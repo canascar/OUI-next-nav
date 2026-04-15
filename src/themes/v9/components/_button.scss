@@ -1,0 +1,18 @@
+/*!
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// Force light text on filled buttons for specific variants
+// where chooseLightOrDarkText() picks black due to color luminance.
+.ouiButton--primary.ouiButton--fill:not(.ouiButton-isDisabled),
+.ouiButton--success.ouiButton--fill:not(.ouiButton-isDisabled),
+.ouiButton--text.ouiButton--fill:not(.ouiButton-isDisabled),
+.ouiButton--danger.ouiButton--fill:not(.ouiButton-isDisabled) {
+  color: $ouiColorEmptyShade;
+
+  .ouiButton__text,
+  .ouiButton__icon {
+    color: $ouiColorEmptyShade;
+  }
+}

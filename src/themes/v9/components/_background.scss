@@ -1,0 +1,78 @@
+/*!
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// sass-lint:disable no-color-literals, leading-zero, no-trailing-zero
+
+// V9 theme gradient backgrounds with frosted glass overlay
+
+$v9-dark-gradient: linear-gradient(241deg, #0F1B2D 0%, #152D45 28%, #0D1926 61%, #132838 100%);
+$v9-light-gradient: linear-gradient(241deg, #94A3B8 0%, #A5D0F0 28%, #E2E8F0 61%, #CBD5E1 100%);
+
+@if (lightness($ouiPageBackgroundColor) < 50) {
+    // Dark mode — deep cosmic
+    html {
+        background-color: $ouiPageBackgroundColor;
+        background-image: $v9-dark-gradient;
+        background-attachment: fixed;
+        min-height: 100vh;
+    }
+
+    body {
+        background: transparent;
+        min-height: 100vh;
+        position: relative;
+
+        // Frosted overlay — dark tinted glass
+        &::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            backdrop-filter: blur(80px) saturate(1.4);
+            background: rgba(2, 6, 23, .55);
+            pointer-events: none;
+            z-index: 0;
+        }
+    }
+
+    .ouiPage,
+    .ouiPageBody {
+        background: transparent !important; // sass-lint:disable-line no-important
+        position: relative;
+        z-index: 1;
+    }
+
+} @else {
+    // Light mode — soft dawn
+    html {
+        background-color: $ouiPageBackgroundColor;
+        background-image: $v9-light-gradient;
+        background-attachment: fixed;
+        min-height: 100vh;
+    }
+
+    body {
+        background: transparent;
+        min-height: 100vh;
+        position: relative;
+
+        // Frosted overlay — light milky glass
+        &::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            backdrop-filter: blur(60px) saturate(1.8);
+            background: rgba(248, 250, 252, .6);
+            pointer-events: none;
+            z-index: 0;
+        }
+    }
+
+    .ouiPage,
+    .ouiPageBody {
+        background: transparent !important; // sass-lint:disable-line no-important
+        position: relative;
+        z-index: 1;
+    }
+}

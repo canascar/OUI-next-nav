@@ -1,0 +1,49 @@
+/*!
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// Apply consistent border radius to group form control layouts
+.ouiFormControlLayout--group {
+  border-radius: $ouiFormControlBorderRadius;
+  overflow: hidden;
+
+  // Round the outer corners of first/last prepend and append elements
+  > .ouiFormControlLayout__prepend:first-child,
+  > *:first-child .ouiFormControlLayout__prepend,
+  > .ouiButtonEmpty:first-child,
+  > .ouiButtonIcon:first-child,
+  > .ouiFormLabel:first-child,
+  > .ouiText:first-child {
+    border-radius: $ouiFormControlBorderRadius 0 0 $ouiFormControlBorderRadius;
+  }
+
+  > .ouiFormControlLayout__append:last-child,
+  > *:last-child .ouiFormControlLayout__append,
+  > .ouiButtonEmpty:last-child,
+  > .ouiButtonIcon:last-child,
+  > .ouiFormLabel:last-child,
+  > .ouiText:last-child {
+    border-radius: 0 $ouiFormControlBorderRadius $ouiFormControlBorderRadius 0;
+  }
+
+  &.ouiFormControlLayout--compressed {
+    border-radius: $ouiFormControlCompressedBorderRadius;
+
+    > .ouiFormControlLayout__prepend:first-child,
+    > .ouiButtonEmpty:first-child,
+    > .ouiButtonIcon:first-child,
+    > .ouiFormLabel:first-child,
+    > .ouiText:first-child {
+      border-radius: $ouiFormControlCompressedBorderRadius 0 0 $ouiFormControlCompressedBorderRadius;
+    }
+
+    > .ouiFormControlLayout__append:last-child,
+    > .ouiButtonEmpty:last-child,
+    > .ouiButtonIcon:last-child,
+    > .ouiFormLabel:last-child,
+    > .ouiText:last-child {
+      border-radius: 0 $ouiFormControlCompressedBorderRadius $ouiFormControlCompressedBorderRadius 0;
+    }
+  }
+}

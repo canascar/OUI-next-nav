@@ -1,0 +1,18 @@
+/*!
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// Dark header background — always use light logo colors
+.ouiHeader--dark {
+  --ouiLogoPrimary: #38BDF8;
+  --ouiLogoSecondary: #0284C7;
+}
+
+// Full dark page theme — default header also gets dark logo colors
+@if (lightness($ouiPageBackgroundColor) < 50) {
+  .ouiHeader--default {
+    --ouiLogoPrimary: #38BDF8;
+    --ouiLogoSecondary: #0284C7;
+  }
+}

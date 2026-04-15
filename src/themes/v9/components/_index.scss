@@ -10,12 +10,17 @@
  */
 
 // V9 Theme-specific component overrides
+@import 'background';
+@import 'button';
 @import 'call_out';
 @import 'filter_group';
 @import 'filter_button';
 @import 'data_grid';
+@import 'form';
+@import 'header_logo';
 @import 'link';
 @import 'list_group';
+@import 'modal';
 @import 'toast';
 @import 'selectable';
 @import 'breadcrumbs';
