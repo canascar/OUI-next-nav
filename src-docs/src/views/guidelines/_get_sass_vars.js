@@ -13,6 +13,8 @@ import lightColors from '!!variables-from-scss!!../../../../src/global_styling/v
 import darkColors from '!!variables-from-scss!!../../../../src/themes/oui/oui_colors_dark.scss';
 import lightNextColors from '!!variables-from-scss!!../../../../src/themes/oui-next/global_styling/variables/_colors.scss';
 import darkNextColors from '!!variables-from-scss!!../../../../src/themes/oui-next/oui_next_colors_dark.scss';
+import lightV9Colors from '!!variables-from-scss!!../../../../src/themes/v9/global_styling/variables/_colors.scss';
+import darkV9Colors from '!!variables-from-scss!!../../../../src/themes/v9/v9_colors_dark.scss';
 
 export const getSassVars = (theme) => {
   let palette;
@@ -22,6 +24,12 @@ export const getSassVars = (theme) => {
       break;
     case 'next-light':
       palette = { ...lightColors, ...lightNextColors };
+      break;
+    case 'v9-dark':
+      palette = { ...darkColors, ...darkV9Colors };
+      break;
+    case 'v9-light':
+      palette = { ...lightColors, ...lightV9Colors };
       break;
     case 'dark':
       palette = darkColors;
