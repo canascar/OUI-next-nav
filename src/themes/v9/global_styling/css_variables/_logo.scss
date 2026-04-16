@@ -3,9 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+// sass-lint:disable no-color-literals
 // OpenSearch logo colors — light mode defaults
 $ouiLogoPrimaryDefault: #005EB8;
 $ouiLogoSecondaryDefault: #003B5C;
+// sass-lint:enable no-color-literals
 
 :root {
   --ouiLogoPrimary: #{$ouiLogoPrimaryDefault};

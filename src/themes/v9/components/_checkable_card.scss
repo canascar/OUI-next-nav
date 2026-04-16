@@ -3,10 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+// sass-lint:disable no-color-literals
 // Make the checkable card's left indicator panel more visible
 // by using a direct rgba color instead of the 90% tint default
 $ouiCheckableCardBg: rgba($ouiColorPrimary, .12);
 $ouiCheckableCardBgChecked: rgba($ouiColorPrimary, .15);
+// sass-lint:enable no-color-literals
 
 .ouiCheckableCard {
   .ouiSplitPanel__inner:first-child {

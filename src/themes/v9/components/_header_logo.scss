@@ -3,9 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+// sass-lint:disable no-color-literals
 // Dark header background — always use light logo colors
 $ouiLogoPrimaryDark: #38BDF8;
 $ouiLogoSecondaryDark: #0284C7;
+// sass-lint:enable no-color-literals
 
 .ouiHeader--dark {
   --ouiLogoPrimary: #{$ouiLogoPrimaryDark};
