@@ -5,6 +5,6 @@
 
 // Clip content to panel border radius, but not checkable cards
 // or cards with beta/experimental badges which overflow the panel edge
-.ouiPanel:not(.ouiCheckableCard):not(.ouiCard--hasBetaBadge):not(.ouiSplitPanel) {
+.ouiPanel:not(.ouiCheckableCard):not(.ouiCard--hasBetaBadge):not(.ouiSplitPanel):not(.ouiSplitPanel__inner) {
   overflow: hidden;
 }
