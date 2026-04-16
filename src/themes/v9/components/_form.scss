@@ -47,3 +47,11 @@
     }
   }
 }
+
+// Remove border-radius from dropdown/select option items
+.ouiComboBoxOption,
+.ouiSelectableListItem,
+.ouiContextMenuItem,
+.ouiFilterSelectItem {
+  border-radius: 0 !important; // sass-lint:disable-line no-important
+}

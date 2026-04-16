@@ -360,8 +360,10 @@
 }
 
 @mixin ouiCustomControlDisabled($type: null) {
-  border-color: $ouiColorLightShade;
-  background-color: $ouiColorLightShade;
+  // sass-lint:disable no-color-literals
+  border-color: rgba($ouiColorLightShade, .7);
+  background-color: rgba($ouiColorLightShade, .7);
+  // sass-lint:enable no-color-literals
   box-shadow: none;
   @if $type != null {
     @include ouiIconBackground($type, $ouiFormCustomControlDisabledIconColor);
