@@ -5,6 +5,16 @@
 
 // sass-lint:disable no-important, no-color-literals
 
+// Override badge border radius to use the v9 variable
+.ouiBadge {
+  border-radius: $ouiBadgeBorderRadius;
+}
+
+// Ensure hollow badge always shows its border
+.ouiBadge--hollow {
+  border-color: $ouiColorDarkShade !important;
+}
+
 // Apply transparent background treatment to named color badges
 .ouiBadge--primary {
   background-color: rgba($ouiColorPrimary, .12) !important;
