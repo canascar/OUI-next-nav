@@ -144,6 +144,6 @@
 // Hollow has a border and is mostly used for autocompleters.
 .ouiBadge--hollow {
   background-color: $ouiColorEmptyShade;
-  border-color: lightOrDarkTheme($ouiBorderColor, tint($ouiBorderColor, 15%));
+  border: 1px solid $ouiColorMediumShade;
   color: $ouiTextColor;
 }

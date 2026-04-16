@@ -186,7 +186,13 @@ export const OuiBadge: FunctionComponent<OuiBadgeProps> = ({
         color: textColor,
         ...optionalCustomStyles,
       };
-    } else if (color !== 'hollow') {
+    } else if (color === 'hollow') {
+      // Hollow badges need an explicit border
+      optionalCustomStyles = {
+        border: '1px solid rgba(128, 128, 128, 0.7)',
+        ...optionalCustomStyles,
+      };
+    } else {
       // This is a custom color that is neither from the base palette nor hollow
       // Let's do our best to ensure that it provides sufficient contrast
 
