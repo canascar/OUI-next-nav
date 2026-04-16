@@ -27,16 +27,16 @@ $ouiColorWarning: #FCD34D;      // Brighter amber (Tailwind amber-400)
 $ouiColorDanger: #FC8181;       // Softer red (Tailwind red-400)
 
 // Grays - Neutral slate tones (no blue cast)
-$ouiColorEmptyShade: #1e293b;   // Slate-800 — card/panel surfaces
+$ouiColorEmptyShade: #1E293B;   // Slate-800 — card/panel surfaces
 $ouiColorLightestShade: #334155; // Slate-700 — subtle backgrounds, code blocks
 $ouiColorLightShade: #020617;   // Slate-950 — borders, dividers
-$ouiColorMediumShade: #64748b;  // Slate-500 — muted UI elements
-$ouiColorDarkShade: #94a3b8;    // Slate-400 — secondary text
-$ouiColorDarkestShade: #e2e8f0; // Slate-200 — high-contrast foreground
-$ouiColorFullShade: #f8fafc;    // Slate-50  — brightest foreground
+$ouiColorMediumShade: #64748B;  // Slate-500 — muted UI elements
+$ouiColorDarkShade: #94A3B8;    // Slate-400 — secondary text
+$ouiColorDarkestShade: #E2E8F0; // Slate-200 — high-contrast foreground
+$ouiColorFullShade: #F8FAFC;    // Slate-50  — brightest foreground
 
 // Backgrounds — page sits one step darker than cards for layered depth
-$ouiPageBackgroundColor: #0f172a; // Slate-900 — deepest layer
+$ouiPageBackgroundColor: #0F172A; // Slate-900 — deepest layer
 $ouiColorHighlight: #422006;    // Warmer highlight (Tailwind amber-950)
 
 // CodeBlock
@@ -49,11 +49,11 @@ $ouiCodeBlockTypeShade: #6AB0F1;
 $ouiCodeBlockTitleShade: #DD8232;
 
 // Variations from core - Better contrast
-$ouiTextColor: #f1f5f9;         // Slate-50 (neutral, no blue)
-$ouiTitleColor: #f8fafc;        // Slate-100 (clearer hierarchy)
+$ouiTextColor: #F1F5F9;         // Slate-50 (neutral, no blue)
+$ouiTitleColor: #F8FAFC;        // Slate-100 (clearer hierarchy)
 // Ensure contrast between subdued text and the page background
 // Should not be shaded as much as $ouiColorDisabled
-$ouiTextSubduedColor: #cbd5e1;  // Zinc-400 (better readability)
+$ouiTextSubduedColor: #CBD5E1;  // Zinc-400 (better readability)
 $ouiColorDisabled: $ouiColorLightestShade !default;
 
 // Contrasty text variants

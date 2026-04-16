@@ -12,7 +12,7 @@
 
 // Ensure hollow badge always shows its border
 .ouiBadge--hollow {
-  border-color: $ouiColorDarkShade !important;
+  border: 1px solid $ouiColorDarkShade !important;
 }
 
 // Apply transparent background treatment to named color badges

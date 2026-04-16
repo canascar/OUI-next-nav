@@ -4,7 +4,10 @@
  */
 
 // OpenSearch logo colors — light mode defaults
+$ouiLogoPrimaryDefault: #005EB8;
+$ouiLogoSecondaryDefault: #003B5C;
+
 :root {
-  --ouiLogoPrimary: #005EB8;
-  --ouiLogoSecondary: #003B5C;
+  --ouiLogoPrimary: #{$ouiLogoPrimaryDefault};
+  --ouiLogoSecondary: #{$ouiLogoSecondaryDefault};
 }

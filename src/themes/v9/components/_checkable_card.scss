@@ -5,14 +5,17 @@
 
 // Make the checkable card's left indicator panel more visible
 // by using a direct rgba color instead of the 90% tint default
+$ouiCheckableCardBg: rgba($ouiColorPrimary, .12);
+$ouiCheckableCardBgChecked: rgba($ouiColorPrimary, .15);
+
 .ouiCheckableCard {
   .ouiSplitPanel__inner:first-child {
-    background-color: rgba($ouiColorPrimary, .12);
+    background-color: $ouiCheckableCardBg;
   }
 
   &.ouiCheckableCard-isChecked {
     .ouiSplitPanel__inner:first-child {
-      background-color: rgba($ouiColorPrimary, .15);
+      background-color: $ouiCheckableCardBgChecked;
     }
   }
 }
