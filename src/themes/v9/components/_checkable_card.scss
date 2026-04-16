@@ -1,0 +1,18 @@
+/*!
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// Make the checkable card's left indicator panel more visible
+// by using a direct rgba color instead of the 90% tint default
+.ouiCheckableCard {
+  .ouiSplitPanel__inner:first-child {
+    background-color: rgba($ouiColorPrimary, .12);
+  }
+
+  &.ouiCheckableCard-isChecked {
+    .ouiSplitPanel__inner:first-child {
+      background-color: rgba($ouiColorPrimary, .15);
+    }
+  }
+}
