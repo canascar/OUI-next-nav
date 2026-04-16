@@ -21,12 +21,10 @@ import { OuiToolTip } from '../../../../src/components/tool_tip';
 import { OuiPopover } from '../../../../src/components/popover';
 import { useIsWithinBreakpoints } from '../../../../src/services/hooks';
 import { OuiButtonEmpty } from '../../../../src/components/button';
+import { OuiBetaBadge } from '../../../../src/components/badge/beta_badge';
 
 import { GuideThemeSelector } from '../guide_theme_selector';
-import { GuideVersionSelector } from '../guide_version_selector';
 import figmaLogo from '../../images/logo-figma.svg';
-
-const pkg = require('../../../../package.json');
 
 export const GuidePageHeader: React.FunctionComponent<{}> = () => {
   const isMobileSize = useIsWithinBreakpoints(['xs', 's']);
@@ -34,14 +32,9 @@ export const GuidePageHeader: React.FunctionComponent<{}> = () => {
   function renderLogo() {
     return (
       <OuiHeaderLogo iconType="logoOpenSearch" href="#/" aria-label="OUI home">
-        OpenSearch UI
+        OpenSearch UI v2.0.1 <OuiBetaBadge label="Beta" size="s" />
       </OuiHeaderLogo>
     );
-  }
-
-  function renderVersion() {
-    const trimVersion = pkg.version.replace(/^(\d+\.\d+)\..*/, '$1');
-    return <GuideVersionSelector selected={trimVersion} />;
   }
 
   function renderGithub() {
@@ -109,7 +102,7 @@ export const GuidePageHeader: React.FunctionComponent<{}> = () => {
       theme="dark"
       sections={[
         {
-          items: [renderLogo(), renderVersion()],
+          items: [renderLogo()],
           borders: 'none',
         },
         {
