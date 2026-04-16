@@ -49,11 +49,11 @@ $ouiCodeBlockTypeShade: #6AB0F1;
 $ouiCodeBlockTitleShade: #DD8232;
 
 // Variations from core - Better contrast
-$ouiTextColor: #D4D4D8;         // Zinc-300 (neutral, no blue)
-$ouiTitleColor: #F4F4F5;        // Zinc-100 (clearer hierarchy)
+$ouiTextColor: #f1f5f9;         // Slate-50 (neutral, no blue)
+$ouiTitleColor: #f8fafc;        // Slate-100 (clearer hierarchy)
 // Ensure contrast between subdued text and the page background
 // Should not be shaded as much as $ouiColorDisabled
-$ouiTextSubduedColor: #A1A1AA;  // Zinc-400 (better readability)
+$ouiTextSubduedColor: #cbd5e1;  // Zinc-400 (better readability)
 $ouiColorDisabled: $ouiColorLightestShade !default;
 
 // Contrasty text variants
@@ -92,11 +92,11 @@ $ouiShadow5: $ouiShadowBase, 0 8px 32px rgba(0, 0, 0, $ouiShadowOpacity);
 $ouiShadow6: $ouiShadowBase, 0 12px 48px rgba(0, 0, 0, $ouiShadowOpacity);
 
 // Border color — subtle but visible against dark surfaces
-$ouiBorderColor: rgba(46, 46, 54, 0.8); // Neutral gray at 80%
+$ouiBorderColor: rgb(51, 65, 85, 0.8); // Slate-700 at 80%
 
 // Elevated surfaces (menus, popovers, flyouts) — one step above cards
 $ouiBackgroundElevated: #1C1C22; // Neutral — distinct from card bg
-$ouiBorderElevated: rgba(63, 63, 70, 0.6); // Zinc-700 at 60% — visible ring on floating surfaces
+$ouiBorderElevated: rgb(51, 65, 85, 0.6); // Slate-700 at 60% — visible ring on floating surfaces
 
 //CodeBlock Colors
 $ouiCodeBlockCommentColor: $ouiCodeBlockCommentShade;

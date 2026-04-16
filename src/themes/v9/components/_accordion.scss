@@ -1,0 +1,14 @@
+/*!
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// Remove background hover state — use link-style hover only
+.ouiAccordion__button,
+.ouiAccordionForm__button {
+  &:hover,
+  &:focus {
+    background-color: transparent;
+    text-decoration: underline;
+  }
+}

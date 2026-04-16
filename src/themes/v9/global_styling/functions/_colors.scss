@@ -109,8 +109,11 @@ $ouiContrastRatioText: 4.5;
   $brightness: lightness($background);
 
   $highContrastTextColor: $foreground;
+  $iterations: 0;
 
   @while ($contrast < $ratio) {
+    $iterations: $iterations + 1;
+
     @if ($brightness > 50) {
       $highContrastTextColor: shade($highContrastTextColor, 5%);
     } @else {
@@ -126,6 +129,11 @@ $ouiContrastRatioText: 4.5;
 
     @if (lightness($highContrastTextColor) > 95) {
       @warn 'High enough contrast could not be determined. Most likely your background color does not adjust for dark mode.';
+      @return $highContrastTextColor;
+    }
+
+    @if ($iterations > 20) {
+      @warn 'makeHighContrastColor: max iterations reached for #{$foreground} on #{$background}. Returning best result.';
       @return $highContrastTextColor;
     }
   }
