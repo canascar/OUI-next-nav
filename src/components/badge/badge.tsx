@@ -224,6 +224,7 @@ export const OuiBadge: FunctionComponent<OuiBadgeProps> = ({
       'ouiBadge-isClickable': (onClick || href) && !iconOnClick,
       'ouiBadge-isDisabled': isDisabled,
       'ouiBadge--hollow': color === 'hollow',
+      [`ouiBadge--${color}`]: COLORS.indexOf(color) > -1,
     },
     iconSideToClassNameMap[iconSide],
     className

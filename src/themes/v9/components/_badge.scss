@@ -1,0 +1,38 @@
+/*!
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// sass-lint:disable no-important, no-color-literals
+
+// Apply transparent background treatment to named color badges
+.ouiBadge--primary {
+  background-color: rgba($ouiColorPrimary, .12) !important;
+  border-color: rgba($ouiColorPrimary, .3) !important;
+  color: $ouiColorPrimary !important;
+}
+
+.ouiBadge--success,
+.ouiBadge--secondary {
+  background-color: rgba($ouiColorSuccess, .12) !important;
+  border-color: rgba($ouiColorSuccess, .3) !important;
+  color: $ouiColorSuccess !important;
+}
+
+.ouiBadge--warning {
+  background-color: rgba($ouiColorWarning, .12) !important;
+  border-color: rgba($ouiColorWarning, .3) !important;
+  color: $ouiColorWarning !important;
+}
+
+.ouiBadge--danger {
+  background-color: rgba($ouiColorDanger, .12) !important;
+  border-color: rgba($ouiColorDanger, .3) !important;
+  color: $ouiColorDanger !important;
+}
+
+.ouiBadge--accent {
+  background-color: rgba($ouiColorAccent, .12) !important;
+  border-color: rgba($ouiColorAccent, .3) !important;
+  color: $ouiColorAccent !important;
+}

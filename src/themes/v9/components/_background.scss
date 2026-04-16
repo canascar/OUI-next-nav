@@ -7,16 +7,21 @@
 
 // V9 theme gradient backgrounds with frosted glass overlay
 
-$v9-dark-gradient: linear-gradient(241deg, #0F1B2D 0%, #152D45 28%, #0D1926 61%, #132838 100%);
-$v9-light-gradient: linear-gradient(241deg, #94A3B8 0%, #A5D0F0 28%, #E2E8F0 61%, #CBD5E1 100%);
+$v9-dark-gradient: 
+    linear-gradient(241deg, #0F1B2D 0%, #25405c 28%, #2e4c6e 61%, #132838 100%);
+
+$v9-light-gradient: 
+    linear-gradient(241deg, #94A3B8 0%, #A5D0F0 28%, #E2E8F0 61%, #CBD5E1 100%);
 
 @if (lightness($ouiPageBackgroundColor) < 50) {
     // Dark mode — deep cosmic
     html {
         background-color: $ouiPageBackgroundColor;
         background-image: $v9-dark-gradient;
+        background-size: 200% 200%;
         background-attachment: fixed;
         min-height: 100vh;
+        animation: gradient-drift 12s ease-in-out infinite;
     }
 
     body {
@@ -75,4 +80,10 @@ $v9-light-gradient: linear-gradient(241deg, #94A3B8 0%, #A5D0F0 28%, #E2E8F0 61%
         position: relative;
         z-index: 1;
     }
+}
+
+@keyframes gradient-drift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
