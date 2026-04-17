@@ -31,6 +31,7 @@ import themeV9Dark from './theme_v9_dark.scss';
 import { ThemeProvider } from './components/with_theme/theme_context';
 import ScrollToHash from './components/scroll_to_hash';
 import { LinkWrapper } from './views/link_wrapper';
+import { SamplePagesView } from './views/sample_pages/sample_pages_view';
 
 registerTheme('light', [themeLight]);
 registerTheme('dark', [themeDark]);
@@ -65,6 +66,14 @@ render(
       <Router history={history}>
         <ScrollToHash />
         <Switch>
+          <Route
+            path="/sample-pages"
+            render={() => (
+              <LinkWrapper>
+                <SamplePagesView />
+              </LinkWrapper>
+            )}
+          />
           {routes.map(
             ({ name, path, sections, isNew, component, from, to }) => {
               const mainComponent = (

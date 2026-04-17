@@ -20,7 +20,7 @@ import { OuiIcon } from '../../../../src/components/icon';
 import { OuiToolTip } from '../../../../src/components/tool_tip';
 import { OuiPopover } from '../../../../src/components/popover';
 import { useIsWithinBreakpoints } from '../../../../src/services/hooks';
-import { OuiButtonEmpty } from '../../../../src/components/button';
+import { OuiButton, OuiButtonEmpty } from '../../../../src/components/button';
 import { OuiBetaBadge } from '../../../../src/components/badge/beta_badge';
 
 import { GuideThemeSelector } from '../guide_theme_selector';
@@ -69,6 +69,21 @@ export const GuidePageHeader: React.FunctionComponent<{}> = () => {
     );
   }
 
+  function renderSamplePages() {
+    const href = '#/sample-pages';
+    const label = 'Sample Pages';
+    return (
+      <OuiButton
+        size="s"
+        href={href}
+        color="ghost"
+        minWidth={0}
+        style={{ marginRight: 16 }}>
+        {label}
+      </OuiButton>
+    );
+  }
+
   const [mobilePopoverIsOpen, setMobilePopoverIsOpen] = useState(false);
 
   function renderMobileMenu() {
@@ -88,13 +103,19 @@ export const GuidePageHeader: React.FunctionComponent<{}> = () => {
         closePopover={() => setMobilePopoverIsOpen(false)}>
         <div className="guideOptionsPopover">{renderGithub()}</div>
         <div className="guideOptionsPopover">{renderFigma()}</div>
+        <div className="guideOptionsPopover">{renderSamplePages()}</div>
       </OuiPopover>
     );
   }
 
   const rightSideItems = isMobileSize
     ? [<GuideThemeSelector />, renderMobileMenu()]
-    : [<GuideThemeSelector />, renderGithub(), renderFigma()];
+    : [
+        renderSamplePages(),
+        <GuideThemeSelector />,
+        renderGithub(),
+        renderFigma(),
+      ];
 
   return (
     <OuiHeader
