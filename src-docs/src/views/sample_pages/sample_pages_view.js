@@ -17,18 +17,18 @@ import { DiscoverPage } from './discover_page';
 import { ThreadPage } from './thread_page';
 import { OuiErrorBoundary } from '../../../../src/components';
 
-const renderPage = (activePage) => {
+const renderPage = (activePage, selectedItem) => {
   switch (activePage) {
     case 'discover':
       return (
         <OuiErrorBoundary>
-          <DiscoverPage />
+          <DiscoverPage selectedItem={selectedItem} />
         </OuiErrorBoundary>
       );
     case 'thread':
       return (
         <OuiErrorBoundary>
-          <ThreadPage />
+          <ThreadPage selectedItem={selectedItem} />
         </OuiErrorBoundary>
       );
     case 'service':
@@ -43,6 +43,12 @@ const renderPage = (activePage) => {
 
 export const SamplePagesView = () => {
   const [activePage, setActivePage] = useState('service');
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  const handlePageChange = (page) => {
+    setActivePage(page);
+    setSelectedItem(null);
+  };
 
   return (
     <div
@@ -56,14 +62,15 @@ export const SamplePagesView = () => {
       }}>
       <SamplePagesLeftNav
         activePage={activePage}
-        onPageChange={setActivePage}
+        onPageChange={handlePageChange}
+        onItemSelect={setSelectedItem}
       />
       <div
         style={{
           flex: 1,
           overflowY: 'auto',
         }}>
-        {renderPage(activePage)}
+        {renderPage(activePage, selectedItem)}
       </div>
     </div>
   );

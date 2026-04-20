@@ -16,8 +16,11 @@ export function registerTheme(theme, cssFiles) {
 }
 
 export function applyTheme(newTheme) {
-  Object.keys(themes).forEach((theme) =>
-    themes[theme].forEach((cssFile) => cssFile.unuse())
-  );
+  // Apply new theme first, then remove old ones to avoid a flash of unstyled content
   themes[newTheme].forEach((cssFile) => cssFile.use());
+  Object.keys(themes).forEach((theme) => {
+    if (theme !== newTheme) {
+      themes[theme].forEach((cssFile) => cssFile.unuse());
+    }
+  });
 }

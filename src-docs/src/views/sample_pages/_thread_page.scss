@@ -1,0 +1,190 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+// sass-lint:disable no-misspelled-properties, no-color-literals, leading-zero, no-vendor-prefixes, shorthand-values
+
+.threadPage__header {
+  border-bottom: 1px solid $ouiBorderColor;
+}
+
+.threadPage__avatarGroup {
+  display: flex;
+  align-items: center;
+  margin-right: $ouiSizeXS;
+
+  .ouiAvatar {
+    border: 2px solid $ouiColorEmptyShade;
+    box-sizing: content-box;
+    position: relative;
+    z-index: 1;
+  }
+
+  .ouiAvatar + .ouiAvatar {
+    margin-left: -$ouiSizeS;
+    z-index: 0;
+  }
+}
+
+// Conversation feed
+.threadPage__feed {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// Message row
+.threadPage__message {
+  display: flex;
+
+  &--user {
+    justify-content: flex-end;
+  }
+
+  &--assistant {
+    justify-content: flex-start;
+  }
+}
+
+// Chat bubbles
+.threadPage__bubble {
+  max-width: 80%;
+  padding: 8px 12px;
+  border-radius: 8px;
+
+  &--user {
+    background-color: rgba($ouiColorDarkShade, 0.06);
+    border-radius: 8px 8px 2px 8px;
+  }
+
+  &--assistant {
+    background: none;
+    padding-left: 0;
+
+    ul,
+    ol {
+      padding-left: 20px;
+      margin: 0;
+    }
+
+    li {
+      list-style: disc;
+    }
+  }
+}
+
+// Thumbs up / down feedback row
+.threadPage__feedback {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+// Attachment card
+.threadPage__attachment {
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  padding: 8px 12px;
+  margin-top: 8px;
+  display: inline-block;
+
+  a {
+    color: $ouiLinkColor;
+    text-decoration: none;
+    word-break: break-all;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.threadPage__attachmentQuery {
+  font-family: $ouiCodeFontFamily;
+  font-size: $ouiFontSizeS;
+  line-height: 18px;
+  color: $ouiColorAccentText;
+  word-break: break-all;
+}
+
+// Task list
+.threadPage__taskList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.threadPage__taskItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.threadPage__taskIconWrap {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.threadPage__taskCollapsed {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+// Input area at bottom
+.threadPage__inputArea {
+  padding: 8px;
+  flex-shrink: 0;
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+// Wrapper positions textarea with action buttons overlaid at bottom
+.threadPage__inputWrapper {
+  position: relative;
+}
+
+// Remove default textarea border so the wrapper controls it
+.threadPage__textarea textarea {
+  padding-bottom: 36px;
+}
+
+// Plus (bottom-left) and send (bottom-right) inside the textarea
+.threadPage__inputActions {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+  }
+}

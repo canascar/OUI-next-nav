@@ -329,6 +329,8 @@ body {
 @import 'guide_section/index';
 @import 'guide_rule/index';
 @import '../views/sample_pages/sample_pages_left_nav';
+@import '../views/sample_pages/service_page';
+@import '../views/sample_pages/thread_page';
 
 @include ouiBreakpoint('xs', 's') {
   .guideSideNav {
