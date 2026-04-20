@@ -17,28 +17,28 @@
 $ouiColorGhost: #FCFEFF !default;
 $ouiColorInk: #02020E !default;
 
-// Core - Modernized for contemporary aesthetic
-$ouiColorPrimary: #0284C7 !default;      // Modern blue (Tailwind sky-600)
-$ouiColorSecondary: #0369A1 !default;    // Fresh green (Tailwind sky-700)
-$ouiColorAccent: #7C3AED !default;       // Vibrant purple (Tailwind violet-600)
+// Core - Monochrome industrial palette
+$ouiColorPrimary: #606060 !default;      // Neutral gray
+$ouiColorSecondary: #333333 !default;    // Dark gray
+$ouiColorAccent: #476666 !default;       // Muted teal
 
-// Status - Muted, sophisticated
-$ouiColorSuccess: #10B981 !default;      // Modern green (Tailwind emerald-500)
-$ouiColorWarning: #F59E0B !default;      // Warm amber (Tailwind amber-500)
-$ouiColorDanger: #DC2626 !default;       // Clean red (Tailwind red-600)
+// Status
+$ouiColorSuccess: #476666 !default;      // Muted teal
+$ouiColorWarning: #909090 !default;      // Mid gray
+$ouiColorDanger: #CC3333 !default;       // Muted red
 
-// Grays - Warmer, softer (Slate-inspired)
-$ouiColorEmptyShade: #FFFFFF !default;   // Pure white
-$ouiColorLightestShade: #F8FAFC !default; // Slate-50
-$ouiColorLightShade: #E2E8F0 !default;   // Slate-200
-$ouiColorMediumShade: #94A3B8 !default;  // Slate-400
-$ouiColorDarkShade: #475569 !default;    // Slate-600
-$ouiColorDarkestShade: #1E293B !default; // Slate-800
-$ouiColorFullShade: #0F172A !default;    // Slate-950
+// Grays
+$ouiColorEmptyShade: #F5F5F5 !default;   // Card bg
+$ouiColorLightestShade: #EAEAEA !default; // Sidebar
+$ouiColorLightShade: #D0D0D0 !default;   // Border
+$ouiColorMediumShade: #666666 !default;  // Muted foreground
+$ouiColorDarkShade: #333333 !default;    // Dark text
+$ouiColorDarkestShade: #333333 !default; // Foreground
+$ouiColorFullShade: #1A1A1A !default;    // Near black
 
-// Backgrounds - Softer, more refined
-$ouiPageBackgroundColor: #F8FAFC !default; // Subtle off-white (Slate-50)
-$ouiColorHighlight: #FEF3C7 !default;    // Softer yellow (Tailwind amber-100)
+// Backgrounds
+$ouiPageBackgroundColor: #F0F0F0 !default; // Light gray
+$ouiColorHighlight: #D9D9D9 !default;    // Muted highlight
 
 // Every color below must be based mathematically on the set above and in a particular order.
 $ouiTextColor: $ouiColorDarkestShade !default;

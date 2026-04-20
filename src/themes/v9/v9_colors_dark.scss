@@ -16,28 +16,28 @@
 $ouiColorGhost: #E3E5E9;
 $ouiColorInk: #02020E;
 
-// Core - Brighter, more vibrant for dark mode
-$ouiColorPrimary: #38BDF8;      // Brighter blue (Tailwind blue-500)
-$ouiColorSecondary: #7DD3FC;    // Vibrant green (Tailwind emerald-500)
-$ouiColorAccent: #FB7185;       // Softer purple (Tailwind violet-400)
+// Core - Monochrome industrial dark mode
+$ouiColorPrimary: #A0A0A0;      // Light gray
+$ouiColorSecondary: #D9D9D9;    // Light foreground
+$ouiColorAccent: #7E9CA0;       // Muted teal
 
-// Status - Higher contrast for dark backgrounds
-$ouiColorSuccess: #4ADE80;      // Modern green (Tailwind emerald-500)
-$ouiColorWarning: #FCD34D;      // Brighter amber (Tailwind amber-400)
-$ouiColorDanger: #EF4444;       // Softer red (Tailwind red-400)
+// Status
+$ouiColorSuccess: #7E9CA0;      // Muted teal
+$ouiColorWarning: #707070;      // Mid gray
+$ouiColorDanger: #E06666;       // Muted red
 
-// Grays - Neutral slate tones (no blue cast)
-$ouiColorEmptyShade: #1E293B;   // Slate-800 — card/panel surfaces
-$ouiColorLightestShade: #334155; // Slate-700 — subtle backgrounds, code blocks
-$ouiColorLightShade: #020617;   // Slate-950 — borders, dividers
-$ouiColorMediumShade: #64748B;  // Slate-500 — muted UI elements
-$ouiColorDarkShade: #94A3B8;    // Slate-400 — secondary text
-$ouiColorDarkestShade: #E2E8F0; // Slate-200 — high-contrast foreground
-$ouiColorFullShade: #F8FAFC;    // Slate-50  — brightest foreground
+// Grays
+$ouiColorEmptyShade: #202020;   // Card surfaces
+$ouiColorLightestShade: #2A2A2A; // Muted backgrounds
+$ouiColorLightShade: #353535;   // Borders
+$ouiColorMediumShade: #808080;  // Muted text
+$ouiColorDarkShade: #D9D9D9;    // Secondary text
+$ouiColorDarkestShade: #D9D9D9; // High-contrast foreground
+$ouiColorFullShade: #F0F0F0;    // Brightest foreground
 
-// Backgrounds — page sits one step darker than cards for layered depth
-$ouiPageBackgroundColor: #0F172A; // Slate-900 — deepest layer
-$ouiColorHighlight: #422006;    // Warmer highlight (Tailwind amber-950)
+// Backgrounds
+$ouiPageBackgroundColor: #1A1A1A; // Dark gray
+$ouiColorHighlight: #2A2A2A;    // Muted highlight
 
 // CodeBlock
 $ouiCodeBlockCommentShade: #838B93;
@@ -49,11 +49,11 @@ $ouiCodeBlockTypeShade: #6AB0F1;
 $ouiCodeBlockTitleShade: #DD8232;
 
 // Variations from core - Better contrast
-$ouiTextColor: #F1F5F9;         // Slate-50 (neutral, no blue)
-$ouiTitleColor: #F8FAFC;        // Slate-100 (clearer hierarchy)
+$ouiTextColor: #D9D9D9;         // Light gray
+$ouiTitleColor: #D9D9D9;        // Same
 // Ensure contrast between subdued text and the page background
 // Should not be shaded as much as $ouiColorDisabled
-$ouiTextSubduedColor: #CBD5E1;  // Zinc-400 (better readability)
+$ouiTextSubduedColor: #808080;  // Mid gray
 $ouiColorDisabled: $ouiColorLightestShade !default;
 
 // Contrasty text variants
@@ -73,30 +73,25 @@ $ouiColorChartBand: tint($ouiColorLightestShade, 2.5%);
 // Code
 $ouiCodeBlockBackgroundColor: $ouiColorLightestShade;
 
-// Shadows — dark theme needs stronger, more spread shadows plus a subtle
-// light ring so elevation is perceptible against dark backgrounds.
+// Shadows — subtle industrial
 $ouiShadowColor: #000;
 $ouiShadowColorLarge: $ouiShadowColor;
-$ouiShadowOpacity: 0.90;
+$ouiShadowOpacity: 0.15;
 
-// Light-ring glow that outlines elevated surfaces (simulates ambient light)
-$ouiShadowGlow: rgba(161, 161, 170, 0.08); // Zinc-400 at 8%
+$ouiShadowBase: 0 2px 0px 0px rgba(51, 51, 51, 0.07);
+$ouiShadow1: 0 2px 0px 0px rgba(51, 51, 51, 0.15);
+$ouiShadow2: 0 2px 0px 0px rgba(51, 51, 51, 0.15), 0 1px 2px -1px rgba(51, 51, 51, 0.15);
+$ouiShadow3: 0 2px 0px 0px rgba(51, 51, 51, 0.15), 0 2px 4px -1px rgba(51, 51, 51, 0.15);
+$ouiShadow4: 0 2px 0px 0px rgba(51, 51, 51, 0.15), 0 4px 6px -1px rgba(51, 51, 51, 0.15);
+$ouiShadow5: 0 2px 0px 0px rgba(51, 51, 51, 0.15), 0 8px 10px -1px rgba(51, 51, 51, 0.15);
+$ouiShadow6: 0 2px 0px 0px rgba(51, 51, 51, 0.38);
 
-// Override shadow levels for dark theme — wider spread + glow ring
-$ouiShadowBase: 0 0 1px rgba(161, 161, 170, 0.12), 0 0 0 1px rgba(161, 161, 170, 0.06);
-$ouiShadow1: $ouiShadowBase, 0 1px 4px rgba(0, 0, 0, $ouiShadowOpacity);
-$ouiShadow2: $ouiShadowBase, 0 2px 8px rgba(0, 0, 0, $ouiShadowOpacity);
-$ouiShadow3: $ouiShadowBase, 0 4px 16px rgba(0, 0, 0, $ouiShadowOpacity);
-$ouiShadow4: $ouiShadowBase, 0 6px 24px rgba(0, 0, 0, $ouiShadowOpacity);
-$ouiShadow5: $ouiShadowBase, 0 8px 32px rgba(0, 0, 0, $ouiShadowOpacity);
-$ouiShadow6: $ouiShadowBase, 0 12px 48px rgba(0, 0, 0, $ouiShadowOpacity);
+// Border color
+$ouiBorderColor: #353535;
 
-// Border color — subtle but visible against dark surfaces
-$ouiBorderColor: rgb(51, 65, 85, 0.8); // Slate-700 at 80%
-
-// Elevated surfaces (menus, popovers, flyouts) — one step above cards
-$ouiBackgroundElevated: #1C1C22; // Neutral — distinct from card bg
-$ouiBorderElevated: rgb(51, 65, 85, 0.6); // Slate-700 at 60% — visible ring on floating surfaces
+// Elevated surfaces
+$ouiBackgroundElevated: #202020;
+$ouiBorderElevated: #353535;
 
 //CodeBlock Colors
 $ouiCodeBlockCommentColor: $ouiCodeBlockCommentShade;
