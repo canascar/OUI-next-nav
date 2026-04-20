@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useRef, useCallback } from 'react';
 
 import {
   OuiIcon,
@@ -20,21 +20,24 @@ import {
   OuiListGroupItem,
   OuiText,
   OuiTitle,
+  OuiButtonEmpty,
 } from '../../../../src/components';
 
 import { ThemeContext } from '../../components/with_theme';
 
 const NAV_ITEMS = [
   { key: 'search', label: 'Search', icon: 'search', isAction: true },
-  { key: 'thread', label: 'Thread', icon: 'chatLeft' },
+  { key: 'thread', label: 'Thread', icon: 'navTicketing' },
   { key: 'discover', label: 'Discover', icon: 'navDiscover' },
-  { key: 'service', label: 'APM', icon: 'pulse' },
+  { key: 'service', label: 'APM', icon: 'navAnomalyDetection' },
+  { key: 'more', label: 'More', icon: 'navQuerySets', hoverOnly: true },
 ];
 
 // Panel content for Thread tab
-const ThreadPanelContent = ({ onItemSelect }) => (
+const ThreadPanelContent = ({ onItemSelect, selectedItem }) => (
   <OuiListGroup gutterSize="none">
     <OuiListGroupItem
+      isActive={selectedItem === 'latency-spike'}
       label={
         <div>
           <OuiText size="s">
@@ -51,6 +54,7 @@ const ThreadPanelContent = ({ onItemSelect }) => (
       <OuiHorizontalRule margin="none" />
     </div>
     <OuiListGroupItem
+      isActive={selectedItem === 'checkout-error'}
       label={
         <div>
           <OuiText size="s">
@@ -67,6 +71,7 @@ const ThreadPanelContent = ({ onItemSelect }) => (
       <OuiHorizontalRule margin="none" />
     </div>
     <OuiListGroupItem
+      isActive={selectedItem === 'weekly-review'}
       label={
         <div>
           <OuiText size="s">
@@ -83,117 +88,200 @@ const ThreadPanelContent = ({ onItemSelect }) => (
 );
 
 // Panel content for Discover tab
-const DiscoverPanelContent = ({ onItemSelect }) => (
+const DiscoverPanelContent = ({ onItemSelect, selectedItem }) => (
   <OuiListGroup gutterSize="none">
     <OuiListGroupItem
+      isActive={selectedItem === 'error-rate'}
       label={
         <div>
           <OuiText size="s">
-            <strong>frontend-proxy</strong>
+            <strong>Error rate by service</strong>
           </OuiText>
           <OuiText size="xs" color="subdued">
-            ERROR 502 Bad Gateway — /api/checkout
-          </OuiText>
-          <OuiText size="xs" color="subdued">
-            3 min ago
+            source=logs | where level=&quot;ERROR&quot; | stats count() by
+            service
           </OuiText>
         </div>
       }
-      onClick={() => onItemSelect('frontend-proxy')}
+      onClick={() => onItemSelect('error-rate')}
     />
     <div className="samplePagesLeftNav__ruleDivider">
       <OuiHorizontalRule margin="none" />
     </div>
     <OuiListGroupItem
+      isActive={selectedItem === 'latency-percentiles'}
       label={
         <div>
           <OuiText size="s">
-            <strong>checkout</strong>
+            <strong>Latency percentiles</strong>
           </OuiText>
           <OuiText size="xs" color="subdued">
-            WARN Connection timeout to payment-service
-          </OuiText>
-          <OuiText size="xs" color="subdued">
-            12 min ago
+            source=traces | stats p99(latency), p50(latency) by service
           </OuiText>
         </div>
       }
-      onClick={() => onItemSelect('checkout')}
+      onClick={() => onItemSelect('latency-percentiles')}
     />
     <div className="samplePagesLeftNav__ruleDivider">
       <OuiHorizontalRule margin="none" />
     </div>
     <OuiListGroupItem
+      isActive={selectedItem === 'throughput'}
       label={
         <div>
           <OuiText size="s">
-            <strong>recommendation</strong>
+            <strong>Throughput over time</strong>
           </OuiText>
           <OuiText size="xs" color="subdued">
-            INFO Model refresh completed in 1.2s
-          </OuiText>
-          <OuiText size="xs" color="subdued">
-            25 min ago
+            source=metrics | stats avg(throughput) by span(timestamp, 5m)
           </OuiText>
         </div>
       }
-      onClick={() => onItemSelect('recommendation')}
+      onClick={() => onItemSelect('throughput')}
     />
   </OuiListGroup>
 );
 
 // Panel content for APM tab
-const ServicesPanelContent = ({ onPageChange }) => (
+const ServicesPanelContent = ({ onPageChange, selectedItem }) => (
   <OuiListGroup gutterSize="none">
     <OuiListGroupItem
-      iconType="pulse"
-      label="Services"
+      isActive={selectedItem === 'services'}
+      iconType="navServices"
+      label={
+        <OuiText size="s">
+          <strong>Services</strong>
+        </OuiText>
+      }
       onClick={() => onPageChange('service')}
-      extraAction={{
-        iconType: 'arrowRight',
-        alwaysShow: true,
-        'aria-label': 'Go to Services',
-      }}
     />
     <div className="samplePagesLeftNav__ruleDivider">
       <OuiHorizontalRule margin="none" />
     </div>
     <OuiListGroupItem
-      iconType="graphApp"
-      label="Application map"
+      isActive={selectedItem === 'application-map'}
+      iconType="navServiceMap"
+      label={
+        <OuiText size="s">
+          <strong>Application map</strong>
+        </OuiText>
+      }
       onClick={() => onPageChange('service')}
-      extraAction={{
-        iconType: 'arrowRight',
-        alwaysShow: true,
-        'aria-label': 'Go to Application map',
-      }}
     />
   </OuiListGroup>
+);
+
+// Panel content for More tab
+const MorePanelContent = () => (
+  <div>
+    <OuiListGroup gutterSize="none">
+      <OuiListGroupItem
+        iconType="navAlerting"
+        label={
+          <OuiText size="s">
+            <strong>Alerts</strong>
+          </OuiText>
+        }
+        onClick={() => {}}
+      />
+      <div className="samplePagesLeftNav__ruleDivider">
+        <OuiHorizontalRule margin="none" />
+      </div>
+      <OuiListGroupItem
+        iconType="navDashboards"
+        label={
+          <OuiText size="s">
+            <strong>Dashboards</strong>
+          </OuiText>
+        }
+        onClick={() => {}}
+      />
+      <div className="samplePagesLeftNav__ruleDivider">
+        <OuiHorizontalRule margin="none" />
+      </div>
+      <OuiListGroupItem
+        iconType="wsSelector"
+        label={
+          <OuiText size="s">
+            <strong>Manage workspace</strong>
+          </OuiText>
+        }
+        onClick={() => {}}
+      />
+    </OuiListGroup>
+    <div style={{ padding: '12px 8px 0' }}>
+      <OuiButtonEmpty size="s" flush="both" style={{ width: '100%' }}>
+        Customize navigation bar
+      </OuiButtonEmpty>
+    </div>
+  </div>
 );
 
 const PANEL_CONTENT = {
   thread: ThreadPanelContent,
   discover: DiscoverPanelContent,
   service: ServicesPanelContent,
+  more: MorePanelContent,
 };
 
 export const SamplePagesLeftNav = ({
   activePage,
   onPageChange,
   onItemSelect,
+  selectedItem,
 }) => {
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
   const [expandedTab, setExpandedTab] = useState(null);
+  const [hoveredTab, setHoveredTab] = useState(null);
+  const hoverTimeoutRef = useRef(null);
+  const navItemRefs = useRef({});
 
   const toggleTheme = () => {
     themeContext.changeTheme(isDark ? 'v9-light' : 'v9-dark');
   };
 
+  const clearHoverTimeout = useCallback(() => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+  }, []);
+
+  const handleNavMouseEnter = useCallback(
+    (item) => {
+      if (item.isAction) return;
+      // Don't show hover popover if this tab is already pinned open
+      if (expandedTab === item.key) return;
+      clearHoverTimeout();
+      setHoveredTab(item.key);
+    },
+    [expandedTab, clearHoverTimeout]
+  );
+
+  const handleNavMouseLeave = useCallback(() => {
+    clearHoverTimeout();
+    hoverTimeoutRef.current = setTimeout(() => {
+      setHoveredTab(null);
+    }, 150);
+  }, [clearHoverTimeout]);
+
+  const handlePopoverMouseEnter = useCallback(() => {
+    clearHoverTimeout();
+  }, [clearHoverTimeout]);
+
+  const handlePopoverMouseLeave = useCallback(() => {
+    clearHoverTimeout();
+    hoverTimeoutRef.current = setTimeout(() => {
+      setHoveredTab(null);
+    }, 150);
+  }, [clearHoverTimeout]);
+
   const handleNavClick = (item) => {
-    if (item.isAction) return; // Search is held for now
+    if (item.isAction || item.hoverOnly) return;
+    setHoveredTab(null);
+    clearHoverTimeout();
     if (expandedTab === item.key) {
-      // Clicking the same tab collapses the panel
       setExpandedTab(null);
     } else {
       setExpandedTab(item.key);
@@ -205,6 +293,22 @@ export const SamplePagesLeftNav = ({
     ? NAV_ITEMS.find((i) => i.key === expandedTab)
     : null;
   const PanelComponent = expandedTab ? PANEL_CONTENT[expandedTab] : null;
+
+  // Hover popover
+  const hoveredNavItem =
+    hoveredTab && hoveredTab !== expandedTab
+      ? NAV_ITEMS.find((i) => i.key === hoveredTab)
+      : null;
+  const HoverPanelComponent = hoveredNavItem
+    ? PANEL_CONTENT[hoveredNavItem.key]
+    : null;
+
+  // Calculate popover position based on the hovered nav item
+  let hoverPopoverTop = 0;
+  if (hoveredTab && navItemRefs.current[hoveredTab]) {
+    const rect = navItemRefs.current[hoveredTab].getBoundingClientRect();
+    hoverPopoverTop = rect.top - 32;
+  }
 
   return (
     <div className="samplePagesLeftNav__wrapper">
@@ -223,12 +327,17 @@ export const SamplePagesLeftNav = ({
             return (
               <button
                 key={item.key}
+                ref={(el) => {
+                  navItemRefs.current[item.key] = el;
+                }}
                 type="button"
                 className={`samplePagesLeftNav__navItem${
                   isActive ? ' samplePagesLeftNav__navItem--active' : ''
                 }`}
                 aria-current={isActive ? 'page' : undefined}
-                onClick={() => handleNavClick(item)}>
+                onClick={() => handleNavClick(item)}
+                onMouseEnter={() => handleNavMouseEnter(item)}
+                onMouseLeave={handleNavMouseLeave}>
                 <div className="samplePagesLeftNav__navIcon">
                   <OuiIcon type={item.icon} size="m" />
                 </div>
@@ -281,7 +390,7 @@ export const SamplePagesLeftNav = ({
         </div>
       </nav>
 
-      {/* Expanded panel */}
+      {/* Expanded (pinned) panel */}
       {PanelComponent && (
         <div className="samplePagesLeftNav__expandedPanel">
           <div className="samplePagesLeftNav__expandedPanelHeader">
@@ -309,6 +418,38 @@ export const SamplePagesLeftNav = ({
           <PanelComponent
             onPageChange={onPageChange}
             onItemSelect={onItemSelect}
+            selectedItem={selectedItem}
+          />
+        </div>
+      )}
+
+      {/* Hover popover */}
+      {HoverPanelComponent && (
+        <div
+          className="samplePagesLeftNav__hoverPopover"
+          style={{ top: hoverPopoverTop }}
+          onMouseEnter={handlePopoverMouseEnter}
+          onMouseLeave={handlePopoverMouseLeave}>
+          <div className="samplePagesLeftNav__expandedPanelHeader">
+            <OuiTitle size="s">
+              <h3>{hoveredNavItem.label}</h3>
+            </OuiTitle>
+          </div>
+          <HoverPanelComponent
+            onPageChange={(page) => {
+              const tabKey = hoveredTab;
+              setExpandedTab(tabKey);
+              setHoveredTab(null);
+              onPageChange(page);
+            }}
+            onItemSelect={(item) => {
+              const tabKey = hoveredTab;
+              setExpandedTab(tabKey);
+              setHoveredTab(null);
+              onPageChange(tabKey);
+              onItemSelect(item);
+            }}
+            selectedItem={selectedItem}
           />
         </div>
       )}

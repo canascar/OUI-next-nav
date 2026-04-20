@@ -578,11 +578,11 @@ export const ServicePage = () => {
   return (
     <div
       style={{
-        minHeight: '100%',
+        height: '100%',
         display: 'flex',
         flexDirection: 'column',
         gap: 12,
-        overflowX: 'hidden',
+        overflow: 'hidden',
       }}>
       {/* Page title + actions */}
       <div
@@ -591,7 +591,7 @@ export const ServicePage = () => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '8px 12px',
+          padding: 20,
         }}>
         <OuiTitle size="s">
           <h1 style={{ margin: 0 }}>Services</h1>

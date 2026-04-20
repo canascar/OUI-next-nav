@@ -45,9 +45,15 @@ export const SamplePagesView = () => {
   const [activePage, setActivePage] = useState('service');
   const [selectedItem, setSelectedItem] = useState(null);
 
+  const DEFAULT_ITEMS = {
+    service: 'services',
+    discover: 'error-rate',
+    thread: 'latency-spike',
+  };
+
   const handlePageChange = (page) => {
     setActivePage(page);
-    setSelectedItem(null);
+    setSelectedItem(DEFAULT_ITEMS[page] || null);
   };
 
   return (
@@ -64,11 +70,12 @@ export const SamplePagesView = () => {
         activePage={activePage}
         onPageChange={handlePageChange}
         onItemSelect={setSelectedItem}
+        selectedItem={selectedItem}
       />
       <div
         style={{
           flex: 1,
-          overflowY: 'auto',
+          overflow: 'hidden',
         }}>
         {renderPage(activePage, selectedItem)}
       </div>

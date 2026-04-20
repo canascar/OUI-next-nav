@@ -65,8 +65,17 @@
   cursor: pointer;
   appearance: none;
 
+  &:hover .samplePagesLeftNav__navIcon {
+    background-color: rgba($ouiColorDarkestShade, 0.07);
+    transition: background-color 150ms ease-in-out;
+  }
+
   &--active .samplePagesLeftNav__navIcon {
     background-color: rgba($ouiColorPrimary, 0.1);
+  }
+
+  &--active:hover .samplePagesLeftNav__navIcon {
+    background-color: rgba($ouiColorPrimary, 0.15);
   }
 }
 
@@ -79,6 +88,7 @@
   height: 24px;
   border-radius: 4px;
   flex-shrink: 0;
+  transition: background-color 150ms ease-in-out;
 }
 
 // Label below the icon
@@ -123,6 +133,7 @@
   background-color: $ouiColorEmptyShade;
   border-right: 1px solid $ouiBorderColor;
   border-top-right-radius: 24px;
+  border-bottom-right-radius: 0;
   box-shadow:
   0 0 12px rgba(0, 0, 0, 0.05),
   0 0 4px rgba(0, 0, 0, 0.05),
@@ -162,4 +173,40 @@
 
 .samplePagesLeftNav__ruleDivider {
   padding: 4px 8px;
+}
+
+// Hover popover — floats next to the nav, positioned absolutely
+.samplePagesLeftNav__hoverPopover {
+  position: fixed;
+  left: 60px;
+  width: 320px;
+  max-height: 400px;
+  background-color: $ouiColorEmptyShade;
+  border: 1px solid $ouiBorderColor;
+  border-radius: 12px;
+  box-shadow:
+  0 6px 20px rgba(0, 0, 0, 0.1),
+  0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+  padding-bottom: 8px;
+
+  .ouiListGroupItem__label {
+    white-space: normal;
+  }
+
+  .ouiListGroup {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .ouiListGroupItem {
+    padding: 8px 0;
+  }
+
+  .samplePagesLeftNav__ruleDivider {
+    padding: 4px 8px;
+  }
 }

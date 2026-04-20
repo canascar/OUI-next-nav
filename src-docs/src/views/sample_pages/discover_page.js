@@ -11,81 +11,43 @@
 
 import React from 'react';
 
-import {
-  OuiTitle,
-  OuiSpacer,
-  OuiPanel,
-  OuiBasicTable,
-  OuiBadge,
-} from '../../../../src/components';
+import { OuiButton, OuiTitle } from '../../../../src/components';
 
-const LOGS = [
-  {
-    id: 'frontend-proxy',
-    timestamp: '2026-04-20T10:32:15Z',
-    level: 'ERROR',
-    service: 'frontend-proxy',
-    message:
-      '502 Bad Gateway — upstream connect error or disconnect/reset before headers',
-  },
-  {
-    id: 'checkout',
-    timestamp: '2026-04-20T10:28:44Z',
-    level: 'WARN',
-    service: 'checkout',
-    message: 'Connection timeout to payment-service after 30000ms',
-  },
-  {
-    id: 'recommendation',
-    timestamp: '2026-04-20T10:15:02Z',
-    level: 'INFO',
-    service: 'recommendation',
-    message: 'Model refresh completed successfully in 1.2s',
-  },
-];
-
-const columns = [
-  {
-    field: 'timestamp',
-    name: 'Timestamp',
-    render: (ts) => new Date(ts).toLocaleString(),
-    width: '200px',
-  },
-  {
-    field: 'level',
-    name: 'Level',
-    width: '100px',
-    render: (level) => {
-      const colorMap = { ERROR: 'danger', WARN: 'warning' };
-      const color = colorMap[level] || 'default';
-      return <OuiBadge color={color}>{level}</OuiBadge>;
-    },
-  },
-  { field: 'service', name: 'Service', width: '160px' },
-  { field: 'message', name: 'Message' },
-];
+const QUERY_TITLES = {
+  'error-rate': 'Error rate by service',
+  'latency-percentiles': 'Latency percentiles',
+  throughput: 'Throughput over time',
+};
 
 export const DiscoverPage = ({ selectedItem }) => {
-  const items = selectedItem
-    ? LOGS.filter((log) => log.id === selectedItem)
-    : LOGS;
-  const title = selectedItem
-    ? LOGS.find((log) => log.id === selectedItem)?.service || 'Discover'
-    : 'Recent logs';
+  const headerTitle =
+    selectedItem && QUERY_TITLES[selectedItem]
+      ? QUERY_TITLES[selectedItem]
+      : 'Discover';
 
   return (
-    <div style={{ padding: 16, minHeight: '100%' }}>
-      <OuiTitle size="s">
-        <h1>Discover</h1>
-      </OuiTitle>
-      <OuiSpacer size="m" />
-      <OuiPanel paddingSize="m">
-        <OuiTitle size="xs">
-          <h3>{title}</h3>
+    <div
+      style={{ minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
+      <div
+        className="discoverPage__header"
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: 20,
+        }}>
+        <OuiTitle size="s">
+          <h1 style={{ margin: 0 }}>{headerTitle}</h1>
         </OuiTitle>
-        <OuiSpacer size="s" />
-        <OuiBasicTable items={items} columns={columns} rowHeader="service" />
-      </OuiPanel>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <OuiButton iconType="refresh" size="s">
+            Refresh
+          </OuiButton>
+          <OuiButton iconType="generate" size="s">
+            Ask AI
+          </OuiButton>
+        </div>
+      </div>
     </div>
   );
 };

@@ -331,6 +331,7 @@ body {
 @import '../views/sample_pages/sample_pages_left_nav';
 @import '../views/sample_pages/service_page';
 @import '../views/sample_pages/thread_page';
+@import '../views/sample_pages/discover_page';
 
 @include ouiBreakpoint('xs', 's') {
   .guideSideNav {
