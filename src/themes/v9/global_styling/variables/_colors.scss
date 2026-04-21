@@ -17,28 +17,28 @@
 $ouiColorGhost: #FCFEFF !default;
 $ouiColorInk: #02020E !default;
 
-// Core - Monochrome industrial palette
-$ouiColorPrimary: #606060 !default;      // Neutral gray
-$ouiColorSecondary: #333333 !default;    // Dark gray
-$ouiColorAccent: #476666 !default;       // Muted teal
+// Core - Warm stone with indigo accents
+$ouiColorPrimary: #0084D1 !default;      // Blue primary
+$ouiColorSecondary: #4B5563 !default;    // Cool gray
+$ouiColorAccent: #6366F1 !default;       // Indigo
 
 // Status
-$ouiColorSuccess: #476666 !default;      // Muted teal
-$ouiColorWarning: #909090 !default;      // Mid gray
-$ouiColorDanger: #CC3333 !default;       // Muted red
+$ouiColorSuccess: #059669 !default;      // Emerald-600
+$ouiColorWarning: #F59E0B !default;      // Amber
+$ouiColorDanger: #EF4444 !default;       // Red
 
-// Grays
-$ouiColorEmptyShade: #F5F5F5 !default;   // Card bg
-$ouiColorLightestShade: #EAEAEA !default; // Sidebar
-$ouiColorLightShade: #D0D0D0 !default;   // Border
-$ouiColorMediumShade: #666666 !default;  // Muted foreground
-$ouiColorDarkShade: #333333 !default;    // Dark text
-$ouiColorDarkestShade: #333333 !default; // Foreground
-$ouiColorFullShade: #1A1A1A !default;    // Near black
+// Grays - Warm stone tones
+$ouiColorEmptyShade: #F5F5F4 !default;   // Stone-100 card
+$ouiColorLightestShade: #E7E5E4 !default; // Stone-200 muted bg
+$ouiColorLightShade: #D6D3D1 !default;   // Stone-300 border
+$ouiColorMediumShade: #6B7280 !default;  // Gray-500 muted text
+$ouiColorDarkShade: #374151 !default;    // Gray-700
+$ouiColorDarkestShade: #1E293B !default; // Slate-800 foreground
+$ouiColorFullShade: #0F172A !default;    // Slate-900
 
 // Backgrounds
-$ouiPageBackgroundColor: #F0F0F0 !default; // Light gray
-$ouiColorHighlight: #D9D9D9 !default;    // Muted highlight
+$ouiPageBackgroundColor: #E7E5E4 !default; // Stone-200
+$ouiColorHighlight: #F3E5F5 !default;    // Light purple
 
 // Every color below must be based mathematically on the set above and in a particular order.
 $ouiTextColor: $ouiColorDarkestShade !default;

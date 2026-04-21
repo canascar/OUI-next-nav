@@ -8,43 +8,20 @@
   border-radius: $ouiFormControlBorderRadius;
   overflow: hidden;
 
-  // Round the outer corners of first/last prepend and append elements
-  > .ouiFormControlLayout__prepend:first-child,
+  // Reset all inner elements to no radius — the group's overflow: hidden clips them
+  > .ouiFormControlLayout__prepend,
+  > .ouiFormControlLayout__append,
   > *:first-child .ouiFormControlLayout__prepend,
-  > .ouiButtonEmpty:first-child,
-  > .ouiButtonIcon:first-child,
-  > .ouiFormLabel:first-child,
-  > .ouiText:first-child {
-    border-radius: $ouiFormControlBorderRadius 0 0 $ouiFormControlBorderRadius;
-  }
-
-  > .ouiFormControlLayout__append:last-child,
   > *:last-child .ouiFormControlLayout__append,
-  > .ouiButtonEmpty:last-child,
-  > .ouiButtonIcon:last-child,
-  > .ouiFormLabel:last-child,
-  > .ouiText:last-child {
-    border-radius: 0 $ouiFormControlBorderRadius $ouiFormControlBorderRadius 0;
+  > .ouiButtonEmpty,
+  > .ouiButtonIcon,
+  > .ouiFormLabel,
+  > .ouiText {
+    border-radius: 0;
   }
 
   &.ouiFormControlLayout--compressed {
     border-radius: $ouiFormControlCompressedBorderRadius;
-
-    > .ouiFormControlLayout__prepend:first-child,
-    > .ouiButtonEmpty:first-child,
-    > .ouiButtonIcon:first-child,
-    > .ouiFormLabel:first-child,
-    > .ouiText:first-child {
-      border-radius: $ouiFormControlCompressedBorderRadius 0 0 $ouiFormControlCompressedBorderRadius;
-    }
-
-    > .ouiFormControlLayout__append:last-child,
-    > .ouiButtonEmpty:last-child,
-    > .ouiButtonIcon:last-child,
-    > .ouiFormLabel:last-child,
-    > .ouiText:last-child {
-      border-radius: 0 $ouiFormControlCompressedBorderRadius $ouiFormControlCompressedBorderRadius 0;
-    }
   }
 }
 
@@ -55,3 +32,83 @@
 .ouiFilterSelectItem {
   border-radius: 0 !important; // sass-lint:disable-line no-important
 }
+
+// Ensure standalone form inputs inherit the v9 border radius and background
+// Inside groups, let the group handle radius via overflow: hidden
+// sass-lint:disable no-important
+.ouiFieldText,
+.ouiFieldSearch,
+.ouiFieldNumber,
+.ouiFieldPassword,
+.ouiSelect,
+.ouiTextArea,
+.ouiDatePopoverButton,
+.ouiSuperDatePicker__prettyFormat {
+  background-color: $ouiFormBackgroundColor !important;
+}
+
+.ouiFormControlLayout:not(.ouiFormControlLayout--group) {
+  > .ouiFieldText,
+  > .ouiFieldSearch,
+  > .ouiFieldNumber,
+  > .ouiFieldPassword,
+  > .ouiSelect {
+    border-radius: $ouiFormControlBorderRadius !important;
+  }
+}
+
+.ouiFieldText--compressed,
+.ouiFieldSearch--compressed,
+.ouiFieldNumber--compressed,
+.ouiFieldPassword--compressed,
+.ouiSelect--compressed,
+.ouiDatePopoverButton-compressed {
+  background-color: $ouiFormBackgroundColor !important;
+}
+
+// Inside groups, inputs get no radius (group clips them)
+.ouiFormControlLayout--group .ouiFieldText,
+.ouiFormControlLayout--group .ouiFieldSearch,
+.ouiFormControlLayout--group .ouiFieldNumber,
+.ouiFormControlLayout--group .ouiFieldPassword,
+.ouiFormControlLayout--group .ouiSelect {
+  border-radius: 0 !important;
+}
+// sass-lint:enable no-important
+
+// Super date picker range should match form background
+// sass-lint:disable no-important
+.ouiDatePickerRange,
+.ouiDatePickerRange--inGroup {
+  background-color: $ouiFormBackgroundColor !important;
+}
+// sass-lint:enable no-important
+
+// Hover contrast for context menus, popovers, and dropdowns
+.ouiContextMenuItem:enabled:hover,
+.ouiContextMenuItem:enabled:focus,
+.ouiFilterSelectItem:hover,
+.ouiFilterSelectItem:focus,
+.ouiComboBoxOption:hover,
+.ouiComboBoxOption:focus {
+  // sass-lint:disable no-important
+  background-color: transparentize($ouiColorLightShade, .5) !important;
+  // sass-lint:enable no-important
+}
+
+// Hover and selected contrast for list group items (nav panels, popovers)
+// sass-lint:disable no-important
+.ouiListGroupItem-isClickable:hover,
+.ouiListGroupItem-isClickable:focus-within,
+.ouiListGroupItem-isActive {
+  background-color: transparentize($ouiColorLightShade, .5) !important;
+}
+// sass-lint:enable no-important
+
+// Lighter table row hover in dark mode
+// sass-lint:disable no-important
+.ouiTableRow:hover .ouiTableRowCell,
+.ouiTableRow-isClickable:hover .ouiTableRowCell {
+  background-color: transparentize($ouiColorLightShade, .25) !important;
+}
+// sass-lint:enable no-important

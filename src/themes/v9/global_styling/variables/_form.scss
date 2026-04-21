@@ -20,7 +20,7 @@ $ouiFormControlCompressedBorderRadius: $ouiBorderRadiusSmall !default;
 
 $ouiRadioSize: $ouiSize !default;
 $ouiCheckBoxSize: $ouiSize !default;
-$ouiCheckboxBorderRadius: $ouiBorderRadiusSmall !default;
+$ouiCheckboxBorderRadius: 4px !default;
 
 // Add transition support
 // sass-lint:disable indentation
@@ -57,7 +57,7 @@ $ouiSwitchColors: (
 ) !default;
 
 // Coloring
-$ouiFormBackgroundColor: tintOrShade($ouiColorLightestShade, 60%, 40%) !default;
+$ouiFormBackgroundColor: tint($ouiColorEmptyShade, 40%) !default;
 $ouiFormBackgroundDisabledColor: darken($ouiColorLightestShade, 2%) !default;
 $ouiFormBackgroundReadOnlyColor: transparentize(lightOrDarkTheme($ouiColorLightShade, $ouiColorInk), .95) !default;
 $ouiFormBorderOpaqueColor: shadeOrTint(desaturate(adjust-hue($ouiColorPrimary, 22), 22.95), 26%, 100%) !default;

@@ -11,7 +11,7 @@
 
 @mixin ouiToolTipStyle($size: null) {
   @include ouiBottomShadow($color: $ouiColorInk);
-  border-radius: $ouiBorderRadius;
+  border-radius: $ouiBorderRadiusSmall;
   background-color: $ouiTooltipBackgroundColor;
   color: $ouiColorGhost;
   z-index: $ouiZLevel9;

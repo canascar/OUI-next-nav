@@ -53,3 +53,8 @@
 .ouiTabs--condensed .ouiTab + .ouiTab {
   margin-left: 0;
 }
+
+// Add padding around tabs inside date popover
+.ouiDatePopoverContent > .ouiTabs {
+  margin: $ouiSizeS $ouiSizeS 0;
+}

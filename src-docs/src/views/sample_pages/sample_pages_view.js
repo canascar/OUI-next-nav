@@ -44,6 +44,10 @@ const renderPage = (activePage, selectedItem) => {
 export const SamplePagesView = () => {
   const [activePage, setActivePage] = useState('service');
   const [selectedItem, setSelectedItem] = useState(null);
+  const [padding, setPadding] = useState(24);
+  const [gap, setGap] = useState(16);
+  const [cardPadding, setCardPadding] = useState(16);
+  const [gutter, setGutter] = useState(16);
 
   const DEFAULT_ITEMS = {
     service: 'services',
@@ -66,16 +70,58 @@ export const SamplePagesView = () => {
         right: 0,
         bottom: 0,
       }}>
+      <style>{`
+        .samplePagesContent .ouiPanel {
+          padding: ${cardPadding}px !important;
+        }
+        .samplePagesContent .ouiFlexGroup--gutterSmall > .ouiFlexItem {
+          margin: ${Math.round(gutter * 0.25)}px !important;
+        }
+        .samplePagesContent .ouiFlexGroup--gutterMedium > .ouiFlexItem {
+          margin: ${Math.round(gutter * 0.5)}px !important;
+        }
+        .samplePagesContent .ouiFlexGroup--gutterLarge > .ouiFlexItem {
+          margin: ${Math.round(gutter * 0.5)}px !important;
+        }
+        .samplePagesContent .ouiFlexGroup--gutterSmall {
+          margin: -${Math.round(gutter * 0.25)}px !important;
+        }
+        .samplePagesContent .ouiFlexGroup--gutterMedium {
+          margin: -${Math.round(gutter * 0.5)}px !important;
+        }
+        .samplePagesContent .ouiFlexGroup--gutterLarge {
+          margin: -${Math.round(gutter * 0.5)}px !important;
+        }
+        .samplePagesContent .ouiSpacer--l {
+          height: ${gap}px !important;
+        }
+        .samplePagesContent .ouiSpacer--m {
+          height: ${Math.round(gap * 0.66)}px !important;
+        }
+        .samplePagesContent .ouiSpacer--s {
+          height: ${Math.round(gap * 0.33)}px !important;
+        }
+      `}</style>
       <SamplePagesLeftNav
         activePage={activePage}
         onPageChange={handlePageChange}
         onItemSelect={setSelectedItem}
         selectedItem={selectedItem}
+        padding={padding}
+        onPaddingChange={setPadding}
+        gap={gap}
+        onGapChange={setGap}
+        cardPadding={cardPadding}
+        onCardPaddingChange={setCardPadding}
+        gutter={gutter}
+        onGutterChange={setGutter}
       />
       <div
+        className="samplePagesContent"
         style={{
           flex: 1,
-          overflow: 'hidden',
+          overflowY: 'auto',
+          padding,
         }}>
         {renderPage(activePage, selectedItem)}
       </div>

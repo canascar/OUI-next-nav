@@ -130,7 +130,7 @@
 .samplePagesLeftNav__expandedPanel {
   width: 320px;
   min-width: 320px;
-  background-color: $ouiColorEmptyShade;
+  background-color: mix($ouiColorEmptyShade, $ouiPageBackgroundColor, 60%);
   border-right: 1px solid $ouiBorderColor;
   border-top-right-radius: 24px;
   border-bottom-right-radius: 0;
@@ -163,8 +163,8 @@
 }
 
 .samplePagesLeftNav__expandedPanel .ouiListGroup {
-  padding-left: 8px;
-  padding-right: 8px;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .samplePagesLeftNav__expandedPanel .ouiListGroupItem {
@@ -172,7 +172,7 @@
 }
 
 .samplePagesLeftNav__ruleDivider {
-  padding: 4px 8px;
+  padding: 0;
 }
 
 // Hover popover — floats next to the nav, positioned absolutely
@@ -191,15 +191,14 @@
   display: flex;
   flex-direction: column;
   z-index: 10;
-  padding-bottom: 8px;
 
   .ouiListGroupItem__label {
     white-space: normal;
   }
 
   .ouiListGroup {
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .ouiListGroupItem {
@@ -207,6 +206,19 @@
   }
 
   .samplePagesLeftNav__ruleDivider {
-    padding: 4px 8px;
+    padding: 0;
+  }
+}
+
+// Nav panel list items — no border radius, no gaps
+.samplePagesLeftNav__expandedPanel,
+.samplePagesLeftNav__hoverPopover {
+  .ouiListGroupItem {
+    border-radius: 0;
+    margin: 0;
+  }
+
+  .ouiListGroup {
+    gap: 0;
   }
 }
