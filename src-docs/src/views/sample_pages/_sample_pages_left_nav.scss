@@ -94,7 +94,7 @@
 // Label below the icon
 .samplePagesLeftNav__navLabel {
   font-family: $ouiFontFamily;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 400;
   line-height: 18px;
   color: $ouiColorDarkestShade;
@@ -126,7 +126,30 @@
   flex-shrink: 0;
 }
 
-// Expanded panel — slides out to the right of the collapsed nav
+// Outer clip wrapper — animates width, clips content
+.samplePagesLeftNav__panelClip {
+  overflow: hidden;
+  height: 100%;
+  flex-shrink: 0;
+  z-index: 1;
+  animation: slidePanelIn 200ms ease-out forwards;
+}
+
+.samplePagesLeftNav__panelClip--collapsing {
+  animation: slidePanelOut 200ms ease-in forwards;
+}
+
+@keyframes slidePanelIn {
+  from { width: 0; }
+  to { width: 320px; }
+}
+
+@keyframes slidePanelOut {
+  from { width: 320px; }
+  to { width: 0; }
+}
+
+// Expanded panel — fixed width inner content, never shrinks
 .samplePagesLeftNav__expandedPanel {
   width: 320px;
   min-width: 320px;
@@ -134,15 +157,10 @@
   border-right: 1px solid $ouiBorderColor;
   border-top-right-radius: 24px;
   border-bottom-right-radius: 0;
-  box-shadow:
-  0 0 12px rgba(0, 0, 0, 0.05),
-  0 0 4px rgba(0, 0, 0, 0.05),
-  0 0 2px rgba(0, 0, 0, 0.05);
   height: 100%;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  z-index: 1;
 }
 
 // Header row: title + close button on the same line

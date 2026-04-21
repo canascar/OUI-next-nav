@@ -13,7 +13,6 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import {
   OuiAvatar,
-  OuiButton,
   OuiButtonIcon,
   OuiIcon,
   OuiLoadingSpinner,
@@ -22,6 +21,7 @@ import {
   OuiFlexGroup,
   OuiFlexItem,
   OuiCompressedTextArea,
+  OuiToolTip,
 } from '../../../../src/components';
 
 const THREADS = {
@@ -477,15 +477,31 @@ export const ThreadPage = ({ selectedItem }) => {
           </OuiFlexItem>
         </OuiFlexGroup>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <OuiButton iconType="share" size="s">
-            Share
-          </OuiButton>
-          <OuiButton iconType="layers" size="s">
-            Canvas
-          </OuiButton>
-          <OuiButton iconType="clock" size="s">
-            History
-          </OuiButton>
+          <OuiToolTip content="Canvas" position="bottom">
+            <OuiButtonIcon
+              iconType="layers"
+              aria-label="Canvas"
+              size="s"
+              color="text"
+            />
+          </OuiToolTip>
+          <OuiToolTip content="History" position="bottom">
+            <OuiButtonIcon
+              iconType="clock"
+              aria-label="History"
+              size="s"
+              color="text"
+            />
+          </OuiToolTip>
+          <div style={{ width: 1, height: 16, backgroundColor: '#D3DAE6' }} />
+          <OuiToolTip content="Share" position="bottom">
+            <OuiButtonIcon
+              iconType="share"
+              aria-label="Share"
+              size="s"
+              color="text"
+            />
+          </OuiToolTip>
         </div>
       </div>
 

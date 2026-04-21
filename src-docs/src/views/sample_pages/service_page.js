@@ -28,7 +28,6 @@ import {
   OuiDualRange,
   OuiHorizontalRule,
   OuiButtonEmpty,
-  OuiButton,
   OuiButtonGroup,
   OuiProgress,
   OuiToolTip,
@@ -597,15 +596,23 @@ export const ServicePage = () => {
           <h1 style={{ margin: 0 }}>Services</h1>
         </OuiTitle>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <OuiButton iconType="gear" size="s">
-            APM Settings
-          </OuiButton>
-          <OuiButton iconType="refresh" size="s">
-            Refresh
-          </OuiButton>
-          <OuiButton iconType="generate" size="s">
-            Ask AI
-          </OuiButton>
+          <OuiToolTip content="Refresh" position="bottom">
+            <OuiButtonIcon
+              iconType="refresh"
+              aria-label="Refresh"
+              size="s"
+              color="text"
+            />
+          </OuiToolTip>
+          <div style={{ width: 1, height: 16, backgroundColor: '#D3DAE6' }} />
+          <OuiToolTip content="Ask AI" position="bottom">
+            <OuiButtonIcon
+              iconType="generate"
+              aria-label="Ask AI"
+              size="s"
+              color="text"
+            />
+          </OuiToolTip>
         </div>
       </div>
 

@@ -21,6 +21,7 @@ import {
   OuiText,
   OuiTitle,
   OuiButtonEmpty,
+  OuiPopover,
 } from '../../../../src/components';
 
 import { ThemeContext } from '../../components/with_theme';
@@ -166,13 +167,175 @@ const ServicesPanelContent = ({ onPageChange, selectedItem }) => (
           <strong>Application map</strong>
         </OuiText>
       }
-      onClick={() => onPageChange('service')}
+      onClick={() => onPageChange('application-map')}
+    />
+  </OuiListGroup>
+);
+
+// Panel content for Alerts tab
+const AlertsPanelContent = ({ onItemSelect, selectedItem }) => (
+  <OuiListGroup gutterSize="none">
+    <OuiListGroupItem
+      isActive={selectedItem === 'cpu-threshold'}
+      label={
+        <div>
+          <OuiText size="s">
+            <strong>CPU threshold exceeded</strong>
+          </OuiText>
+          <OuiText size="xs" color="subdued">
+            Critical · Triggered 10 min ago
+          </OuiText>
+        </div>
+      }
+      onClick={() => onItemSelect('cpu-threshold')}
+    />
+    <div className="samplePagesLeftNav__ruleDivider">
+      <OuiHorizontalRule margin="none" />
+    </div>
+    <OuiListGroupItem
+      isActive={selectedItem === 'disk-usage'}
+      label={
+        <div>
+          <OuiText size="s">
+            <strong>Disk usage warning</strong>
+          </OuiText>
+          <OuiText size="xs" color="subdued">
+            Warning · Triggered 1 hour ago
+          </OuiText>
+        </div>
+      }
+      onClick={() => onItemSelect('disk-usage')}
+    />
+    <div className="samplePagesLeftNav__ruleDivider">
+      <OuiHorizontalRule margin="none" />
+    </div>
+    <OuiListGroupItem
+      isActive={selectedItem === 'error-rate-spike'}
+      label={
+        <div>
+          <OuiText size="s">
+            <strong>Error rate spike</strong>
+          </OuiText>
+          <OuiText size="xs" color="subdued">
+            Critical · Triggered 3 hours ago
+          </OuiText>
+        </div>
+      }
+      onClick={() => onItemSelect('error-rate-spike')}
+    />
+  </OuiListGroup>
+);
+
+// Panel content for Dashboards tab
+const DashboardsPanelContent = ({ onItemSelect, selectedItem }) => (
+  <OuiListGroup gutterSize="none">
+    <OuiListGroupItem
+      isActive={selectedItem === 'system-overview'}
+      label={
+        <div>
+          <OuiText size="s">
+            <strong>System overview</strong>
+          </OuiText>
+          <OuiText size="xs" color="subdued">
+            Updated 5 min ago
+          </OuiText>
+        </div>
+      }
+      onClick={() => onItemSelect('system-overview')}
+    />
+    <div className="samplePagesLeftNav__ruleDivider">
+      <OuiHorizontalRule margin="none" />
+    </div>
+    <OuiListGroupItem
+      isActive={selectedItem === 'web-traffic'}
+      label={
+        <div>
+          <OuiText size="s">
+            <strong>Web traffic analytics</strong>
+          </OuiText>
+          <OuiText size="xs" color="subdued">
+            Updated 15 min ago
+          </OuiText>
+        </div>
+      }
+      onClick={() => onItemSelect('web-traffic')}
+    />
+    <div className="samplePagesLeftNav__ruleDivider">
+      <OuiHorizontalRule margin="none" />
+    </div>
+    <OuiListGroupItem
+      isActive={selectedItem === 'api-performance'}
+      label={
+        <div>
+          <OuiText size="s">
+            <strong>API performance</strong>
+          </OuiText>
+          <OuiText size="xs" color="subdued">
+            Updated 30 min ago
+          </OuiText>
+        </div>
+      }
+      onClick={() => onItemSelect('api-performance')}
+    />
+  </OuiListGroup>
+);
+
+// Panel content for Skills tab
+const SkillsPanelContent = ({ onItemSelect, selectedItem }) => (
+  <OuiListGroup gutterSize="none">
+    <OuiListGroupItem
+      isActive={selectedItem === 'anomaly-detector'}
+      label={
+        <div>
+          <OuiText size="s">
+            <strong>Anomaly detector</strong>
+          </OuiText>
+          <OuiText size="xs" color="subdued">
+            ML · Active
+          </OuiText>
+        </div>
+      }
+      onClick={() => onItemSelect('anomaly-detector')}
+    />
+    <div className="samplePagesLeftNav__ruleDivider">
+      <OuiHorizontalRule margin="none" />
+    </div>
+    <OuiListGroupItem
+      isActive={selectedItem === 'log-summarizer'}
+      label={
+        <div>
+          <OuiText size="s">
+            <strong>Log summarizer</strong>
+          </OuiText>
+          <OuiText size="xs" color="subdued">
+            NLP · Active
+          </OuiText>
+        </div>
+      }
+      onClick={() => onItemSelect('log-summarizer')}
+    />
+    <div className="samplePagesLeftNav__ruleDivider">
+      <OuiHorizontalRule margin="none" />
+    </div>
+    <OuiListGroupItem
+      isActive={selectedItem === 'root-cause-analysis'}
+      label={
+        <div>
+          <OuiText size="s">
+            <strong>Root cause analysis</strong>
+          </OuiText>
+          <OuiText size="xs" color="subdued">
+            ML · Draft
+          </OuiText>
+        </div>
+      }
+      onClick={() => onItemSelect('root-cause-analysis')}
     />
   </OuiListGroup>
 );
 
 // Panel content for More tab
-const MorePanelContent = () => (
+const MorePanelContent = ({ onPageChange, onNavigateToPage }) => (
   <div>
     <OuiListGroup gutterSize="none">
       <OuiListGroupItem
@@ -182,7 +345,9 @@ const MorePanelContent = () => (
             <strong>Alerts</strong>
           </OuiText>
         }
-        onClick={() => {}}
+        onClick={() =>
+          onNavigateToPage ? onNavigateToPage('alerts') : onPageChange('alerts')
+        }
       />
       <div className="samplePagesLeftNav__ruleDivider">
         <OuiHorizontalRule margin="none" />
@@ -194,7 +359,25 @@ const MorePanelContent = () => (
             <strong>Dashboards</strong>
           </OuiText>
         }
-        onClick={() => {}}
+        onClick={() =>
+          onNavigateToPage
+            ? onNavigateToPage('dashboards')
+            : onPageChange('dashboards')
+        }
+      />
+      <div className="samplePagesLeftNav__ruleDivider">
+        <OuiHorizontalRule margin="none" />
+      </div>
+      <OuiListGroupItem
+        iconType="navReports"
+        label={
+          <OuiText size="s">
+            <strong>Skills</strong>
+          </OuiText>
+        }
+        onClick={() =>
+          onNavigateToPage ? onNavigateToPage('skills') : onPageChange('skills')
+        }
       />
       <div className="samplePagesLeftNav__ruleDivider">
         <OuiHorizontalRule margin="none" />
@@ -221,6 +404,9 @@ const PANEL_CONTENT = {
   thread: ThreadPanelContent,
   discover: DiscoverPanelContent,
   service: ServicesPanelContent,
+  alerts: AlertsPanelContent,
+  dashboards: DashboardsPanelContent,
+  skills: SkillsPanelContent,
   more: MorePanelContent,
 };
 
@@ -234,8 +420,18 @@ export const SamplePagesLeftNav = ({
   const isDark = themeContext.theme === 'v9-dark';
   const [expandedTab, setExpandedTab] = useState(null);
   const [hoveredTab, setHoveredTab] = useState(null);
+  const [isCollapsing, setIsCollapsing] = useState(false);
+  const [appsPopoverOpen, setAppsPopoverOpen] = useState(false);
   const hoverTimeoutRef = useRef(null);
   const navItemRefs = useRef({});
+
+  const collapsePanel = useCallback(() => {
+    setIsCollapsing(true);
+    setTimeout(() => {
+      setExpandedTab(null);
+      setIsCollapsing(false);
+    }, 200);
+  }, []);
 
   const toggleTheme = () => {
     themeContext.changeTheme(isDark ? 'v9-light' : 'v9-dark');
@@ -282,8 +478,9 @@ export const SamplePagesLeftNav = ({
     setHoveredTab(null);
     clearHoverTimeout();
     if (expandedTab === item.key) {
-      setExpandedTab(null);
+      collapsePanel();
     } else {
+      setIsCollapsing(false);
       setExpandedTab(item.key);
       onPageChange(item.key);
     }
@@ -292,6 +489,21 @@ export const SamplePagesLeftNav = ({
   const expandedNavItem = expandedTab
     ? NAV_ITEMS.find((i) => i.key === expandedTab)
     : null;
+
+  // Label map for panels that aren't in NAV_ITEMS (e.g. More sub-pages)
+  const PANEL_LABELS = {
+    alerts: 'Alerts',
+    dashboards: 'Dashboards',
+    skills: 'Skills',
+  };
+
+  let expandedPanelLabel = null;
+  if (expandedTab) {
+    expandedPanelLabel = expandedNavItem
+      ? expandedNavItem.label
+      : PANEL_LABELS[expandedTab] || expandedTab;
+  }
+
   const PanelComponent = expandedTab ? PANEL_CONTENT[expandedTab] : null;
 
   // Hover popover
@@ -362,64 +574,117 @@ export const SamplePagesLeftNav = ({
             display="empty"
             size="s"
           />
-          <OuiButtonIcon
-            iconType="gear"
-            aria-label="Settings"
-            color="text"
-            display="empty"
-            size="s"
-          />
-          <OuiButtonIcon
-            iconType="brush"
-            aria-label={
-              isDark ? 'Switch to light theme' : 'Switch to dark theme'
+          <OuiPopover
+            button={
+              <OuiButtonIcon
+                iconType="apps"
+                aria-label="More options"
+                color="text"
+                display="empty"
+                size="s"
+                onClick={() => setAppsPopoverOpen((open) => !open)}
+              />
             }
-            color="text"
-            display="empty"
-            size="s"
-            onClick={toggleTheme}
-          />
-          <OuiButtonIcon
-            iconType="iInCircle"
-            aria-label="Info"
-            color="text"
-            display="empty"
-            size="s"
-          />
-          <OuiAvatar name="OS" size="s" />
+            isOpen={appsPopoverOpen}
+            closePopover={() => setAppsPopoverOpen(false)}
+            anchorPosition="rightDown"
+            panelPaddingSize="s">
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 0,
+                minWidth: 180,
+              }}>
+              <OuiListGroup gutterSize="none">
+                <OuiListGroupItem
+                  iconType="wsSelector"
+                  label="Workspace"
+                  size="s"
+                  onClick={() => {}}
+                />
+                <OuiListGroupItem
+                  iconType="brush"
+                  label="Switch theme"
+                  size="s"
+                  onClick={toggleTheme}
+                />
+                <OuiListGroupItem
+                  iconType="console"
+                  label="Developer tools"
+                  size="s"
+                  onClick={() => {}}
+                />
+                <OuiListGroupItem
+                  iconType="gear"
+                  label="Settings"
+                  size="s"
+                  onClick={() => {}}
+                />
+                <OuiListGroupItem
+                  iconType="keyboardShortcut"
+                  label="Keyboard shortcuts"
+                  size="s"
+                  onClick={() => {}}
+                />
+                <OuiListGroupItem
+                  iconType="help"
+                  label="Help"
+                  size="s"
+                  onClick={() => {}}
+                />
+              </OuiListGroup>
+            </div>
+          </OuiPopover>
+          <OuiAvatar name="OS" size="m" />
         </div>
       </nav>
 
       {/* Expanded (pinned) panel */}
       {PanelComponent && (
-        <div className="samplePagesLeftNav__expandedPanel">
-          <div className="samplePagesLeftNav__expandedPanelHeader">
-            <OuiTitle size="s">
-              <h3>{expandedNavItem.label}</h3>
-            </OuiTitle>
-            <div style={{ display: 'flex', gap: 4 }}>
-              <OuiButtonIcon
-                iconType="plusInCircle"
-                aria-label="New item"
-                color="text"
-                display="empty"
-                size="s"
-              />
-              <OuiButtonIcon
-                iconType="menuLeft"
-                aria-label="Collapse panel"
-                color="text"
-                display="empty"
-                size="s"
-                onClick={() => setExpandedTab(null)}
-              />
+        <div
+          className={`samplePagesLeftNav__panelClip${
+            isCollapsing ? ' samplePagesLeftNav__panelClip--collapsing' : ''
+          }`}>
+          <div className="samplePagesLeftNav__expandedPanel">
+            <div className="samplePagesLeftNav__expandedPanelHeader">
+              <OuiTitle size="s">
+                <h3>{expandedPanelLabel}</h3>
+              </OuiTitle>
+              <div style={{ display: 'flex', gap: 4 }}>
+                <OuiButtonIcon
+                  iconType={
+                    expandedTab === 'service'
+                      ? 'controlsHorizontal'
+                      : 'plusInCircle'
+                  }
+                  aria-label={
+                    expandedTab === 'service' ? 'Options' : 'New item'
+                  }
+                  color="text"
+                  display="empty"
+                  size="s"
+                />
+                <OuiButtonIcon
+                  iconType="menuLeft"
+                  aria-label="Collapse panel"
+                  color="text"
+                  display="empty"
+                  size="s"
+                  onClick={() => collapsePanel()}
+                />
+              </div>
             </div>
+            <PanelComponent
+              onPageChange={onPageChange}
+              onItemSelect={onItemSelect}
+              selectedItem={selectedItem}
+              onNavigateToPage={(page) => {
+                setExpandedTab(page);
+                onPageChange(page);
+              }}
+            />
           </div>
-          <PanelComponent
-            onPageChange={onPageChange}
-            onItemSelect={onItemSelect}
-            selectedItem={selectedItem}
-          />
         </div>
       )}
 
@@ -450,6 +715,11 @@ export const SamplePagesLeftNav = ({
               onItemSelect(item);
             }}
             selectedItem={selectedItem}
+            onNavigateToPage={(page) => {
+              setExpandedTab(page);
+              setHoveredTab(null);
+              onPageChange(page);
+            }}
           />
         </div>
       )}

@@ -15,6 +15,10 @@ import { SamplePagesLeftNav } from './sample_pages_left_nav';
 import { ServicePage } from './service_page';
 import { DiscoverPage } from './discover_page';
 import { ThreadPage } from './thread_page';
+import { AlertsPage } from './alerts_page';
+import { DashboardsPage } from './dashboards_page';
+import { SkillsPage } from './skills_page';
+import { ApplicationMapPage } from './application_map_page';
 import { OuiErrorBoundary } from '../../../../src/components';
 
 const renderPage = (activePage, selectedItem) => {
@@ -29,6 +33,30 @@ const renderPage = (activePage, selectedItem) => {
       return (
         <OuiErrorBoundary>
           <ThreadPage selectedItem={selectedItem} />
+        </OuiErrorBoundary>
+      );
+    case 'alerts':
+      return (
+        <OuiErrorBoundary>
+          <AlertsPage selectedItem={selectedItem} />
+        </OuiErrorBoundary>
+      );
+    case 'dashboards':
+      return (
+        <OuiErrorBoundary>
+          <DashboardsPage selectedItem={selectedItem} />
+        </OuiErrorBoundary>
+      );
+    case 'skills':
+      return (
+        <OuiErrorBoundary>
+          <SkillsPage selectedItem={selectedItem} />
+        </OuiErrorBoundary>
+      );
+    case 'application-map':
+      return (
+        <OuiErrorBoundary>
+          <ApplicationMapPage />
         </OuiErrorBoundary>
       );
     case 'service':
@@ -49,6 +77,9 @@ export const SamplePagesView = () => {
     service: 'services',
     discover: 'error-rate',
     thread: 'latency-spike',
+    alerts: 'cpu-threshold',
+    dashboards: 'system-overview',
+    skills: 'anomaly-detector',
   };
 
   const handlePageChange = (page) => {
