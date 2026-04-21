@@ -15,7 +15,7 @@ import { SamplePagesLeftNav } from './sample_pages_left_nav';
 import { ServicePage } from './service_page';
 import { DiscoverPage } from './discover_page';
 import { ThreadPage } from './thread_page';
-import { OuiErrorBoundary } from '../../../../src/components';
+import { OuiErrorBoundary, OuiPanel } from '../../../../src/components';
 
 const renderPage = (activePage, selectedItem) => {
   switch (activePage) {
@@ -122,8 +122,14 @@ export const SamplePagesView = () => {
           flex: 1,
           overflowY: 'auto',
           padding,
+          paddingLeft: 0,
         }}>
-        {renderPage(activePage, selectedItem)}
+        <OuiPanel
+          paddingSize="none"
+          className="samplePagesMainPanel"
+          style={{ minHeight: '100%' }}>
+          {renderPage(activePage, selectedItem)}
+        </OuiPanel>
       </div>
     </div>
   );

@@ -544,6 +544,8 @@ export const ThreadPage = ({ selectedItem }) => {
               aria-label="Send message"
               display="fill"
               size="s"
+              color="primary"
+              style={{ color: '#FFFFFF' }}
               isDisabled={
                 !message.trim() || isTyping || messages.some((m) => m.streaming)
               }

@@ -22,8 +22,8 @@
 .samplePagesLeftNav {
   width: 72px;
   min-width: 72px;
-  background-color: $ouiColorEmptyShade;
-  border-right: 1px solid $ouiBorderColor;
+  background-color: transparent;
+  border-right: none;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -130,14 +130,12 @@
 .samplePagesLeftNav__expandedPanel {
   width: 320px;
   min-width: 320px;
-  background-color: mix($ouiColorEmptyShade, $ouiPageBackgroundColor, 60%);
-  border-right: 1px solid $ouiBorderColor;
-  border-top-right-radius: 24px;
+  background-color: transparent;
+  border-right: none;
+  border-left: 1px solid $ouiColorLightShade;
+  border-top-right-radius: 0;
   border-bottom-right-radius: 0;
-  box-shadow:
-  0 0 12px rgba(0, 0, 0, 0.05),
-  0 0 4px rgba(0, 0, 0, 0.05),
-  0 0 2px rgba(0, 0, 0, 0.05);
+  box-shadow: none;
   height: 100%;
   overflow-y: auto;
   display: flex;
@@ -181,12 +179,10 @@
   left: 60px;
   width: 320px;
   max-height: 400px;
-  background-color: $ouiColorEmptyShade;
-  border: 1px solid $ouiBorderColor;
-  border-radius: 12px;
-  box-shadow:
-  0 6px 20px rgba(0, 0, 0, 0.1),
-  0 2px 8px rgba(0, 0, 0, 0.08);
+  background-color: lighten($ouiColorEmptyShade, 10%);
+  border: none;
+  border-radius: $ouiBorderRadius;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -214,11 +210,23 @@
 .samplePagesLeftNav__expandedPanel,
 .samplePagesLeftNav__hoverPopover {
   .ouiListGroupItem {
-    border-radius: 0;
-    margin: 0;
+    border-radius: $ouiBorderRadiusSmall;
+    margin: 0 0 4px;
   }
 
   .ouiListGroup {
     gap: 0;
+    padding: 8px;
   }
+
+  // Hide horizontal rule dividers
+  .samplePagesLeftNav__ruleDivider {
+    display: none;
+  }
+}
+
+// Page-level panel — semi-transparent for depth
+.samplePagesMainPanel {
+  background-color: rgba($ouiColorEmptyShade, .6) !important; // sass-lint:disable-line no-important
+  backdrop-filter: blur(4px);
 }

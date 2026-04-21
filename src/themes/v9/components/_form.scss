@@ -97,13 +97,7 @@
 }
 
 // Hover and selected contrast for list group items (nav panels, popovers)
-// sass-lint:disable no-important
-.ouiListGroupItem-isClickable:hover,
-.ouiListGroupItem-isClickable:focus-within,
-.ouiListGroupItem-isActive {
-  background-color: transparentize($ouiColorLightShade, .5) !important;
-}
-// sass-lint:enable no-important
+// — merged with popover/nav panel states below
 
 // Lighter table row hover in dark mode
 // sass-lint:disable no-important
@@ -112,3 +106,30 @@
   background-color: transparentize($ouiColorLightShade, .25) !important;
 }
 // sass-lint:enable no-important
+
+// Remove shadows and borders from all panels and cards
+// sass-lint:disable no-important
+.ouiPanel,
+.ouiCard {
+  box-shadow: none !important;
+  border: none !important;
+}
+// sass-lint:enable no-important
+
+// Large drop shadows on all popovers — no border, higher contrast bg
+// sass-lint:disable no-important, no-color-literals, leading-zero
+.ouiPopover__panel {
+  border: none !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, .15), 0 2px 8px rgba(0, 0, 0, .1) !important;
+  background-color: lighten($ouiColorEmptyShade, 10%) !important;
+}
+// sass-lint:enable no-important, no-color-literals, leading-zero
+
+// Hover and active states in popovers and nav panels
+// sass-lint:disable no-important, no-color-literals
+.ouiListGroupItem-isClickable:hover,
+.ouiListGroupItem-isClickable:focus-within,
+.ouiListGroupItem-isActive {
+  background-color: lightOrDarkTheme(#F4F4F5, #3A4050) !important;
+}
+// sass-lint:enable no-important, no-color-literals
