@@ -15,9 +15,9 @@ $ouiBorderWidthThin: 1px !default;
 $ouiBorderWidthThick: 2px !default;
 
 $ouiBorderColor: $ouiColorLightShade !default;
-$ouiBorderRadius: 12px !default;
-$ouiBorderRadiusSmall: 8px !default;
-$ouiBorderRadiusLarge: 16px !default;
+$ouiBorderRadius: 9px !default;
+$ouiBorderRadiusSmall: 5px !default;
+$ouiBorderRadiusLarge: 13px !default;
 $ouiBorderThick: $ouiBorderWidthThick solid $ouiBorderColor !default;
 $ouiBorderThin: $ouiBorderWidthThin solid $ouiBorderColor !default;
 $ouiBorderEditable: $ouiBorderWidthThick dotted $ouiBorderColor !default;
