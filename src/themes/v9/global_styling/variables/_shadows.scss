@@ -10,23 +10,23 @@
  */
 
 // sass-lint:disable leading-zero
-// Shadows — soft spread with slight offset
-$ouiShadowColor: #9898A0 !default;
-$ouiShadowColorLarge: #9898A0 !default;
+// Shadows — subtle
+$ouiShadowColor: #000 !default;
+$ouiShadowColorLarge: #000 !default;
 
 // Shadow opacity
-$ouiShadowOpacity: 0.18 !default;
+$ouiShadowOpacity: .1 !default;
 
 // Base shadow layer
-$ouiShadowBase: 2px 2px 10px 4px rgba(152, 152, 160, 0.09);
+$ouiShadowBase: 0 1px 3px 0 rgba(0, 0, 0, .05);
 
-// Soft spread shadow levels
-$ouiShadow1: 2px 2px 10px 4px rgba(152, 152, 160, 0.09);
-$ouiShadow2: 2px 2px 10px 4px rgba(152, 152, 160, 0.18), 2px 1px 2px 3px rgba(152, 152, 160, 0.18);
-$ouiShadow3: 2px 2px 10px 4px rgba(152, 152, 160, 0.18), 2px 2px 4px 3px rgba(152, 152, 160, 0.18);
-$ouiShadow4: 2px 2px 10px 4px rgba(152, 152, 160, 0.18), 2px 4px 6px 3px rgba(152, 152, 160, 0.18);
-$ouiShadow5: 2px 2px 10px 4px rgba(152, 152, 160, 0.18), 2px 8px 10px 3px rgba(152, 152, 160, 0.18);
-$ouiShadow6: 2px 2px 10px 4px rgba(152, 152, 160, 0.45);
+// Subtle shadow levels
+$ouiShadow1: 0 1px 3px 0 rgba(0, 0, 0, .05);
+$ouiShadow2: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px -1px rgba(0, 0, 0, .1);
+$ouiShadow3: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 2px 4px -1px rgba(0, 0, 0, .1);
+$ouiShadow4: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 4px 6px -1px rgba(0, 0, 0, .1);
+$ouiShadow5: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 8px 10px -1px rgba(0, 0, 0, .1);
+$ouiShadow6: 0 1px 3px 0 rgba(0, 0, 0, .25);
 
 // Local elevation z-index values
 $ouiLocalZIndex1: 1;

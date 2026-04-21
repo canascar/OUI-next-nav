@@ -17,28 +17,28 @@
 $ouiColorGhost: #FCFEFF !default;
 $ouiColorInk: #02020E !default;
 
-// Core - Warm stone with indigo accents
-$ouiColorPrimary: #0084D1 !default;      // Blue primary
-$ouiColorSecondary: #4B5563 !default;    // Cool gray
-$ouiColorAccent: #6366F1 !default;       // Indigo
+// Core - Blue/navy with orange accent
+$ouiColorPrimary: #155DFC !default;      // Blue
+$ouiColorSecondary: #4B5563 !default;    // Gray
+$ouiColorAccent: #8EC5FF !default;       // Light blue accent
 
 // Status
 $ouiColorSuccess: #059669 !default;      // Emerald-600
 $ouiColorWarning: #F59E0B !default;      // Amber
 $ouiColorDanger: #EF4444 !default;       // Red
 
-// Grays - Warm stone tones
-$ouiColorEmptyShade: #F5F5F4 !default;   // Stone-100 card
-$ouiColorLightestShade: #E7E5E4 !default; // Stone-200 muted bg
-$ouiColorLightShade: #D6D3D1 !default;   // Stone-300 border
-$ouiColorMediumShade: #6B7280 !default;  // Gray-500 muted text
-$ouiColorDarkShade: #374151 !default;    // Gray-700
-$ouiColorDarkestShade: #1E293B !default; // Slate-800 foreground
-$ouiColorFullShade: #0F172A !default;    // Slate-900
+// Grays - Cool light tones
+$ouiColorEmptyShade: #FFFFFF !default;   // White card
+$ouiColorLightestShade: #F9FAFB !default; // Muted bg
+$ouiColorLightShade: #DCDFE2 !default;   // Border
+$ouiColorMediumShade: #6B7280 !default;  // Muted text
+$ouiColorDarkShade: #333333 !default;    // Dark text
+$ouiColorDarkestShade: #333333 !default; // Foreground
+$ouiColorFullShade: #111827 !default;    // Near black
 
 // Backgrounds
-$ouiPageBackgroundColor: #E7E5E4 !default; // Stone-200
-$ouiColorHighlight: #F3E5F5 !default;    // Light purple
+$ouiPageBackgroundColor: #E8EBED !default; // Cool gray bg
+$ouiColorHighlight: #D6E4F0 !default;    // Light blue highlight
 
 // Every color below must be based mathematically on the set above and in a particular order.
 $ouiTextColor: $ouiColorDarkestShade !default;
