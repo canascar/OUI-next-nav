@@ -48,6 +48,7 @@ export const SamplePagesView = () => {
   const [gap, setGap] = useState(16);
   const [cardPadding, setCardPadding] = useState(16);
   const [gutter, setGutter] = useState(16);
+  const [showLabels, setShowLabels] = useState(true);
 
   const DEFAULT_ITEMS = {
     service: 'services',
@@ -115,6 +116,8 @@ export const SamplePagesView = () => {
         onCardPaddingChange={setCardPadding}
         gutter={gutter}
         onGutterChange={setGutter}
+        showLabels={showLabels}
+        onShowLabelsChange={setShowLabels}
       />
       <div
         className="samplePagesContent"

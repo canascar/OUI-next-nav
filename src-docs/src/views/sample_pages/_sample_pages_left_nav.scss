@@ -36,7 +36,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px 12px 0;
+  padding: 24px 12px 32px;
   flex-shrink: 0;
 }
 
@@ -47,8 +47,13 @@
   flex-direction: column;
   align-items: center;
   gap: 24px;
-  padding: 24px 12px;
+  padding: 16px 12px;
   min-height: 0;
+
+  &--compact {
+    gap: 4px;
+    padding: 8px 12px;
+  }
 }
 
 // Each nav item is a clickable button with icon + label
@@ -64,6 +69,10 @@
   padding: 0;
   cursor: pointer;
   appearance: none;
+
+  .samplePagesLeftNav__items--compact & {
+    height: 32px;
+  }
 
   &:hover .samplePagesLeftNav__navIcon {
     background-color: rgba($ouiColorDarkestShade, 0.07);
@@ -117,8 +126,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-bottom: 16px;
-  gap: 16px;
+  padding: 16px 12px;
+  gap: 8px;
   width: 100%;
 }
 
@@ -141,6 +150,15 @@
   display: flex;
   flex-direction: column;
   z-index: 1;
+
+  // Higher contrast hover/active states in the transparent expanded panel
+  // sass-lint:disable no-important, no-color-literals
+  .ouiListGroupItem-isClickable:hover,
+  .ouiListGroupItem-isClickable:focus-within,
+  .ouiListGroupItem-isActive {
+    background-color: lightOrDarkTheme(#C7C3BE, #484441) !important;
+  }
+  // sass-lint:enable no-important, no-color-literals
 }
 
 // Header row: title + close button on the same line
@@ -179,10 +197,11 @@
   left: 60px;
   width: 320px;
   max-height: 400px;
-  background-color: lighten($ouiColorEmptyShade, 10%);
-  border: none;
+  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .65); // sass-lint:disable-line no-color-literals
+  backdrop-filter: blur(12px);
+  border: 1px solid $ouiColorLightShade;
   border-radius: $ouiBorderRadius;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1); // sass-lint:disable-line no-color-literals
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -227,6 +246,7 @@
 
 // Page-level panel — semi-transparent for depth
 .samplePagesMainPanel {
-  background-color: rgba($ouiColorEmptyShade, .6) !important; // sass-lint:disable-line no-important
+  background-color: rgba($ouiColorEmptyShade, .6) !important; // sass-lint:disable-line no-important, no-color-literals
   backdrop-filter: blur(4px);
 }
+

@@ -3,10 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// Apply consistent border radius to group form control layouts
+// Apply consistent border radius and background to group form control layouts
 .ouiFormControlLayout--group {
   border-radius: $ouiFormControlBorderRadius;
   overflow: hidden;
+  background-color: $ouiFormBackgroundColor !important; // sass-lint:disable-line no-important
 
   // Reset all inner elements to no radius — the group's overflow: hidden clips them
   // sass-lint:disable no-important
@@ -44,10 +45,20 @@
 .ouiFieldPassword,
 .ouiSelect,
 .ouiTextArea,
+.ouiFieldText--compressed,
+.ouiFieldSearch--compressed,
+.ouiFieldNumber--compressed,
+.ouiFieldPassword--compressed,
+.ouiSelect--compressed,
 .ouiDatePopoverButton,
 .ouiSuperDatePicker__prettyFormat {
   background-color: $ouiFormBackgroundColor !important;
-  border-radius: 0 !important;
+  border-radius: $ouiFormControlBorderRadius !important;
+
+  &:focus,
+  &:hover {
+    background-color: $ouiFormBackgroundColor !important;
+  }
 }
 
 .ouiFormControlLayout:not(.ouiFormControlLayout--group) {
@@ -60,22 +71,16 @@
   }
 }
 
-.ouiFieldText--compressed,
-.ouiFieldSearch--compressed,
-.ouiFieldNumber--compressed,
-.ouiFieldPassword--compressed,
-.ouiSelect--compressed,
-.ouiDatePopoverButton-compressed {
-  background-color: $ouiFormBackgroundColor !important;
-}
-
-// Inside groups, inputs get no radius (group clips them)
+// Inside groups, inputs get no radius and matching bg (group handles radius via overflow)
 .ouiFormControlLayout--group .ouiFieldText,
 .ouiFormControlLayout--group .ouiFieldSearch,
 .ouiFormControlLayout--group .ouiFieldNumber,
 .ouiFormControlLayout--group .ouiFieldPassword,
-.ouiFormControlLayout--group .ouiSelect {
+.ouiFormControlLayout--group .ouiSelect,
+.ouiFormControlLayout--group .ouiTextArea {
   border-radius: 0 !important;
+  box-shadow: none !important;
+  background-color: $ouiFormBackgroundColor !important;
 }
 // sass-lint:enable no-important
 
@@ -130,12 +135,13 @@
 }
 // sass-lint:enable no-important
 
-// Large drop shadows on all popovers — no border, higher contrast bg
+// Large drop shadows on all popovers — light border, higher contrast bg with blur
 // sass-lint:disable no-important, no-color-literals, leading-zero
 .ouiPopover__panel {
-  border: none !important;
+  border: 1px solid $ouiColorLightShade !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, .15), 0 2px 8px rgba(0, 0, 0, .1) !important;
-  background-color: lighten($ouiColorEmptyShade, 10%) !important;
+  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .65) !important;
+  backdrop-filter: blur(12px);
 }
 // sass-lint:enable no-important, no-color-literals, leading-zero
 
@@ -144,7 +150,7 @@
 .ouiListGroupItem-isClickable:hover,
 .ouiListGroupItem-isClickable:focus-within,
 .ouiListGroupItem-isActive {
-  background-color: lightOrDarkTheme(#F4F4F5, #3A4050) !important;
+  background-color: lightOrDarkTheme(#D6D3D1, #484441) !important;
 }
 // sass-lint:enable no-important, no-color-literals
 
@@ -155,6 +161,53 @@
   > *,
   > * > * {
     border-radius: 0 !important;
+  }
+}
+// sass-lint:enable no-important
+
+// Backdrop blur on modal and flyout overlays
+// sass-lint:disable no-important, no-color-literals
+.ouiOverlayMask {
+  backdrop-filter: blur(12px);
+  background-color: rgba(0, 0, 0, .45) !important;
+}
+// sass-lint:enable no-important, no-color-literals
+
+// Form control layout delimited — inputs inside should be transparent
+// sass-lint:disable no-important
+.ouiFormControlLayoutDelimited__input {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+.ouiFormControlLayoutDelimited {
+  background-color: $ouiFormBackgroundColor !important;
+}
+
+.ouiFormControlLayoutDelimited__delimeter {
+  background-color: transparent !important;
+}
+// sass-lint:enable no-important
+
+// Prepend/append labels and buttons in form groups — accent bg for separation
+// Targets prepend/append wrappers and any buttons inside them
+// sass-lint:disable no-important
+.ouiFormControlLayout--group > .ouiFormControlLayout__prepend,
+.ouiFormControlLayout--group > .ouiFormControlLayout__append,
+.ouiFormControlLayout--group > *:first-child:not(.ouiFormControlLayout__childrenWrapper):not(input),
+.ouiFormControlLayout--group > *:last-child:not(.ouiFormControlLayout__childrenWrapper):not(input),
+.ouiFormControlLayout--group > .ouiFormLabel,
+.ouiFormControlLayout--group > .ouiText,
+.ouiFormControlLayout--group .ouiFormControlLayout__prepend .ouiButtonEmpty,
+.ouiFormControlLayout--group .ouiFormControlLayout__append .ouiButtonEmpty,
+.ouiFormControlLayout--group .ouiFormControlLayout__prepend .ouiButtonIcon,
+.ouiFormControlLayout--group .ouiFormControlLayout__append .ouiButtonIcon {
+  background-color: $ouiFormInputGroupLabelBackground !important;
+
+  &:hover,
+  &:focus {
+    background-color: shade($ouiFormInputGroupLabelBackground, 10%) !important;
   }
 }
 // sass-lint:enable no-important
