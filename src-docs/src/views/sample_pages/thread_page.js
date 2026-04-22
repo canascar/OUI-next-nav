@@ -9,11 +9,13 @@
  * GitHub history for details.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 import {
   OuiAvatar,
   OuiButtonIcon,
+  OuiFlyoutHeader,
+  OuiFlyoutBody,
   OuiIcon,
   OuiLoadingSpinner,
   OuiTitle,
@@ -40,8 +42,9 @@ const THREADS = {
           'During the investigation, the primary cause of the service outage was identified as a misconfigured deployment that triggered a cascading failure across dependent services.\n\n**Key Findings**\n\n- Configuration Drift: A recent infrastructure change introduced an incorrect timeout value in the API gateway.\n- Autoscaling Feedback Loop: Increased retries caused aggressive scaling, which overwhelmed downstream services.\n- Insufficient Guardrails: Circuit breakers were not triggered due to misaligned thresholds.\n\n**Contributing Factors**\n\n1. Limited pre-deployment validation for environment-specific configurations.\n2. Monitoring alerts focused on symptoms (latency) rather than root signals (retry rates).\n3. Manual rollback required due to partial automation gaps.',
         attachment: {
           type: 'page',
-          title: 'Investigation - Payment processing failure',
-          url: 'https://opensearch.org/app/investigation-payment-001',
+          title: 'Payment service latency dashboard',
+          description:
+            'P99 latency, error rate, and throughput for the payment service over the last 24 hours.',
         },
       },
       {
@@ -78,7 +81,8 @@ const THREADS = {
         attachment: {
           type: 'page',
           title: 'Checkout error rate dashboard',
-          url: 'https://opensearch.org/app/dashboards/checkout-errors',
+          description:
+            'Real-time error rates, connection pool usage, and 503 response breakdown for the checkout service.',
         },
       },
     ],
@@ -169,37 +173,84 @@ const parseContent = (content) => {
   return elements;
 };
 
-// Attachment card: page link (bold title + URL)
-const PageAttachment = ({ title, url }) => (
-  <div className="threadPage__attachment">
-    <OuiText size="xs">
-      <strong>{title}</strong>
-    </OuiText>
-    <OuiText size="xs" color="accent">
-      <a href={url} target="_blank" rel="noopener noreferrer">
-        {url}
-      </a>
-    </OuiText>
-  </div>
+// Floating "Add to canvas" button shown on attachment hover
+const AddToCanvasButton = ({ onClick, added }) => (
+  <button
+    type="button"
+    className={`threadPage__addToCanvas${
+      added ? ' threadPage__addToCanvas--added' : ''
+    }`}
+    onClick={added ? undefined : onClick}>
+    {added ? 'Added to canvas' : 'Add to canvas'}
+  </button>
 );
+
+// Attachment card: page reference (title + description, no link)
+const PageAttachment = ({ title, description, onAddToCanvas, canvasItems }) => {
+  const added = canvasItems.some((c) => c.type === 'page' && c.title === title);
+  return (
+    <div className="threadPage__attachmentWrap">
+      <AddToCanvasButton
+        added={added}
+        onClick={() => onAddToCanvas({ type: 'page', title, description })}
+      />
+      <div className="threadPage__attachment">
+        <OuiText size="xs">
+          <strong>{title}</strong>
+        </OuiText>
+        {description && (
+          <OuiText size="xs" color="subdued">
+            <p style={{ margin: 0 }}>{description}</p>
+          </OuiText>
+        )}
+      </div>
+    </div>
+  );
+};
 
 // Attachment card: query (monospace code)
-const QueryAttachment = ({ query }) => (
-  <div className="threadPage__attachment">
-    <code className="threadPage__attachmentQuery">{query}</code>
-  </div>
-);
+const QueryAttachment = ({ query, onAddToCanvas, canvasItems }) => {
+  const added = canvasItems.some(
+    (c) => c.type === 'query' && c.query === query
+  );
+  return (
+    <div className="threadPage__attachmentWrap">
+      <AddToCanvasButton
+        added={added}
+        onClick={() => onAddToCanvas({ type: 'query', query })}
+      />
+      <div className="threadPage__attachment">
+        <code className="threadPage__attachmentQuery">{query}</code>
+      </div>
+    </div>
+  );
+};
 
 // Renders a single assistant response (left-aligned, plain text + feedback)
-const AssistantMessage = ({ content, streaming, attachment }) => (
+const AssistantMessage = ({
+  content,
+  streaming,
+  attachment,
+  onAddToCanvas,
+  canvasItems,
+}) => (
   <div className="threadPage__message threadPage__message--assistant">
     <div className="threadPage__bubble threadPage__bubble--assistant">
       <OuiText size="s">{parseContent(content)}</OuiText>
       {!streaming && attachment && attachment.type === 'page' && (
-        <PageAttachment title={attachment.title} url={attachment.url} />
+        <PageAttachment
+          title={attachment.title}
+          description={attachment.description}
+          onAddToCanvas={onAddToCanvas}
+          canvasItems={canvasItems}
+        />
       )}
       {!streaming && attachment && attachment.type === 'query' && (
-        <QueryAttachment query={attachment.query} />
+        <QueryAttachment
+          query={attachment.query}
+          onAddToCanvas={onAddToCanvas}
+          canvasItems={canvasItems}
+        />
       )}
       {!streaming && (
         <div className="threadPage__feedback">
@@ -236,7 +287,7 @@ const TaskListMessage = ({ tasks, statuses, collapsed }) => {
       <div className="threadPage__message threadPage__message--assistant">
         <div className="threadPage__taskCollapsed">
           <div className="threadPage__taskIconWrap">
-            <OuiIcon type="check" size="m" color="success" />
+            <OuiIcon type="checkInCircleEmpty" size="m" color="success" />
           </div>
           <OuiText size="s">
             <span>{tasks.length} tasks finished</span>
@@ -257,7 +308,7 @@ const TaskListMessage = ({ tasks, statuses, collapsed }) => {
                 {statuses[i] === 'running' ? (
                   <OuiLoadingSpinner size="m" />
                 ) : (
-                  <OuiIcon type="check" size="m" color="success" />
+                  <OuiIcon type="checkInCircleEmpty" size="m" color="success" />
                 )}
               </div>
               <OuiText size="s">
@@ -278,8 +329,9 @@ const MOCK_RESPONSES = [
       'I looked into this and found a few things worth noting.\n\n**Summary**\n\n- The service metrics show a gradual increase in P99 latency over the past 6 hours.\n- Error rates remain within acceptable thresholds but are trending upward.\n- No recent deployments correlate with the change.\n\nI recommend checking the downstream dependency health and reviewing recent config changes in the environment.',
     attachment: {
       type: 'page',
-      title: 'Service health overview',
-      url: 'https://opensearch.org/app/observability/services',
+      title: 'Service health overview dashboard',
+      description:
+        'Aggregated health metrics across all services including uptime, latency percentiles, and error trends.',
     },
   },
   {
@@ -296,8 +348,9 @@ const MOCK_RESPONSES = [
       'I ran a correlation analysis across the affected services.\n\n**Key Observations**\n\n- The spike aligns with a traffic surge from the EU region starting at 14:32 UTC.\n- Cache hit ratio dropped from 94% to 61% during the same window.\n- The CDN origin pull rate tripled, putting pressure on the backend.\n\nThis looks like a cache invalidation event combined with organic traffic growth. The system should stabilize once the cache warms back up.',
     attachment: {
       type: 'page',
-      title: 'Traffic analysis - EU region surge',
-      url: 'https://opensearch.org/app/dashboards/traffic-eu',
+      title: 'EU region traffic dashboard',
+      description:
+        'Traffic volume, cache hit ratios, and CDN origin pull rates for the EU region.',
     },
   },
   {
@@ -311,25 +364,83 @@ const MOCK_RESPONSES = [
   },
 ];
 
-export const ThreadPage = ({ selectedItem }) => {
+const NEW_THREAD = { title: 'New thread', messages: [] };
+
+export const ThreadPage = ({ selectedItem, pendingMessages }) => {
   const threadKey = selectedItem || 'latency-spike';
-  const thread = THREADS[threadKey];
-  const [messages, setMessages] = useState(thread.messages);
+  const thread = THREADS[threadKey] || NEW_THREAD;
+  const initialMessages = pendingMessages || thread.messages;
+  const [messages, setMessages] = useState(initialMessages);
   const [message, setMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [isCanvasOpen, setIsCanvasOpen] = useState(false);
+  const [canvasItems, setCanvasItems] = useState([]);
+  const [canvasWidth, setCanvasWidth] = useState(340);
+  const [isCanvasDragging, setIsCanvasDragging] = useState(false);
+  const isDragging = useRef(false);
   const feedRef = useRef(null);
   const responseIndex = useRef(0);
 
   const streamTimers = useRef([]);
 
+  // Drag-to-resize handlers for canvas flyout
+  const handleDragStart = useCallback((e) => {
+    e.preventDefault();
+    isDragging.current = true;
+    setIsCanvasDragging(true);
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  }, []);
+
+  useEffect(() => {
+    const handleDragMove = (e) => {
+      if (!isDragging.current) return;
+      const newWidth = window.innerWidth - e.clientX;
+      setCanvasWidth(Math.max(240, Math.min(newWidth, 700)));
+    };
+    const handleDragEnd = () => {
+      if (!isDragging.current) return;
+      isDragging.current = false;
+      setIsCanvasDragging(false);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+    window.addEventListener('mousemove', handleDragMove);
+    window.addEventListener('mouseup', handleDragEnd);
+    return () => {
+      window.removeEventListener('mousemove', handleDragMove);
+      window.removeEventListener('mouseup', handleDragEnd);
+    };
+  }, []);
+
+  const handleAddToCanvas = useCallback((item) => {
+    setCanvasItems((prev) => {
+      // Deduplicate by matching type + title/query
+      const exists = prev.some(
+        (existing) =>
+          existing.type === item.type &&
+          (item.type === 'page'
+            ? existing.title === item.title
+            : existing.query === item.query)
+      );
+      if (exists) return prev;
+      return [...prev, item];
+    });
+    setIsCanvasOpen(true);
+  }, []);
+
   // Reset messages when switching threads
   useEffect(() => {
-    setMessages(thread.messages);
+    if (pendingMessages) {
+      setMessages(pendingMessages);
+    } else {
+      setMessages(thread.messages);
+    }
     setMessage('');
     setIsTyping(false);
     streamTimers.current.forEach(clearTimeout);
     streamTimers.current = [];
-  }, [threadKey, thread.messages]);
+  }, [threadKey, thread.messages, pendingMessages]);
 
   // Clean up timers on unmount
   useEffect(() => {
@@ -460,7 +571,7 @@ export const ThreadPage = ({ selectedItem }) => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: 20,
+          padding: '20px 16px 20px 12px',
         }}>
         <OuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
           <OuiFlexItem grow={false}>
@@ -482,7 +593,8 @@ export const ThreadPage = ({ selectedItem }) => {
               iconType="layers"
               aria-label="Canvas"
               size="s"
-              color="text"
+              color={isCanvasOpen ? 'primary' : 'text'}
+              onClick={() => setIsCanvasOpen(!isCanvasOpen)}
             />
           </OuiToolTip>
           <OuiToolTip content="History" position="bottom">
@@ -493,7 +605,7 @@ export const ThreadPage = ({ selectedItem }) => {
               color="text"
             />
           </OuiToolTip>
-          <div style={{ width: 1, height: 16, backgroundColor: '#D3DAE6' }} />
+          <div className="detailPageHeader__ruleDivider" />
           <OuiToolTip content="Share" position="bottom">
             <OuiButtonIcon
               iconType="share"
@@ -505,66 +617,176 @@ export const ThreadPage = ({ selectedItem }) => {
         </div>
       </div>
 
-      {/* Conversation feed — scrollable */}
-      <div className="threadPage__feed" ref={feedRef}>
-        {messages.map((msg, i) => {
-          if (msg.role === 'user') {
-            return (
-              <UserMessage key={i} author={msg.author} content={msg.content} />
-            );
-          }
-          if (msg.role === 'tasks') {
-            return (
-              <TaskListMessage
-                key={i}
-                tasks={msg.tasks}
-                statuses={msg.statuses}
-                collapsed={msg.collapsed}
-              />
-            );
-          }
-          return (
-            <AssistantMessage
-              key={i}
-              content={msg.content}
-              streaming={msg.streaming}
-              attachment={msg.attachment}
-            />
-          );
-        })}
-        {isTyping && null}
-      </div>
-
-      {/* Input area — textarea with buttons inside at bottom */}
-      <div className="threadPage__inputArea">
-        <div className="threadPage__inputWrapper">
-          <OuiCompressedTextArea
-            placeholder="Ask anything. Type / for actions."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={handleKeyDown}
-            rows={3}
-            resize="none"
-            fullWidth
-            className="threadPage__textarea"
-          />
-          <div className="threadPage__inputActions">
-            <OuiButtonIcon
-              iconType="plus"
-              aria-label="Add attachment"
-              size="s"
-              color="text"
-            />
-            <OuiButtonIcon
-              iconType="sortUp"
-              aria-label="Send message"
-              display="fill"
-              size="s"
-              isDisabled={
-                !message.trim() || isTyping || messages.some((m) => m.streaming)
+      {/* Body: feed + optional canvas flyout */}
+      <div className="threadPage__body">
+        {/* Conversation column */}
+        <div className="threadPage__conversationCol">
+          {/* Conversation feed — scrollable */}
+          <div className="threadPage__feed" ref={feedRef}>
+            {messages.map((msg, i) => {
+              if (msg.role === 'user') {
+                return (
+                  <UserMessage
+                    key={i}
+                    author={msg.author}
+                    content={msg.content}
+                  />
+                );
               }
-              onClick={handleSend}
-            />
+              if (msg.role === 'tasks') {
+                return (
+                  <TaskListMessage
+                    key={i}
+                    tasks={msg.tasks}
+                    statuses={msg.statuses}
+                    collapsed={msg.collapsed}
+                  />
+                );
+              }
+              return (
+                <AssistantMessage
+                  key={i}
+                  content={msg.content}
+                  streaming={msg.streaming}
+                  attachment={msg.attachment}
+                  onAddToCanvas={handleAddToCanvas}
+                  canvasItems={canvasItems}
+                />
+              );
+            })}
+            {isTyping && null}
+          </div>
+
+          {/* Input area — textarea with buttons inside at bottom */}
+          <div className="threadPage__inputArea">
+            <div className="threadPage__inputWrapper">
+              <OuiCompressedTextArea
+                placeholder="Ask anything. Type / for actions."
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={handleKeyDown}
+                rows={3}
+                resize="none"
+                fullWidth
+                className="threadPage__textarea"
+              />
+              <div className="threadPage__inputActions">
+                <OuiButtonIcon
+                  iconType="plus"
+                  aria-label="Add attachment"
+                  size="s"
+                  color="text"
+                />
+                <OuiButtonIcon
+                  iconType="sortUp"
+                  aria-label="Send message"
+                  display="fill"
+                  size="s"
+                  isDisabled={
+                    !message.trim() ||
+                    isTyping ||
+                    messages.some((m) => m.streaming)
+                  }
+                  onClick={handleSend}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Canvas flyout (push panel) */}
+        <div
+          className={`threadPage__canvasFlyout${
+            isCanvasOpen ? ' threadPage__canvasFlyout--open' : ''
+          }${isCanvasDragging ? ' threadPage__canvasFlyout--dragging' : ''}`}
+          style={isCanvasOpen ? { width: canvasWidth } : undefined}>
+          <div className="threadPage__canvasFlyoutInner">
+            {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+            <div
+              className="threadPage__canvasResizeHandle"
+              onMouseDown={handleDragStart}
+              role="separator"
+              aria-orientation="vertical"
+              aria-label="Resize canvas"
+              tabIndex={0}>
+              <span className="threadPage__canvasResizeGrip">
+                <OuiIcon type="grab" size="s" />
+              </span>
+            </div>
+            <OuiFlyoutHeader hasBorder>
+              <OuiFlexGroup
+                alignItems="center"
+                justifyContent="spaceBetween"
+                responsive={false}
+                gutterSize="none">
+                <OuiFlexItem grow={false}>
+                  <OuiTitle size="xs">
+                    <h2>Canvas</h2>
+                  </OuiTitle>
+                </OuiFlexItem>
+                <OuiFlexItem grow={false}>
+                  <OuiButtonIcon
+                    iconType="cross"
+                    aria-label="Close canvas"
+                    size="s"
+                    color="text"
+                    onClick={() => setIsCanvasOpen(false)}
+                  />
+                </OuiFlexItem>
+              </OuiFlexGroup>
+            </OuiFlyoutHeader>
+            <OuiFlyoutBody>
+              {canvasItems.length === 0 ? (
+                <OuiText size="s" color="subdued">
+                  <p>
+                    Items added to the canvas will appear here. Hover over
+                    attachments in the conversation and click &ldquo;Add to
+                    canvas&rdquo; to collect them.
+                  </p>
+                </OuiText>
+              ) : (
+                <div className="threadPage__canvasItems">
+                  {canvasItems.map((item, i) => (
+                    <div key={i} className="threadPage__canvasItem">
+                      <div className="threadPage__canvasItemHeader">
+                        <OuiIcon
+                          type={item.type === 'page' ? 'document' : 'console'}
+                          size="s"
+                        />
+                        <OuiText size="xs">
+                          <strong>
+                            {item.type === 'page' ? item.title : 'Query'}
+                          </strong>
+                        </OuiText>
+                        <OuiButtonIcon
+                          iconType="trash"
+                          aria-label="Remove from canvas"
+                          size="xs"
+                          color="danger"
+                          className="threadPage__canvasItemRemove"
+                          onClick={() =>
+                            setCanvasItems((prev) =>
+                              prev.filter((_, idx) => idx !== i)
+                            )
+                          }
+                        />
+                      </div>
+                      {item.type === 'page' ? (
+                        item.description && (
+                          <OuiText size="xs" color="subdued">
+                            <p style={{ margin: 0 }}>{item.description}</p>
+                          </OuiText>
+                        )
+                      ) : (
+                        <code className="threadPage__attachmentQuery">
+                          {item.query}
+                        </code>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </OuiFlyoutBody>
           </div>
         </div>
       </div>

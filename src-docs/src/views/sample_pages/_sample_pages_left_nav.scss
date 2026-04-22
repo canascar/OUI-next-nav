@@ -29,6 +29,7 @@
   align-items: center;
   height: 100%;
   z-index: 2;
+  transition: width 200ms ease-in-out, min-width 200ms ease-in-out;
 }
 
 // Logo header
@@ -38,6 +39,20 @@
   justify-content: center;
   padding: 24px 12px 0;
   flex-shrink: 0;
+}
+
+// Logo button — unstyled clickable wrapper
+.samplePagesLeftNav__logoButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  appearance: none;
+
 }
 
 // Nav items container — grows to fill space
@@ -141,18 +156,18 @@
 
 @keyframes slidePanelIn {
   from { width: 0; }
-  to { width: 320px; }
+  to { width: 280px; }
 }
 
 @keyframes slidePanelOut {
-  from { width: 320px; }
+  from { width: 280px; }
   to { width: 0; }
 }
 
 // Expanded panel — fixed width inner content, never shrinks
 .samplePagesLeftNav__expandedPanel {
-  width: 320px;
-  min-width: 320px;
+  width: 280px;
+  min-width: 280px;
   background-color: $ouiColorEmptyShade;
   border-right: 1px solid $ouiBorderColor;
   border-top-right-radius: 24px;
@@ -197,7 +212,7 @@
 .samplePagesLeftNav__hoverPopover {
   position: fixed;
   left: 60px;
-  width: 320px;
+  width: 280px;
   max-height: 400px;
   background-color: $ouiColorEmptyShade;
   border: 1px solid $ouiBorderColor;
@@ -226,5 +241,65 @@
 
   .samplePagesLeftNav__ruleDivider {
     padding: 4px 8px;
+  }
+
+  .samplePagesLeftNav__panelTabs {
+    padding: 0 12px 8px;
+
+    .ouiTabs {
+      overflow-x: auto;
+    }
+  }
+}
+
+// Customize mode — wider nav with transition
+.samplePagesLeftNav--customizing {
+  width: 96px;
+  min-width: 96px;
+}
+
+// Customize mode items — vertical layout with icon, label, checkbox
+.samplePagesLeftNav__navItem--customizable,
+.samplePagesLeftNav__navItem--fixed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 72px;
+  position: relative;
+}
+
+// Fixed items — slightly muted appearance
+.samplePagesLeftNav__navItem--fixed {
+  opacity: 0.6;
+}
+
+// Checkbox positioning — to the right of the item
+.samplePagesLeftNav__customizeCheckbox {
+  position: absolute;
+  right: 0;
+  top: 4px;
+
+  // Hide the label since we use aria-label
+  .ouiCheckbox__label {
+    display: none;
+  }
+}
+
+// Done button at the bottom of the items area
+.samplePagesLeftNav__doneButton {
+  margin-top: auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+// Tabs inside expanded panel
+.samplePagesLeftNav__panelTabs {
+  padding: 0 12px 8px;
+  flex-shrink: 0;
+
+  .ouiTabs {
+    overflow-x: auto;
   }
 }

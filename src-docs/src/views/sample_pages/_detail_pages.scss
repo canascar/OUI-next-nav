@@ -10,8 +10,15 @@
  */
 
 .alertsPage__header,
+.assetsPage__header,
 .dashboardsPage__header,
 .skillsPage__header,
 .applicationMapPage__header {
   border-bottom: 1px solid $ouiBorderColor;
+}
+
+.detailPageHeader__ruleDivider {
+  width: 1px;
+  height: 16px;
+  background-color: $ouiBorderColor;
 }

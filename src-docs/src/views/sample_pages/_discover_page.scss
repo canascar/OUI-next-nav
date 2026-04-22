@@ -9,6 +9,197 @@
  * GitHub history for details.
  */
 
+// sass-lint:disable no-misspelled-properties
+
 .discoverPage__header {
   border-bottom: 1px solid $ouiBorderColor;
+}
+
+// Query textarea area
+.discoverPage__queryArea {
+  padding: 12px 12px 8px;
+}
+
+.discoverPage__queryTextarea textarea {
+  font-family: $ouiCodeFontFamily;
+  font-size: $ouiFontSizeS;
+}
+
+// Tab bar with actions
+.discoverPage__tabBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+}
+
+.discoverPage__tabBarLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.discoverPage__hitsInfo {
+  white-space: nowrap;
+  color: $ouiColorDarkShade;
+}
+
+.discoverPage__hitsDot {
+  margin: 0 4px;
+}
+
+.discoverPage__tabActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.discoverPage__mono {
+  font-family: $ouiCodeFontFamily;
+}
+
+// Body layout
+.discoverPage__body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  padding: 12px;
+}
+
+.discoverPage__contentCol {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+// Fields panel (left sidebar)
+.discoverPage__fieldsPanel {
+  width: 100%;
+  height: 100%;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.discoverPage__fieldsPanelHeader {
+  padding: 8px 12px;
+}
+
+.discoverPage__fieldsListScroll {
+  flex: 1;
+  overflow-y: auto;
+}
+
+// Resize handle between fields panel and results
+.discoverPage__resizeHandle {
+  width: 12px;
+  flex-shrink: 0;
+  cursor: col-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  &::before {
+    content: '';
+    width: 2px;
+    height: 100%;
+    background: transparent;
+    border-radius: 1px;
+    transition: background-color 150ms ease-in-out;
+  }
+
+  &:hover::before,
+  &--active::before {
+    background-color: $ouiColorPrimary;
+  }
+}
+
+.discoverPage__fieldItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  border-radius: $ouiBorderRadius;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $ouiColorLightestShade;
+  }
+}
+
+.discoverPage__fieldAccordion {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+
+  &:hover {
+    background-color: $ouiColorLightestShade;
+  }
+}
+
+// Source cell key labels
+.discoverPage__sourceKey {
+  color: $ouiColorDarkShade;
+  font-weight: 600;
+}
+
+// Expanded row detail view
+.discoverPage__expandedRow {
+  padding: 12px 16px;
+}
+
+.discoverPage__expandedHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.discoverPage__detailTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  tr {
+    border-bottom: 1px solid $ouiBorderColor;
+  }
+
+  td {
+    padding: 6px 8px;
+    vertical-align: top;
+  }
+}
+
+.discoverPage__detailToken {
+  width: 28px;
+}
+
+.discoverPage__detailName {
+  width: 140px;
+  font-weight: 500;
+}
+
+.discoverPage__detailValue {
+  word-break: break-all;
+}
+
+.discoverPage__detailJson {
+  font-family: $ouiCodeFontFamily;
+  font-size: $ouiFontSizeXS;
+  padding: 12px;
+  margin: 8px 0 0;
+  background-color: $ouiColorLightestShade;
+  border-radius: $ouiBorderRadius;
+  overflow-x: auto;
+  white-space: pre-wrap;
 }

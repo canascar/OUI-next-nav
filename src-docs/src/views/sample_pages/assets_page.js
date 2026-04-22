@@ -22,7 +22,13 @@ import {
 
 import { AskAiPopover } from './ask_ai_popover';
 
-export const ApplicationMapPage = ({ onContinueAsThread }) => {
+const ITEM_LABELS = {
+  'web-server-fleet': 'Web server fleet',
+  'payment-gateway': 'Payment gateway',
+  'data-pipeline': 'Data pipeline cluster',
+};
+
+export const AssetsPage = ({ selectedItem, onContinueAsThread }) => {
   const [isAskAiOpen, setIsAskAiOpen] = React.useState(false);
 
   return (
@@ -34,7 +40,7 @@ export const ApplicationMapPage = ({ onContinueAsThread }) => {
         overflow: 'hidden',
       }}>
       <div
-        className="applicationMapPage__header"
+        className="assetsPage__header"
         style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -44,15 +50,26 @@ export const ApplicationMapPage = ({ onContinueAsThread }) => {
         <OuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
           <OuiFlexItem grow={false}>
             <OuiTitle size="s">
-              <h1 style={{ margin: 0 }}>Application map</h1>
+              <h1 style={{ margin: 0 }}>
+                {ITEM_LABELS[selectedItem] || 'Assets'}
+              </h1>
             </OuiTitle>
           </OuiFlexItem>
         </OuiFlexGroup>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <OuiToolTip content="Refresh" position="bottom">
+          <OuiToolTip content="Edit" position="bottom">
             <OuiButtonIcon
-              iconType="refresh"
-              aria-label="Refresh"
+              iconType="pencil"
+              aria-label="Edit"
+              size="s"
+              color="text"
+            />
+          </OuiToolTip>
+          <div className="detailPageHeader__ruleDivider" />
+          <OuiToolTip content="Share" position="bottom">
+            <OuiButtonIcon
+              iconType="share"
+              aria-label="Share"
               size="s"
               color="text"
             />
@@ -84,7 +101,7 @@ export const ApplicationMapPage = ({ onContinueAsThread }) => {
           justifyContent: 'center',
         }}>
         <OuiText color="subdued" textAlign="center">
-          <p>Application map visualization will appear here.</p>
+          <p>Detail view will appear here.</p>
         </OuiText>
       </div>
     </div>

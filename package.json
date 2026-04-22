@@ -210,6 +210,7 @@
     "eslint-plugin-react": "^7.21.3",
     "eslint-plugin-react-hooks": "^4.1.2",
     "expose-gc": "^1.0.0",
+    "fast-check": "^4.7.0",
     "file-loader": "^6.1.0",
     "findup": "^0.1.5",
     "fork-ts-checker-webpack-plugin": "^6.5.3",

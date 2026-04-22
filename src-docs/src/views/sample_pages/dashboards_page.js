@@ -20,76 +20,90 @@ import {
   OuiToolTip,
 } from '../../../../src/components';
 
+import { AskAiPopover } from './ask_ai_popover';
+
 const ITEM_LABELS = {
   'system-overview': 'System overview',
   'web-traffic': 'Web traffic analytics',
   'api-performance': 'API performance',
 };
 
-export const DashboardsPage = ({ selectedItem }) => (
-  <div
-    style={{
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      overflow: 'hidden',
-    }}>
+export const DashboardsPage = ({ selectedItem, onContinueAsThread }) => {
+  const [isAskAiOpen, setIsAskAiOpen] = React.useState(false);
+
+  return (
     <div
-      className="dashboardsPage__header"
       style={{
+        height: '100%',
         display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: 20,
+        flexDirection: 'column',
+        overflow: 'hidden',
       }}>
-      <OuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
-        <OuiFlexItem grow={false}>
-          <OuiTitle size="s">
-            <h1 style={{ margin: 0 }}>
-              {ITEM_LABELS[selectedItem] || 'Dashboards'}
-            </h1>
-          </OuiTitle>
-        </OuiFlexItem>
-      </OuiFlexGroup>
-      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-        <OuiToolTip content="Edit" position="bottom">
-          <OuiButtonIcon
-            iconType="pencil"
-            aria-label="Edit"
-            size="s"
-            color="text"
-          />
-        </OuiToolTip>
-        <div style={{ width: 1, height: 16, backgroundColor: '#D3DAE6' }} />
-        <OuiToolTip content="Share" position="bottom">
-          <OuiButtonIcon
-            iconType="share"
-            aria-label="Share"
-            size="s"
-            color="text"
-          />
-        </OuiToolTip>
-        <div style={{ width: 1, height: 16, backgroundColor: '#D3DAE6' }} />
-        <OuiToolTip content="Ask AI" position="bottom">
-          <OuiButtonIcon
-            iconType="generate"
-            aria-label="Ask AI"
-            size="s"
-            color="text"
-          />
-        </OuiToolTip>
+      <div
+        className="dashboardsPage__header"
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '20px 16px 20px 12px',
+        }}>
+        <OuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
+          <OuiFlexItem grow={false}>
+            <OuiTitle size="s">
+              <h1 style={{ margin: 0 }}>
+                {ITEM_LABELS[selectedItem] || 'Dashboards'}
+              </h1>
+            </OuiTitle>
+          </OuiFlexItem>
+        </OuiFlexGroup>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <OuiToolTip content="Edit" position="bottom">
+            <OuiButtonIcon
+              iconType="pencil"
+              aria-label="Edit"
+              size="s"
+              color="text"
+            />
+          </OuiToolTip>
+          <div className="detailPageHeader__ruleDivider" />
+          <OuiToolTip content="Share" position="bottom">
+            <OuiButtonIcon
+              iconType="share"
+              aria-label="Share"
+              size="s"
+              color="text"
+            />
+          </OuiToolTip>
+          <div className="detailPageHeader__ruleDivider" />
+          <div className="askAiPopover__anchor">
+            <OuiToolTip content="Ask AI" position="bottom">
+              <OuiButtonIcon
+                iconType="generate"
+                aria-label="Ask AI"
+                size="s"
+                color={isAskAiOpen ? 'primary' : 'text'}
+                onClick={() => setIsAskAiOpen(!isAskAiOpen)}
+              />
+            </OuiToolTip>
+            <AskAiPopover
+              isOpen={isAskAiOpen}
+              onClose={() => setIsAskAiOpen(false)}
+              onContinueAsThread={onContinueAsThread}
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <OuiText color="subdued" textAlign="center">
+          <p>Detail view will appear here.</p>
+        </OuiText>
       </div>
     </div>
-    <div
-      style={{
-        flex: 1,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-      <OuiText color="subdued" textAlign="center">
-        <p>Detail view will appear here.</p>
-      </OuiText>
-    </div>
-  </div>
-);
+  );
+};
