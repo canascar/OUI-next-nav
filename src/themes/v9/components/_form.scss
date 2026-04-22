@@ -9,6 +9,7 @@
   overflow: hidden;
 
   // Reset all inner elements to no radius — the group's overflow: hidden clips them
+  // sass-lint:disable no-important
   > .ouiFormControlLayout__prepend,
   > .ouiFormControlLayout__append,
   > *:first-child .ouiFormControlLayout__prepend,
@@ -17,8 +18,9 @@
   > .ouiButtonIcon,
   > .ouiFormLabel,
   > .ouiText {
-    border-radius: 0;
+    border-radius: 0 !important;
   }
+  // sass-lint:enable no-important
 
   &.ouiFormControlLayout--compressed {
     border-radius: $ouiFormControlCompressedBorderRadius;
@@ -45,6 +47,7 @@
 .ouiDatePopoverButton,
 .ouiSuperDatePicker__prettyFormat {
   background-color: $ouiFormBackgroundColor !important;
+  border-radius: 0 !important;
 }
 
 .ouiFormControlLayout:not(.ouiFormControlLayout--group) {
@@ -81,6 +84,17 @@
 .ouiDatePickerRange,
 .ouiDatePickerRange--inGroup {
   background-color: $ouiFormBackgroundColor !important;
+  border-radius: $ouiFormControlBorderRadius !important;
+  box-shadow: none !important;
+}
+
+// When inside a group, the range should have no radius (group handles it)
+// and background should match the group
+.ouiFormControlLayout--group .ouiDatePickerRange,
+.ouiFormControlLayout--group .ouiDatePickerRange--inGroup {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
 }
 // sass-lint:enable no-important
 
@@ -133,3 +147,14 @@
   background-color: lightOrDarkTheme(#F4F4F5, #3A4050) !important;
 }
 // sass-lint:enable no-important, no-color-literals
+
+// Fix inner element radius in super date picker grouped layout
+// sass-lint:disable no-important
+.ouiSuperDatePicker .ouiFormControlLayout--group,
+.ouiCompressedSuperDatePicker .ouiFormControlLayout--group {
+  > *,
+  > * > * {
+    border-radius: 0 !important;
+  }
+}
+// sass-lint:enable no-important

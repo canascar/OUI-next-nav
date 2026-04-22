@@ -643,6 +643,16 @@ export const ServicePage = () => {
             start={start}
             end={end}
             onTimeChange={onTimeChange}
+            showUpdateButton={false}
+          />
+        </OuiFlexItem>
+        <OuiFlexItem grow={false}>
+          <OuiButtonIcon
+            iconType="refresh"
+            aria-label="Refresh"
+            display="base"
+            color="primary"
+            size="s"
           />
         </OuiFlexItem>
       </OuiFlexGroup>
