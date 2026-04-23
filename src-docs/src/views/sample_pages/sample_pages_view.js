@@ -22,13 +22,24 @@ import { AssetsPage } from './assets_page';
 import { ApplicationMapPage } from './application_map_page';
 import { HomePage } from './home_page';
 import { WorkspacePage } from './workspace_page';
+import { SettingsPage } from './settings_page';
 import { OuiErrorBoundary } from '../../../../src/components';
+
+import { AskAiPopover } from './ask_ai_popover';
+import {
+  ALL_DRAGGABLE_ITEMS,
+  loadLayout,
+  saveLayout,
+  loadNavAppearance,
+  saveNavAppearance,
+} from './nav_layout_utils';
 
 const renderPage = (
   activePage,
   selectedItem,
   onContinueAsThread,
-  pendingThread
+  pendingThread,
+  navProps
 ) => {
   switch (activePage) {
     case 'home':
@@ -107,6 +118,18 @@ const renderPage = (
           <WorkspacePage onContinueAsThread={onContinueAsThread} />
         </OuiErrorBoundary>
       );
+    case 'settings':
+      return (
+        <OuiErrorBoundary>
+          <SettingsPage
+            mainItems={navProps.mainItems}
+            overflowItems={navProps.overflowItems}
+            onLayoutChange={navProps.onLayoutChange}
+            navAppearance={navProps.navAppearance}
+            onNavAppearanceChange={navProps.onNavAppearanceChange}
+          />
+        </OuiErrorBoundary>
+      );
     case 'service':
     default:
       return (
@@ -122,9 +145,34 @@ export const SamplePagesView = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [pendingThread, setPendingThread] = useState(null); // { key, messages }
   const [expandAnim, setExpandAnim] = useState(null); // { fromRect, prompt, response }
+  const [isNavAskAiOpen, setIsNavAskAiOpen] = useState(false);
+  const [navAskAiInitialPrompt, setNavAskAiInitialPrompt] = useState('');
   const createThreadRef = useRef(null);
   const contentRef = useRef(null);
   const animTimerRef = useRef(null);
+
+  // Lifted nav layout state
+  const [mainItems, setMainItems] = useState([]);
+  const [overflowItems, setOverflowItems] = useState([]);
+  const [navAppearance, setNavAppearance] = useState('icon-text');
+
+  useEffect(() => {
+    const layout = loadLayout(ALL_DRAGGABLE_ITEMS);
+    setMainItems(layout.mainKeys);
+    setOverflowItems(layout.overflowKeys);
+    setNavAppearance(loadNavAppearance());
+  }, []);
+
+  const handleLayoutChange = useCallback((newMain, newOverflow) => {
+    setMainItems(newMain);
+    setOverflowItems(newOverflow);
+    saveLayout(newMain, newOverflow);
+  }, []);
+
+  const handleNavAppearanceChange = useCallback((mode) => {
+    setNavAppearance(mode);
+    saveNavAppearance(mode);
+  }, []);
 
   const DEFAULT_ITEMS = {
     service: 'services',
@@ -140,6 +188,11 @@ export const SamplePagesView = () => {
     setActivePage(page);
     setSelectedItem(DEFAULT_ITEMS[page] || null);
   };
+
+  const handleNavAskAi = useCallback((text) => {
+    setNavAskAiInitialPrompt(text || '');
+    setIsNavAskAiOpen(true);
+  }, []);
 
   // Clean up animation timer on unmount
   useEffect(() => {
@@ -237,6 +290,11 @@ export const SamplePagesView = () => {
         onLogoClick={() => handlePageChange('home')}
         createThreadRef={createThreadRef}
         onContinueAsThread={handleContinueAsThread}
+        onAskAi={handleNavAskAi}
+        mainItems={mainItems}
+        overflowItems={overflowItems}
+        onLayoutChange={handleLayoutChange}
+        navAppearance={navAppearance}
       />
       <div
         ref={contentRef}
@@ -248,10 +306,32 @@ export const SamplePagesView = () => {
           activePage,
           selectedItem,
           handleContinueAsThread,
-          pendingThread
+          pendingThread,
+          {
+            mainItems,
+            overflowItems,
+            onLayoutChange: handleLayoutChange,
+            navAppearance,
+            onNavAppearanceChange: handleNavAppearanceChange,
+          }
         )}
       </div>
       {renderExpandOverlay()}
+
+      {/* Ask AI popover triggered from search */}
+      {isNavAskAiOpen && (
+        <div className="navAskAiPopover__anchor">
+          <AskAiPopover
+            isOpen={isNavAskAiOpen}
+            onClose={() => {
+              setIsNavAskAiOpen(false);
+              setNavAskAiInitialPrompt('');
+            }}
+            onContinueAsThread={handleContinueAsThread}
+            initialPrompt={navAskAiInitialPrompt}
+          />
+        </div>
+      )}
     </div>
   );
 };

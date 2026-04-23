@@ -32,8 +32,6 @@ import {
   OuiProgress,
   OuiToolTip,
   OuiButtonIcon,
-  OuiTab,
-  OuiTabs,
 } from '../../../../src/components';
 
 import { AskAiPopover } from './ask_ai_popover';
@@ -647,7 +645,7 @@ export const ServicePage = ({ onContinueAsThread }) => {
           </h1>
         </OuiTitle>
         <div style={{ flexGrow: 1 }} />
-        <div style={{ maxWidth: 280, flexShrink: 0 }}>
+        <div style={{ maxWidth: 320, flexShrink: 0 }}>
           <OuiCompressedSuperDatePicker
             start={start}
             end={end}
@@ -702,18 +700,18 @@ export const ServicePage = ({ onContinueAsThread }) => {
       {/* Tab bar */}
       <div className="servicePage__tabBar">
         <div className="servicePage__tabBarLeft">
-          <OuiTabs size="s" display="condensed">
-            <OuiTab
-              isSelected={activeTab === 'services'}
-              onClick={() => setActiveTab('services')}>
-              Services
-            </OuiTab>
-            <OuiTab
-              isSelected={activeTab === 'application-map'}
-              onClick={() => setActiveTab('application-map')}>
-              Application map
-            </OuiTab>
-          </OuiTabs>
+          <OuiButtonGroup
+            legend="APM view toggle"
+            options={[
+              { id: 'services', label: 'Services' },
+              { id: 'application-map', label: 'Application map' },
+            ]}
+            idSelected={activeTab}
+            onChange={(id) => setActiveTab(id)}
+            buttonSize="compressed"
+            isFullWidth
+            style={{ width: 320 }}
+          />
         </div>
         <div className="servicePage__tabActions">
           <OuiButtonEmpty size="s" iconType="popout" iconSide="right">

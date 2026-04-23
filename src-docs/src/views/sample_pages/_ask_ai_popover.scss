@@ -47,10 +47,19 @@
   cursor: grab;
   user-select: none;
   flex-shrink: 0;
+  position: relative;
 
   &:active {
     cursor: grabbing;
   }
+}
+
+.askAiPopover__grabIcon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
 }
 
 .askAiPopover__headerLeft {
@@ -109,6 +118,7 @@
 
 .askAiPopover__feedback {
   display: flex;
+  align-items: center;
   gap: 4px;
   margin-top: 4px;
 }
@@ -183,4 +193,19 @@
   flex-direction: column;
   gap: 12px;
   max-width: 600px;
+}
+
+// Nav-triggered Ask AI popover — positioned like the search popover
+.navAskAiPopover__anchor {
+  position: fixed;
+  top: 68px;
+  left: 80px;
+  z-index: 9999;
+
+  .askAiPopover {
+    position: relative;
+    top: 0;
+    right: auto;
+    left: 0;
+  }
 }

@@ -27,7 +27,12 @@ const MOCK_AI_RESPONSES = [
   'Here is a quick health check: cart is healthy at 4ms latency, checkout is degraded with 12.3% error rate, and payment-service is unhealthy with 67% connection timeouts. The payment-service is the bottleneck.',
 ];
 
-export const AskAiPopover = ({ isOpen, onClose, onContinueAsThread }) => {
+export const AskAiPopover = ({
+  isOpen,
+  onClose,
+  onContinueAsThread,
+  initialPrompt,
+}) => {
   const [message, setMessage] = useState('');
   const [conversation, setConversation] = useState(null); // { prompt, response }
   const [isStreaming, setIsStreaming] = useState(false);
@@ -61,6 +66,35 @@ export const AskAiPopover = ({ isOpen, onClose, onContinueAsThread }) => {
       streamTimers.current = [];
     }
   }, [isOpen]);
+
+  // Pre-fill message from initialPrompt and auto-send
+  useEffect(() => {
+    if (isOpen && initialPrompt) {
+      const text = initialPrompt.trim();
+      if (!text) return;
+
+      const idx = responseIdx.current % MOCK_AI_RESPONSES.length;
+      responseIdx.current += 1;
+      const fullResponse = MOCK_AI_RESPONSES[idx];
+
+      setConversation({ prompt: text, response: '' });
+      setMessage('');
+      setIsStreaming(true);
+
+      const words = fullResponse.split(/(\s+)/);
+      let built = '';
+      words.forEach((word, i) => {
+        const timer = setTimeout(() => {
+          built += word;
+          setConversation({ prompt: text, response: built });
+          if (i === words.length - 1) {
+            setIsStreaming(false);
+          }
+        }, i * 25);
+        streamTimers.current.push(timer);
+      });
+    }
+  }, [isOpen, initialPrompt]);
 
   // Drag handlers for the popover header
   const handleDragStart = useCallback((e) => {
@@ -154,28 +188,15 @@ export const AskAiPopover = ({ isOpen, onClose, onContinueAsThread }) => {
         onMouseDown={handleDragStart}
         role="banner">
         <div className="askAiPopover__headerLeft">
-          <OuiIcon type="generate" size="m" />
           <span className="askAiPopover__title">Ask AI</span>
         </div>
+        <OuiIcon
+          className="askAiPopover__grabIcon"
+          type="grab"
+          size="m"
+          color="subdued"
+        />
         <div className="askAiPopover__headerRight">
-          {conversation && conversation.response && !isStreaming && (
-            <OuiButtonEmpty
-              iconType="navTicketing"
-              size="xs"
-              onClick={() => {
-                if (onContinueAsThread && popoverRef.current) {
-                  const rect = popoverRef.current.getBoundingClientRect();
-                  onContinueAsThread(
-                    conversation.prompt,
-                    conversation.response,
-                    rect
-                  );
-                }
-                onClose();
-              }}>
-              Continue as thread
-            </OuiButtonEmpty>
-          )}
           <OuiButtonIcon
             iconType="cross"
             aria-label="Close"
@@ -215,6 +236,21 @@ export const AskAiPopover = ({ isOpen, onClose, onContinueAsThread }) => {
                     size="xs"
                     color="text"
                   />
+                  <OuiButtonEmpty
+                    size="xs"
+                    onClick={() => {
+                      if (onContinueAsThread && popoverRef.current) {
+                        const rect = popoverRef.current.getBoundingClientRect();
+                        onContinueAsThread(
+                          conversation.prompt,
+                          conversation.response,
+                          rect
+                        );
+                      }
+                      onClose();
+                    }}>
+                    Continue as thread
+                  </OuiButtonEmpty>
                 </div>
               )}
             </div>

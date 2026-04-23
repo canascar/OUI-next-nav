@@ -13,10 +13,10 @@
 
 .searchPopover {
   position: absolute;
-  top: 8px;
+  top: 68px;
   left: 80px;
   width: 380px;
-  max-height: 520px;
+  max-height: 480px;
   background-color: $ouiColorEmptyShade;
   border: 1px solid $ouiBorderColor;
   border-radius: $ouiBorderRadius;
@@ -25,42 +25,6 @@
   flex-direction: column;
   z-index: 9999;
   overflow: hidden;
-
-  &--dragged {
-    position: fixed;
-  }
-}
-
-.searchPopover__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 8px 8px 12px;
-  border-bottom: 1px solid $ouiBorderColor;
-  cursor: grab;
-  user-select: none;
-  flex-shrink: 0;
-
-  &:active {
-    cursor: grabbing;
-  }
-}
-
-.searchPopover__headerLeft {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.searchPopover__headerRight {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.searchPopover__title {
-  font-size: $ouiFontSizeS;
-  font-weight: 600;
 }
 
 .searchPopover__input {
@@ -71,22 +35,24 @@
 .searchPopover__inputWrapper {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 
-  .ouiButtonIcon {
-    flex-shrink: 0;
+  .ouiFormControlLayout {
+    flex: 1;
   }
+}
+
+.searchPopover__askAiButton {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .searchPopover__body {
   flex: 1;
   overflow-y: auto;
-  min-height: 80px;
+  min-height: 40px;
   max-height: 400px;
-
-  &--conversation {
-    padding: 12px;
-  }
+  border-top: 1px solid $ouiBorderColor;
 }
 
 .searchPopover__empty {

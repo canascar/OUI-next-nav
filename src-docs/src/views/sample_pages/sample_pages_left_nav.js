@@ -29,18 +29,12 @@ import {
   OuiTitle,
   OuiButtonEmpty,
   OuiPopover,
-  OuiCheckbox,
   OuiTabs,
   OuiTab,
 } from '../../../../src/components';
 
 import { ThemeContext } from '../../components/with_theme';
-import {
-  loadLayout,
-  saveLayout,
-  ALL_DRAGGABLE_ITEMS,
-  FIXED_KEYS,
-} from './nav_layout_utils';
+import { ALL_DRAGGABLE_ITEMS } from './nav_layout_utils';
 import { SearchPopover } from './search_popover';
 
 const NAV_ITEMS = [
@@ -561,7 +555,7 @@ const WorkspacePanelContent = ({ onItemSelect, selectedItem }) => {
 const MorePanelContent = ({
   onPageChange,
   onNavigateToPage,
-  onEnterCustomize,
+  onGoToSettings,
   overflowItems = [],
 }) => {
   const items = overflowItems
@@ -599,7 +593,7 @@ const MorePanelContent = ({
           size="s"
           flush="both"
           style={{ width: '100%' }}
-          onClick={onEnterCustomize}>
+          onClick={onGoToSettings}>
           Customize navigation bar
         </OuiButtonEmpty>
       </div>
@@ -624,7 +618,12 @@ export const SamplePagesLeftNav = ({
   selectedItem,
   onLogoClick,
   createThreadRef,
-  onContinueAsThread,
+  _onContinueAsThread,
+  onAskAi,
+  mainItems,
+  overflowItems,
+  _onLayoutChange,
+  navAppearance,
 }) => {
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
@@ -633,10 +632,6 @@ export const SamplePagesLeftNav = ({
   const [isCollapsing, setIsCollapsing] = useState(false);
   const [appsPopoverOpen, setAppsPopoverOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isCustomizing, setIsCustomizing] = useState(false);
-  const [mainItems, setMainItems] = useState([]);
-  const [overflowItems, setOverflowItems] = useState([]);
-  const [checkedKeys, setCheckedKeys] = useState(new Set());
   const hoverTimeoutRef = useRef(null);
   const navItemRefs = useRef({});
   const [threads, setThreads] = useState(DEFAULT_THREADS);
@@ -660,12 +655,6 @@ export const SamplePagesLeftNav = ({
       createThreadRef.current = handleCreateThread;
     }
   }, [createThreadRef, handleCreateThread]);
-
-  useEffect(() => {
-    const layout = loadLayout(ALL_DRAGGABLE_ITEMS);
-    setMainItems(layout.mainKeys);
-    setOverflowItems(layout.overflowKeys);
-  }, []);
 
   const renderedNavItems = useMemo(() => {
     const fixedItems = NAV_ITEMS.filter(
@@ -695,21 +684,10 @@ export const SamplePagesLeftNav = ({
     }, 200);
   }, []);
 
-  const handleDoneCustomize = useCallback(() => {
-    const allKeys = ALL_DRAGGABLE_ITEMS.map((item) => item.key);
-    const newMainKeys = allKeys.filter((k) => checkedKeys.has(k));
-    const newOverflowKeys = allKeys.filter((k) => !checkedKeys.has(k));
-    saveLayout(newMainKeys, newOverflowKeys);
-    setMainItems(newMainKeys);
-    setOverflowItems(newOverflowKeys);
-    setIsCustomizing(false);
-  }, [checkedKeys]);
-
-  const handleEnterCustomize = useCallback(() => {
-    setIsCustomizing(true);
-    setCheckedKeys(new Set(mainItems));
+  const handleGoToSettings = useCallback(() => {
     collapsePanel();
-  }, [mainItems, collapsePanel]);
+    onPageChange('settings');
+  }, [collapsePanel, onPageChange]);
 
   const toggleTheme = () => {
     themeContext.changeTheme(isDark ? 'v9-light' : 'v9-dark');
@@ -820,7 +798,7 @@ export const SamplePagesLeftNav = ({
       <nav
         aria-label="Sample pages navigation"
         className={`samplePagesLeftNav${
-          isCustomizing ? ' samplePagesLeftNav--customizing' : ''
+          navAppearance === 'icon-only' ? ' samplePagesLeftNav--iconOnly' : ''
         }`}>
         {/* Logo */}
         <div className="samplePagesLeftNav__header">
@@ -838,89 +816,33 @@ export const SamplePagesLeftNav = ({
 
         {/* Nav items */}
         <div className="samplePagesLeftNav__items">
-          {isCustomizing ? (
-            <>
-              {/* Fixed items without checkboxes */}
-              {NAV_ITEMS.filter((item) => FIXED_KEYS.includes(item.key)).map(
-                (item) => (
-                  <div
-                    key={item.key}
-                    className="samplePagesLeftNav__navItem samplePagesLeftNav__navItem--fixed">
-                    <div className="samplePagesLeftNav__navIcon">
-                      <OuiIcon type={item.icon} size="m" />
-                    </div>
-                    <span className="samplePagesLeftNav__navLabel">
-                      {item.label}
-                    </span>
-                  </div>
-                )
-              )}
-              {/* Draggable items with checkboxes */}
-              {ALL_DRAGGABLE_ITEMS.map((item) => (
-                <div
-                  key={item.key}
-                  className="samplePagesLeftNav__navItem samplePagesLeftNav__navItem--customizable">
-                  <div className="samplePagesLeftNav__navIcon">
-                    <OuiIcon type={item.icon} size="m" />
-                  </div>
-                  <span className="samplePagesLeftNav__navLabel">
-                    {item.label}
-                  </span>
-                  <OuiCheckbox
-                    id={`customize-checkbox-${item.key}`}
-                    className="samplePagesLeftNav__customizeCheckbox"
-                    checked={checkedKeys.has(item.key)}
-                    onChange={() => {
-                      setCheckedKeys((prev) => {
-                        const next = new Set(prev);
-                        if (next.has(item.key)) {
-                          next.delete(item.key);
-                        } else {
-                          next.add(item.key);
-                        }
-                        return next;
-                      });
-                    }}
-                    aria-label={item.label}
-                  />
+          {renderedNavItems.map((item) => {
+            const isActive =
+              !item.isAction &&
+              (activePage === item.key || expandedTab === item.key);
+            return (
+              <button
+                key={item.key}
+                ref={(el) => {
+                  navItemRefs.current[item.key] = el;
+                }}
+                type="button"
+                className={`samplePagesLeftNav__navItem${
+                  isActive ? ' samplePagesLeftNav__navItem--active' : ''
+                }`}
+                aria-current={isActive ? 'page' : undefined}
+                onClick={() => handleNavClick(item)}
+                onMouseEnter={() => handleNavMouseEnter(item)}
+                onMouseLeave={handleNavMouseLeave}>
+                <div className="samplePagesLeftNav__navIcon">
+                  <OuiIcon type={item.icon} size="m" />
                 </div>
-              ))}
-              {/* Done button */}
-              <div className="samplePagesLeftNav__doneButton">
-                <OuiButtonEmpty size="s" onClick={handleDoneCustomize}>
-                  Done
-                </OuiButtonEmpty>
-              </div>
-            </>
-          ) : (
-            renderedNavItems.map((item) => {
-              const isActive =
-                !item.isAction &&
-                (activePage === item.key || expandedTab === item.key);
-              return (
-                <button
-                  key={item.key}
-                  ref={(el) => {
-                    navItemRefs.current[item.key] = el;
-                  }}
-                  type="button"
-                  className={`samplePagesLeftNav__navItem${
-                    isActive ? ' samplePagesLeftNav__navItem--active' : ''
-                  }`}
-                  aria-current={isActive ? 'page' : undefined}
-                  onClick={() => handleNavClick(item)}
-                  onMouseEnter={() => handleNavMouseEnter(item)}
-                  onMouseLeave={handleNavMouseLeave}>
-                  <div className="samplePagesLeftNav__navIcon">
-                    <OuiIcon type={item.icon} size="m" />
-                  </div>
-                  <span className="samplePagesLeftNav__navLabel">
-                    {item.label}
-                  </span>
-                </button>
-              );
-            })
-          )}
+                <span className="samplePagesLeftNav__navLabel">
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Footer */}
@@ -979,7 +901,11 @@ export const SamplePagesLeftNav = ({
                   iconType="gear"
                   label="Settings"
                   size="s"
-                  onClick={() => {}}
+                  onClick={() => {
+                    setAppsPopoverOpen(false);
+                    collapsePanel();
+                    onPageChange('settings');
+                  }}
                 />
                 <OuiListGroupItem
                   iconType="keyboardShortcut"
@@ -1044,7 +970,7 @@ export const SamplePagesLeftNav = ({
               onPageChange={onPageChange}
               onItemSelect={onItemSelect}
               selectedItem={selectedItem}
-              onEnterCustomize={handleEnterCustomize}
+              onGoToSettings={handleGoToSettings}
               overflowItems={overflowItems}
               threads={expandedTab === 'thread' ? threads : undefined}
               onNavigateToPage={(page) => {
@@ -1080,14 +1006,11 @@ export const SamplePagesLeftNav = ({
             onItemSelect={(item) => {
               const tabKey = hoveredTab;
               setHoveredTab(null);
-              // Switch expanded panel to the hovered tab's section
-              setIsCollapsing(false);
-              setExpandedTab(tabKey);
               onPageChange(tabKey);
               onItemSelect(item);
             }}
             selectedItem={selectedItem}
-            onEnterCustomize={handleEnterCustomize}
+            onGoToSettings={handleGoToSettings}
             overflowItems={overflowItems}
             threads={threads}
             onNavigateToPage={(page) => {
@@ -1109,7 +1032,7 @@ export const SamplePagesLeftNav = ({
           onPageChange(page);
           onItemSelect(itemKey);
         }}
-        onContinueAsThread={onContinueAsThread}
+        onAskAi={onAskAi}
       />
     </div>
   );

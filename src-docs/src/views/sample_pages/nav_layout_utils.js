@@ -188,3 +188,22 @@ export function validateLayout(stored, allDraggableItems) {
 
   return { mainKeys, overflowKeys };
 }
+
+export const NAV_APPEARANCE_KEY = 'samplePagesNavAppearance';
+
+export function loadNavAppearance() {
+  try {
+    const val = localStorage.getItem(NAV_APPEARANCE_KEY);
+    return val === 'icon-only' ? 'icon-only' : 'icon-text';
+  } catch (e) {
+    return 'icon-text';
+  }
+}
+
+export function saveNavAppearance(mode) {
+  try {
+    localStorage.setItem(NAV_APPEARANCE_KEY, mode);
+  } catch (e) {
+    // Silently fail
+  }
+}

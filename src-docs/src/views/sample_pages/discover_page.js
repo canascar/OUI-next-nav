@@ -576,7 +576,7 @@ export const DiscoverPage = ({ selectedItem, onContinueAsThread }) => {
           <h1 style={{ margin: 0, whiteSpace: 'nowrap' }}>{queryDef.title}</h1>
         </OuiTitle>
         <div style={{ flexGrow: 1 }} />
-        <div style={{ maxWidth: 280, flexShrink: 0 }}>
+        <div style={{ maxWidth: 320, flexShrink: 0 }}>
           <OuiCompressedSuperDatePicker
             start={start}
             end={end}

@@ -336,6 +336,7 @@ body {
 @import '../views/sample_pages/ask_ai_popover';
 @import '../views/sample_pages/search_popover';
 @import '../views/sample_pages/workspace_page';
+@import '../views/sample_pages/settings_page';
 
 @include ouiBreakpoint('xs', 's') {
   .guideSideNav {

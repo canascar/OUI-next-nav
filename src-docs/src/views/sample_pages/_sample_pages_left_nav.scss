@@ -252,48 +252,6 @@
   }
 }
 
-// Customize mode — wider nav with transition
-.samplePagesLeftNav--customizing {
-  width: 96px;
-  min-width: 96px;
-}
-
-// Customize mode items — vertical layout with icon, label, checkbox
-.samplePagesLeftNav__navItem--customizable,
-.samplePagesLeftNav__navItem--fixed {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  width: 72px;
-  position: relative;
-}
-
-// Fixed items — slightly muted appearance
-.samplePagesLeftNav__navItem--fixed {
-  opacity: 0.6;
-}
-
-// Checkbox positioning — to the right of the item
-.samplePagesLeftNav__customizeCheckbox {
-  position: absolute;
-  right: 0;
-  top: 4px;
-
-  // Hide the label since we use aria-label
-  .ouiCheckbox__label {
-    display: none;
-  }
-}
-
-// Done button at the bottom of the items area
-.samplePagesLeftNav__doneButton {
-  margin-top: auto;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
 // Tabs inside expanded panel
 .samplePagesLeftNav__panelTabs {
   padding: 0 12px 8px;
@@ -301,5 +259,35 @@
 
   .ouiTabs {
     overflow-x: auto;
+  }
+}
+
+// Icon-only mode — narrower nav, hide labels
+.samplePagesLeftNav--iconOnly {
+  width: 48px;
+  min-width: 48px;
+
+  .samplePagesLeftNav__header {
+    padding: 20px 8px 0;
+  }
+
+  .samplePagesLeftNav__items {
+    padding: 20px 8px;
+    gap: 16px;
+  }
+
+  .samplePagesLeftNav__navItem {
+    width: 32px;
+    height: 32px;
+    gap: 0;
+  }
+
+  .samplePagesLeftNav__navLabel {
+    display: none;
+  }
+
+  .samplePagesLeftNav__footer {
+    padding-bottom: 12px;
+    gap: 12px;
   }
 }

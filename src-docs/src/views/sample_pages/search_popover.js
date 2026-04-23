@@ -19,22 +19,12 @@ import React, {
 
 import {
   OuiButtonEmpty,
-  OuiButtonIcon,
   OuiCompressedFieldText,
   OuiHorizontalRule,
-  OuiIcon,
   OuiListGroup,
   OuiListGroupItem,
   OuiText,
 } from '../../../../src/components';
-
-// Mock AI responses (same pool as Ask AI popover)
-const MOCK_AI_RESPONSES = [
-  'I looked into this and found a few things worth noting. The service metrics show a gradual increase in P99 latency over the past 6 hours. Error rates remain within acceptable thresholds but are trending upward. I recommend checking the downstream dependency health and reviewing recent config changes.',
-  'Based on the available data, the connection pool utilization is at 87%, approaching the configured limit. Garbage collection pauses have increased by 40% compared to last week. Consider scaling horizontally or increasing the connection pool ceiling.',
-  'The spike aligns with a traffic surge from the EU region starting at 14:32 UTC. Cache hit ratio dropped from 94% to 61% during the same window. The system should stabilize once the cache warms back up.',
-  'Here is a quick health check: cart is healthy at 4ms latency, checkout is degraded with 12.3% error rate, and payment-service is unhealthy with 67% connection timeouts. The payment-service is the bottleneck.',
-];
 
 // All searchable items grouped by section, matching the left nav panel data
 const SEARCH_SECTIONS = [
@@ -294,44 +284,15 @@ SEARCH_SECTIONS.forEach(({ page, items }) => {
   });
 });
 
-export const SearchPopover = ({
-  isOpen,
-  onClose,
-  onNavigate,
-  onContinueAsThread,
-}) => {
+export const SearchPopover = ({ isOpen, onClose, onNavigate, onAskAi }) => {
   const [query, setQuery] = useState('');
-  const [conversation, setConversation] = useState(null); // { prompt, response }
-  const [isStreaming, setIsStreaming] = useState(false);
-  const responseIdx = useRef(0);
-  const streamTimers = useRef([]);
   const popoverRef = useRef(null);
   const inputRef = useRef(null);
-  const dragState = useRef({
-    isDragging: false,
-    startX: 0,
-    startY: 0,
-    origX: 0,
-    origY: 0,
-  });
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [hasBeenDragged, setHasBeenDragged] = useState(false);
-
-  // Clean up stream timers on unmount
-  useEffect(() => {
-    return () => streamTimers.current.forEach(clearTimeout);
-  }, []);
 
   // Reset state when popover closes
   useEffect(() => {
     if (!isOpen) {
       setQuery('');
-      setConversation(null);
-      setIsStreaming(false);
-      setHasBeenDragged(false);
-      setPosition({ x: 0, y: 0 });
-      streamTimers.current.forEach(clearTimeout);
-      streamTimers.current = [];
     }
   }, [isOpen]);
 
@@ -342,81 +303,23 @@ export const SearchPopover = ({
     }
   }, [isOpen]);
 
-  // Drag handlers (same pattern as Ask AI popover)
-  const handleDragStart = useCallback((e) => {
-    if (!popoverRef.current) return;
-    e.preventDefault();
-    const rect = popoverRef.current.getBoundingClientRect();
-    dragState.current = {
-      isDragging: true,
-      startX: e.clientX,
-      startY: e.clientY,
-      origX: rect.left,
-      origY: rect.top,
-    };
-    document.body.style.userSelect = 'none';
-  }, []);
-
+  // Click-outside to dismiss
   useEffect(() => {
-    const handleDragMove = (e) => {
-      if (!dragState.current.isDragging) return;
-      const dx = e.clientX - dragState.current.startX;
-      const dy = e.clientY - dragState.current.startY;
-      setPosition({
-        x: dragState.current.origX + dx,
-        y: dragState.current.origY + dy,
-      });
-      setHasBeenDragged(true);
+    if (!isOpen) return;
+    const handleClickOutside = (e) => {
+      if (popoverRef.current && !popoverRef.current.contains(e.target)) {
+        onClose();
+      }
     };
-    const handleDragEnd = () => {
-      dragState.current.isDragging = false;
-      document.body.style.userSelect = '';
-    };
-    window.addEventListener('mousemove', handleDragMove);
-    window.addEventListener('mouseup', handleDragEnd);
-    return () => {
-      window.removeEventListener('mousemove', handleDragMove);
-      window.removeEventListener('mouseup', handleDragEnd);
-    };
-  }, []);
+    // Use mousedown so it fires before any focus changes
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen, onClose]);
 
-  const handleSend = () => {
-    const text = query.trim();
-    if (!text || isStreaming) return;
-
-    const idx = responseIdx.current % MOCK_AI_RESPONSES.length;
-    responseIdx.current += 1;
-    const fullResponse = MOCK_AI_RESPONSES[idx];
-
-    setConversation({ prompt: text, response: '' });
-    setQuery('');
-    setIsStreaming(true);
-
-    const words = fullResponse.split(/(\s+)/);
-    let built = '';
-    words.forEach((word, i) => {
-      const timer = setTimeout(() => {
-        built += word;
-        setConversation({ prompt: text, response: built });
-        if (i === words.length - 1) {
-          setIsStreaming(false);
-        }
-      }, i * 25);
-      streamTimers.current.push(timer);
-    });
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey && query.trim()) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
-  // Filter items by query (only when not in conversation mode)
+  // Filter items by query
   const filteredSections = useMemo(() => {
     const q = query.toLowerCase().trim();
-    if (!q) return SEARCH_SECTIONS;
+    if (!q) return [];
     return SEARCH_SECTIONS.map((section) => ({
       ...section,
       items: section.items.filter(
@@ -428,194 +331,108 @@ export const SearchPopover = ({
     })).filter((section) => section.items.length > 0);
   }, [query]);
 
-  const handleItemClick = (itemKey) => {
-    const page = ITEM_TO_PAGE[itemKey];
-    if (page && onNavigate) {
-      onNavigate(page, itemKey);
-    }
+  const handleItemClick = useCallback(
+    (itemKey) => {
+      const page = ITEM_TO_PAGE[itemKey];
+      if (page && onNavigate) {
+        onNavigate(page, itemKey);
+      }
+      onClose();
+    },
+    [onNavigate, onClose]
+  );
+
+  const handleAskAi = useCallback(() => {
+    const text = query.trim();
     onClose();
+    if (onAskAi) {
+      onAskAi(text);
+    }
+  }, [query, onClose, onAskAi]);
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      onClose();
+    }
   };
 
   if (!isOpen) return null;
 
-  const popoverStyle = hasBeenDragged
-    ? { position: 'fixed', left: position.x, top: position.y, zIndex: 10000 }
-    : {};
+  const hasQuery = query.trim().length > 0;
+  const hasResults = filteredSections.length > 0;
 
   return (
-    <div
-      ref={popoverRef}
-      className={`searchPopover${
-        hasBeenDragged ? ' searchPopover--dragged' : ''
-      }`}
-      style={popoverStyle}>
-      {/* Draggable header */}
-      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
-      <div
-        className="searchPopover__header"
-        onMouseDown={handleDragStart}
-        role="banner">
-        <div className="searchPopover__headerLeft">
-          <OuiIcon type={conversation ? 'generate' : 'search'} size="m" />
-          <span className="searchPopover__title">
-            {conversation ? 'Ask AI' : 'Search'}
-          </span>
-        </div>
-        <div className="searchPopover__headerRight">
-          {conversation && conversation.response && !isStreaming && (
+    <div ref={popoverRef} className="searchPopover">
+      {/* Search input */}
+      <div className="searchPopover__input">
+        <div className="searchPopover__inputWrapper">
+          <OuiCompressedFieldText
+            inputRef={inputRef}
+            placeholder="Search..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
+            fullWidth
+          />
+          {hasQuery && (
             <OuiButtonEmpty
-              iconType="navTicketing"
-              size="xs"
-              onClick={() => {
-                if (onContinueAsThread && popoverRef.current) {
-                  const rect = popoverRef.current.getBoundingClientRect();
-                  onContinueAsThread(
-                    conversation.prompt,
-                    conversation.response,
-                    rect
-                  );
-                }
-                onClose();
-              }}>
-              Continue as thread
+              className="searchPopover__askAiButton"
+              size="s"
+              iconType="generate"
+              onClick={handleAskAi}>
+              Ask AI
             </OuiButtonEmpty>
           )}
-          <OuiButtonIcon
-            iconType="cross"
-            aria-label="Close"
-            size="xs"
-            color="text"
-            onClick={onClose}
-          />
         </div>
       </div>
 
-      {/* Search mode: input on top, then results */}
-      {!conversation && (
-        <>
-          <div className="searchPopover__input">
-            <div className="searchPopover__inputWrapper">
-              <OuiCompressedFieldText
-                inputRef={inputRef}
-                placeholder="Search items..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={handleKeyDown}
-                fullWidth
-              />
-              {query.trim() && (
-                <OuiButtonIcon
-                  iconType="generate"
-                  aria-label="Send message"
-                  display="empty"
-                  size="s"
-                  onClick={handleSend}
-                />
-              )}
+      {/* Results — only show when typing */}
+      {hasQuery && (
+        <div className="searchPopover__body">
+          {!hasResults ? (
+            <div className="searchPopover__empty">
+              <OuiText size="s" color="subdued">
+                <p>No results found</p>
+              </OuiText>
             </div>
-          </div>
-          <div className="searchPopover__body">
-            {filteredSections.length === 0 ? (
-              <div className="searchPopover__empty">
-                <OuiText size="s" color="subdued">
-                  <p>No results found</p>
-                </OuiText>
-              </div>
-            ) : (
-              filteredSections.map((section) => (
-                <div key={section.section} className="searchPopover__section">
-                  <div className="searchPopover__sectionTitle">
-                    <OuiText size="xs" color="subdued">
-                      <strong>{section.section}</strong>
-                    </OuiText>
-                  </div>
-                  <OuiListGroup gutterSize="none">
-                    {section.items.map((item, index) => (
-                      <React.Fragment key={item.key}>
-                        {index > 0 && (
-                          <div className="searchPopover__ruleDivider">
-                            <OuiHorizontalRule margin="none" />
-                          </div>
-                        )}
-                        <OuiListGroupItem
-                          label={
-                            <div>
-                              <OuiText size="s">
-                                <strong>{item.label}</strong>
-                              </OuiText>
-                              {item.subtitle && (
-                                <OuiText size="xs" color="subdued">
-                                  {item.subtitle}
-                                </OuiText>
-                              )}
-                            </div>
-                          }
-                          onClick={() => handleItemClick(item.key)}
-                        />
-                      </React.Fragment>
-                    ))}
-                  </OuiListGroup>
+          ) : (
+            filteredSections.map((section) => (
+              <div key={section.section} className="searchPopover__section">
+                <div className="searchPopover__sectionTitle">
+                  <OuiText size="xs" color="subdued">
+                    <strong>{section.section}</strong>
+                  </OuiText>
                 </div>
-              ))
-            )}
-          </div>
-        </>
-      )}
-
-      {/* Conversation mode: body on top with padding, input at bottom */}
-      {conversation && (
-        <>
-          <div className="searchPopover__body searchPopover__body--conversation">
-            <div className="askAiPopover__messages">
-              <div className="askAiPopover__msg askAiPopover__msg--user">
-                <OuiText size="s">
-                  <p>{conversation.prompt}</p>
-                </OuiText>
+                <OuiListGroup gutterSize="none">
+                  {section.items.map((item, index) => (
+                    <React.Fragment key={item.key}>
+                      {index > 0 && (
+                        <div className="searchPopover__ruleDivider">
+                          <OuiHorizontalRule margin="none" />
+                        </div>
+                      )}
+                      <OuiListGroupItem
+                        label={
+                          <div>
+                            <OuiText size="s">
+                              <strong>{item.label}</strong>
+                            </OuiText>
+                            {item.subtitle && (
+                              <OuiText size="xs" color="subdued">
+                                {item.subtitle}
+                              </OuiText>
+                            )}
+                          </div>
+                        }
+                        onClick={() => handleItemClick(item.key)}
+                      />
+                    </React.Fragment>
+                  ))}
+                </OuiListGroup>
               </div>
-              <div className="askAiPopover__msg askAiPopover__msg--assistant">
-                <OuiText size="s">
-                  <p>{conversation.response}</p>
-                </OuiText>
-                {!isStreaming && conversation.response && (
-                  <div className="askAiPopover__feedback">
-                    <OuiButtonIcon
-                      iconType="thumbsUp"
-                      aria-label="Helpful"
-                      size="xs"
-                      color="text"
-                    />
-                    <OuiButtonIcon
-                      iconType="thumbsDown"
-                      aria-label="Not helpful"
-                      size="xs"
-                      color="text"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-          <div className="searchPopover__input">
-            <div className="searchPopover__inputWrapper">
-              <OuiCompressedFieldText
-                inputRef={inputRef}
-                placeholder="Ask a follow-up..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={handleKeyDown}
-                fullWidth
-              />
-              <OuiButtonIcon
-                iconType="sortUp"
-                aria-label="Send message"
-                display="fill"
-                size="s"
-                isDisabled={!query.trim() || isStreaming}
-                onClick={handleSend}
-              />
-            </div>
-          </div>
-        </>
+            ))
+          )}
+        </div>
       )}
     </div>
   );
