@@ -9,11 +9,66 @@
  * GitHub history for details.
  */
 
+// ============================================================
+// DETAIL PAGE HEADER (shared across all detail pages)
+// ============================================================
+.detailPageHeader {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.detailPageHeader__title {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 8px 0 12px;
+  border-bottom: 1px solid $ouiBorderColor;
+  font-size: $ouiFontSizeM;
+  font-weight: 500;
+  line-height: 19px;
+  color: $ouiTitleColor;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.detailPageHeader__actions {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 12px;
+  gap: 12px;
+  flex-shrink: 0;
+  border-bottom: 1px solid $ouiBorderColor;
+  border-left: 1px solid $ouiBorderColor;
+}
+
+// Legacy support — keep old class names working
 .alertsPage__header,
 .assetsPage__header,
 .dashboardsPage__header,
 .skillsPage__header,
-.applicationMapPage__header {
+.applicationMapPage__header,
+.topologyMapPage__header,
+.agentMonitoringTracesPage__header,
+.agentMonitoringSpansPage__header,
+.appPerfTracesPage__header,
+.notebooksPage__header,
+.anomalyDashboardPage__header,
+.detectorsPage__header,
+.forecastersPage__header,
+.alertsDetailPage__header,
+.monitorsPage__header,
+.destinationsPage__header,
+.dataSourcesPage__header,
+.indexPatternsPage__header,
+.datasetsPage__header,
+.assetsDetailPage__header,
+.sampleDataPage__header {
   border-bottom: 1px solid $ouiBorderColor;
 }
 
@@ -21,4 +76,89 @@
   width: 1px;
   height: 16px;
   background-color: $ouiBorderColor;
+}
+
+// Panel toggle button in header
+.detailPageHeader__panelToggle {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-right: 1px solid $ouiBorderColor;
+  border-bottom: 1px solid $ouiBorderColor;
+  background: none;
+  border-top: none;
+  border-left: none;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    background-color: $ouiColorLightestShade;
+  }
+}
+
+// ============================================================
+// DETAIL PAGE PANEL (standalone left panel component)
+// ============================================================
+.detailPagePanel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.detailPagePanel__header {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid $ouiBorderColor;
+  font-size: $ouiFontSizeXS;
+  color: $ouiColorDarkShade;
+  flex-shrink: 0;
+}
+
+.detailPagePanel__content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.detailPagePanel__item {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-align: left;
+  width: 100%;
+
+  &:hover {
+    background-color: $ouiColorLightestShade;
+  }
+}
+
+.detailPagePanel__item--active {
+  background-color: $ouiColorLightestShade;
+}
+
+.detailPagePanel__itemTitle {
+  font-size: $ouiFontSizeS;
+  font-weight: 600;
+  line-height: 21px;
+  letter-spacing: -0.28px;
+  color: $ouiTextColor;
+}
+
+.detailPagePanel__itemSubtitle {
+  font-size: $ouiFontSizeXS;
+  line-height: 18px;
+  color: $ouiTextColor;
 }

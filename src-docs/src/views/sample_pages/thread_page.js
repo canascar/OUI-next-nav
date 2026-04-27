@@ -23,8 +23,9 @@ import {
   OuiFlexGroup,
   OuiFlexItem,
   OuiCompressedTextArea,
-  OuiToolTip,
 } from '../../../../src/components';
+
+import { DetailPageHeader } from './detail_page_header';
 
 const THREADS = {
   'latency-spike': {
@@ -366,7 +367,7 @@ const MOCK_RESPONSES = [
 
 const NEW_THREAD = { title: 'New thread', messages: [] };
 
-export const ThreadPage = ({ selectedItem, pendingMessages }) => {
+export const ThreadPage = ({ selectedItem, onItemSelect, pendingMessages, isPanelOpen, onTogglePanel }) => {
   const threadKey = selectedItem || 'latency-spike';
   const thread = THREADS[threadKey] || NEW_THREAD;
   const initialMessages = pendingMessages || thread.messages;
@@ -564,58 +565,23 @@ export const ThreadPage = ({ selectedItem, pendingMessages }) => {
         flexDirection: 'column',
         overflow: 'hidden',
       }}>
-      {/* Header — same pattern as service page */}
-      <div
-        className="threadPage__header"
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '20px 16px 20px 12px',
-        }}>
-        <OuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
-          <OuiFlexItem grow={false}>
-            <OuiTitle size="s">
-              <h1 style={{ margin: 0 }}>{thread.title}</h1>
-            </OuiTitle>
-          </OuiFlexItem>
-          <OuiFlexItem grow={false}>
-            <div className="threadPage__avatarGroup">
-              {authors.map((name) => (
-                <OuiAvatar key={name} size="s" name={name} />
-              ))}
-            </div>
-          </OuiFlexItem>
-        </OuiFlexGroup>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <OuiToolTip content="Canvas" position="bottom">
-            <OuiButtonIcon
-              iconType="layers"
-              aria-label="Canvas"
-              size="s"
-              color={isCanvasOpen ? 'primary' : 'text'}
-              onClick={() => setIsCanvasOpen(!isCanvasOpen)}
-            />
-          </OuiToolTip>
-          <OuiToolTip content="History" position="bottom">
-            <OuiButtonIcon
-              iconType="clock"
-              aria-label="History"
-              size="s"
-              color="text"
-            />
-          </OuiToolTip>
-          <div className="detailPageHeader__ruleDivider" />
-          <OuiToolTip content="Share" position="bottom">
-            <OuiButtonIcon
-              iconType="share"
-              aria-label="Share"
-              size="s"
-              color="text"
-            />
-          </OuiToolTip>
+      {/* Header — using DetailPageHeader with custom children */}
+      <DetailPageHeader
+        title={thread.title}
+        isPanelOpen={isPanelOpen}
+        onTogglePanel={onTogglePanel}
+        firstActionIcon="layers"
+        firstActionLabel="Canvas"
+        onFirstAction={() => setIsCanvasOpen((open) => !open)}
+        hideAskAi
+      >
+        {thread.title}
+        <div className="threadPage__avatarGroup" style={{ display: 'inline-flex', marginLeft: 8 }}>
+          {authors.map((name) => (
+            <OuiAvatar key={name} size="s" name={name} />
+          ))}
         </div>
-      </div>
+      </DetailPageHeader>
 
       {/* Body: feed + optional canvas flyout */}
       <div className="threadPage__body">

@@ -11,26 +11,23 @@
 
 import React from 'react';
 
-import {
-  OuiButtonIcon,
-  OuiFlexGroup,
-  OuiFlexItem,
-  OuiTitle,
-  OuiText,
-  OuiToolTip,
-} from '../../../../src/components';
+import { OuiText } from '../../../../src/components';
 
-import { AskAiPopover } from './ask_ai_popover';
+import { DetailPageHeader } from './detail_page_header';
 
 const ITEM_LABELS = {
   'cpu-threshold': 'CPU threshold exceeded',
   'disk-usage': 'Disk usage warning',
   'error-rate-spike': 'Error rate spike',
+  'uptime-monitor': 'Uptime monitor',
+  'latency-monitor': 'Latency threshold',
+  'log-volume-monitor': 'Log volume spike',
+  'slack-ops': 'Slack #ops-alerts',
+  'pagerduty-critical': 'PagerDuty critical',
+  'email-oncall': 'On-call email group',
 };
 
 export const AlertsPage = ({ selectedItem, onContinueAsThread }) => {
-  const [isAskAiOpen, setIsAskAiOpen] = React.useState(false);
-
   return (
     <div
       style={{
@@ -39,68 +36,7 @@ export const AlertsPage = ({ selectedItem, onContinueAsThread }) => {
         flexDirection: 'column',
         overflow: 'hidden',
       }}>
-      <div
-        className="alertsPage__header"
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '20px 16px 20px 12px',
-        }}>
-        <OuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
-          <OuiFlexItem grow={false}>
-            <OuiTitle size="s">
-              <h1 style={{ margin: 0 }}>
-                {ITEM_LABELS[selectedItem] || 'Alerts'}
-              </h1>
-            </OuiTitle>
-          </OuiFlexItem>
-        </OuiFlexGroup>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <OuiToolTip content="Acknowledge" position="bottom">
-            <OuiButtonIcon
-              iconType="checkInCircleEmpty"
-              aria-label="Acknowledge"
-              size="s"
-              color="text"
-            />
-          </OuiToolTip>
-          <OuiToolTip content="Edit" position="bottom">
-            <OuiButtonIcon
-              iconType="pencil"
-              aria-label="Edit"
-              size="s"
-              color="text"
-            />
-          </OuiToolTip>
-          <div className="detailPageHeader__ruleDivider" />
-          <OuiToolTip content="Share" position="bottom">
-            <OuiButtonIcon
-              iconType="share"
-              aria-label="Share"
-              size="s"
-              color="text"
-            />
-          </OuiToolTip>
-          <div className="detailPageHeader__ruleDivider" />
-          <div className="askAiPopover__anchor">
-            <OuiToolTip content="Ask AI" position="bottom">
-              <OuiButtonIcon
-                iconType="generate"
-                aria-label="Ask AI"
-                size="s"
-                color={isAskAiOpen ? 'primary' : 'text'}
-                onClick={() => setIsAskAiOpen(!isAskAiOpen)}
-              />
-            </OuiToolTip>
-            <AskAiPopover
-              isOpen={isAskAiOpen}
-              onClose={() => setIsAskAiOpen(false)}
-              onContinueAsThread={onContinueAsThread}
-            />
-          </div>
-        </div>
-      </div>
+      <DetailPageHeader title={ITEM_LABELS[selectedItem] || 'Alerts'} onContinueAsThread={onContinueAsThread} />
       <div
         style={{
           flex: 1,

@@ -12,10 +12,11 @@
 // sass-lint:disable no-misspelled-properties, no-color-literals
 
 .searchPopover {
-  position: absolute;
-  top: 68px;
-  left: 80px;
-  width: 380px;
+  position: fixed;
+  top: 240px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 480px;
   max-height: 480px;
   background-color: $ouiColorEmptyShade;
   border: 1px solid $ouiBorderColor;

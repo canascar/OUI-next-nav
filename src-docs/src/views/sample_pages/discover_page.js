@@ -15,7 +15,6 @@ import {
   OuiBasicTable,
   OuiButtonEmpty,
   OuiButtonIcon,
-  OuiCompressedSuperDatePicker,
   OuiCompressedTextArea,
   OuiFieldSearch,
   OuiIcon,
@@ -26,10 +25,9 @@ import {
   OuiText,
   OuiTitle,
   OuiToken,
-  OuiToolTip,
 } from '../../../../src/components';
 
-import { AskAiPopover } from './ask_ai_popover';
+import { DetailPageHeader } from './detail_page_header';
 
 // --- Query definitions keyed by selectedItem ---
 
@@ -484,18 +482,16 @@ const getColumns = (expandedRows, toggleRowExpansion) => [
 
 // --- Main DiscoverPage Component ---
 
-export const DiscoverPage = ({ selectedItem, onContinueAsThread }) => {
+export const DiscoverPage = ({ selectedItem, onContinueAsThread, isPanelOpen, onTogglePanel }) => {
   const queryDef =
     (selectedItem && QUERY_DEFS[selectedItem]) || DEFAULT_QUERY_DEF;
   const results = FLIGHT_DATA;
 
-  const [start, setStart] = useState('now-15m');
-  const [end, setEnd] = useState('now');
   const [activeTab, setActiveTab] = useState('logs');
   const [queryText, setQueryText] = useState(queryDef.query);
   const [isQueryEditable, setIsQueryEditable] = useState(false);
+  const queryRef = useRef(null);
   const [expandedRows, setExpandedRows] = useState({});
-  const [isAskAiOpen, setIsAskAiOpen] = useState(false);
 
   const toggleRowExpansion = (item) => {
     setExpandedRows((prev) => {
@@ -512,11 +508,6 @@ export const DiscoverPage = ({ selectedItem, onContinueAsThread }) => {
   const [isDragging, setIsDragging] = useState(false);
   const dragging = useRef(false);
   const bodyRef = useRef(null);
-
-  const onTimeChange = ({ start: s, end: e }) => {
-    setStart(s);
-    setEnd(e);
-  };
 
   // Update query text when selected item changes
   useEffect(() => {
@@ -564,72 +555,21 @@ export const DiscoverPage = ({ selectedItem, onContinueAsThread }) => {
         overflow: 'hidden',
       }}>
       {/* Header */}
-      <div
-        className="discoverPage__header"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          padding: '20px 16px 20px 12px',
-        }}>
-        <OuiTitle size="s">
-          <h1 style={{ margin: 0, whiteSpace: 'nowrap' }}>{queryDef.title}</h1>
-        </OuiTitle>
-        <div style={{ flexGrow: 1 }} />
-        <div style={{ maxWidth: 320, flexShrink: 0 }}>
-          <OuiCompressedSuperDatePicker
-            start={start}
-            end={end}
-            onTimeChange={onTimeChange}
-            showUpdateButton={false}
-          />
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            gap: 8,
-            alignItems: 'center',
-            flexShrink: 0,
-          }}>
-          <OuiToolTip
-            content={isQueryEditable ? 'Save query' : 'Edit query'}
-            position="bottom">
-            <OuiButtonIcon
-              iconType={isQueryEditable ? 'save' : 'pencil'}
-              aria-label={isQueryEditable ? 'Save query' : 'Edit query'}
-              size="s"
-              color={isQueryEditable ? 'primary' : 'text'}
-              onClick={() => setIsQueryEditable(!isQueryEditable)}
-            />
-          </OuiToolTip>
-          <div className="detailPageHeader__ruleDivider" />
-          <OuiToolTip content="Share" position="bottom">
-            <OuiButtonIcon
-              iconType="share"
-              aria-label="Share"
-              size="s"
-              color="text"
-            />
-          </OuiToolTip>
-          <div className="detailPageHeader__ruleDivider" />
-          <div className="askAiPopover__anchor">
-            <OuiToolTip content="Ask AI" position="bottom">
-              <OuiButtonIcon
-                iconType="generate"
-                aria-label="Ask AI"
-                size="s"
-                color={isAskAiOpen ? 'primary' : 'text'}
-                onClick={() => setIsAskAiOpen(!isAskAiOpen)}
-              />
-            </OuiToolTip>
-            <AskAiPopover
-              isOpen={isAskAiOpen}
-              onClose={() => setIsAskAiOpen(false)}
-              onContinueAsThread={onContinueAsThread}
-            />
-          </div>
-        </div>
-      </div>
+      <DetailPageHeader
+        title={queryDef.title}
+        onContinueAsThread={onContinueAsThread}
+        isPanelOpen={isPanelOpen}
+        onTogglePanel={onTogglePanel}
+        firstActionIcon={isQueryEditable ? 'save' : 'pencil'}
+        firstActionLabel={isQueryEditable ? 'Save' : 'Edit'}
+        onFirstAction={() => {
+          const next = !isQueryEditable;
+          setIsQueryEditable(next);
+          if (next && queryRef.current) {
+            setTimeout(() => queryRef.current.focus(), 0);
+          }
+        }}
+      />
 
       {/* Query textarea */}
       <div className="discoverPage__queryArea">
@@ -643,6 +583,7 @@ export const DiscoverPage = ({ selectedItem, onContinueAsThread }) => {
           disabled={false}
           readOnly={!isQueryEditable}
           className="discoverPage__queryTextarea"
+          inputRef={queryRef}
         />
       </div>
 

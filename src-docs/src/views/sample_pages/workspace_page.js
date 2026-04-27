@@ -12,19 +12,15 @@
 import React, { useState } from 'react';
 
 import {
-  OuiButtonIcon,
   OuiTab,
   OuiTabs,
   OuiText,
-  OuiTitle,
-  OuiToolTip,
 } from '../../../../src/components';
 
-import { AskAiPopover } from './ask_ai_popover';
+import { DetailPageHeader } from './detail_page_header';
 
 export const WorkspacePage = ({ onContinueAsThread }) => {
   const [activeTab, setActiveTab] = useState('workspace-details');
-  const [isAskAiOpen, setIsAskAiOpen] = useState(false);
 
   return (
     <div
@@ -35,52 +31,7 @@ export const WorkspacePage = ({ onContinueAsThread }) => {
         overflow: 'hidden',
       }}>
       {/* Header */}
-      <div
-        className="workspacePage__header"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          padding: '20px 16px 20px 12px',
-        }}>
-        <OuiTitle size="s">
-          <h1 style={{ margin: 0, whiteSpace: 'nowrap' }}>Workspace</h1>
-        </OuiTitle>
-        <div style={{ flexGrow: 1 }} />
-        <div
-          style={{
-            display: 'flex',
-            gap: 8,
-            alignItems: 'center',
-            flexShrink: 0,
-          }}>
-          <OuiToolTip content="Refresh" position="bottom">
-            <OuiButtonIcon
-              iconType="refresh"
-              aria-label="Refresh"
-              size="s"
-              color="text"
-            />
-          </OuiToolTip>
-          <div className="detailPageHeader__ruleDivider" />
-          <div className="askAiPopover__anchor">
-            <OuiToolTip content="Ask AI" position="bottom">
-              <OuiButtonIcon
-                iconType="generate"
-                aria-label="Ask AI"
-                size="s"
-                color={isAskAiOpen ? 'primary' : 'text'}
-                onClick={() => setIsAskAiOpen(!isAskAiOpen)}
-              />
-            </OuiToolTip>
-            <AskAiPopover
-              isOpen={isAskAiOpen}
-              onClose={() => setIsAskAiOpen(false)}
-              onContinueAsThread={onContinueAsThread}
-            />
-          </div>
-        </div>
-      </div>
+      <DetailPageHeader title="Workspace" onContinueAsThread={onContinueAsThread} />
 
       {/* Tab bar */}
       <div className="workspacePage__tabBar">

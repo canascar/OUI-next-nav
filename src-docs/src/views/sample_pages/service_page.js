@@ -13,7 +13,6 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 import {
   OuiAccordion,
-  OuiCompressedSuperDatePicker,
   OuiFieldSearch,
   OuiBasicTable,
   OuiFlexGroup,
@@ -34,7 +33,7 @@ import {
   OuiButtonIcon,
 } from '../../../../src/components';
 
-import { AskAiPopover } from './ask_ai_popover';
+import { DetailPageHeader } from './detail_page_header';
 
 // --- Mock Data ---
 
@@ -577,19 +576,11 @@ const catalogColumns = [
 
 export const ServicePage = ({ onContinueAsThread }) => {
   const [latencyTab, setLatencyTab] = useState('p99');
-  const [start, setStart] = useState('now-15m');
-  const [end, setEnd] = useState('now');
   const [filterWidth, setFilterWidth] = useState(240);
   const [isDragging, setIsDragging] = useState(false);
   const [activeTab, setActiveTab] = useState('services');
-  const [isAskAiOpen, setIsAskAiOpen] = useState(false);
   const dragging = useRef(false);
   const bodyRef = useRef(null);
-
-  const onTimeChange = ({ start: s, end: e }) => {
-    setStart(s);
-    setEnd(e);
-  };
 
   // Drag-to-resize handlers for filter panel (same pattern as Discover fields panel)
   const handleResizeStart = useCallback((e) => {
@@ -630,72 +621,8 @@ export const ServicePage = ({ onContinueAsThread }) => {
         flexDirection: 'column',
         overflow: 'hidden',
       }}>
-      {/* Page title + search + date picker + actions */}
-      <div
-        className="servicePage__header"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          padding: '20px 16px 20px 12px',
-        }}>
-        <OuiTitle size="s">
-          <h1 style={{ margin: 0, whiteSpace: 'nowrap' }}>
-            Application Monitoring
-          </h1>
-        </OuiTitle>
-        <div style={{ flexGrow: 1 }} />
-        <div style={{ maxWidth: 320, flexShrink: 0 }}>
-          <OuiCompressedSuperDatePicker
-            start={start}
-            end={end}
-            onTimeChange={onTimeChange}
-            showUpdateButton={false}
-          />
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            gap: 8,
-            alignItems: 'center',
-            flexShrink: 0,
-          }}>
-          <OuiToolTip content="Refresh" position="bottom">
-            <OuiButtonIcon
-              iconType="refresh"
-              aria-label="Refresh"
-              size="s"
-              color="text"
-            />
-          </OuiToolTip>
-          <div className="detailPageHeader__ruleDivider" />
-          <OuiToolTip content="Controls" position="bottom">
-            <OuiButtonIcon
-              iconType="controlsHorizontal"
-              aria-label="Controls"
-              size="s"
-              color="text"
-            />
-          </OuiToolTip>
-          <div className="detailPageHeader__ruleDivider" />
-          <div className="askAiPopover__anchor">
-            <OuiToolTip content="Ask AI" position="bottom">
-              <OuiButtonIcon
-                iconType="generate"
-                aria-label="Ask AI"
-                size="s"
-                color={isAskAiOpen ? 'primary' : 'text'}
-                onClick={() => setIsAskAiOpen(!isAskAiOpen)}
-              />
-            </OuiToolTip>
-            <AskAiPopover
-              isOpen={isAskAiOpen}
-              onClose={() => setIsAskAiOpen(false)}
-              onContinueAsThread={onContinueAsThread}
-            />
-          </div>
-        </div>
-      </div>
+      {/* Page title + date picker + actions */}
+      <DetailPageHeader title="Application Performance Services" onContinueAsThread={onContinueAsThread} />
 
       {/* Tab bar */}
       <div className="servicePage__tabBar">
@@ -763,7 +690,7 @@ export const ServicePage = ({ onContinueAsThread }) => {
 
         {/* Main content column */}
         <div className="servicePage__contentCol">
-          <div style={{ padding: '0', overflow: 'auto', flex: 1 }}>
+          <div style={{ padding: '0', overflowY: 'auto', overflowX: 'hidden', flex: 1 }}>
             {/* Top summary panels */}
             <OuiFlexGroup gutterSize="m">
               <OuiFlexItem>
@@ -810,7 +737,7 @@ export const ServicePage = ({ onContinueAsThread }) => {
                 items={SERVICES}
                 columns={catalogColumns}
                 rowHeader="name"
-                tableLayout="auto"
+                tableLayout="fixed"
               />
               <OuiText size="xs" color="subdued" style={{ marginTop: 8 }}>
                 <p>Rows per page: 10</p>

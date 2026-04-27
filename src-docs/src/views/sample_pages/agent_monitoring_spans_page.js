@@ -15,16 +15,7 @@ import { OuiText } from '../../../../src/components';
 
 import { DetailPageHeader } from './detail_page_header';
 
-const ITEM_LABELS = {
-  'web-server-fleet': 'Web server fleet',
-  'payment-gateway': 'Payment gateway',
-  'data-pipeline': 'Data pipeline cluster',
-  'region-latency-map': 'Region latency map',
-  'traffic-origin-map': 'Traffic origin map',
-  'cdn-coverage-map': 'CDN coverage map',
-};
-
-export const AssetsPage = ({ selectedItem, onContinueAsThread }) => {
+export const AgentMonitoringSpansPage = ({ onContinueAsThread }) => {
   return (
     <div
       style={{
@@ -33,7 +24,7 @@ export const AssetsPage = ({ selectedItem, onContinueAsThread }) => {
         flexDirection: 'column',
         overflow: 'hidden',
       }}>
-      <DetailPageHeader title={ITEM_LABELS[selectedItem] || 'Assets'} onContinueAsThread={onContinueAsThread} />
+      <DetailPageHeader title="Agent Monitoring Spans" onContinueAsThread={onContinueAsThread} />
       <div
         style={{
           flex: 1,
@@ -42,7 +33,7 @@ export const AssetsPage = ({ selectedItem, onContinueAsThread }) => {
           justifyContent: 'center',
         }}>
         <OuiText color="subdued" textAlign="center">
-          <p>Detail view will appear here.</p>
+          <p>Agent monitoring spans content will appear here.</p>
         </OuiText>
       </div>
     </div>

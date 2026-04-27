@@ -2,23 +2,39 @@ export const STORAGE_KEY = 'samplePagesNavLayout';
 export const FIXED_KEYS = ['search', 'thread'];
 
 export const ALL_DRAGGABLE_ITEMS = [
-  { key: 'discover', label: 'Discover', icon: 'navDiscover' },
-  { key: 'service', label: 'APM', icon: 'navAnomalyDetection' },
-  { key: 'alerts', label: 'Alerting', icon: 'navAlerting' },
   { key: 'dashboards', label: 'Dashboards', icon: 'navDashboards' },
-  { key: 'skills', label: 'Skills', icon: 'navReports' },
-  { key: 'assets', label: 'Assets', icon: 'navSecurityCases' },
+  { key: 'logs', label: 'Logs', icon: 'navDiscover' },
+  { key: 'metrics', label: 'Metrics', icon: 'visArea' },
+  { key: 'topology-map', label: 'Topology Map', icon: 'navAiFlow' },
+  {
+    key: 'agent-monitoring-traces',
+    label: 'Agent Monitoring Traces',
+    icon: 'visTable',
+  },
+  {
+    key: 'agent-monitoring-spans',
+    label: 'Agent Monitoring Spans',
+    icon: 'visTagCloud',
+  },
+  { key: 'app-perf-traces', label: 'Application Performance Traces', icon: 'apmTrace' },
+  { key: 'app-perf-services', label: 'Application Performance Services', icon: 'navServices' },
+  { key: 'tools', label: 'Tools', icon: 'wrench' },
   { key: 'manage-workspace', label: 'Workspace', icon: 'wsSelector' },
 ];
 
-export const DEFAULT_MAIN_KEYS = ['discover', 'service'];
-export const DEFAULT_OVERFLOW_KEYS = [
-  'alerts',
+export const DEFAULT_MAIN_KEYS = [
   'dashboards',
-  'skills',
-  'assets',
+  'logs',
+  'metrics',
+  'topology-map',
+  'agent-monitoring-traces',
+  'agent-monitoring-spans',
+  'app-perf-traces',
+  'app-perf-services',
+  'tools',
   'manage-workspace',
 ];
+export const DEFAULT_OVERFLOW_KEYS = [];
 
 /**
  * Toggle an item between main and overflow zones.

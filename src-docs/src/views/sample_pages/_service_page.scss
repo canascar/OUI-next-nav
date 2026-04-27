@@ -63,6 +63,10 @@
   flex: 1;
   min-width: 0;
   overflow: hidden;
+
+  .ouiTable {
+    table-layout: fixed;
+  }
 }
 
 // Filter panel (left sidebar, same pattern as Discover fields panel)
