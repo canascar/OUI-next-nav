@@ -271,6 +271,7 @@ export const SamplePagesLeftNav = ({
   const [expandedTab, setExpandedTab] = useState(null);
   const [hoveredTab, setHoveredTab] = useState(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isPanelClosing, setIsPanelClosing] = useState(false);
   const hoverTimeoutRef = useRef(null);
   const navItemRefs = useRef({});
 
@@ -314,13 +315,22 @@ export const SamplePagesLeftNav = ({
     }, 150);
   }, [clearHoverTimeout]);
 
+  const closePanel = useCallback(() => {
+    setIsPanelClosing(true);
+    setTimeout(() => {
+      setExpandedTab(null);
+      setIsPanelClosing(false);
+    }, 220);
+  }, []);
+
   const handleNavClick = (item) => {
     if (item.isAction || item.hoverOnly) return;
     setHoveredTab(null);
     clearHoverTimeout();
     if (expandedTab === item.key) {
-      setExpandedTab(null);
+      closePanel();
     } else {
+      if (isPanelClosing) return;
       setExpandedTab(item.key);
       onPageChange(item.key);
     }
@@ -418,7 +428,10 @@ export const SamplePagesLeftNav = ({
 
       {/* Expanded (pinned) panel */}
       {PanelComponent && (
-        <div className="samplePagesLeftNav__expandedPanel">
+        <div
+          className={`samplePagesLeftNav__expandedPanel${
+            isPanelClosing ? ' samplePagesLeftNav__expandedPanel--closing' : ''
+          }`}>
           <div className="samplePagesLeftNav__expandedPanelHeader">
             <OuiTitle size="s">
               <h3>{expandedNavItem.label}</h3>
@@ -437,7 +450,7 @@ export const SamplePagesLeftNav = ({
                 color="text"
                 display="empty"
                 size="s"
-                onClick={() => setExpandedTab(null)}
+                onClick={closePanel}
               />
             </div>
           </div>
@@ -489,68 +502,60 @@ export const SamplePagesLeftNav = ({
             <OuiModalHeaderTitle>Layout settings</OuiModalHeaderTitle>
           </OuiModalHeader>
           <OuiModalBody>
-            <OuiFormRow label="Dark mode" display="columnCompressedSwitch">
+            <OuiFormRow label="Dark mode" display="row">
               <OuiSwitch
                 label=""
                 showLabel={false}
                 checked={isDark}
                 onChange={toggleTheme}
-                compressed
               />
             </OuiFormRow>
             <OuiSpacer size="s" />
-            <OuiFormRow
-              label="Show navigation labels"
-              display="columnCompressedSwitch">
+            <OuiFormRow label="Show navigation labels" display="row">
               <OuiSwitch
                 label=""
                 showLabel={false}
                 checked={showLabels}
                 onChange={(e) => onShowLabelsChange(e.target.checked)}
-                compressed
               />
             </OuiFormRow>
             <OuiSpacer size="m" />
-            <OuiFormRow label="Padding" display="columnCompressed">
+            <OuiFormRow label="Padding" display="row">
               <OuiButtonGroup
                 legend="Padding"
                 options={SPACING_OPTIONS}
                 idSelected={`spacing-${padding}`}
                 onChange={(id) => onPaddingChange(SPACING_MAP[id])}
-                buttonSize="compressed"
                 isFullWidth
               />
             </OuiFormRow>
             <OuiSpacer size="s" />
-            <OuiFormRow label="Gap" display="columnCompressed">
+            <OuiFormRow label="Gap" display="row">
               <OuiButtonGroup
                 legend="Gap"
                 options={SPACING_OPTIONS}
                 idSelected={`spacing-${gap}`}
                 onChange={(id) => onGapChange(SPACING_MAP[id])}
-                buttonSize="compressed"
                 isFullWidth
               />
             </OuiFormRow>
             <OuiSpacer size="s" />
-            <OuiFormRow label="Card padding" display="columnCompressed">
+            <OuiFormRow label="Card padding" display="row">
               <OuiButtonGroup
                 legend="Card padding"
                 options={SPACING_OPTIONS}
                 idSelected={`spacing-${cardPadding}`}
                 onChange={(id) => onCardPaddingChange(SPACING_MAP[id])}
-                buttonSize="compressed"
                 isFullWidth
               />
             </OuiFormRow>
             <OuiSpacer size="s" />
-            <OuiFormRow label="Gutter" display="columnCompressed">
+            <OuiFormRow label="Gutter" display="row">
               <OuiButtonGroup
                 legend="Gutter"
                 options={SPACING_OPTIONS}
                 idSelected={`spacing-${gutter}`}
                 onChange={(id) => onGutterChange(SPACING_MAP[id])}
-                buttonSize="compressed"
                 isFullWidth
               />
             </OuiFormRow>

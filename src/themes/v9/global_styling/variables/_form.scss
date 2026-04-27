@@ -11,7 +11,7 @@
 
 // Sizing
 $ouiFormMaxWidth: $ouiSizeXXL * 10 !default;
-$ouiFormControlHeight: $ouiSizeXXL !default;
+$ouiFormControlHeight: $ouiSizeXL !default;
 $ouiFormControlCompressedHeight: $ouiSizeXL !default;
 $ouiFormControlPadding: $ouiSizeM !default;
 $ouiFormControlCompressedPadding: $ouiSizeS !default;
@@ -69,7 +69,7 @@ $ouiFormControlDisabledColor: $ouiColorMediumShade !default;
 $ouiFormControlBoxShadow: 0 1px 1px -1px transparentize($ouiShadowColor, .8), 0 3px 2px -2px transparentize($ouiShadowColor, .8) !default;
 $ouiFormControlPlaceholderText: makeHighContrastColor($ouiTextSubduedColor, $ouiFormBackgroundColor) !default;
 $_ouiFormInputGroupLabelDarkBackgroundColor: #293847 !default;
-$ouiFormInputGroupLabelBackground: $ouiColorAccent !default;
+$ouiFormInputGroupLabelBackground: $ouiColorLightestShade !default;
 $ouiFormInputGroupBorder: 1px solid $ouiBorderColor !default;
 $ouiSwitchOffColor: lightOrDarkTheme(transparentize($ouiColorMediumShade, .8), transparentize($ouiColorMediumShade, .3)) !default;
 

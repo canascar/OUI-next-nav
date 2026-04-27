@@ -21,7 +21,7 @@ import {
   OuiText,
   OuiFlexGroup,
   OuiFlexItem,
-  OuiCompressedTextArea,
+  OuiTextArea,
 } from '../../../../src/components';
 
 const THREADS = {
@@ -522,7 +522,7 @@ export const ThreadPage = ({ selectedItem }) => {
       {/* Input area — textarea with buttons inside at bottom */}
       <div className="threadPage__inputArea">
         <div className="threadPage__inputWrapper">
-          <OuiCompressedTextArea
+          <OuiTextArea
             placeholder="Ask anything. Type / for actions."
             value={message}
             onChange={(e) => setMessage(e.target.value)}

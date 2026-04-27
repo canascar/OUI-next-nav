@@ -572,6 +572,8 @@ export class OuiSuperDatePicker extends Component<
     const flexWrapperClasses = classNames('ouiSuperDatePicker__flexWrapper', {
       'ouiSuperDatePicker__flexWrapper--noUpdateButton': !showUpdateButton,
       'ouiSuperDatePicker__flexWrapper--isAutoRefreshOnly': isAutoRefreshOnly,
+      'ouiSuperDatePicker__flexWrapper--isOpen':
+        this.state.isStartDatePopoverOpen || this.state.isEndDatePopoverOpen,
     });
 
     return (

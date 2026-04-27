@@ -44,10 +44,10 @@ const renderPage = (activePage, selectedItem) => {
 export const SamplePagesView = () => {
   const [activePage, setActivePage] = useState('service');
   const [selectedItem, setSelectedItem] = useState(null);
-  const [padding, setPadding] = useState(24);
-  const [gap, setGap] = useState(16);
-  const [cardPadding, setCardPadding] = useState(16);
-  const [gutter, setGutter] = useState(16);
+  const [padding, setPadding] = useState(8);
+  const [gap, setGap] = useState(8);
+  const [cardPadding, setCardPadding] = useState(8);
+  const [gutter, setGutter] = useState(8);
   const [showLabels, setShowLabels] = useState(true);
 
   const DEFAULT_ITEMS = {

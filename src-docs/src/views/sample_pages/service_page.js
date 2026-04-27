@@ -13,7 +13,7 @@ import React, { useState } from 'react';
 
 import {
   OuiSimplifiedBreadcrumbs,
-  OuiCompressedSuperDatePicker,
+  OuiSuperDatePicker,
   OuiFieldSearch,
   OuiBasicTable,
   OuiFlexGroup,
@@ -237,7 +237,6 @@ const FilterSidebar = () => {
             prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
           )
         }
-        compressed
       />
       <OuiSpacer size="m" />
 
@@ -251,7 +250,6 @@ const FilterSidebar = () => {
         value={latencyRange}
         onChange={setLatencyRange}
         showInput={false}
-        compressed
         aria-label="Latency range"
       />
       <OuiText size="xs" color="subdued">
@@ -271,7 +269,6 @@ const FilterSidebar = () => {
         value={throughputRange}
         onChange={setThroughputRange}
         showInput={false}
-        compressed
         aria-label="Throughput range"
       />
       <OuiText size="xs" color="subdued">
@@ -299,11 +296,7 @@ const FilterSidebar = () => {
         <p>telemetry.sdk.language</p>
       </OuiText>
       <OuiSpacer size="xs" />
-      <OuiFieldSearch
-        placeholder="Search"
-        compressed
-        aria-label="Search attributes"
-      />
+      <OuiFieldSearch placeholder="Search" aria-label="Search attributes" />
       <OuiSpacer size="xs" />
       <OuiFlexGroup gutterSize="xs" responsive={false}>
         <OuiFlexItem grow={false}>
@@ -328,7 +321,6 @@ const FilterSidebar = () => {
             prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
           )
         }
-        compressed
       />
     </OuiPanel>
   );
@@ -344,7 +336,7 @@ const TopFaultServicesPanel = () => (
     <OuiSpacer size="s" />
     <OuiFlexGroup gutterSize="xs" direction="column">
       <OuiFlexItem>
-        <OuiFlexGroup responsive={false} gutterSize="s" alignItems="center">
+        <OuiFlexGroup responsive={false} gutterSize="l" alignItems="center">
           <OuiFlexItem grow={false} style={{ width: 120 }}>
             <OuiText size="xs">
               <strong>Service</strong>
@@ -359,7 +351,7 @@ const TopFaultServicesPanel = () => (
       </OuiFlexItem>
       {TOP_FAULT_SERVICES.map((item) => (
         <OuiFlexItem key={item.service}>
-          <OuiFlexGroup responsive={false} gutterSize="s" alignItems="center">
+          <OuiFlexGroup responsive={false} gutterSize="l" alignItems="center">
             <OuiFlexItem grow={false} style={{ width: 120 }}>
               <OuiLink href="#" onClick={(e) => e.preventDefault()}>
                 {item.service}
@@ -383,13 +375,13 @@ const TopDependencyPathsPanel = () => (
     <OuiSpacer size="s" />
     <OuiFlexGroup gutterSize="xs" direction="column">
       <OuiFlexItem>
-        <OuiFlexGroup responsive={false} gutterSize="s" alignItems="center">
-          <OuiFlexItem grow={false} style={{ width: 110 }}>
+        <OuiFlexGroup responsive={false} gutterSize="l" alignItems="center">
+          <OuiFlexItem grow={false} style={{ width: 140 }}>
             <OuiText size="xs">
               <strong>Dependency service</strong>
             </OuiText>
           </OuiFlexItem>
-          <OuiFlexItem grow={false} style={{ width: 110 }}>
+          <OuiFlexItem grow={false} style={{ width: 140 }}>
             <OuiText size="xs">
               <strong>Service</strong>
             </OuiText>
@@ -403,13 +395,13 @@ const TopDependencyPathsPanel = () => (
       </OuiFlexItem>
       {TOP_DEPENDENCY_PATHS.map((item, i) => (
         <OuiFlexItem key={i}>
-          <OuiFlexGroup responsive={false} gutterSize="s" alignItems="center">
-            <OuiFlexItem grow={false} style={{ width: 110 }}>
+          <OuiFlexGroup responsive={false} gutterSize="l" alignItems="center">
+            <OuiFlexItem grow={false} style={{ width: 140 }}>
               <OuiLink href="#" onClick={(e) => e.preventDefault()}>
                 {item.depService}
               </OuiLink>
             </OuiFlexItem>
-            <OuiFlexItem grow={false} style={{ width: 110 }}>
+            <OuiFlexItem grow={false} style={{ width: 140 }}>
               <OuiLink href="#" onClick={(e) => e.preventDefault()}>
                 {item.service}
               </OuiLink>
@@ -635,11 +627,10 @@ export const ServicePage = () => {
           <OuiFieldSearch
             placeholder="Filter by service name or environment"
             fullWidth
-            compressed
           />
         </OuiFlexItem>
         <OuiFlexItem grow={false}>
-          <OuiCompressedSuperDatePicker
+          <OuiSuperDatePicker
             start={start}
             end={end}
             onTimeChange={onTimeChange}
@@ -701,7 +692,6 @@ export const ServicePage = () => {
                       options={LATENCY_TABS}
                       idSelected={latencyTab}
                       onChange={(id) => setLatencyTab(id)}
-                      buttonSize="compressed"
                     />
                   </OuiFlexItem>
                 </OuiFlexGroup>

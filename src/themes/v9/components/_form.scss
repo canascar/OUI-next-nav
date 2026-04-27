@@ -9,7 +9,7 @@
   overflow: hidden;
   background-color: $ouiFormBackgroundColor !important; // sass-lint:disable-line no-important
 
-  // Reset all inner elements to no radius — the group's overflow: hidden clips them
+  // Reset inner elements to no radius by default — the group's overflow: hidden clips them
   // sass-lint:disable no-important
   > .ouiFormControlLayout__prepend,
   > .ouiFormControlLayout__append,
@@ -20,6 +20,29 @@
   > .ouiFormLabel,
   > .ouiText {
     border-radius: 0 !important;
+  }
+
+  // Restore border radius on the outermost prepend/append so corners match the group
+  > *:first-child,
+  > .ouiFormControlLayout__prepend:first-child,
+  > *:first-child .ouiButtonIcon,
+  > *:first-child .ouiButtonEmpty,
+  > *:first-child .ouiFormLabel,
+  > *:first-child .ouiText,
+  > *:first-child .ouiIcon {
+    border-top-left-radius: $ouiFormControlBorderRadius !important;
+    border-bottom-left-radius: $ouiFormControlBorderRadius !important;
+  }
+
+  > *:last-child,
+  > .ouiFormControlLayout__append:last-child,
+  > *:last-child .ouiButtonIcon,
+  > *:last-child .ouiButtonEmpty,
+  > *:last-child .ouiFormLabel,
+  > *:last-child .ouiText,
+  > *:last-child .ouiIcon {
+    border-top-right-radius: $ouiFormControlBorderRadius !important;
+    border-bottom-right-radius: $ouiFormControlBorderRadius !important;
   }
   // sass-lint:enable no-important
 
@@ -51,7 +74,8 @@
 .ouiFieldPassword--compressed,
 .ouiSelect--compressed,
 .ouiDatePopoverButton,
-.ouiSuperDatePicker__prettyFormat {
+.ouiSuperDatePicker__prettyFormat,
+.ouiFilePicker__prompt {
   background-color: $ouiFormBackgroundColor !important;
   border-radius: $ouiFormControlBorderRadius !important;
 
@@ -61,6 +85,38 @@
   }
 }
 
+// Larger drop shadow on hover for form controls
+// sass-lint:disable no-important, no-color-literals, no-mergeable-selectors
+.ouiFieldText,
+.ouiFieldSearch,
+.ouiFieldNumber,
+.ouiFieldPassword,
+.ouiSelect,
+.ouiTextArea,
+.ouiFilePicker__prompt {
+  transition: box-shadow $ouiAnimSpeedNormal ease-in-out !important;
+
+  &:hover {
+    box-shadow:
+    0 2px 8px -2px rgba(0, 0, 0, .12),
+    0 1px 3px -1px rgba(0, 0, 0, .08),
+    inset 0 0 0 1px $ouiFormBorderColor !important;
+  }
+}
+
+.ouiFormControlLayout--group {
+  transition: box-shadow $ouiAnimSpeedNormal ease-in-out !important;
+
+  &:hover {
+    box-shadow:
+    0 2px 8px -2px rgba(0, 0, 0, .12),
+    0 1px 3px -1px rgba(0, 0, 0, .08),
+    inset 0 0 0 1px $ouiFormBorderColor !important;
+  }
+}
+// sass-lint:enable no-important, no-color-literals, no-mergeable-selectors
+
+// sass-lint:disable no-important
 .ouiFormControlLayout:not(.ouiFormControlLayout--group) {
   > .ouiFieldText,
   > .ouiFieldSearch,
@@ -158,9 +214,17 @@
 // sass-lint:disable no-important
 .ouiSuperDatePicker .ouiFormControlLayout--group,
 .ouiCompressedSuperDatePicker .ouiFormControlLayout--group {
-  > *,
-  > * > * {
+  border-radius: $ouiFormControlBorderRadius !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  border: 1px solid $ouiFormBorderColor !important;
+  background-color: $ouiFormInputGroupLabelBackground !important;
+
+  // Reset all inner elements to no radius — overflow: hidden on the group handles clipping
+  * {
     border-radius: 0 !important;
+    box-shadow: none !important;
   }
 }
 // sass-lint:enable no-important
@@ -168,8 +232,8 @@
 // Backdrop blur on modal and flyout overlays
 // sass-lint:disable no-important, no-color-literals
 .ouiOverlayMask {
-  backdrop-filter: blur(12px);
-  background-color: rgba(0, 0, 0, .45) !important;
+  backdrop-filter: blur(20px);
+  background-color: rgba(red($ouiPageBackgroundColor), green($ouiPageBackgroundColor), blue($ouiPageBackgroundColor), .6) !important;
 }
 // sass-lint:enable no-important, no-color-literals
 
@@ -187,6 +251,23 @@
 
 .ouiFormControlLayoutDelimited__delimeter {
   background-color: transparent !important;
+}
+// sass-lint:enable no-important
+
+// Keep file picker at the original (larger) height — exclude the large (drag-and-drop) variant
+// sass-lint:disable no-important
+.ouiFilePicker:not(.ouiFilePicker--large) {
+  height: $ouiSizeXXL !important;
+}
+
+.ouiFilePicker:not(.ouiFilePicker--large) > .ouiFilePicker__prompt {
+  height: $ouiSizeXXL !important;
+}
+
+// Ensure file picker prompt background matches other form inputs
+.ouiFilePicker__prompt {
+  background-image: none !important;
+  box-shadow: inset 0 0 0 1px $ouiFormBorderColor !important;
 }
 // sass-lint:enable no-important
 
@@ -210,4 +291,71 @@
     background-color: shade($ouiFormInputGroupLabelBackground, 10%) !important;
   }
 }
+
+// Vertically center label text in prepend/append elements
+.ouiFormControlLayout--group .ouiFormLabel,
+.ouiFormControlLayout--group .ouiText {
+  @include ouiFontSizeXS;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  line-height: normal !important;
+}
+
+// Ensure all elements inside prepend/append stretch and center (e.g. tooltip spans)
+.ouiFormControlLayout--group > .ouiFormControlLayout__prepend,
+.ouiFormControlLayout--group > .ouiFormControlLayout__append {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.ouiFormControlLayout__prepend > *,
+.ouiFormControlLayout__append > * {
+  display: flex !important;
+  align-items: center !important;
+}
+
+// Normalize line-height on text elements inside prepend/append so text sits centered
+.ouiFormControlLayout__prepend .ouiText,
+.ouiFormControlLayout__append .ouiText,
+.ouiFormControlLayout__prepend .ouiText p,
+.ouiFormControlLayout__append .ouiText p {
+  line-height: 1 !important;
+  margin-bottom: 0 !important;
+}
 // sass-lint:enable no-important
+
+// Super date picker — compacted by default, expands on interaction
+// sass-lint:disable no-important, leading-zero
+.ouiSuperDatePicker__flexWrapper {
+  width: 300px !important;
+  transition: width 450ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+  overflow: hidden;
+
+  &:focus-within,
+  &:hover,
+  &--isOpen {
+    width: $ouiSuperDatePickerWidth + $ouiSuperDatePickerButtonWidth + $ouiSizeS !important;
+  }
+}
+
+.ouiSuperDatePicker__flexWrapper--noUpdateButton {
+  &:focus-within,
+  &:hover,
+  &.ouiSuperDatePicker__flexWrapper--isOpen {
+    width: $ouiSuperDatePickerWidth !important;
+  }
+}
+
+// Compressed variant
+.ouiCompressedSuperDatePicker .ouiSuperDatePicker__flexWrapper {
+  width: 260px !important;
+
+  &:focus-within,
+  &:hover,
+  &.ouiSuperDatePicker__flexWrapper--isOpen {
+    width: $ouiSuperDatePickerWidth + $ouiSuperDatePickerButtonWidth + $ouiSizeS !important;
+  }
+}
+// sass-lint:enable no-important, leading-zero
