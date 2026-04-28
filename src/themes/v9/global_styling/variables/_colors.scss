@@ -18,9 +18,9 @@ $ouiColorGhost: #FCFEFF !default;
 $ouiColorInk: #02020E !default;
 
 // Core - Warm stone with sky blue
-$ouiColorPrimary: #0084D1 !default;      // Sky blue
+$ouiColorPrimary: #1C1917 !default;      // oklch(0.216 0.006 56.043)
 $ouiColorSecondary: #4B5563 !default;    // Cool gray
-$ouiColorAccent: #ED6AFF !default;       // oklch(0.74 0.238 322.16)
+$ouiColorAccent: #F6339A !default;       // Hot pink accent
 
 // Status
 $ouiColorSuccess: #059669 !default;      // Emerald-600
@@ -31,10 +31,10 @@ $ouiColorDanger: #EF4444 !default;       // Red
 $ouiColorEmptyShade: #F5F5F4 !default;   // Stone-100 card
 $ouiColorLightestShade: #E7E5E4 !default; // Stone-200 muted bg
 $ouiColorLightShade: #D6D3D1 !default;   // Stone-300 border
-$ouiColorMediumShade: #6B7280 !default;  // Gray-500 muted text
-$ouiColorDarkShade: #374151 !default;    // Gray-700
-$ouiColorDarkestShade: #1E293B !default; // Slate-800 foreground
-$ouiColorFullShade: #0F172A !default;    // Slate-900
+$ouiColorMediumShade: #79716B !default;  // Stone-500 muted text
+$ouiColorDarkShade: #57534D !default;    // Stone-600
+$ouiColorDarkestShade: #57534D !default; // Stone-600 foreground
+$ouiColorFullShade: #1C1917 !default;    // Stone-900
 
 // Backgrounds
 $ouiPageBackgroundColor: #E7E5E4 !default; // Stone-200
@@ -43,7 +43,7 @@ $ouiColorHighlight: #E7E5E4 !default;    // Stone-200 highlight
 // Every color below must be based mathematically on the set above and in a particular order.
 $ouiTextColor: $ouiColorDarkestShade !default;
 $ouiTitleColor: shade($ouiTextColor, 50%) !default;
-$ouiTextSubduedColor: makeHighContrastColor($ouiColorMediumShade) !default;
+$ouiTextSubduedColor: #79716B !default;
 $ouiColorDisabled: tint($ouiTextColor, 70%) !default;
 
 // Contrasty text variants

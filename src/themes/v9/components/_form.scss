@@ -159,6 +159,13 @@
 }
 // sass-lint:enable no-important
 
+// Add padding to date popover content so tabs don't touch the edges
+// sass-lint:disable no-important
+.ouiDatePopoverContent {
+  padding: $ouiSizeS !important;
+}
+// sass-lint:enable no-important
+
 // Hover contrast for context menus, popovers, and dropdowns
 .ouiContextMenuItem:enabled:hover,
 .ouiContextMenuItem:enabled:focus,
