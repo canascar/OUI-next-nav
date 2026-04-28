@@ -13,7 +13,7 @@
   @include ouiBottomShadow($color: $ouiColorInk);
   border-radius: $ouiBorderRadiusSmall;
   background-color: $ouiTooltipBackgroundColor;
-  color: $ouiColorGhost;
+  color: lightOrDarkTheme($ouiColorGhost, $ouiColorInk);
   z-index: $ouiZLevel9;
   max-width: 256px;
   overflow-wrap: break-word;

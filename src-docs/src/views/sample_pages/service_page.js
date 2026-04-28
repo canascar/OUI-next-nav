@@ -12,7 +12,6 @@
 import React, { useState } from 'react';
 
 import {
-  OuiSimplifiedBreadcrumbs,
   OuiSuperDatePicker,
   OuiFieldSearch,
   OuiBasicTable,
@@ -145,11 +144,6 @@ const LATENCY_TABS = [
   { id: 'p99', label: 'P99' },
   { id: 'p90', label: 'P90' },
   { id: 'p50', label: 'P50' },
-];
-
-const breadcrumbs = [
-  { text: 'APM Observability', href: '#', onClick: (e) => e.preventDefault() },
-  { text: '' },
 ];
 
 // --- Sparkline placeholder (simple inline SVG) ---
@@ -583,26 +577,6 @@ export const ServicePage = () => {
 
   return (
     <div style={{ minHeight: '100%' }}>
-      {/* Breadcrumbs */}
-      <OuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
-        <OuiFlexItem grow={false}>
-          <OuiButtonIcon
-            iconType="gear"
-            aria-label="Settings"
-            size="s"
-            color="text"
-          />
-        </OuiFlexItem>
-        <OuiFlexItem grow={false}>
-          <OuiSimplifiedBreadcrumbs
-            breadcrumbs={breadcrumbs}
-            truncate={false}
-            aria-label="Service page breadcrumbs"
-          />
-        </OuiFlexItem>
-      </OuiFlexGroup>
-      <OuiSpacer size="s" />
-
       {/* Page title + APM Settings */}
       <OuiFlexGroup
         justifyContent="spaceBetween"

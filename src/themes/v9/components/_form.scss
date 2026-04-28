@@ -203,10 +203,18 @@
 .ouiPopover__panel {
   border: 1px solid $ouiColorLightShade !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, .15), 0 2px 8px rgba(0, 0, 0, .1) !important;
-  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .65) !important;
+  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .6) !important;
   backdrop-filter: blur(12px);
 }
 // sass-lint:enable no-important, no-color-literals, leading-zero
+
+// Ensure dropdown panels have border radius on all corners
+// sass-lint:disable no-important
+.ouiComboBoxOptionsList,
+.ouiPopover__panel-isAttached {
+  border-radius: $ouiFormControlBorderRadius !important;
+}
+// sass-lint:enable no-important
 
 // Hover and active states in popovers and nav panels
 // sass-lint:disable no-important, no-color-literals
@@ -240,7 +248,7 @@
 // sass-lint:disable no-important, no-color-literals
 .ouiOverlayMask {
   backdrop-filter: blur(20px);
-  background-color: rgba(red($ouiPageBackgroundColor), green($ouiPageBackgroundColor), blue($ouiPageBackgroundColor), .6) !important;
+  background-color: rgba(red($ouiPageBackgroundColor), green($ouiPageBackgroundColor), blue($ouiPageBackgroundColor), .4) !important;
 }
 // sass-lint:enable no-important, no-color-literals
 

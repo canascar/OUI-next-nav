@@ -3,16 +3,46 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// Force light text on filled buttons for specific variants
-// where chooseLightOrDarkText() picks black due to color luminance.
-.ouiButton--primary.ouiButton--fill:not(.ouiButton-isDisabled),
+// sass-lint:disable no-important
+
+// Override primary button colors to use v9 primary color
+.ouiButton--primary {
+  color: $ouiColorPrimary !important;
+  border-color: $ouiColorPrimary !important;
+
+  &.ouiButton--fill:not(.ouiButton-isDisabled) {
+    background-color: $ouiColorPrimary !important;
+    border-color: $ouiColorPrimary !important;
+    color: lightOrDarkTheme($ouiColorEmptyShade, $ouiColorInk) !important;
+
+    .ouiButton__text,
+    .ouiButton__icon {
+      color: lightOrDarkTheme($ouiColorEmptyShade, $ouiColorInk) !important;
+    }
+  }
+}
+
+// Force correct text on other filled button variants
 .ouiButton--success.ouiButton--fill:not(.ouiButton-isDisabled),
 .ouiButton--text.ouiButton--fill:not(.ouiButton-isDisabled),
 .ouiButton--danger.ouiButton--fill:not(.ouiButton-isDisabled) {
-  color: $ouiColorEmptyShade;
+  color: $ouiColorEmptyShade !important;
 
   .ouiButton__text,
   .ouiButton__icon {
-    color: $ouiColorEmptyShade;
+    color: $ouiColorEmptyShade !important;
   }
 }
+
+// Override success button colors to use green
+.ouiButton--success {
+  color: $ouiColorSecondary !important;
+  border-color: $ouiColorSecondary !important;
+
+  &.ouiButton--fill:not(.ouiButton-isDisabled) {
+    background-color: $ouiColorSecondary !important;
+    border-color: $ouiColorSecondary !important;
+  }
+}
+
+// sass-lint:enable no-important
