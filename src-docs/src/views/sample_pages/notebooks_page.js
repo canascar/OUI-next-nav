@@ -11,12 +11,30 @@ const ITEMS_MAP = {
 };
 
 const ITEMS_LIST = [
-  { key: 'notebook-runbook', label: 'Runbook checklist', subtitle: 'Last edited 2 hours ago' },
-  { key: 'notebook-incident', label: 'Incident postmortem', subtitle: 'Last edited 1 day ago' },
-  { key: 'notebook-capacity', label: 'Capacity planning', subtitle: 'Last edited 3 days ago' },
+  {
+    key: 'notebook-runbook',
+    label: 'Runbook checklist',
+    subtitle: 'Last edited 2 hours ago',
+  },
+  {
+    key: 'notebook-incident',
+    label: 'Incident postmortem',
+    subtitle: 'Last edited 1 day ago',
+  },
+  {
+    key: 'notebook-capacity',
+    label: 'Capacity planning',
+    subtitle: 'Last edited 3 days ago',
+  },
 ];
 
-export const NotebooksPage = ({ selectedItem, onItemSelect, onContinueAsThread, isPanelOpen, onTogglePanel }) => (
+export const NotebooksPage = ({
+  selectedItem,
+  onItemSelect,
+  onContinueAsThread,
+  isPanelOpen,
+  onTogglePanel,
+}) => (
   <PlaceholderPage
     title={ITEMS_MAP[selectedItem] || 'Notebooks'}
     bodyText="Notebook content will appear here."

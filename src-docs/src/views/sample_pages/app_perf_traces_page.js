@@ -24,7 +24,10 @@ export const AppPerfTracesPage = ({ onContinueAsThread }) => {
         flexDirection: 'column',
         overflow: 'hidden',
       }}>
-      <DetailPageHeader title="Application Performance Traces" onContinueAsThread={onContinueAsThread} />
+      <DetailPageHeader
+        title="Application Performance Traces"
+        onContinueAsThread={onContinueAsThread}
+      />
       <div
         style={{
           flex: 1,

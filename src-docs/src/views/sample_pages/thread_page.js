@@ -367,7 +367,13 @@ const MOCK_RESPONSES = [
 
 const NEW_THREAD = { title: 'New thread', messages: [] };
 
-export const ThreadPage = ({ selectedItem, onItemSelect, pendingMessages, isPanelOpen, onTogglePanel }) => {
+export const ThreadPage = ({
+  selectedItem,
+  _onItemSelect,
+  pendingMessages,
+  isPanelOpen,
+  onTogglePanel,
+}) => {
   const threadKey = selectedItem || 'latency-spike';
   const thread = THREADS[threadKey] || NEW_THREAD;
   const initialMessages = pendingMessages || thread.messages;
@@ -573,10 +579,11 @@ export const ThreadPage = ({ selectedItem, onItemSelect, pendingMessages, isPane
         firstActionIcon="layers"
         firstActionLabel="Canvas"
         onFirstAction={() => setIsCanvasOpen((open) => !open)}
-        hideAskAi
-      >
+        hideAskAi>
         {thread.title}
-        <div className="threadPage__avatarGroup" style={{ display: 'inline-flex', marginLeft: 8 }}>
+        <div
+          className="threadPage__avatarGroup"
+          style={{ display: 'inline-flex', marginLeft: 8 }}>
           {authors.map((name) => (
             <OuiAvatar key={name} size="s" name={name} />
           ))}

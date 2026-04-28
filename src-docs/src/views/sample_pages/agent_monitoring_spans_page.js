@@ -24,7 +24,10 @@ export const AgentMonitoringSpansPage = ({ onContinueAsThread }) => {
         flexDirection: 'column',
         overflow: 'hidden',
       }}>
-      <DetailPageHeader title="Agent Monitoring Spans" onContinueAsThread={onContinueAsThread} />
+      <DetailPageHeader
+        title="Agent Monitoring Spans"
+        onContinueAsThread={onContinueAsThread}
+      />
       <div
         style={{
           flex: 1,

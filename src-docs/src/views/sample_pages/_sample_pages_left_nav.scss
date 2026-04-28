@@ -102,6 +102,89 @@
 }
 
 // ============================================================
+// WORKSPACE POPOVER
+// ============================================================
+.samplePagesLeftNav__workspacePopover {
+  margin: -8px; // counteract OuiPopover panelPaddingSize="s"
+}
+
+.samplePagesLeftNav__workspacePopoverContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+
+  > div {
+    width: 100%;
+  }
+
+  .ouiPopover,
+  .ouiPopover__anchor {
+    width: 100%;
+  }
+}
+
+.samplePagesLeftNav__workspacePicker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  padding: 0 8px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.samplePagesLeftNav__workspacePickerInfo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.samplePagesLeftNav__workspacePickerText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.samplePagesLeftNav__workspacePickerName {
+  font-size: $ouiFontSizeS;
+  font-weight: 700;
+  line-height: 20px;
+  color: $ouiTextColor;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.samplePagesLeftNav__workspacePickerType {
+  font-size: 10.5px;
+  line-height: 18px;
+  color: $ouiColorDarkShade;
+  letter-spacing: -0.08px;
+}
+
+// ============================================================
+// PROFILE POPOVER
+// ============================================================
+.samplePagesLeftNav__profilePopoverHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 48px;
+  padding: 0 16px;
+  border-bottom: 1px solid $ouiBorderColor;
+}
+
+.samplePagesLeftNav__profilePopoverName {
+  font-size: $ouiFontSizeXS;
+  line-height: 18px;
+  color: $ouiTextColor;
+}
+
+// ============================================================
 // THREAD POPOVER (Recent Thread panel in collapsed mode)
 // ============================================================
 .samplePagesLeftNav__threadPopover {
@@ -292,6 +375,16 @@
 }
 
 .samplePagesLeftNav__footer .ouiAvatar {
+  flex-shrink: 0;
+}
+
+// 32x32 container for footer items — matches nav body items
+.samplePagesLeftNav__footerItem {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 
@@ -534,7 +627,7 @@
 // Footer in expanded mode
 .samplePagesLeftNav__footerExpanded {
   flex-shrink: 0;
-  padding: 12px 0;
+  padding: 8px 0;
 }
 
 .samplePagesLeftNav__footerIcons {

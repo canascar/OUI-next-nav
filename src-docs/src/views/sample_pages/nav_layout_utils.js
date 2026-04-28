@@ -16,8 +16,16 @@ export const ALL_DRAGGABLE_ITEMS = [
     label: 'Agent Monitoring Spans',
     icon: 'visTagCloud',
   },
-  { key: 'app-perf-traces', label: 'Application Performance Traces', icon: 'apmTrace' },
-  { key: 'app-perf-services', label: 'Application Performance Services', icon: 'navServices' },
+  {
+    key: 'app-perf-traces',
+    label: 'Application Performance Traces',
+    icon: 'apmTrace',
+  },
+  {
+    key: 'app-perf-services',
+    label: 'Application Performance Services',
+    icon: 'navServices',
+  },
   { key: 'tools', label: 'Tools', icon: 'wrench' },
   { key: 'manage-workspace', label: 'Workspace', icon: 'wsSelector' },
 ];

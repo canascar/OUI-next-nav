@@ -33,7 +33,10 @@ export const AssetsPage = ({ selectedItem, onContinueAsThread }) => {
         flexDirection: 'column',
         overflow: 'hidden',
       }}>
-      <DetailPageHeader title={ITEM_LABELS[selectedItem] || 'Assets'} onContinueAsThread={onContinueAsThread} />
+      <DetailPageHeader
+        title={ITEM_LABELS[selectedItem] || 'Assets'}
+        onContinueAsThread={onContinueAsThread}
+      />
       <div
         style={{
           flex: 1,

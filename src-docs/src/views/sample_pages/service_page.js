@@ -622,7 +622,10 @@ export const ServicePage = ({ onContinueAsThread }) => {
         overflow: 'hidden',
       }}>
       {/* Page title + date picker + actions */}
-      <DetailPageHeader title="Application Performance Services" onContinueAsThread={onContinueAsThread} />
+      <DetailPageHeader
+        title="Application Performance Services"
+        onContinueAsThread={onContinueAsThread}
+      />
 
       {/* Tab bar */}
       <div className="servicePage__tabBar">
@@ -690,7 +693,13 @@ export const ServicePage = ({ onContinueAsThread }) => {
 
         {/* Main content column */}
         <div className="servicePage__contentCol">
-          <div style={{ padding: '0', overflowY: 'auto', overflowX: 'hidden', flex: 1 }}>
+          <div
+            style={{
+              padding: '0',
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              flex: 1,
+            }}>
             {/* Top summary panels */}
             <OuiFlexGroup gutterSize="m">
               <OuiFlexItem>

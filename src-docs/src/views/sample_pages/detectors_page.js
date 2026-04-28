@@ -11,12 +11,30 @@ const ITEMS_MAP = {
 };
 
 const ITEMS_LIST = [
-  { key: 'detector-cpu', label: 'CPU anomaly detector', subtitle: 'ML · Active' },
-  { key: 'detector-latency', label: 'Latency anomaly detector', subtitle: 'ML · Active' },
-  { key: 'detector-error', label: 'Error rate detector', subtitle: 'ML · Draft' },
+  {
+    key: 'detector-cpu',
+    label: 'CPU anomaly detector',
+    subtitle: 'ML · Active',
+  },
+  {
+    key: 'detector-latency',
+    label: 'Latency anomaly detector',
+    subtitle: 'ML · Active',
+  },
+  {
+    key: 'detector-error',
+    label: 'Error rate detector',
+    subtitle: 'ML · Draft',
+  },
 ];
 
-export const DetectorsPage = ({ selectedItem, onItemSelect, onContinueAsThread, isPanelOpen, onTogglePanel }) => (
+export const DetectorsPage = ({
+  selectedItem,
+  onItemSelect,
+  onContinueAsThread,
+  isPanelOpen,
+  onTogglePanel,
+}) => (
   <PlaceholderPage
     title={ITEMS_MAP[selectedItem] || 'Detectors'}
     bodyText="Detector details will appear here."

@@ -24,7 +24,10 @@ export const ApplicationMapPage = ({ onContinueAsThread }) => {
         flexDirection: 'column',
         overflow: 'hidden',
       }}>
-      <DetailPageHeader title="Application map" onContinueAsThread={onContinueAsThread} />
+      <DetailPageHeader
+        title="Application map"
+        onContinueAsThread={onContinueAsThread}
+      />
       <div
         style={{
           flex: 1,

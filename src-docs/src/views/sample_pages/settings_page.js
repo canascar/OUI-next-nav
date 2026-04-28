@@ -11,11 +11,7 @@
 
 import React, { useState } from 'react';
 
-import {
-  OuiTab,
-  OuiTabs,
-  OuiText,
-} from '../../../../src/components';
+import { OuiTab, OuiTabs, OuiText } from '../../../../src/components';
 
 import { DetailPageHeader } from './detail_page_header';
 

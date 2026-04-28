@@ -147,17 +147,13 @@ const renderPage = (
     case 'agent-monitoring-traces':
       return (
         <OuiErrorBoundary>
-          <AgentMonitoringTracesPage
-            onContinueAsThread={onContinueAsThread}
-          />
+          <AgentMonitoringTracesPage onContinueAsThread={onContinueAsThread} />
         </OuiErrorBoundary>
       );
     case 'agent-monitoring-spans':
       return (
         <OuiErrorBoundary>
-          <AgentMonitoringSpansPage
-            onContinueAsThread={onContinueAsThread}
-          />
+          <AgentMonitoringSpansPage onContinueAsThread={onContinueAsThread} />
         </OuiErrorBoundary>
       );
     case 'app-perf-traces':
@@ -169,7 +165,13 @@ const renderPage = (
     case 'notebooks':
       return (
         <OuiErrorBoundary>
-          <NotebooksPage selectedItem={selectedItem} onItemSelect={onItemSelect} onContinueAsThread={onContinueAsThread} isPanelOpen={isPanelOpen} onTogglePanel={onTogglePanel} />
+          <NotebooksPage
+            selectedItem={selectedItem}
+            onItemSelect={onItemSelect}
+            onContinueAsThread={onContinueAsThread}
+            isPanelOpen={isPanelOpen}
+            onTogglePanel={onTogglePanel}
+          />
         </OuiErrorBoundary>
       );
     case 'anomaly-dashboard':
@@ -181,7 +183,13 @@ const renderPage = (
     case 'detectors':
       return (
         <OuiErrorBoundary>
-          <DetectorsPage selectedItem={selectedItem} onItemSelect={onItemSelect} onContinueAsThread={onContinueAsThread} isPanelOpen={isPanelOpen} onTogglePanel={onTogglePanel} />
+          <DetectorsPage
+            selectedItem={selectedItem}
+            onItemSelect={onItemSelect}
+            onContinueAsThread={onContinueAsThread}
+            isPanelOpen={isPanelOpen}
+            onTogglePanel={onTogglePanel}
+          />
         </OuiErrorBoundary>
       );
     case 'forecasters':
@@ -193,13 +201,25 @@ const renderPage = (
     case 'alerts-detail':
       return (
         <OuiErrorBoundary>
-          <AlertsDetailPage selectedItem={selectedItem} onItemSelect={onItemSelect} onContinueAsThread={onContinueAsThread} isPanelOpen={isPanelOpen} onTogglePanel={onTogglePanel} />
+          <AlertsDetailPage
+            selectedItem={selectedItem}
+            onItemSelect={onItemSelect}
+            onContinueAsThread={onContinueAsThread}
+            isPanelOpen={isPanelOpen}
+            onTogglePanel={onTogglePanel}
+          />
         </OuiErrorBoundary>
       );
     case 'monitors-detail':
       return (
         <OuiErrorBoundary>
-          <MonitorsPage selectedItem={selectedItem} onItemSelect={onItemSelect} onContinueAsThread={onContinueAsThread} isPanelOpen={isPanelOpen} onTogglePanel={onTogglePanel} />
+          <MonitorsPage
+            selectedItem={selectedItem}
+            onItemSelect={onItemSelect}
+            onContinueAsThread={onContinueAsThread}
+            isPanelOpen={isPanelOpen}
+            onTogglePanel={onTogglePanel}
+          />
         </OuiErrorBoundary>
       );
     case 'destinations':
@@ -211,31 +231,61 @@ const renderPage = (
     case 'data-sources':
       return (
         <OuiErrorBoundary>
-          <DataSourcesPage selectedItem={selectedItem} onItemSelect={onItemSelect} onContinueAsThread={onContinueAsThread} isPanelOpen={isPanelOpen} onTogglePanel={onTogglePanel} />
+          <DataSourcesPage
+            selectedItem={selectedItem}
+            onItemSelect={onItemSelect}
+            onContinueAsThread={onContinueAsThread}
+            isPanelOpen={isPanelOpen}
+            onTogglePanel={onTogglePanel}
+          />
         </OuiErrorBoundary>
       );
     case 'index-patterns':
       return (
         <OuiErrorBoundary>
-          <IndexPatternsPage selectedItem={selectedItem} onItemSelect={onItemSelect} onContinueAsThread={onContinueAsThread} isPanelOpen={isPanelOpen} onTogglePanel={onTogglePanel} />
+          <IndexPatternsPage
+            selectedItem={selectedItem}
+            onItemSelect={onItemSelect}
+            onContinueAsThread={onContinueAsThread}
+            isPanelOpen={isPanelOpen}
+            onTogglePanel={onTogglePanel}
+          />
         </OuiErrorBoundary>
       );
     case 'datasets':
       return (
         <OuiErrorBoundary>
-          <DatasetsPage selectedItem={selectedItem} onItemSelect={onItemSelect} onContinueAsThread={onContinueAsThread} isPanelOpen={isPanelOpen} onTogglePanel={onTogglePanel} />
+          <DatasetsPage
+            selectedItem={selectedItem}
+            onItemSelect={onItemSelect}
+            onContinueAsThread={onContinueAsThread}
+            isPanelOpen={isPanelOpen}
+            onTogglePanel={onTogglePanel}
+          />
         </OuiErrorBoundary>
       );
     case 'assets-detail':
       return (
         <OuiErrorBoundary>
-          <AssetsDetailPage selectedItem={selectedItem} onItemSelect={onItemSelect} onContinueAsThread={onContinueAsThread} isPanelOpen={isPanelOpen} onTogglePanel={onTogglePanel} />
+          <AssetsDetailPage
+            selectedItem={selectedItem}
+            onItemSelect={onItemSelect}
+            onContinueAsThread={onContinueAsThread}
+            isPanelOpen={isPanelOpen}
+            onTogglePanel={onTogglePanel}
+          />
         </OuiErrorBoundary>
       );
     case 'sample-data':
       return (
         <OuiErrorBoundary>
-          <SampleDataPage selectedItem={selectedItem} onItemSelect={onItemSelect} onContinueAsThread={onContinueAsThread} isPanelOpen={isPanelOpen} onTogglePanel={onTogglePanel} />
+          <SampleDataPage
+            selectedItem={selectedItem}
+            onItemSelect={onItemSelect}
+            onContinueAsThread={onContinueAsThread}
+            isPanelOpen={isPanelOpen}
+            onTogglePanel={onTogglePanel}
+          />
         </OuiErrorBoundary>
       );
     case 'manage-workspace':
@@ -294,100 +344,248 @@ export const SamplePagesView = () => {
     thread: {
       title: 'Thread',
       items: [
-        { key: 'latency-spike', title: 'Latency spike investigation', subtitle: 'Sarah Lee · 2 hours ago' },
-        { key: 'checkout-error', title: 'Checkout error rate alert', subtitle: 'Alex Chen · 5 hours ago' },
-        { key: 'weekly-review', title: 'Weekly service review', subtitle: 'Team Ops · 1 day ago' },
+        {
+          key: 'latency-spike',
+          title: 'Latency spike investigation',
+          subtitle: 'Sarah Lee · 2 hours ago',
+        },
+        {
+          key: 'checkout-error',
+          title: 'Checkout error rate alert',
+          subtitle: 'Alex Chen · 5 hours ago',
+        },
+        {
+          key: 'weekly-review',
+          title: 'Weekly service review',
+          subtitle: 'Team Ops · 1 day ago',
+        },
       ],
     },
     dashboards: {
       title: 'Dashboards',
       items: [
-        { key: 'system-overview', title: 'System overview', subtitle: 'Updated 5 min ago' },
-        { key: 'web-traffic', title: 'Web traffic analytics', subtitle: 'Updated 15 min ago' },
-        { key: 'api-performance', title: 'API performance', subtitle: 'Updated 30 min ago' },
+        {
+          key: 'system-overview',
+          title: 'System overview',
+          subtitle: 'Updated 5 min ago',
+        },
+        {
+          key: 'web-traffic',
+          title: 'Web traffic analytics',
+          subtitle: 'Updated 15 min ago',
+        },
+        {
+          key: 'api-performance',
+          title: 'API performance',
+          subtitle: 'Updated 30 min ago',
+        },
       ],
     },
     discover: {
       title: 'Logs',
       items: [
-        { key: 'error-rate', title: 'Error rate by service', subtitle: 'source=logs | where level="ERROR"' },
-        { key: 'auth-failures', title: 'Auth failure events', subtitle: 'source=logs | where event="auth_fail"' },
-        { key: 'slow-queries', title: 'Slow query log', subtitle: 'source=logs | where duration > 5000' },
-        { key: 'throughput', title: 'Throughput over time', subtitle: 'source=metrics | stats avg(throughput)' },
-        { key: 'cpu-utilization', title: 'CPU utilization', subtitle: 'source=metrics | stats avg(cpu) by host' },
-        { key: 'memory-pressure', title: 'Memory pressure', subtitle: 'source=metrics | stats max(mem_used)' },
+        {
+          key: 'error-rate',
+          title: 'Error rate by service',
+          subtitle: 'source=logs | where level="ERROR"',
+        },
+        {
+          key: 'auth-failures',
+          title: 'Auth failure events',
+          subtitle: 'source=logs | where event="auth_fail"',
+        },
+        {
+          key: 'slow-queries',
+          title: 'Slow query log',
+          subtitle: 'source=logs | where duration > 5000',
+        },
+        {
+          key: 'throughput',
+          title: 'Throughput over time',
+          subtitle: 'source=metrics | stats avg(throughput)',
+        },
+        {
+          key: 'cpu-utilization',
+          title: 'CPU utilization',
+          subtitle: 'source=metrics | stats avg(cpu) by host',
+        },
+        {
+          key: 'memory-pressure',
+          title: 'Memory pressure',
+          subtitle: 'source=metrics | stats max(mem_used)',
+        },
       ],
     },
     notebooks: {
       title: 'Notebooks',
       items: [
-        { key: 'notebook-runbook', title: 'Runbook checklist', subtitle: 'Last edited 2 hours ago' },
-        { key: 'notebook-incident', title: 'Incident postmortem', subtitle: 'Last edited 1 day ago' },
-        { key: 'notebook-capacity', title: 'Capacity planning', subtitle: 'Last edited 3 days ago' },
+        {
+          key: 'notebook-runbook',
+          title: 'Runbook checklist',
+          subtitle: 'Last edited 2 hours ago',
+        },
+        {
+          key: 'notebook-incident',
+          title: 'Incident postmortem',
+          subtitle: 'Last edited 1 day ago',
+        },
+        {
+          key: 'notebook-capacity',
+          title: 'Capacity planning',
+          subtitle: 'Last edited 3 days ago',
+        },
       ],
     },
     detectors: {
       title: 'Detectors',
       items: [
-        { key: 'detector-cpu', title: 'CPU anomaly detector', subtitle: 'ML · Active' },
-        { key: 'detector-latency', title: 'Latency anomaly detector', subtitle: 'ML · Active' },
-        { key: 'detector-error', title: 'Error rate detector', subtitle: 'ML · Draft' },
+        {
+          key: 'detector-cpu',
+          title: 'CPU anomaly detector',
+          subtitle: 'ML · Active',
+        },
+        {
+          key: 'detector-latency',
+          title: 'Latency anomaly detector',
+          subtitle: 'ML · Active',
+        },
+        {
+          key: 'detector-error',
+          title: 'Error rate detector',
+          subtitle: 'ML · Draft',
+        },
       ],
     },
     'alerts-detail': {
       title: 'Alerts',
       items: [
-        { key: 'alert-cpu-threshold', title: 'CPU threshold exceeded', subtitle: 'Critical · 10 min ago' },
-        { key: 'alert-disk-usage', title: 'Disk usage warning', subtitle: 'Warning · 1 hour ago' },
-        { key: 'alert-error-spike', title: 'Error rate spike', subtitle: 'Critical · 3 hours ago' },
+        {
+          key: 'alert-cpu-threshold',
+          title: 'CPU threshold exceeded',
+          subtitle: 'Critical · 10 min ago',
+        },
+        {
+          key: 'alert-disk-usage',
+          title: 'Disk usage warning',
+          subtitle: 'Warning · 1 hour ago',
+        },
+        {
+          key: 'alert-error-spike',
+          title: 'Error rate spike',
+          subtitle: 'Critical · 3 hours ago',
+        },
       ],
     },
     'monitors-detail': {
       title: 'Monitors',
       items: [
-        { key: 'monitor-uptime', title: 'Uptime monitor', subtitle: 'HTTP · Every 5 min · Active' },
-        { key: 'monitor-latency', title: 'Latency threshold', subtitle: 'Query · Every 1 min · Active' },
-        { key: 'monitor-log-volume', title: 'Log volume spike', subtitle: 'Bucket · Every 10 min · Paused' },
+        {
+          key: 'monitor-uptime',
+          title: 'Uptime monitor',
+          subtitle: 'HTTP · Every 5 min · Active',
+        },
+        {
+          key: 'monitor-latency',
+          title: 'Latency threshold',
+          subtitle: 'Query · Every 1 min · Active',
+        },
+        {
+          key: 'monitor-log-volume',
+          title: 'Log volume spike',
+          subtitle: 'Bucket · Every 10 min · Paused',
+        },
       ],
     },
     'data-sources': {
       title: 'Data sources',
       items: [
-        { key: 'ds-faos219prod', title: 'FAOS219prod', subtitle: 'OpenSearch 2.19 · Production' },
-        { key: 'ds-os-219', title: 'OS 219', subtitle: 'OpenSearch 2.19 · Development' },
-        { key: 'ds-olly-stable', title: 'Olly@stableDefault', subtitle: 'OpenSearch · Observability' },
+        {
+          key: 'ds-faos219prod',
+          title: 'FAOS219prod',
+          subtitle: 'OpenSearch 2.19 · Production',
+        },
+        {
+          key: 'ds-os-219',
+          title: 'OS 219',
+          subtitle: 'OpenSearch 2.19 · Development',
+        },
+        {
+          key: 'ds-olly-stable',
+          title: 'Olly@stableDefault',
+          subtitle: 'OpenSearch · Observability',
+        },
       ],
     },
     'index-patterns': {
       title: 'Index patterns',
       items: [
         { key: 'ip-logs', title: 'logs-*', subtitle: 'Matches 12 indices' },
-        { key: 'ip-metrics', title: 'metrics-*', subtitle: 'Matches 8 indices' },
+        {
+          key: 'ip-metrics',
+          title: 'metrics-*',
+          subtitle: 'Matches 8 indices',
+        },
         { key: 'ip-traces', title: 'traces-*', subtitle: 'Matches 5 indices' },
       ],
     },
     datasets: {
       title: 'Datasets',
       items: [
-        { key: 'dataset-web-logs', title: 'Web server logs', subtitle: '2.4 GB · Updated 5 min ago' },
-        { key: 'dataset-app-traces', title: 'Application traces', subtitle: '1.1 GB · Updated 10 min ago' },
-        { key: 'dataset-system-metrics', title: 'System metrics', subtitle: '890 MB · Updated 1 min ago' },
+        {
+          key: 'dataset-web-logs',
+          title: 'Web server logs',
+          subtitle: '2.4 GB · Updated 5 min ago',
+        },
+        {
+          key: 'dataset-app-traces',
+          title: 'Application traces',
+          subtitle: '1.1 GB · Updated 10 min ago',
+        },
+        {
+          key: 'dataset-system-metrics',
+          title: 'System metrics',
+          subtitle: '890 MB · Updated 1 min ago',
+        },
       ],
     },
     'assets-detail': {
       title: 'Assets',
       items: [
-        { key: 'asset-web-fleet', title: 'Web server fleet', subtitle: '12 hosts · Healthy' },
-        { key: 'asset-payment', title: 'Payment gateway', subtitle: '3 endpoints · Warning' },
-        { key: 'asset-pipeline', title: 'Data pipeline cluster', subtitle: '8 nodes · Healthy' },
+        {
+          key: 'asset-web-fleet',
+          title: 'Web server fleet',
+          subtitle: '12 hosts · Healthy',
+        },
+        {
+          key: 'asset-payment',
+          title: 'Payment gateway',
+          subtitle: '3 endpoints · Warning',
+        },
+        {
+          key: 'asset-pipeline',
+          title: 'Data pipeline cluster',
+          subtitle: '8 nodes · Healthy',
+        },
       ],
     },
     'sample-data': {
       title: 'Sample data',
       items: [
-        { key: 'sample-ecommerce', title: 'Sample eCommerce orders', subtitle: 'Preloaded dataset' },
-        { key: 'sample-flights', title: 'Sample flight data', subtitle: 'Preloaded dataset' },
-        { key: 'sample-web-logs', title: 'Sample web logs', subtitle: 'Preloaded dataset' },
+        {
+          key: 'sample-ecommerce',
+          title: 'Sample eCommerce orders',
+          subtitle: 'Preloaded dataset',
+        },
+        {
+          key: 'sample-flights',
+          title: 'Sample flight data',
+          subtitle: 'Preloaded dataset',
+        },
+        {
+          key: 'sample-web-logs',
+          title: 'Sample web logs',
+          subtitle: 'Preloaded dataset',
+        },
       ],
     },
   };
@@ -560,7 +758,12 @@ export const SamplePagesView = () => {
           transition: 'gap 200ms ease-out',
         }}>
         {panelConfig && isPanelOpen && (
-          <div className={`samplePagesContentPanel samplePagesContentPanel--sidePanel${isPanelCollapsing ? ' samplePagesContentPanel--sidePanelCollapsing' : ''}`}>
+          <div
+            className={`samplePagesContentPanel samplePagesContentPanel--sidePanel${
+              isPanelCollapsing
+                ? ' samplePagesContentPanel--sidePanelCollapsing'
+                : ''
+            }`}>
             <DetailPagePanel
               title={panelConfig.title}
               items={panelConfig.items}
@@ -570,7 +773,9 @@ export const SamplePagesView = () => {
             />
           </div>
         )}
-        <div className="samplePagesContentPanel" style={{ flex: 1, minWidth: 0 }}>
+        <div
+          className="samplePagesContentPanel"
+          style={{ flex: 1, minWidth: 0 }}>
           {renderPage(
             activePage,
             selectedItem,
@@ -583,7 +788,7 @@ export const SamplePagesView = () => {
             },
             setSelectedItem,
             isPanelOpen,
-            () => isPanelOpen ? handlePanelClose() : setIsPanelOpen(true)
+            () => (isPanelOpen ? handlePanelClose() : setIsPanelOpen(true))
           )}
         </div>
       </div>

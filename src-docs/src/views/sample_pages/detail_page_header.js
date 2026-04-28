@@ -13,7 +13,17 @@ import React from 'react';
 import { OuiButtonIcon, OuiToolTip } from '../../../../src/components';
 import { AskAiPopover } from './ask_ai_popover';
 
-export const DetailPageHeader = ({ title, onContinueAsThread, children, isPanelOpen, onTogglePanel, firstActionIcon = 'controlsHorizontal', firstActionLabel = 'Settings', onFirstAction, hideAskAi = false }) => {
+export const DetailPageHeader = ({
+  title,
+  onContinueAsThread,
+  children,
+  isPanelOpen,
+  onTogglePanel,
+  firstActionIcon = 'controlsHorizontal',
+  firstActionLabel = 'Settings',
+  onFirstAction,
+  hideAskAi = false,
+}) => {
   const [isAskAiOpen, setIsAskAiOpen] = React.useState(false);
 
   return (
@@ -24,7 +34,13 @@ export const DetailPageHeader = ({ title, onContinueAsThread, children, isPanelO
           className="detailPageHeader__panelToggle"
           aria-label={isPanelOpen ? 'Close panel' : 'Open panel'}
           onClick={onTogglePanel}>
-          <OuiButtonIcon iconType={isPanelOpen ? 'folderOpen' : 'folderClosed'} aria-label={isPanelOpen ? 'Close panel' : 'Open panel'} size="s" color="text" display="empty" />
+          <OuiButtonIcon
+            iconType={isPanelOpen ? 'folderOpen' : 'folderClosed'}
+            aria-label={isPanelOpen ? 'Close panel' : 'Open panel'}
+            size="s"
+            color="text"
+            display="empty"
+          />
         </button>
       )}
       <div className="detailPageHeader__title">

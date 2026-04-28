@@ -15,9 +15,24 @@ import { DetailPageHeader } from './detail_page_header';
 
 export const TopologyMapPage = ({ onContinueAsThread }) => {
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      <DetailPageHeader title="Topology Map" onContinueAsThread={onContinueAsThread} />
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div
+      style={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}>
+      <DetailPageHeader
+        title="Topology Map"
+        onContinueAsThread={onContinueAsThread}
+      />
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
         <OuiText color="subdued" textAlign="center">
           <p>Topology map visualization will appear here.</p>
         </OuiText>

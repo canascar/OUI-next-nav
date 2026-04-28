@@ -482,7 +482,12 @@ const getColumns = (expandedRows, toggleRowExpansion) => [
 
 // --- Main DiscoverPage Component ---
 
-export const DiscoverPage = ({ selectedItem, onContinueAsThread, isPanelOpen, onTogglePanel }) => {
+export const DiscoverPage = ({
+  selectedItem,
+  onContinueAsThread,
+  isPanelOpen,
+  onTogglePanel,
+}) => {
   const queryDef =
     (selectedItem && QUERY_DEFS[selectedItem]) || DEFAULT_QUERY_DEF;
   const results = FLIGHT_DATA;

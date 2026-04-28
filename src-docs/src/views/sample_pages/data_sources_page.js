@@ -11,12 +11,30 @@ const ITEMS_MAP = {
 };
 
 const ITEMS_LIST = [
-  { key: 'ds-faos219prod', label: 'FAOS219prod', subtitle: 'OpenSearch 2.19 · Production' },
-  { key: 'ds-os-219', label: 'OS 219', subtitle: 'OpenSearch 2.19 · Development' },
-  { key: 'ds-olly-stable', label: 'Olly@stableDefault', subtitle: 'OpenSearch · Observability' },
+  {
+    key: 'ds-faos219prod',
+    label: 'FAOS219prod',
+    subtitle: 'OpenSearch 2.19 · Production',
+  },
+  {
+    key: 'ds-os-219',
+    label: 'OS 219',
+    subtitle: 'OpenSearch 2.19 · Development',
+  },
+  {
+    key: 'ds-olly-stable',
+    label: 'Olly@stableDefault',
+    subtitle: 'OpenSearch · Observability',
+  },
 ];
 
-export const DataSourcesPage = ({ selectedItem, onItemSelect, onContinueAsThread, isPanelOpen, onTogglePanel }) => (
+export const DataSourcesPage = ({
+  selectedItem,
+  onItemSelect,
+  onContinueAsThread,
+  isPanelOpen,
+  onTogglePanel,
+}) => (
   <PlaceholderPage
     title={ITEMS_MAP[selectedItem] || 'Data Sources'}
     bodyText="Data source details will appear here."

@@ -11,12 +11,30 @@ const ITEMS_MAP = {
 };
 
 const ITEMS_LIST = [
-  { key: 'sample-ecommerce', label: 'Sample eCommerce orders', subtitle: 'Preloaded dataset' },
-  { key: 'sample-flights', label: 'Sample flight data', subtitle: 'Preloaded dataset' },
-  { key: 'sample-web-logs', label: 'Sample web logs', subtitle: 'Preloaded dataset' },
+  {
+    key: 'sample-ecommerce',
+    label: 'Sample eCommerce orders',
+    subtitle: 'Preloaded dataset',
+  },
+  {
+    key: 'sample-flights',
+    label: 'Sample flight data',
+    subtitle: 'Preloaded dataset',
+  },
+  {
+    key: 'sample-web-logs',
+    label: 'Sample web logs',
+    subtitle: 'Preloaded dataset',
+  },
 ];
 
-export const SampleDataPage = ({ selectedItem, onItemSelect, onContinueAsThread, isPanelOpen, onTogglePanel }) => (
+export const SampleDataPage = ({
+  selectedItem,
+  onItemSelect,
+  onContinueAsThread,
+  isPanelOpen,
+  onTogglePanel,
+}) => (
   <PlaceholderPage
     title={ITEMS_MAP[selectedItem] || 'Sample Data'}
     bodyText="Sample data details will appear here."

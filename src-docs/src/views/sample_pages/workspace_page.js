@@ -11,11 +11,7 @@
 
 import React, { useState } from 'react';
 
-import {
-  OuiTab,
-  OuiTabs,
-  OuiText,
-} from '../../../../src/components';
+import { OuiTab, OuiTabs, OuiText } from '../../../../src/components';
 
 import { DetailPageHeader } from './detail_page_header';
 
@@ -31,7 +27,10 @@ export const WorkspacePage = ({ onContinueAsThread }) => {
         overflow: 'hidden',
       }}>
       {/* Header */}
-      <DetailPageHeader title="Workspace" onContinueAsThread={onContinueAsThread} />
+      <DetailPageHeader
+        title="Workspace"
+        onContinueAsThread={onContinueAsThread}
+      />
 
       {/* Tab bar */}
       <div className="workspacePage__tabBar">

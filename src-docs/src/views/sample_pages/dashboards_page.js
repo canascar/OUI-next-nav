@@ -21,18 +21,36 @@ const DASHBOARD_TITLES = {
   'api-performance': 'API performance',
 };
 
-export const DashboardsPage = ({ selectedItem, onContinueAsThread, isPanelOpen, onTogglePanel }) => {
-  const currentTitle = (selectedItem && DASHBOARD_TITLES[selectedItem]) || 'Dashboards';
+export const DashboardsPage = ({
+  selectedItem,
+  onContinueAsThread,
+  isPanelOpen,
+  onTogglePanel,
+}) => {
+  const currentTitle =
+    (selectedItem && DASHBOARD_TITLES[selectedItem]) || 'Dashboards';
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div
+      style={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}>
       <DetailPageHeader
         title={currentTitle}
         onContinueAsThread={onContinueAsThread}
         isPanelOpen={isPanelOpen}
         onTogglePanel={onTogglePanel}
       />
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
         <OuiText color="subdued" textAlign="center">
           <p>Dashboard detail view will appear here.</p>
         </OuiText>

@@ -36,7 +36,10 @@ export const AlertsPage = ({ selectedItem, onContinueAsThread }) => {
         flexDirection: 'column',
         overflow: 'hidden',
       }}>
-      <DetailPageHeader title={ITEM_LABELS[selectedItem] || 'Alerts'} onContinueAsThread={onContinueAsThread} />
+      <DetailPageHeader
+        title={ITEM_LABELS[selectedItem] || 'Alerts'}
+        onContinueAsThread={onContinueAsThread}
+      />
       <div
         style={{
           flex: 1,

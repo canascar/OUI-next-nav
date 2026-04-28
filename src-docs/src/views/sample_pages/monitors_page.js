@@ -11,12 +11,30 @@ const ITEMS_MAP = {
 };
 
 const ITEMS_LIST = [
-  { key: 'monitor-uptime', label: 'Uptime monitor', subtitle: 'HTTP · Every 5 min · Active' },
-  { key: 'monitor-latency', label: 'Latency threshold', subtitle: 'Query · Every 1 min · Active' },
-  { key: 'monitor-log-volume', label: 'Log volume spike', subtitle: 'Bucket · Every 10 min · Paused' },
+  {
+    key: 'monitor-uptime',
+    label: 'Uptime monitor',
+    subtitle: 'HTTP · Every 5 min · Active',
+  },
+  {
+    key: 'monitor-latency',
+    label: 'Latency threshold',
+    subtitle: 'Query · Every 1 min · Active',
+  },
+  {
+    key: 'monitor-log-volume',
+    label: 'Log volume spike',
+    subtitle: 'Bucket · Every 10 min · Paused',
+  },
 ];
 
-export const MonitorsPage = ({ selectedItem, onItemSelect, onContinueAsThread, isPanelOpen, onTogglePanel }) => (
+export const MonitorsPage = ({
+  selectedItem,
+  onItemSelect,
+  onContinueAsThread,
+  isPanelOpen,
+  onTogglePanel,
+}) => (
   <PlaceholderPage
     title={ITEMS_MAP[selectedItem] || 'Monitors'}
     bodyText="Monitor details will appear here."

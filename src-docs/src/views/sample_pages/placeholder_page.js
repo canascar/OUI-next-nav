@@ -11,9 +11,7 @@
 
 import React from 'react';
 
-import {
-  OuiText,
-} from '../../../../src/components';
+import { OuiText } from '../../../../src/components';
 
 import { DetailPageHeader } from './detail_page_header';
 
@@ -40,10 +38,29 @@ export const PlaceholderPage = ({
 }) => {
   // Always show detail view — the left panel handles the list
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      <DetailPageHeader title={title} onContinueAsThread={onContinueAsThread} isPanelOpen={isPanelOpen} onTogglePanel={onTogglePanel} />
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <OuiText color="subdued" textAlign="center"><p>{bodyText}</p></OuiText>
+    <div
+      style={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}>
+      <DetailPageHeader
+        title={title}
+        onContinueAsThread={onContinueAsThread}
+        isPanelOpen={isPanelOpen}
+        onTogglePanel={onTogglePanel}
+      />
+      <div
+        style={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <OuiText color="subdued" textAlign="center">
+          <p>{bodyText}</p>
+        </OuiText>
       </div>
     </div>
   );

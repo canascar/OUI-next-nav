@@ -11,12 +11,30 @@ const ITEMS_MAP = {
 };
 
 const ITEMS_LIST = [
-  { key: 'asset-web-fleet', label: 'Web server fleet', subtitle: '12 hosts · Healthy' },
-  { key: 'asset-payment', label: 'Payment gateway', subtitle: '3 endpoints · Warning' },
-  { key: 'asset-pipeline', label: 'Data pipeline cluster', subtitle: '8 nodes · Healthy' },
+  {
+    key: 'asset-web-fleet',
+    label: 'Web server fleet',
+    subtitle: '12 hosts · Healthy',
+  },
+  {
+    key: 'asset-payment',
+    label: 'Payment gateway',
+    subtitle: '3 endpoints · Warning',
+  },
+  {
+    key: 'asset-pipeline',
+    label: 'Data pipeline cluster',
+    subtitle: '8 nodes · Healthy',
+  },
 ];
 
-export const AssetsDetailPage = ({ selectedItem, onItemSelect, onContinueAsThread, isPanelOpen, onTogglePanel }) => (
+export const AssetsDetailPage = ({
+  selectedItem,
+  onItemSelect,
+  onContinueAsThread,
+  isPanelOpen,
+  onTogglePanel,
+}) => (
   <PlaceholderPage
     title={ITEMS_MAP[selectedItem] || 'Assets'}
     bodyText="Asset details will appear here."

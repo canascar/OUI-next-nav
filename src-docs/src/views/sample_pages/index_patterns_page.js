@@ -16,7 +16,13 @@ const ITEMS_LIST = [
   { key: 'ip-traces', label: 'traces-*', subtitle: 'Matches 5 indices' },
 ];
 
-export const IndexPatternsPage = ({ selectedItem, onItemSelect, onContinueAsThread, isPanelOpen, onTogglePanel }) => (
+export const IndexPatternsPage = ({
+  selectedItem,
+  onItemSelect,
+  onContinueAsThread,
+  isPanelOpen,
+  onTogglePanel,
+}) => (
   <PlaceholderPage
     title={ITEMS_MAP[selectedItem] || 'Index Patterns'}
     bodyText="Index pattern details will appear here."
