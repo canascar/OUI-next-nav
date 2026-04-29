@@ -92,8 +92,8 @@ const NAV_ITEMS = [
     rulerAfter: true,
     group: 'app-perf',
   },
-  // More tools (collapsible)
-  { key: 'tools', label: 'More tools', icon: 'navQuerySets', group: 'tools' },
+  // More (collapsible)
+  { key: 'tools', label: 'More', icon: 'navQuerySets', group: 'tools' },
 ];
 
 // Items nested under Agent Monitoring in expanded mode
@@ -1322,7 +1322,7 @@ const ToolsPanelContent = ({
   };
   return (
     <div className="samplePagesLeftNav__toolsPopover">
-      <div className="samplePagesLeftNav__toolsPopoverHeader">More tools</div>
+      <div className="samplePagesLeftNav__toolsPopoverHeader">More</div>
       <div className="samplePagesLeftNav__toolsPopoverContent">
         <PopoverItemWithHover pageKey="notebooks" onNavigate={handleNavigate}>
           <button
@@ -2543,9 +2543,9 @@ export const SamplePagesLeftNav = ({
           })}
           <div className="samplePagesLeftNav__spacer" />
 
-          {/* More tools — collapsible with minus/plus toggle */}
+          {/* More — collapsible with minus/plus toggle */}
           <NavGroup
-            label="More tools"
+            label="More"
             isOpen={groupOpen.tools}
             onToggle={() => toggleGroup('tools')}>
             {TOOLS_CHILDREN.map((child) => {

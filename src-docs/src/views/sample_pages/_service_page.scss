@@ -67,6 +67,12 @@
   .ouiTable {
     table-layout: fixed;
   }
+
+  // Restore borders on panels and cards inside the content area
+  // (removed by v9 global .ouiPanel { border: none !important })
+  .ouiPanel {
+    border: $ouiBorderThin !important; // sass-lint:disable-line no-important
+  }
 }
 
 // Filter panel (left sidebar, same pattern as Discover fields panel)
@@ -77,6 +83,8 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  // Restore border removed by v9 global .ouiPanel { border: none !important }
+  border: $ouiBorderThin !important; // sass-lint:disable-line no-important
 
   .ouiRangeWrapper {
     max-width: none;

@@ -73,6 +73,12 @@
   flex: 1;
   min-width: 0;
   overflow: hidden;
+
+  // Restore border on the log/metric results panel
+  // (removed by v9 global .ouiPanel { border: none !important })
+  > div > .ouiPanel {
+    border: $ouiBorderThin !important; // sass-lint:disable-line no-important
+  }
 }
 
 // Fields panel (left sidebar)
@@ -83,6 +89,8 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  // Restore border removed by v9 global .ouiPanel { border: none !important }
+  border: $ouiBorderThin !important; // sass-lint:disable-line no-important
 }
 
 .discoverPage__fieldsPanelHeader {
