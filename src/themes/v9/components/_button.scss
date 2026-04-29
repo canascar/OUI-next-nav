@@ -31,15 +31,15 @@
 }
 // sass-lint:enable no-important
 
-// Outline (non-fill) buttons — faint border with light shade background
+// Outline (non-fill) buttons — faint border with subtle background
 // sass-lint:disable no-important
 .ouiButton:not(.ouiButton--fill):not(.ouiButton-isDisabled) {
-  background-color: $ouiColorLightShade !important;
-  border-color: transparentize($ouiColorLightShade, .5) !important;
+  background-color: lightOrDarkTheme($ouiColorLightestShade, $ouiColorLightShade) !important;
+  border-color: transparentize($ouiColorLightShade, .7) !important;
 
   &:hover,
   &:focus {
-    background-color: darken($ouiColorLightShade, 5%) !important;
+    background-color: lightOrDarkTheme(darken($ouiColorLightestShade, 3%), lighten($ouiColorLightShade, 3%)) !important;
   }
 }
 
@@ -95,6 +95,33 @@
   .ouiButton__text,
   .ouiButton__icon {
     color: $ouiTextColor !important;
+  }
+}
+
+// Ghost outline buttons — dark background in light mode for contrast
+.ouiButton--ghost:not(.ouiButton--fill):not(.ouiButton-isDisabled) {
+  background-color: lightOrDarkTheme($ouiColorDarkShade, $ouiColorLightShade) !important;
+  border-color: lightOrDarkTheme($ouiColorDarkShade, $ouiColorLightShade) !important;
+
+  &:hover,
+  &:focus {
+    background-color: lightOrDarkTheme(lighten($ouiColorDarkShade, 5%), lighten($ouiColorLightShade, 3%)) !important;
+  }
+}
+
+// Disabled buttons — muted background, no color, no outline, faded
+.ouiButton-isDisabled,
+.ouiButton-isDisabled:hover,
+.ouiButton-isDisabled:focus {
+  background-color: $ouiColorLightestShade !important;
+  border-color: transparent !important;
+  color: $ouiColorMediumShade !important;
+  box-shadow: none !important;
+  opacity: .5 !important;
+
+  .ouiButton__text,
+  .ouiButton__icon {
+    color: $ouiColorMediumShade !important;
   }
 }
 // sass-lint:enable no-important

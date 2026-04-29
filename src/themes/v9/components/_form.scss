@@ -139,6 +139,13 @@
 }
 // sass-lint:enable no-important
 
+// Add padding to date popover content so tabs have space
+// sass-lint:disable no-important
+.ouiDatePopoverContent {
+  padding: $ouiSizeS !important;
+}
+// sass-lint:enable no-important
+
 // Large drop shadows on all popovers — no border, higher contrast bg
 // sass-lint:disable no-important, no-color-literals, leading-zero
 .ouiPopover__panel {
