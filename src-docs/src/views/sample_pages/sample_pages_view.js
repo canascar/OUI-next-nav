@@ -63,7 +63,8 @@ const renderPage = (
   onItemSelect,
   isPanelOpen,
   onTogglePanel,
-  onPageChange
+  onPageChange,
+  onNavigate
 ) => {
   switch (activePage) {
     case 'home':
@@ -881,6 +882,15 @@ export const SamplePagesView = () => {
   };
 
   const handlePageChange = (page) => {
+    if (page === activePage) {
+      // Re-clicking the same tab — reopen the panel if it was closed
+      if (!PANEL_CLOSED_BY_DEFAULT.has(page)) {
+        setIsPanelOpen(true);
+        setIsPanelCollapsing(false);
+      }
+      setSelectedItem(DEFAULT_ITEMS[page] || null);
+      return;
+    }
     setActivePage(page);
     setSelectedItem(DEFAULT_ITEMS[page] || null);
   };
@@ -1022,9 +1032,17 @@ export const SamplePagesView = () => {
             setSelectedItem,
             isPanelOpen,
             () => (isPanelOpen ? handlePanelClose() : setIsPanelOpen(true)),
-            handlePageChange
+            handlePageChange,
+            handlePopoverNavigate
           )}
           {panelConfig && isPanelOpen && (
+            <>
+            <div
+              className={`detailPageFlyout__cover${
+                isPanelCollapsing ? ' detailPageFlyout__cover--closing' : ''
+              }`}
+              onClick={handlePanelClose}
+            />
             <div
               className={`detailPageFlyout${
                 isPanelCollapsing ? ' detailPageFlyout--closing' : ''
@@ -1042,6 +1060,7 @@ export const SamplePagesView = () => {
                 onClose={handlePanelClose}
               />
             </div>
+            </>
           )}
         </div>
       </div>

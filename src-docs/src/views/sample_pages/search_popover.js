@@ -23,6 +23,7 @@ import {
   OuiHorizontalRule,
   OuiListGroup,
   OuiListGroupItem,
+  OuiOverlayMask,
   OuiText,
 } from '../../../../src/components';
 
@@ -288,24 +289,16 @@ export const SearchPopover = ({ isOpen, onClose, onNavigate, onAskAi }) => {
   }, [isOpen]);
 
   // Auto-focus the search input when opened
+  // Longer delay needed because OuiOverlayMask renders via a portal
   useEffect(() => {
-    if (isOpen && inputRef.current) {
-      setTimeout(() => inputRef.current.focus(), 50);
+    if (isOpen) {
+      const timer = setTimeout(() => {
+        if (inputRef.current) inputRef.current.focus();
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [isOpen]);
 
-  // Click-outside to dismiss
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleClickOutside = (e) => {
-      if (popoverRef.current && !popoverRef.current.contains(e.target)) {
-        onClose();
-      }
-    };
-    // Use mousedown so it fires before any focus changes
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen, onClose]);
 
   // Filter items by query
   const filteredSections = useMemo(() => {
@@ -353,6 +346,7 @@ export const SearchPopover = ({ isOpen, onClose, onNavigate, onAskAi }) => {
   const hasResults = filteredSections.length > 0;
 
   return (
+    <OuiOverlayMask onClick={onClose} headerZindexLocation="below">
     <div ref={popoverRef} className="searchPopover">
       {/* Search input */}
       <div className="searchPopover__input">
@@ -426,5 +420,6 @@ export const SearchPopover = ({ isOpen, onClose, onNavigate, onAskAi }) => {
         </div>
       )}
     </div>
+    </OuiOverlayMask>
   );
 };
