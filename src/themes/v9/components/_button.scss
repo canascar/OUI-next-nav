@@ -3,16 +3,125 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// Force light text on filled buttons for specific variants
-// where chooseLightOrDarkText() picks black due to color luminance.
+// Force light text/icons on filled buttons in light mode,
+// dark content in dark mode where primary is a lighter color
+// sass-lint:disable no-important
 .ouiButton--primary.ouiButton--fill:not(.ouiButton-isDisabled),
 .ouiButton--success.ouiButton--fill:not(.ouiButton-isDisabled),
 .ouiButton--text.ouiButton--fill:not(.ouiButton-isDisabled),
 .ouiButton--danger.ouiButton--fill:not(.ouiButton-isDisabled) {
-  color: $ouiColorEmptyShade;
+  color: lightOrDarkTheme($ouiColorGhost, $ouiColorInk) !important;
 
   .ouiButton__text,
   .ouiButton__icon {
-    color: $ouiColorEmptyShade;
+    color: lightOrDarkTheme($ouiColorGhost, $ouiColorInk) !important;
   }
 }
+
+// Icon buttons with fill display
+.ouiButtonIcon--primary.ouiButtonIcon--fill,
+.ouiButtonIcon--success.ouiButtonIcon--fill,
+.ouiButtonIcon--danger.ouiButtonIcon--fill {
+  color: lightOrDarkTheme($ouiColorGhost, $ouiColorInk) !important;
+
+  .ouiButtonIcon__icon {
+    color: lightOrDarkTheme($ouiColorGhost, $ouiColorInk) !important;
+    fill: lightOrDarkTheme($ouiColorGhost, $ouiColorInk) !important;
+  }
+}
+// sass-lint:enable no-important
+
+// Outline (non-fill) buttons — faint border with subtle background
+// sass-lint:disable no-important
+.ouiButton:not(.ouiButton--fill):not(.ouiButton-isDisabled) {
+  background-color: lightOrDarkTheme($ouiColorLightShade, $ouiColorLightShade) !important;
+  border-color: transparentize($ouiColorLightShade, .7) !important;
+
+  &:hover,
+  &:focus {
+    background-color: lightOrDarkTheme(darken($ouiColorLightestShade, 3%), lighten($ouiColorLightShade, 3%)) !important;
+  }
+}
+
+// Colored text for each outline button variant
+.ouiButton--primary:not(.ouiButton--fill):not(.ouiButton-isDisabled) {
+  color: $ouiColorPrimary !important;
+
+  .ouiButton__text,
+  .ouiButton__icon {
+    color: $ouiColorPrimary !important;
+  }
+}
+
+.ouiButton--danger:not(.ouiButton--fill):not(.ouiButton-isDisabled) {
+  color: $ouiColorDanger !important;
+
+  .ouiButton__text,
+  .ouiButton__icon {
+    color: $ouiColorDanger !important;
+  }
+}
+
+.ouiButton--warning:not(.ouiButton--fill):not(.ouiButton-isDisabled) {
+  color: $ouiColorWarning !important;
+
+  .ouiButton__text,
+  .ouiButton__icon {
+    color: $ouiColorWarning !important;
+  }
+}
+
+.ouiButton--success:not(.ouiButton--fill):not(.ouiButton-isDisabled) {
+  color: $ouiColorSecondary !important;
+
+  .ouiButton__text,
+  .ouiButton__icon {
+    color: $ouiColorSecondary !important;
+  }
+}
+
+.ouiButton--accent:not(.ouiButton--fill):not(.ouiButton-isDisabled) {
+  color: $ouiColorAccent !important;
+
+  .ouiButton__text,
+  .ouiButton__icon {
+    color: $ouiColorAccent !important;
+  }
+}
+
+.ouiButton--text:not(.ouiButton--fill):not(.ouiButton-isDisabled) {
+  color: $ouiTextColor !important;
+
+  .ouiButton__text,
+  .ouiButton__icon {
+    color: $ouiTextColor !important;
+  }
+}
+
+// Ghost outline buttons — dark background in light mode for contrast
+.ouiButton--ghost:not(.ouiButton--fill):not(.ouiButton-isDisabled) {
+  background-color: lightOrDarkTheme($ouiColorDarkShade, $ouiColorLightShade) !important;
+  border-color: lightOrDarkTheme($ouiColorDarkShade, $ouiColorLightShade) !important;
+
+  &:hover,
+  &:focus {
+    background-color: lightOrDarkTheme(lighten($ouiColorDarkShade, 5%), lighten($ouiColorLightShade, 3%)) !important;
+  }
+}
+
+// Disabled buttons — muted background, no color, no outline, faded
+.ouiButton-isDisabled,
+.ouiButton-isDisabled:hover,
+.ouiButton-isDisabled:focus {
+  background-color: $ouiColorLightestShade !important;
+  border-color: transparent !important;
+  color: $ouiColorMediumShade !important;
+  box-shadow: none !important;
+  opacity: .5 !important;
+
+  .ouiButton__text,
+  .ouiButton__icon {
+    color: $ouiColorMediumShade !important;
+  }
+}
+// sass-lint:enable no-important

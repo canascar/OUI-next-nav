@@ -1,0 +1,116 @@
+/*!
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// V9 theme: shadcn-inspired pill tabs
+// Tab list gets a muted track background; selected tab gets an elevated pill style
+
+// sass-lint:disable no-important, no-color-literals, no-misspelled-properties, no-vendor-prefixes
+
+// Tab list — muted track container
+.ouiTabs {
+  background-color: $ouiColorLightestShade !important;
+  border-radius: $ouiBorderRadius !important;
+  padding: 4px !important;
+  gap: 2px;
+  border: 1px solid transparentize($ouiColorLightShade, .5) !important;
+
+  // Remove the bottom border line
+  &::before {
+    display: none !important;
+  }
+
+  // Remove scrollbar styling override — keep native if needed
+  &::-webkit-scrollbar {
+    height: 0;
+  }
+}
+
+// Individual tab — pill style
+.ouiTab {
+  border-radius: calc(#{$ouiBorderRadius} - 2px) !important;
+  padding: $ouiSizeS $ouiSizeM !important;
+  font-weight: $ouiFontWeightMedium !important;
+  // sass-lint:disable indentation
+  transition:
+  background-color 150ms ease-in-out,
+  color 150ms ease-in-out,
+  box-shadow 150ms ease-in-out !important;
+  // sass-lint:enable indentation
+
+  // Remove the selected underline
+  &.ouiTab-isSelected::after {
+    display: none !important;
+  }
+
+  // Selected tab — elevated pill
+  &.ouiTab-isSelected {
+    background-color: $ouiColorEmptyShade !important;
+    color: $ouiTextColor !important;
+    // sass-lint:disable indentation
+    box-shadow:
+    0 1px 2px 0 rgba(0, 0, 0, .06),
+    0 1px 3px 0 rgba(0, 0, 0, .1) !important;
+    // sass-lint:enable indentation
+  }
+
+  // Hover state for unselected tabs
+  &:hover:not(.ouiTab-isSelected) {
+    background-color: transparentize($ouiColorLightShade, .3) !important;
+  }
+
+  // Focus visible
+  &:focus-visible {
+    background-color: transparent !important;
+    outline: 2px solid $ouiFocusRingColor;
+    outline-offset: -2px;
+
+    &::before {
+      display: none !important;
+    }
+  }
+
+  // Disabled
+  &.ouiTab-isDisabled {
+    opacity: .5;
+  }
+}
+
+// Condensed tabs — tighter spacing
+.ouiTabs--condensed {
+  padding: 3px !important;
+
+  .ouiTab {
+    padding: $ouiSizeXS $ouiSizeS !important;
+  }
+
+  .ouiTab + .ouiTab {
+    margin-left: 0 !important;
+  }
+}
+
+// Small tabs — smaller text
+.ouiTabs--small {
+  .ouiTab {
+    padding: $ouiSizeXS $ouiSizeS !important;
+  }
+}
+
+// Tighten flyout header bottom padding when tabs are present
+// sass-lint:disable no-important
+.ouiFlyoutHeader:has(.ouiTabs) {
+  padding-bottom: 4px !important;
+}
+
+.ouiFlyoutHeader--hasBorder:has(.ouiTabs) {
+  padding-bottom: 4px !important;
+}
+
+// Small gap between tabs and the border/rule below in flyout headers
+.ouiFlyoutHeader .ouiTabs {
+  margin-bottom: 4px !important;
+}
+// sass-lint:enable no-important
+
+// sass-lint:enable no-important, no-color-literals, no-misspelled-properties, no-vendor-prefixes

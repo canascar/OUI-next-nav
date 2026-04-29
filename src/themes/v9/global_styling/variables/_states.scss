@@ -20,7 +20,7 @@ $ouiFocusRingSizeLarge: $ouiSizeXS !default;
 $ouiFocusRingSize: $ouiFocusRingSizeLarge * .75 !default;
 
 // Transparency — lower dark-theme percent = stronger focus background
-$ouiFocusChangePercent: lightOrDarkTheme(90%, 50%) !default;
+$ouiFocusChangePercent: lightOrDarkTheme(90%, 35%) !default;
 $ouiFocusBackgroundColor: tintOrShade($ouiColorPrimary, $ouiFocusChangePercent, $ouiFocusChangePercent) !default;
 
 

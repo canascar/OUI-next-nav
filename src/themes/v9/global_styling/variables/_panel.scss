@@ -16,9 +16,9 @@ $ouiPanelPaddingModifiers: (
 ) !default;
 
 // Panel and card base variables
-$ouiPanelBorderRadius: $ouiBorderRadius !default;
+$ouiPanelBorderRadius: $ouiBorderRadiusLarge !default;
 $ouiPanelPaddingModifier: $ouiSize !default;
-$ouiCardBorderRadius: $ouiBorderRadius !default;
+$ouiCardBorderRadius: $ouiBorderRadiusLarge !default;
 
 // Modal and popover variables
 $ouiModalBorderRadius: $ouiBorderRadiusLarge !default;
@@ -34,7 +34,7 @@ $ouiPanelBorderRadiusModifiers: (
 $ouiPanelBackgroundColorModifiers: (
   'transparent': transparent,
   'plain': $ouiColorEmptyShade,
-  'subdued': $ouiPageBackgroundColor,
+  'subdued': shadeOrTint($ouiPageBackgroundColor, 3%, 3%),
   'accent':  tintOrShade($ouiColorAccent, 90%, 70%),
   'primary': tintOrShade($ouiColorPrimary, 90%, 70%),
   'success': tintOrShade($ouiColorSuccess, 90%, 70%),

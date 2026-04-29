@@ -9,8 +9,31 @@
  * GitHub history for details.
  */
 
+// Accent bar color adjustments for v9 — use blue for primary, green for success
+// sass-lint:disable no-important, no-color-literals
+
+$_ouiToastInfoBlue: #0084D1;
+
+// Override toast type colors to use blue for primary and green for success
+.ouiToast--primary {
+  border-top-color: $_ouiToastInfoBlue !important;
+
+  &::before {
+    background-color: $_ouiToastInfoBlue !important;
+  }
+}
+
+.ouiToast--success {
+  border-top-color: $ouiColorSuccess !important;
+
+  &::before {
+    background-color: $ouiColorSuccess !important;
+  }
+}
+// sass-lint:enable no-important, no-color-literals
+
 // Dark theme adjustments for Toast component
-// sass-lint:disable indentation, no-trailing-whitespace, leading-zero
+// sass-lint:disable indentation, no-trailing-whitespace, leading-zero, no-color-literals
 @if (lightness($ouiPageBackgroundColor) < 50) {
   // Override variables for dark theme
   $ouiToastBorder: 1px solid transparentize($ouiBorderColor, 0.3) !global; // More visible border
@@ -20,11 +43,11 @@
 
   // Accent bar color adjustments - lighten by 5% for better visibility
   .ouiToast--primary::before {
-    background-color: lighten($ouiColorPrimary, 5%);
+    background-color: lighten($_ouiToastInfoBlue, 5%);
   }
 
   .ouiToast--success::before {
-    background-color: lighten($ouiColorSecondary, 5%);
+    background-color: lighten($ouiColorSuccess, 5%);
   }
 
   .ouiToast--warning::before {
@@ -35,4 +58,4 @@
     background-color: lighten($ouiColorDanger, 5%);
   }
 }
-// sass-lint:enable indentation, no-trailing-whitespace, leading-zero
+// sass-lint:enable indentation, no-trailing-whitespace, leading-zero, no-color-literals

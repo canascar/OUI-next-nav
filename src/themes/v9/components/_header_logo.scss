@@ -14,9 +14,10 @@ $ouiLogoSecondaryDark: #0284C7;
   --ouiLogoSecondary: #{$ouiLogoSecondaryDark};
 }
 
-// Full dark page theme — default header also gets dark logo colors
+// Full dark page theme — default header and sidebar also get dark logo colors
 @if (lightness($ouiPageBackgroundColor) < 50) {
-  .ouiHeader--default {
+  .ouiHeader--default,
+  .samplePagesLeftNav {
     --ouiLogoPrimary: #{$ouiLogoPrimaryDark};
     --ouiLogoSecondary: #{$ouiLogoSecondaryDark};
   }

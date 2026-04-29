@@ -12,6 +12,14 @@
 // sass-lint:disable no-color-literals, leading-zero
 // V9 Theme-specific CallOut modernization overrides
 
+// Override callout type colors: blue for info/primary, green for success
+$ouiCallOutTypes: (
+  primary: #0084D1,
+  success: $ouiColorSuccess,
+  warning: $ouiColorWarning,
+  danger: $ouiColorDanger,
+);
+
 .ouiCallOut {
   padding: calc($ouiSize * 1.25); // 20px for better breathing room
   border: 1px solid transparent; // All-around border instead of just left

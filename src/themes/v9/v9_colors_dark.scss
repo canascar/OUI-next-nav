@@ -13,31 +13,34 @@
 @import 'global_styling/functions/index';
 
 // These colors stay the same no matter the theme
-$ouiColorGhost: #E3E5E9;
-$ouiColorInk: #02020E;
+$ouiColorGhost: #FFF;
+$ouiColorInk: #111;
 
-// Core - Brighter, more vibrant for dark mode
-$ouiColorPrimary: #38BDF8;      // Brighter blue (Tailwind blue-500)
-$ouiColorSecondary: #7DD3FC;    // Vibrant green (Tailwind emerald-500)
-$ouiColorAccent: #FB7185;       // Softer purple (Tailwind violet-400)
+// Core
+$ouiColorPrimary: #00B8DB;      // oklch(0.715 0.143 215.221)
+$ouiColorSecondary: #10B981;    // Emerald-500 (matches success)
+$ouiColorAccent: #FB64B6;       // oklch(0.718 0.202 349.761)
 
-// Status - Higher contrast for dark backgrounds
-$ouiColorSuccess: #4ADE80;      // Modern green (Tailwind emerald-500)
-$ouiColorWarning: #FCD34D;      // Brighter amber (Tailwind amber-400)
-$ouiColorDanger: #EF4444;       // Softer red (Tailwind red-400)
+// Status
+$ouiColorSuccess: #10B981;      // Emerald-500
+$ouiColorWarning: #FBBF24;      // Amber
+$ouiColorDanger: #FF6467;       // oklch(0.704 0.191 22.216)
 
-// Grays - Neutral slate tones (no blue cast)
-$ouiColorEmptyShade: #1E293B;   // Slate-800 — card/panel surfaces
-$ouiColorLightestShade: #334155; // Slate-700 — subtle backgrounds, code blocks
-$ouiColorLightShade: #020617;   // Slate-950 — borders, dividers
-$ouiColorMediumShade: #64748B;  // Slate-500 — muted UI elements
-$ouiColorDarkShade: #94A3B8;    // Slate-400 — secondary text
-$ouiColorDarkestShade: #E2E8F0; // Slate-200 — high-contrast foreground
-$ouiColorFullShade: #F8FAFC;    // Slate-50  — brightest foreground
+// Grays - Cool dark tones
+$ouiColorEmptyShade: #242526;   // Card surfaces
+$ouiColorLightestShade: #191A1B; // Muted backgrounds
+$ouiColorLightShade: #383B3E;   // Borders
+$ouiColorMediumShade: #A9B1B7;  // Muted text
+$ouiColorDarkShade: #B6BBC3;    // Secondary text
+$ouiColorDarkestShade: #E2E4E5; // Foreground
+$ouiColorFullShade: #F5F7FA;    // Brightest foreground
 
-// Backgrounds — page sits one step darker than cards for layered depth
-$ouiPageBackgroundColor: #0F172A; // Slate-900 — deepest layer
-$ouiColorHighlight: #422006;    // Warmer highlight (Tailwind amber-950)
+// Backgrounds
+$ouiPageBackgroundColor: #111; // Dark bg
+$ouiColorHighlight: #15171A;    // Accent
+
+// Form input background
+$ouiFormBackgroundColor: #2E2F30;
 
 // CodeBlock
 $ouiCodeBlockCommentShade: #838B93;
@@ -48,12 +51,10 @@ $ouiCodeBlockKeywordShade: #B174FC;
 $ouiCodeBlockTypeShade: #6AB0F1;
 $ouiCodeBlockTitleShade: #DD8232;
 
-// Variations from core - Better contrast
-$ouiTextColor: #F1F5F9;         // Slate-50 (neutral, no blue)
-$ouiTitleColor: #F8FAFC;        // Slate-100 (clearer hierarchy)
-// Ensure contrast between subdued text and the page background
-// Should not be shaded as much as $ouiColorDisabled
-$ouiTextSubduedColor: #CBD5E1;  // Zinc-400 (better readability)
+// Variations from core
+$ouiTextColor: #B6BBC3;
+$ouiTitleColor: #E2E4E5;
+$ouiTextSubduedColor: #A9B1B7;
 $ouiColorDisabled: $ouiColorLightestShade !default;
 
 // Contrasty text variants
@@ -64,7 +65,7 @@ $ouiColorWarningText: makeHighContrastColor($ouiColorWarning) !default;
 $ouiColorDangerText: makeHighContrastColor($ouiColorDanger) !default;
 $ouiColorDisabledText: #798189 !default;
 $ouiColorSuccessText: $ouiColorSecondaryText !default;
-$ouiLinkColor: $ouiColorPrimaryText !default;
+$ouiLinkColor: $ouiColorMediumShade !default;
 
 // Charts
 $ouiColorChartLines: $ouiColorLightShade;
@@ -73,30 +74,25 @@ $ouiColorChartBand: tint($ouiColorLightestShade, 2.5%);
 // Code
 $ouiCodeBlockBackgroundColor: $ouiColorLightestShade;
 
-// Shadows — dark theme needs stronger, more spread shadows plus a subtle
-// light ring so elevation is perceptible against dark backgrounds.
+// Shadows — subtle
 $ouiShadowColor: #000;
 $ouiShadowColorLarge: $ouiShadowColor;
-$ouiShadowOpacity: 0.90;
+$ouiShadowOpacity: 0.10;
 
-// Light-ring glow that outlines elevated surfaces (simulates ambient light)
-$ouiShadowGlow: rgba(161, 161, 170, 0.08); // Zinc-400 at 8%
+$ouiShadowBase: 0 1px 3px 0px rgba(0, 0, 0, 0.05);
+$ouiShadow1: 0 1px 3px 0px rgba(0, 0, 0, 0.05);
+$ouiShadow2: 0 1px 3px 0px rgba(0, 0, 0, 0.10), 0 1px 2px -1px rgba(0, 0, 0, 0.10);
+$ouiShadow3: 0 1px 3px 0px rgba(0, 0, 0, 0.10), 0 2px 4px -1px rgba(0, 0, 0, 0.10);
+$ouiShadow4: 0 1px 3px 0px rgba(0, 0, 0, 0.10), 0 4px 6px -1px rgba(0, 0, 0, 0.10);
+$ouiShadow5: 0 1px 3px 0px rgba(0, 0, 0, 0.10), 0 8px 10px -1px rgba(0, 0, 0, 0.10);
+$ouiShadow6: 0 1px 3px 0px rgba(0, 0, 0, 0.25);
 
-// Override shadow levels for dark theme — wider spread + glow ring
-$ouiShadowBase: 0 0 1px rgba(161, 161, 170, 0.12), 0 0 0 1px rgba(161, 161, 170, 0.06);
-$ouiShadow1: $ouiShadowBase, 0 1px 4px rgba(0, 0, 0, $ouiShadowOpacity);
-$ouiShadow2: $ouiShadowBase, 0 2px 8px rgba(0, 0, 0, $ouiShadowOpacity);
-$ouiShadow3: $ouiShadowBase, 0 4px 16px rgba(0, 0, 0, $ouiShadowOpacity);
-$ouiShadow4: $ouiShadowBase, 0 6px 24px rgba(0, 0, 0, $ouiShadowOpacity);
-$ouiShadow5: $ouiShadowBase, 0 8px 32px rgba(0, 0, 0, $ouiShadowOpacity);
-$ouiShadow6: $ouiShadowBase, 0 12px 48px rgba(0, 0, 0, $ouiShadowOpacity);
+// Border color
+$ouiBorderColor: #383B3E;
 
-// Border color — subtle but visible against dark surfaces
-$ouiBorderColor: rgb(51, 65, 85, 0.8); // Slate-700 at 80%
-
-// Elevated surfaces (menus, popovers, flyouts) — one step above cards
-$ouiBackgroundElevated: #1C1C22; // Neutral — distinct from card bg
-$ouiBorderElevated: rgb(51, 65, 85, 0.6); // Slate-700 at 60% — visible ring on floating surfaces
+// Elevated surfaces
+$ouiBackgroundElevated: #2E2F30;
+$ouiBorderElevated: #383B3E;
 
 //CodeBlock Colors
 $ouiCodeBlockCommentColor: $ouiCodeBlockCommentShade;

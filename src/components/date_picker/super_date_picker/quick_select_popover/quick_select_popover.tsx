@@ -63,6 +63,7 @@ export interface OuiQuickSelectPopoverProps {
   recentlyUsedRanges: DurationRange[];
   refreshInterval: number;
   start: string;
+  onPopoverToggle?: (isOpen: boolean) => void;
 }
 
 interface OuiQuickSelectPopoverState {
@@ -80,12 +81,15 @@ export class OuiQuickSelectPopover extends Component<
 
   closePopover = () => {
     this.setState({ isOpen: false });
+    this.props.onPopoverToggle?.(false);
   };
 
   togglePopover = () => {
-    this.setState((prevState) => ({
-      isOpen: !prevState.isOpen,
-    }));
+    this.setState((prevState) => {
+      const next = !prevState.isOpen;
+      this.props.onPopoverToggle?.(next);
+      return { isOpen: next };
+    });
   };
 
   applyTime: ApplyTime = ({
