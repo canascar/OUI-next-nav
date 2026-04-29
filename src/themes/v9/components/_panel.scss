@@ -5,6 +5,9 @@
 
 // Clip content to panel border radius, but not checkable cards
 // or cards with beta/experimental badges which overflow the panel edge
+// sass-lint:disable no-important
 .ouiPanel:not(.ouiCheckableCard):not(.ouiCard--hasBetaBadge):not(.ouiSplitPanel):not(.ouiSplitPanel__inner) {
   overflow: hidden;
+  border-radius: 12px !important;
 }
+// sass-lint:enable no-important

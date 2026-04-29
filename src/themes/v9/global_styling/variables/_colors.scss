@@ -14,36 +14,36 @@
 @import '../functions/index';
 
 // These colors stay the same no matter the theme
-$ouiColorGhost: #FCFEFF !default;
-$ouiColorInk: #02020E !default;
+$ouiColorGhost: #FFFFFF !default;
+$ouiColorInk: #111111 !default;
 
-// Core - Blue/navy with orange accent
-$ouiColorPrimary: #0EA5E9 !default;      // Sky-500
-$ouiColorSecondary: #4B5563 !default;    // Gray
-$ouiColorAccent: #8EC5FF !default;       // Light blue accent
+// Core
+$ouiColorPrimary: #0D87CE;      // Blue primary
+$ouiColorSecondary: #059669;    // Emerald-600 (matches success)
+$ouiColorAccent: #F6339A;       // oklch(0.656 0.241 354.308)
 
 // Status
 $ouiColorSuccess: #059669 !default;      // Emerald-600
 $ouiColorWarning: #F59E0B !default;      // Amber
-$ouiColorDanger: #EF4444 !default;       // Red
+$ouiColorDanger: #FB2C36 !default;       // oklch(0.637 0.237 25.331)
 
-// Grays - Cool light tones
-$ouiColorEmptyShade: #FFFFFF !default;   // White card
-$ouiColorLightestShade: #F9FAFB !default; // Muted bg
-$ouiColorLightShade: #DCDFE2 !default;   // Border
-$ouiColorMediumShade: #6B7280 !default;  // Muted text
-$ouiColorDarkShade: #333333 !default;    // Dark text
-$ouiColorDarkestShade: #333333 !default; // Foreground
-$ouiColorFullShade: #111827 !default;    // Near black
+// Grays - Cool blue-gray tones
+$ouiColorEmptyShade: #F5F8FA !default;   // Card
+$ouiColorLightestShade: #DEE6ED !default; // Muted bg
+$ouiColorLightShade: #D4DADB !default;   // Border
+$ouiColorMediumShade: #7D8283 !default;  // Muted text
+$ouiColorDarkShade: #464E53 !default;    // Secondary text
+$ouiColorDarkestShade: #29323D !default; // Foreground
+$ouiColorFullShade: #131814 !default;    // Near black
 
 // Backgrounds
-$ouiPageBackgroundColor: #E8EBED !default; // Cool gray bg
-$ouiColorHighlight: #D6E4F0 !default;    // Light blue highlight
+$ouiPageBackgroundColor: #E5E5E5 !default; // Darker gray bg
+$ouiColorHighlight: #DCE3E9 !default;    // Highlight
 
 // Every color below must be based mathematically on the set above and in a particular order.
 $ouiTextColor: $ouiColorDarkestShade !default;
 $ouiTitleColor: shade($ouiTextColor, 50%) !default;
-$ouiTextSubduedColor: makeHighContrastColor($ouiColorMediumShade) !default;
+$ouiTextSubduedColor: #7D8283 !default;
 $ouiColorDisabled: tint($ouiTextColor, 70%) !default;
 
 // Contrasty text variants
@@ -54,7 +54,7 @@ $ouiColorWarningText: makeHighContrastColor($ouiColorWarning) !default;
 $ouiColorDangerText: makeHighContrastColor($ouiColorDanger) !default;
 $ouiColorDisabledText: makeDisabledContrastColor($ouiColorDisabled) !default;
 $ouiColorSuccessText: $ouiColorSecondaryText !default;
-$ouiLinkColor: $ouiColorPrimaryText !default;
+$ouiLinkColor: $ouiColorMediumShade !default;
 
 // Visualization colors
 

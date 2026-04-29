@@ -179,10 +179,11 @@
   left: 60px;
   width: 320px;
   max-height: 400px;
-  background-color: lighten($ouiColorEmptyShade, 10%);
+  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .55); // sass-lint:disable-line no-color-literals
+  backdrop-filter: blur(16px);
   border: none;
   border-radius: $ouiBorderRadius;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1); // sass-lint:disable-line no-color-literals
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -227,6 +228,6 @@
 
 // Page-level panel — semi-transparent for depth
 .samplePagesMainPanel {
-  background-color: rgba($ouiColorEmptyShade, .6) !important; // sass-lint:disable-line no-important
+  background-color: rgba($ouiColorEmptyShade, .6) !important; // sass-lint:disable-line no-important, no-color-literals
   backdrop-filter: blur(4px);
 }

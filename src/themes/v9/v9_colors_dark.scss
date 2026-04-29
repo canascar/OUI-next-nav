@@ -13,34 +13,34 @@
 @import 'global_styling/functions/index';
 
 // These colors stay the same no matter the theme
-$ouiColorGhost: #E3E5E9;
-$ouiColorInk: #02020E;
+$ouiColorGhost: #FFF;
+$ouiColorInk: #111;
 
-// Core - Navy dark mode with orange accent
-$ouiColorPrimary: #38BDF8;      // Sky-400
-$ouiColorSecondary: #E5E5E5;    // Light foreground
-$ouiColorAccent: #BEDBFF;       // Light blue accent
+// Core
+$ouiColorPrimary: #42ADF0;      // Bright blue primary
+$ouiColorSecondary: #10B981;    // Emerald-500 (matches success)
+$ouiColorAccent: #FB64B6;       // oklch(0.718 0.202 349.761)
 
 // Status
 $ouiColorSuccess: #10B981;      // Emerald-500
 $ouiColorWarning: #FBBF24;      // Amber
-$ouiColorDanger: #EF4444;       // Red
+$ouiColorDanger: #FF6467;       // oklch(0.704 0.191 22.216)
 
-// Grays - Navy dark tones
-$ouiColorEmptyShade: #2A3040;   // Card surfaces
-$ouiColorLightestShade: #2A303E; // Muted backgrounds
-$ouiColorLightShade: #3D4354;   // Borders
-$ouiColorMediumShade: #A3A3A3;  // Muted text
-$ouiColorDarkShade: #E5E5E5;    // Secondary text
-$ouiColorDarkestShade: #E5E5E5; // High-contrast foreground
-$ouiColorFullShade: #F5F5F5;    // Brightest foreground
+// Grays - Cool dark tones
+$ouiColorEmptyShade: #242526;   // Card surfaces
+$ouiColorLightestShade: #191A1B; // Muted backgrounds
+$ouiColorLightShade: #383B3E;   // Borders
+$ouiColorMediumShade: #A9B1B7;  // Muted text
+$ouiColorDarkShade: #B6BBC3;    // Secondary text
+$ouiColorDarkestShade: #E2E4E5; // Foreground
+$ouiColorFullShade: #F5F7FA;    // Brightest foreground
 
 // Backgrounds
-$ouiPageBackgroundColor: #1C2433; // Navy dark
-$ouiColorHighlight: #2A3656;    // Dark blue accent
+$ouiPageBackgroundColor: #111; // Dark bg
+$ouiColorHighlight: #15171A;    // Accent
 
-// Form input background — lighter than card for contrast
-$ouiFormBackgroundColor: #3D4354;
+// Form input background
+$ouiFormBackgroundColor: #2E2F30;
 
 // CodeBlock
 $ouiCodeBlockCommentShade: #838B93;
@@ -51,12 +51,10 @@ $ouiCodeBlockKeywordShade: #B174FC;
 $ouiCodeBlockTypeShade: #6AB0F1;
 $ouiCodeBlockTitleShade: #DD8232;
 
-// Variations from core - Better contrast
-$ouiTextColor: #E5E5E5;         // Light
-$ouiTitleColor: #E5E5E5;        // Same
-// Ensure contrast between subdued text and the page background
-// Should not be shaded as much as $ouiColorDisabled
-$ouiTextSubduedColor: #A3A3A3;  // Muted
+// Variations from core
+$ouiTextColor: #B6BBC3;
+$ouiTitleColor: #E2E4E5;
+$ouiTextSubduedColor: #A9B1B7;
 $ouiColorDisabled: $ouiColorLightestShade !default;
 
 // Contrasty text variants
@@ -67,7 +65,7 @@ $ouiColorWarningText: makeHighContrastColor($ouiColorWarning) !default;
 $ouiColorDangerText: makeHighContrastColor($ouiColorDanger) !default;
 $ouiColorDisabledText: #798189 !default;
 $ouiColorSuccessText: $ouiColorSecondaryText !default;
-$ouiLinkColor: $ouiColorPrimaryText !default;
+$ouiLinkColor: $ouiColorMediumShade !default;
 
 // Charts
 $ouiColorChartLines: $ouiColorLightShade;
@@ -90,11 +88,11 @@ $ouiShadow5: 0 1px 3px 0px rgba(0, 0, 0, 0.10), 0 8px 10px -1px rgba(0, 0, 0, 0.
 $ouiShadow6: 0 1px 3px 0px rgba(0, 0, 0, 0.25);
 
 // Border color
-$ouiBorderColor: #3D4354;
+$ouiBorderColor: #383B3E;
 
 // Elevated surfaces
-$ouiBackgroundElevated: #262B38;
-$ouiBorderElevated: #3D4354;
+$ouiBackgroundElevated: #2E2F30;
+$ouiBorderElevated: #383B3E;
 
 //CodeBlock Colors
 $ouiCodeBlockCommentColor: $ouiCodeBlockCommentShade;

@@ -21,10 +21,15 @@ import {
   OuiText,
   OuiTitle,
   OuiButtonEmpty,
-  OuiPopover,
   OuiButtonGroup,
   OuiFormRow,
   OuiSpacer,
+  OuiModal,
+  OuiModalHeader,
+  OuiModalHeaderTitle,
+  OuiModalBody,
+  OuiModalFooter,
+  OuiButton,
 } from '../../../../src/components';
 
 import { ThemeContext } from '../../components/with_theme';
@@ -391,71 +396,14 @@ export const SamplePagesLeftNav = ({
             display="empty"
             size="s"
           />
-          <OuiPopover
-            button={
-              <OuiButtonIcon
-                iconType="gear"
-                aria-label="Layout settings"
-                color="text"
-                display="empty"
-                size="s"
-                onClick={() => setIsSettingsOpen((o) => !o)}
-              />
-            }
-            isOpen={isSettingsOpen}
-            closePopover={() => setIsSettingsOpen(false)}
-            anchorPosition="upCenter"
-            panelPaddingSize="m">
-            <div style={{ width: 220 }}>
-              <OuiTitle size="xxxs">
-                <h4>Layout</h4>
-              </OuiTitle>
-              <OuiSpacer size="s" />
-              <OuiFormRow label="Padding" display="columnCompressed">
-                <OuiButtonGroup
-                  legend="Padding"
-                  options={SPACING_OPTIONS}
-                  idSelected={`spacing-${padding}`}
-                  onChange={(id) => onPaddingChange(SPACING_MAP[id])}
-                  buttonSize="compressed"
-                  isFullWidth
-                />
-              </OuiFormRow>
-              <OuiSpacer size="s" />
-              <OuiFormRow label="Gap" display="columnCompressed">
-                <OuiButtonGroup
-                  legend="Gap"
-                  options={SPACING_OPTIONS}
-                  idSelected={`spacing-${gap}`}
-                  onChange={(id) => onGapChange(SPACING_MAP[id])}
-                  buttonSize="compressed"
-                  isFullWidth
-                />
-              </OuiFormRow>
-              <OuiSpacer size="s" />
-              <OuiFormRow label="Card padding" display="columnCompressed">
-                <OuiButtonGroup
-                  legend="Card padding"
-                  options={SPACING_OPTIONS}
-                  idSelected={`spacing-${cardPadding}`}
-                  onChange={(id) => onCardPaddingChange(SPACING_MAP[id])}
-                  buttonSize="compressed"
-                  isFullWidth
-                />
-              </OuiFormRow>
-              <OuiSpacer size="s" />
-              <OuiFormRow label="Gutter" display="columnCompressed">
-                <OuiButtonGroup
-                  legend="Gutter"
-                  options={SPACING_OPTIONS}
-                  idSelected={`spacing-${gutter}`}
-                  onChange={(id) => onGutterChange(SPACING_MAP[id])}
-                  buttonSize="compressed"
-                  isFullWidth
-                />
-              </OuiFormRow>
-            </div>
-          </OuiPopover>
+          <OuiButtonIcon
+            iconType="gear"
+            aria-label="Layout settings"
+            color="text"
+            display="empty"
+            size="s"
+            onClick={() => setIsSettingsOpen(true)}
+          />
           <OuiButtonIcon
             iconType="brush"
             aria-label={
@@ -539,6 +487,63 @@ export const SamplePagesLeftNav = ({
             selectedItem={selectedItem}
           />
         </div>
+      )}
+
+      {/* Layout settings modal */}
+      {isSettingsOpen && (
+        <OuiModal
+          onClose={() => setIsSettingsOpen(false)}
+          style={{ width: 420 }}>
+          <OuiModalHeader>
+            <OuiModalHeaderTitle>Layout settings</OuiModalHeaderTitle>
+          </OuiModalHeader>
+          <OuiModalBody>
+            <OuiFormRow label="Padding" display="row">
+              <OuiButtonGroup
+                legend="Padding"
+                options={SPACING_OPTIONS}
+                idSelected={`spacing-${padding}`}
+                onChange={(id) => onPaddingChange(SPACING_MAP[id])}
+                isFullWidth
+              />
+            </OuiFormRow>
+            <OuiSpacer size="s" />
+            <OuiFormRow label="Gap" display="row">
+              <OuiButtonGroup
+                legend="Gap"
+                options={SPACING_OPTIONS}
+                idSelected={`spacing-${gap}`}
+                onChange={(id) => onGapChange(SPACING_MAP[id])}
+                isFullWidth
+              />
+            </OuiFormRow>
+            <OuiSpacer size="s" />
+            <OuiFormRow label="Card padding" display="row">
+              <OuiButtonGroup
+                legend="Card padding"
+                options={SPACING_OPTIONS}
+                idSelected={`spacing-${cardPadding}`}
+                onChange={(id) => onCardPaddingChange(SPACING_MAP[id])}
+                isFullWidth
+              />
+            </OuiFormRow>
+            <OuiSpacer size="s" />
+            <OuiFormRow label="Gutter" display="row">
+              <OuiButtonGroup
+                legend="Gutter"
+                options={SPACING_OPTIONS}
+                idSelected={`spacing-${gutter}`}
+                onChange={(id) => onGutterChange(SPACING_MAP[id])}
+                isFullWidth
+              />
+            </OuiFormRow>
+          </OuiModalBody>
+          <OuiModalFooter>
+            <OuiButton onClick={() => setIsSettingsOpen(false)} fill>
+              Done
+            </OuiButton>
+          </OuiModalFooter>
+        </OuiModal>
       )}
     </div>
   );
