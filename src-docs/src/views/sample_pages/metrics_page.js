@@ -62,39 +62,106 @@ const QUERY_DEFS = {
     query:
       'source=opensearch_dashboards_sample_data_logs | stats max(mem_used_percent) as max_mem by host | sort -max_mem',
   },
+  'query-disk-io': {
+    title: 'Disk I/O by volume',
+    language: 'PPL',
+    query:
+      'source=opensearch_dashboards_sample_data_logs | stats avg(disk_io) as avg_disk_io by volume | sort -avg_disk_io',
+    queryOnly: true,
+  },
+  'query-network-errors': {
+    title: 'Network error rate',
+    language: 'PPL',
+    query:
+      'source=opensearch_dashboards_sample_data_logs | where net_errors > 0 | stats sum(net_errors) as total_errors by interface',
+    queryOnly: true,
+  },
+  'query-gc-pauses': {
+    title: 'GC pause duration',
+    language: 'PPL',
+    query:
+      'source=opensearch_dashboards_sample_data_logs | stats max(gc_pause_ms) as max_gc_pause by service | sort -max_gc_pause',
+    queryOnly: true,
+  },
 };
 
 const DEFAULT_QUERY_DEF = QUERY_DEFS['throughput'];
 
-// --- Mock result data (flight log documents) ---
+// --- Mock result data per query ---
 
-const FLIGHT_DATA = [
-  { id: '1', FlightNum: '2H60FMN', Origin: 'Chubu Centrair International Airport', Dest: "Xi'an Xianyang International Airport", FlightDelayMin: 105 },
-  { id: '2', FlightNum: 'OE1F975', Origin: 'Melbourne International Airport', Dest: 'Sheremetyevo International Airport', FlightDelayMin: 150 },
-  { id: '3', FlightNum: '1FPP0G6', Origin: 'Leonardo da Vinci - Fiumicino Airport', Dest: 'Memphis International Airport', FlightDelayMin: 285 },
-  { id: '4', FlightNum: 'O433ACB', Origin: 'Adolfo Suarez Madrid-Barajas Airport', Dest: 'OR Tambo International Airport', FlightDelayMin: 15 },
-  { id: '5', FlightNum: 'FN09ASF', Origin: 'Denver International Airport', Dest: 'Warsaw Chopin Airport', FlightDelayMin: 105 },
-  { id: '6', FlightNum: 'A7048AT', Origin: 'Catania-Fontanarossa Airport', Dest: 'Milano Linate Airport', FlightDelayMin: 125 },
-  { id: '7', FlightNum: '9OGHNE', Origin: 'Venice Marco Polo Airport', Dest: "Xi'an Xianyang International Airport", FlightDelayMin: 145 },
-  { id: '8', FlightNum: 'W5S2AT5', Origin: 'Rochester International Airport', Dest: 'Shanghai Hongqiao International Airport', FlightDelayMin: 155 },
-  { id: '9', FlightNum: 'GLRDTMA', Origin: 'Chubu Centrair International Airport', Dest: 'Lester B. Pearson International Airport', FlightDelayMin: 135 },
-  { id: '10', FlightNum: 'YYM0920', Origin: 'Abu Dhabi International Airport', Dest: 'Bari Karol Wojty_a Airport', FlightDelayMin: 90 },
-  { id: '11', FlightNum: 'ZOUK4GU', Origin: 'Sheremetyevo International Airport', Dest: 'Turin Airport', FlightDelayMin: 285 },
-  { id: '12', FlightNum: 'H030T30', Origin: 'Helsinki International Airport', Dest: 'Il Caravaggio International Airport', FlightDelayMin: 75 },
-  { id: '13', FlightNum: 'DBROENB', Origin: 'London Gatwick Airport', Dest: 'Wichita Mid Continent Airport', FlightDelayMin: 60 },
-  { id: '14', FlightNum: '4F3U08A', Origin: 'London Gatwick Airport', Dest: 'Rajiv Gandhi International Airport', FlightDelayMin: 165 },
-  { id: '15', FlightNum: '0VTGH80', Origin: 'Rajiv Gandhi International Airport', Dest: 'Savannah Hilton Head International Airport', FlightDelayMin: 255 },
-  { id: '16', FlightNum: 'HOMCZSP', Origin: 'El Dorado International Airport', Dest: 'Zurich Airport', FlightDelayMin: 345 },
-  { id: '17', FlightNum: 'KY3SM80', Origin: 'Chicago Midway International Airport', Dest: 'Ministro Pistarini International Airport', FlightDelayMin: 165 },
-  { id: '18', FlightNum: '6KT3Y7H', Origin: 'Huntsville International Carl T Jones Field', Dest: 'Munich Airport', FlightDelayMin: 45 },
-  { id: '19', FlightNum: 'GAUTSOV', Origin: 'Shanghai Pudong International Airport', Dest: "Treviso-Sant'Angelo Airport", FlightDelayMin: 105 },
-  { id: '20', FlightNum: 'TQA0Y30', Origin: 'Genoa Cristoforo Colombo Airport', Dest: 'Mariscal Sucre International Airport', FlightDelayMin: 240 },
-  { id: '21', FlightNum: 'F3WBTEP', Origin: 'Genoa Cristoforo Colombo Airport', Dest: 'Kempegowda International Airport', FlightDelayMin: 210 },
-  { id: '22', FlightNum: 'ULINNLO', Origin: 'Al Maktoum International Airport', Dest: 'Sheremetyevo International Airport', FlightDelayMin: 315 },
-  { id: '23', FlightNum: 'AHQCJLL', Origin: 'Stockholm Arlanda Airport', Dest: 'Verona Villafranca Airport', FlightDelayMin: 240 },
-  { id: '24', FlightNum: '413KDT0', Origin: 'Manchester Airport', Dest: 'Venice Marco Polo Airport', FlightDelayMin: 120 },
-  { id: '25', FlightNum: 'G64XA34', Origin: 'Warsaw Chopin Airport', Dest: 'Warsaw Chopin Airport', FlightDelayMin: 270 },
-];
+const QUERY_DATA = {
+  throughput: [
+    { id: '1', FlightNum: 'GLRDTMA', Origin: 'Chubu Centrair International Airport', Dest: 'Lester B. Pearson International Airport', FlightDelayMin: 135 },
+    { id: '2', FlightNum: 'YYM0920', Origin: 'Abu Dhabi International Airport', Dest: 'Bari Karol Wojty_a Airport', FlightDelayMin: 90 },
+    { id: '3', FlightNum: 'ZOUK4GU', Origin: 'Sheremetyevo International Airport', Dest: 'Turin Airport', FlightDelayMin: 285 },
+    { id: '4', FlightNum: 'H030T30', Origin: 'Helsinki International Airport', Dest: 'Il Caravaggio International Airport', FlightDelayMin: 75 },
+    { id: '5', FlightNum: 'DBROENB', Origin: 'London Gatwick Airport', Dest: 'Wichita Mid Continent Airport', FlightDelayMin: 60 },
+    { id: '6', FlightNum: '4F3U08A', Origin: 'London Gatwick Airport', Dest: 'Rajiv Gandhi International Airport', FlightDelayMin: 165 },
+    { id: '7', FlightNum: '0VTGH80', Origin: 'Rajiv Gandhi International Airport', Dest: 'Savannah Hilton Head International Airport', FlightDelayMin: 255 },
+    { id: '8', FlightNum: 'HOMCZSP', Origin: 'El Dorado International Airport', Dest: 'Zurich Airport', FlightDelayMin: 345 },
+    { id: '9', FlightNum: 'KY3SM80', Origin: 'Chicago Midway International Airport', Dest: 'Ministro Pistarini International Airport', FlightDelayMin: 165 },
+    { id: '10', FlightNum: '2H60FMN', Origin: 'Chubu Centrair International Airport', Dest: "Xi'an Xianyang International Airport", FlightDelayMin: 105 },
+    { id: '11', FlightNum: 'OE1F975', Origin: 'Melbourne International Airport', Dest: 'Sheremetyevo International Airport', FlightDelayMin: 150 },
+    { id: '12', FlightNum: '1FPP0G6', Origin: 'Leonardo da Vinci - Fiumicino Airport', Dest: 'Memphis International Airport', FlightDelayMin: 285 },
+    { id: '13', FlightNum: 'O433ACB', Origin: 'Adolfo Suarez Madrid-Barajas Airport', Dest: 'OR Tambo International Airport', FlightDelayMin: 15 },
+    { id: '14', FlightNum: 'FN09ASF', Origin: 'Denver International Airport', Dest: 'Warsaw Chopin Airport', FlightDelayMin: 105 },
+    { id: '15', FlightNum: 'A7048AT', Origin: 'Catania-Fontanarossa Airport', Dest: 'Milano Linate Airport', FlightDelayMin: 125 },
+    { id: '16', FlightNum: '9OGHNE', Origin: 'Venice Marco Polo Airport', Dest: "Xi'an Xianyang International Airport", FlightDelayMin: 145 },
+    { id: '17', FlightNum: 'W5S2AT5', Origin: 'Rochester International Airport', Dest: 'Shanghai Hongqiao International Airport', FlightDelayMin: 155 },
+    { id: '18', FlightNum: '6KT3Y7H', Origin: 'Huntsville International Carl T Jones Field', Dest: 'Munich Airport', FlightDelayMin: 45 },
+    { id: '19', FlightNum: 'GAUTSOV', Origin: 'Shanghai Pudong International Airport', Dest: "Treviso-Sant'Angelo Airport", FlightDelayMin: 105 },
+    { id: '20', FlightNum: 'TQA0Y30', Origin: 'Genoa Cristoforo Colombo Airport', Dest: 'Mariscal Sucre International Airport', FlightDelayMin: 240 },
+    { id: '21', FlightNum: 'F3WBTEP', Origin: 'Genoa Cristoforo Colombo Airport', Dest: 'Kempegowda International Airport', FlightDelayMin: 210 },
+    { id: '22', FlightNum: 'ULINNLO', Origin: 'Al Maktoum International Airport', Dest: 'Sheremetyevo International Airport', FlightDelayMin: 315 },
+    { id: '23', FlightNum: 'AHQCJLL', Origin: 'Stockholm Arlanda Airport', Dest: 'Verona Villafranca Airport', FlightDelayMin: 240 },
+  ],
+  'cpu-utilization': [
+    { id: '1', FlightNum: 'NK56YHT', Origin: 'John F. Kennedy International Airport', Dest: 'Heathrow Airport', FlightDelayMin: 310 },
+    { id: '2', FlightNum: 'WZ19QAB', Origin: 'Singapore Changi Airport', Dest: 'Sydney Kingsford Smith Airport', FlightDelayMin: 55 },
+    { id: '3', FlightNum: 'CV84RTE', Origin: 'Indira Gandhi International Airport', Dest: 'Kuala Lumpur International Airport', FlightDelayMin: 175 },
+    { id: '4', FlightNum: 'MH37UPO', Origin: 'O\'Hare International Airport', Dest: 'Charles de Gaulle Airport', FlightDelayMin: 140 },
+    { id: '5', FlightNum: 'DF62SLK', Origin: 'Hong Kong International Airport', Dest: 'Taipei Taoyuan International Airport', FlightDelayMin: 25 },
+    { id: '6', FlightNum: 'AX95WBN', Origin: 'Istanbul Airport', Dest: 'Amsterdam Airport Schiphol', FlightDelayMin: 200 },
+    { id: '7', FlightNum: 'RG28HJD', Origin: 'Hartsfield-Jackson Atlanta International Airport', Dest: 'Mexico City International Airport', FlightDelayMin: 95 },
+    { id: '8', FlightNum: 'TK51CZX', Origin: 'Beijing Capital International Airport', Dest: 'Kansai International Airport', FlightDelayMin: 265 },
+    { id: '9', FlightNum: 'UE74FGM', Origin: 'Zurich Airport', Dest: 'Cape Town International Airport', FlightDelayMin: 330 },
+    { id: '10', FlightNum: 'YP16NVR', Origin: 'Toronto Pearson International Airport', Dest: 'Jorge Chávez International Airport', FlightDelayMin: 110 },
+    { id: '11', FlightNum: 'LW43BQS', Origin: 'Munich Airport', Dest: 'Doha Hamad International Airport', FlightDelayMin: 70 },
+    { id: '12', FlightNum: 'HN89XTL', Origin: 'San Francisco International Airport', Dest: 'Haneda Airport', FlightDelayMin: 185 },
+    { id: '13', FlightNum: 'GK02YMW', Origin: 'Barcelona-El Prat Airport', Dest: 'Bogotá El Dorado International Airport', FlightDelayMin: 250 },
+    { id: '14', FlightNum: 'FJ57APE', Origin: 'Copenhagen Airport', Dest: 'Johannesburg OR Tambo International Airport', FlightDelayMin: 40 },
+    { id: '15', FlightNum: 'SO31DKR', Origin: 'Guangzhou Baiyun International Airport', Dest: 'Auckland Airport', FlightDelayMin: 295 },
+    { id: '16', FlightNum: 'XC68VHJ', Origin: 'Vienna International Airport', Dest: 'Montréal-Trudeau International Airport', FlightDelayMin: 160 },
+    { id: '17', FlightNum: 'BI45GNP', Origin: 'Dallas/Fort Worth International Airport', Dest: 'Rome Fiumicino Airport', FlightDelayMin: 215 },
+    { id: '18', FlightNum: 'EW90TRC', Origin: 'Lisbon Humberto Delgado Airport', Dest: 'Chhatrapati Shivaji Maharaj International Airport', FlightDelayMin: 130 },
+    { id: '19', FlightNum: 'BX72KLP', Origin: 'Narita International Airport', Dest: 'São Paulo–Guarulhos International Airport', FlightDelayMin: 190 },
+    { id: '20', FlightNum: 'QR41VNE', Origin: 'Hamad International Airport', Dest: 'Los Angeles International Airport', FlightDelayMin: 30 },
+  ],
+  'memory-pressure': [
+    { id: '1', FlightNum: 'ZM14KQW', Origin: 'Miami International Airport', Dest: 'Cancún International Airport', FlightDelayMin: 50 },
+    { id: '2', FlightNum: 'RA67XBP', Origin: 'Oslo Gardermoen Airport', Dest: 'Atatürk International Airport', FlightDelayMin: 180 },
+    { id: '3', FlightNum: 'VT23NHG', Origin: 'Ninoy Aquino International Airport', Dest: 'Perth Airport', FlightDelayMin: 305 },
+    { id: '4', FlightNum: 'OC58DLF', Origin: 'Brussels Airport', Dest: 'Jomo Kenyatta International Airport', FlightDelayMin: 115 },
+    { id: '5', FlightNum: 'IB92YSR', Origin: 'Chengdu Shuangliu International Airport', Dest: 'Helsinki-Vantaa Airport', FlightDelayMin: 235 },
+    { id: '6', FlightNum: 'KP46AMT', Origin: 'Seattle-Tacoma International Airport', Dest: 'Dublin Airport', FlightDelayMin: 65 },
+    { id: '7', FlightNum: 'WN71EJC', Origin: 'Soekarno-Hatta International Airport', Dest: 'Lisbon Humberto Delgado Airport', FlightDelayMin: 340 },
+    { id: '8', FlightNum: 'DG05RVU', Origin: 'Riga International Airport', Dest: 'Tan Son Nhat International Airport', FlightDelayMin: 145 },
+    { id: '9', FlightNum: 'HL39QKB', Origin: 'Arturo Merino Benítez International Airport', Dest: 'Václav Havel Airport Prague', FlightDelayMin: 80 },
+    { id: '10', FlightNum: 'FX83WPN', Origin: 'Bengaluru Kempegowda International Airport', Dest: 'Montréal-Trudeau International Airport', FlightDelayMin: 275 },
+    { id: '11', FlightNum: 'SJ17CTG', Origin: 'Gimpo International Airport', Dest: 'Palma de Mallorca Airport', FlightDelayMin: 195 },
+    { id: '12', FlightNum: 'NE50HYZ', Origin: 'Pulkovo Airport', Dest: 'Ngurah Rai International Airport', FlightDelayMin: 35 },
+    { id: '13', FlightNum: 'UC26LDA', Origin: 'George Bush Intercontinental Airport', Dest: 'Edinburgh Airport', FlightDelayMin: 260 },
+    { id: '14', FlightNum: 'BW94FXM', Origin: 'Noi Bai International Airport', Dest: 'Adolfo Suárez Madrid-Barajas Airport', FlightDelayMin: 100 },
+    { id: '15', FlightNum: 'AG61SJR', Origin: 'Heydar Aliyev International Airport', Dest: 'Ministro Pistarini International Airport', FlightDelayMin: 355 },
+    { id: '16', FlightNum: 'TX08BEV', Origin: 'Tallinn Airport', Dest: 'Chhatrapati Shivaji Maharaj International Airport', FlightDelayMin: 155 },
+    { id: '17', FlightNum: 'MR75GKN', Origin: 'Cologne Bonn Airport', Dest: 'Hamad International Airport', FlightDelayMin: 20 },
+    { id: '18', FlightNum: 'PQ42WDH', Origin: 'Kuala Lumpur International Airport', Dest: 'Leonardo da Vinci-Fiumicino Airport', FlightDelayMin: 225 },
+    { id: '19', FlightNum: 'YL30AXC', Origin: 'Sheremetyevo International Airport', Dest: 'Tocumen International Airport', FlightDelayMin: 170 },
+    { id: '20', FlightNum: 'JH59NTQ', Origin: 'Haneda Airport', Dest: 'Suvarnabhumi Airport', FlightDelayMin: 290 },
+    { id: '21', FlightNum: 'JT88MWC', Origin: 'Suvarnabhumi Airport', Dest: 'Frankfurt Airport', FlightDelayMin: 220 },
+    { id: '22', FlightNum: 'PL03DFR', Origin: 'Incheon International Airport', Dest: 'Dubai International Airport', FlightDelayMin: 85 },
+  ],
+};
 
 // --- Fields panel (left sidebar) ---
 
@@ -271,16 +338,16 @@ export const MetricsPage = ({
   onTogglePanel,
 }) => {
   const queryDef = selectedItem && QUERY_DEFS[selectedItem];
-  const results = queryDef ? FLIGHT_DATA : [];
+  const results = queryDef && !queryDef.queryOnly ? (QUERY_DATA[selectedItem] || []) : [];
 
   const [activeTab, setActiveTab] = useState('metrics');
   const [queryText, setQueryText] = useState(queryDef ? queryDef.query : '');
-  const [isQueryEditable, setIsQueryEditable] = useState(!queryDef);
+  const [isQueryEditable, setIsQueryEditable] = useState(!queryDef || !!queryDef.queryOnly);
   const queryRef = useRef(null);
 
-  // Auto-focus textarea when landing on empty page
+  // Auto-focus textarea when landing on empty page or query-only page
   useEffect(() => {
-    if (!queryDef && queryRef.current) {
+    if ((!queryDef || queryDef.queryOnly) && queryRef.current) {
       setTimeout(() => queryRef.current.focus(), 0);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -327,8 +394,8 @@ export const MetricsPage = ({
 
   useEffect(() => {
     setQueryText(queryDef ? queryDef.query : '');
-    setIsQueryEditable(!queryDef);
-    if (!queryDef && queryRef.current) {
+    setIsQueryEditable(!queryDef || !!queryDef.queryOnly);
+    if ((!queryDef || queryDef.queryOnly) && queryRef.current) {
       setTimeout(() => queryRef.current.focus(), 0);
     }
   }, [queryDef]);

@@ -451,8 +451,8 @@ export const SamplePagesView = () => {
     logs: {
       title: 'Logs',
       tabs: [
-        { id: 'saved-logs', name: 'Saved logs' },
-        { id: 'saved-results', name: 'Saved results' },
+        { id: 'saved-logs', name: 'Saved results' },
+        { id: 'saved-results', name: 'Saved query' },
       ],
       tabItems: {
         'saved-logs': [
@@ -474,14 +474,19 @@ export const SamplePagesView = () => {
         ],
         'saved-results': [
           {
-            key: 'result-error-rate',
-            title: 'Error rate snapshot',
-            subtitle: 'Saved 2 hours ago',
+            key: 'query-latency-by-host',
+            title: 'Latency by host',
+            subtitle: 'source=logs | stats avg(latency) by host',
           },
           {
-            key: 'result-slow-queries',
-            title: 'Slow queries snapshot',
-            subtitle: 'Saved 1 day ago',
+            key: 'query-5xx-responses',
+            title: '5xx responses',
+            subtitle: 'source=logs | where status >= 500 | stats count() by path',
+          },
+          {
+            key: 'query-top-users',
+            title: 'Top users by request count',
+            subtitle: 'source=logs | stats count() as requests by user | sort -requests | head 50',
           },
         ],
       },
@@ -506,8 +511,8 @@ export const SamplePagesView = () => {
     metrics: {
       title: 'Metrics',
       tabs: [
-        { id: 'saved-metrics', name: 'Saved metrics' },
-        { id: 'saved-results', name: 'Saved results' },
+        { id: 'saved-metrics', name: 'Saved results' },
+        { id: 'saved-results', name: 'Saved query' },
       ],
       tabItems: {
         'saved-metrics': [
@@ -529,14 +534,19 @@ export const SamplePagesView = () => {
         ],
         'saved-results': [
           {
-            key: 'result-throughput',
-            title: 'Throughput snapshot',
-            subtitle: 'Saved 3 hours ago',
+            key: 'query-disk-io',
+            title: 'Disk I/O by volume',
+            subtitle: 'source=metrics | stats avg(disk_io) by volume | sort -avg_disk_io',
           },
           {
-            key: 'result-cpu',
-            title: 'CPU utilization snapshot',
-            subtitle: 'Saved 1 day ago',
+            key: 'query-network-errors',
+            title: 'Network error rate',
+            subtitle: 'source=metrics | where net_errors > 0 | stats sum(net_errors) by interface',
+          },
+          {
+            key: 'query-gc-pauses',
+            title: 'GC pause duration',
+            subtitle: 'source=metrics | stats max(gc_pause_ms) by service | sort -max_gc_pause_ms',
           },
         ],
       },

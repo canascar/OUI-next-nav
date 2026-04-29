@@ -1123,28 +1123,59 @@ const DashboardsPopoverContent = ({ onNavigate }) => {
 
 // Popover content for Logs (collapsed mode)
 const LogsPopoverContent = ({ onNavigate }) => {
-  const items = [
-    {
-      key: 'error-rate',
-      title: 'Error rate by service',
-      subtitle: 'source=logs | where level="ERROR"',
-    },
-    {
-      key: 'auth-failures',
-      title: 'Auth failure events',
-      subtitle: 'source=logs | where event="auth_fail"',
-    },
-    {
-      key: 'slow-queries',
-      title: 'Slow query log',
-      subtitle: 'source=logs | where duration > 5000',
-    },
-  ];
+  const [activeTab, setActiveTab] = useState('saved-results');
+  const tabItems = {
+    'saved-results': [
+      {
+        key: 'error-rate',
+        title: 'Error rate by service',
+        subtitle: 'source=logs | where level="ERROR"',
+      },
+      {
+        key: 'auth-failures',
+        title: 'Auth failure events',
+        subtitle: 'source=logs | where event="auth_fail"',
+      },
+      {
+        key: 'slow-queries',
+        title: 'Slow query log',
+        subtitle: 'source=logs | where duration > 5000',
+      },
+    ],
+    'saved-query': [
+      {
+        key: 'query-latency-by-host',
+        title: 'Latency by host',
+        subtitle: 'source=logs | stats avg(latency) by host',
+      },
+      {
+        key: 'query-5xx-responses',
+        title: '5xx responses',
+        subtitle: 'source=logs | where status >= 500 | stats count() by path',
+      },
+      {
+        key: 'query-top-users',
+        title: 'Top users by request count',
+        subtitle: 'source=logs | stats count() as requests by user | sort -requests | head 50',
+      },
+    ],
+  };
+  const items = tabItems[activeTab];
   return (
     <div className="samplePagesLeftNav__threadPopover">
       <div className="samplePagesLeftNav__threadPopoverHeader">Logs</div>
+      <div style={{ padding: '0 12px', marginTop: 8 }}>
+        <OuiTabs size="s" display="condensed">
+          <OuiTab isSelected={activeTab === 'saved-results'} onClick={() => setActiveTab('saved-results')}>
+            Saved results
+          </OuiTab>
+          <OuiTab isSelected={activeTab === 'saved-query'} onClick={() => setActiveTab('saved-query')}>
+            Saved query
+          </OuiTab>
+        </OuiTabs>
+      </div>
       <div className="samplePagesLeftNav__threadPopoverContent">
-        {items.map((item, index) => (
+        {items.map((item) => (
           <button
             key={item.key}
             type="button"
@@ -1165,28 +1196,59 @@ const LogsPopoverContent = ({ onNavigate }) => {
 
 // Popover content for Metrics (collapsed mode)
 const MetricsPopoverContent = ({ onNavigate }) => {
-  const items = [
-    {
-      key: 'throughput',
-      title: 'Throughput over time',
-      subtitle: 'source=metrics | stats avg(throughput)',
-    },
-    {
-      key: 'cpu-utilization',
-      title: 'CPU utilization',
-      subtitle: 'source=metrics | stats avg(cpu) by host',
-    },
-    {
-      key: 'memory-pressure',
-      title: 'Memory pressure',
-      subtitle: 'source=metrics | stats max(mem_used)',
-    },
-  ];
+  const [activeTab, setActiveTab] = useState('saved-results');
+  const tabItems = {
+    'saved-results': [
+      {
+        key: 'throughput',
+        title: 'Throughput over time',
+        subtitle: 'source=metrics | stats avg(throughput)',
+      },
+      {
+        key: 'cpu-utilization',
+        title: 'CPU utilization',
+        subtitle: 'source=metrics | stats avg(cpu) by host',
+      },
+      {
+        key: 'memory-pressure',
+        title: 'Memory pressure',
+        subtitle: 'source=metrics | stats max(mem_used)',
+      },
+    ],
+    'saved-query': [
+      {
+        key: 'query-disk-io',
+        title: 'Disk I/O by volume',
+        subtitle: 'source=metrics | stats avg(disk_io) by volume | sort -avg_disk_io',
+      },
+      {
+        key: 'query-network-errors',
+        title: 'Network error rate',
+        subtitle: 'source=metrics | where net_errors > 0 | stats sum(net_errors) by interface',
+      },
+      {
+        key: 'query-gc-pauses',
+        title: 'GC pause duration',
+        subtitle: 'source=metrics | stats max(gc_pause_ms) by service | sort -max_gc_pause_ms',
+      },
+    ],
+  };
+  const items = tabItems[activeTab];
   return (
     <div className="samplePagesLeftNav__threadPopover">
       <div className="samplePagesLeftNav__threadPopoverHeader">Metrics</div>
+      <div style={{ padding: '0 12px', marginTop: 8 }}>
+        <OuiTabs size="s" display="condensed">
+          <OuiTab isSelected={activeTab === 'saved-results'} onClick={() => setActiveTab('saved-results')}>
+            Saved results
+          </OuiTab>
+          <OuiTab isSelected={activeTab === 'saved-query'} onClick={() => setActiveTab('saved-query')}>
+            Saved query
+          </OuiTab>
+        </OuiTabs>
+      </div>
       <div className="samplePagesLeftNav__threadPopoverContent">
-        {items.map((item, index) => (
+        {items.map((item) => (
           <button
             key={item.key}
             type="button"
@@ -2386,6 +2448,7 @@ export const SamplePagesLeftNav = ({
                       closePopover={() => setNavPopover(null)}
                       anchorPosition="rightUp"
                       offset={-4}
+                      ownFocus={false}
                       panelPaddingSize="s"
                       panelClassName="samplePagesLeftNav__popoverPanel">
                       <div
@@ -2828,6 +2891,7 @@ export const SamplePagesLeftNav = ({
                   closePopover={() => setNavPopover(null)}
                   anchorPosition="rightUp"
                   offset={-4}
+                  ownFocus={false}
                   panelPaddingSize="s"
                   panelClassName="samplePagesLeftNav__popoverPanel">
                   <div
