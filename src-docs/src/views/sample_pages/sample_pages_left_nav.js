@@ -185,6 +185,37 @@ const TOOLS_SUBGROUPS = [
       },
     ],
   },
+  {
+    key: 'ai-configs',
+    label: 'AI Configs',
+    icon: 'generate',
+    children: [
+      {
+        key: 'ai-skills',
+        label: 'Skills',
+        icon: 'wrench',
+        page: 'ai-skills',
+      },
+      {
+        key: 'ai-memories',
+        label: 'Memories',
+        icon: 'memory',
+        page: 'ai-memories',
+      },
+      {
+        key: 'ai-automations',
+        label: 'Automations',
+        icon: 'bolt',
+        page: 'ai-automations',
+      },
+      {
+        key: 'ai-mcp-servers',
+        label: 'MCP Servers',
+        icon: 'console',
+        page: 'ai-mcp-servers',
+      },
+    ],
+  },
 ];
 
 // Items nested under Manage workspace in expanded mode
@@ -734,7 +765,7 @@ const LogsPanelContent = ({ onItemSelect, selectedItem, onPageChange }) => (
   <PanelItemList
     items={LOGS_ITEMS}
     onItemSelect={(key) => {
-      onPageChange('discover');
+      onPageChange('logs');
       onItemSelect(key);
     }}
     selectedItem={selectedItem}
@@ -764,7 +795,7 @@ const MetricsPanelContent = ({ onItemSelect, selectedItem, onPageChange }) => (
   <PanelItemList
     items={METRICS_ITEMS}
     onItemSelect={(key) => {
-      onPageChange('discover');
+      onPageChange('metrics');
       onItemSelect(key);
     }}
     selectedItem={selectedItem}
@@ -1118,7 +1149,7 @@ const LogsPopoverContent = ({ onNavigate }) => {
             key={item.key}
             type="button"
             className="samplePagesLeftNav__threadPopoverItem"
-            onClick={() => onNavigate('discover', item.key)}>
+            onClick={() => onNavigate('logs', item.key)}>
             <span className="samplePagesLeftNav__threadPopoverTitle">
               {item.title}
             </span>
@@ -1160,7 +1191,7 @@ const MetricsPopoverContent = ({ onNavigate }) => {
             key={item.key}
             type="button"
             className="samplePagesLeftNav__threadPopoverItem"
-            onClick={() => onNavigate('discover', item.key)}>
+            onClick={() => onNavigate('metrics', item.key)}>
             <span className="samplePagesLeftNav__threadPopoverTitle">
               {item.title}
             </span>
@@ -1210,16 +1241,22 @@ const ToolsPanelContent = ({
   onPageChange,
   onOpenPanel,
   onItemSelect: onSelectItem,
+  onPopoverNavigate,
 }) => {
   const [subOpen, setSubOpen] = useState({
     'anomaly-detection': false,
     alerting: false,
+    'ai-configs': false,
   });
   const toggleSub = (key) =>
     setSubOpen((prev) => ({ ...prev, [key]: !prev[key] }));
   const handleNavigate = (page, itemKey) => {
-    onPageChange(page);
-    if (onSelectItem) onSelectItem(itemKey);
+    if (onPopoverNavigate) {
+      onPopoverNavigate(page, itemKey);
+    } else {
+      onPageChange(page);
+      if (onSelectItem) onSelectItem(itemKey);
+    }
   };
   return (
     <div className="samplePagesLeftNav__toolsPopover">
@@ -1338,6 +1375,57 @@ const ToolsPanelContent = ({
             </div>
           )}
         </div>
+        {/* AI Configs */}
+        <div className="samplePagesLeftNav__toolsPopoverGroup">
+          <div className="samplePagesLeftNav__toolsPopoverItem samplePagesLeftNav__toolsPopoverItem--parent">
+            <div className="samplePagesLeftNav__navItemIconWrap">
+              <OuiIcon type="generate" size="m" />
+            </div>
+            <span className="samplePagesLeftNav__toolsPopoverItemLabel">
+              AI Configs
+            </span>
+            <OuiButtonIcon
+              iconType={subOpen['ai-configs'] ? 'minus' : 'plus'}
+              aria-label="Toggle AI Configs"
+              size="xs"
+              color="text"
+              display="empty"
+              onClick={() => toggleSub('ai-configs')}
+            />
+          </div>
+          {subOpen['ai-configs'] && (
+            <div className="samplePagesLeftNav__subgroupChildren">
+              <button
+                type="button"
+                className="samplePagesLeftNav__toolsPopoverItem samplePagesLeftNav__toolsPopoverItem--child"
+                onClick={() => onPageChange('ai-skills')}>
+                <div className="samplePagesLeftNav__treeLine" />
+                <span>Skills</span>
+              </button>
+              <button
+                type="button"
+                className="samplePagesLeftNav__toolsPopoverItem samplePagesLeftNav__toolsPopoverItem--child"
+                onClick={() => onPageChange('ai-memories')}>
+                <div className="samplePagesLeftNav__treeLine" />
+                <span>Memories</span>
+              </button>
+              <button
+                type="button"
+                className="samplePagesLeftNav__toolsPopoverItem samplePagesLeftNav__toolsPopoverItem--child"
+                onClick={() => onPageChange('ai-automations')}>
+                <div className="samplePagesLeftNav__treeLine" />
+                <span>Automations</span>
+              </button>
+              <button
+                type="button"
+                className="samplePagesLeftNav__toolsPopoverItem samplePagesLeftNav__toolsPopoverItem--child"
+                onClick={() => onPageChange('ai-mcp-servers')}>
+                <div className="samplePagesLeftNav__treeLine" />
+                <span>MCP Servers</span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -1348,10 +1436,15 @@ const WorkspaceNavPanelContent = ({
   onPageChange,
   onOpenPanel,
   onItemSelect: onSelectItem,
+  onPopoverNavigate,
 }) => {
   const handleNavigate = (page, itemKey) => {
-    onPageChange(page);
-    if (onSelectItem) onSelectItem(itemKey);
+    if (onPopoverNavigate) {
+      onPopoverNavigate(page, itemKey);
+    } else {
+      onPageChange(page);
+      if (onSelectItem) onSelectItem(itemKey);
+    }
   };
   return (
     <div className="samplePagesLeftNav__workspacePopover">
@@ -1449,6 +1542,120 @@ const WorkspaceNavPanelContent = ({
           </div>
           <span>All workspaces</span>
         </button>
+      </div>
+    </div>
+  );
+};
+
+// Settings popover content (gear icon)
+const APPEARANCE_OPTIONS = [
+  { key: 'v9-light', label: 'Light' },
+  { key: 'v9-dark', label: 'Dark' },
+  { key: 'system', label: 'System' },
+];
+
+const SettingsPopoverContent = ({ onPageChange, themeContext, appearanceSelection, onAppearanceChange }) => {
+  const [appearanceOpen, setAppearanceOpen] = useState(false);
+  const appearanceTimer = useRef(null);
+  const openAppearance = () => {
+    if (appearanceTimer.current) clearTimeout(appearanceTimer.current);
+    setAppearanceOpen(true);
+  };
+  const closeAppearance = () => {
+    appearanceTimer.current = setTimeout(() => setAppearanceOpen(false), 150);
+  };
+
+  const handleThemeSelect = (themeKey) => {
+    if (!themeContext) return;
+    if (onAppearanceChange) onAppearanceChange(themeKey);
+    if (themeKey === 'system') {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      themeContext.changeTheme(prefersDark ? 'v9-dark' : 'v9-light');
+    } else {
+      themeContext.changeTheme(themeKey);
+    }
+  };
+
+  return (
+    <div className="samplePagesLeftNav__toolsPopover">
+      <div className="samplePagesLeftNav__toolsPopoverContent">
+        <button
+          type="button"
+          className="samplePagesLeftNav__toolsPopoverItem"
+          onClick={() => {}}>
+          <div className="samplePagesLeftNav__navItemIconWrap">
+            <OuiIcon type="gear" size="m" />
+          </div>
+          <span className="samplePagesLeftNav__toolsPopoverItemLabel">
+            Settings and setup
+          </span>
+          <OuiIcon
+            type="popout"
+            size="m"
+            color="subdued"
+            style={{ marginRight: 8 }}
+          />
+        </button>
+        <button
+          type="button"
+          className="samplePagesLeftNav__toolsPopoverItem"
+          onClick={() => {}}>
+          <div className="samplePagesLeftNav__navItemIconWrap">
+            <OuiIcon type="database" size="m" />
+          </div>
+          <span className="samplePagesLeftNav__toolsPopoverItemLabel">
+            Data administration
+          </span>
+          <OuiIcon
+            type="popout"
+            size="m"
+            color="subdued"
+            style={{ marginRight: 8 }}
+          />
+        </button>
+        <div onMouseEnter={openAppearance} onMouseLeave={closeAppearance}>
+          <OuiPopover
+            button={
+              <button
+                type="button"
+                className="samplePagesLeftNav__toolsPopoverItem">
+                <div className="samplePagesLeftNav__navItemIconWrap">
+                  <OuiIcon type="brush" size="m" />
+                </div>
+                <span className="samplePagesLeftNav__toolsPopoverItemLabel">
+                  Appearance
+                </span>
+                <OuiIcon type="arrowRight" size="m" color="subdued" style={{ marginRight: 8 }} />
+              </button>
+            }
+            isOpen={appearanceOpen}
+            closePopover={() => setAppearanceOpen(false)}
+            anchorPosition="rightUp"
+            offset={-4}
+            panelPaddingSize="s"
+            panelClassName="samplePagesLeftNav__popoverPanel">
+            <div onMouseEnter={openAppearance} onMouseLeave={closeAppearance}>
+              <div className="samplePagesLeftNav__toolsPopover">
+                <div className="samplePagesLeftNav__toolsPopoverContent">
+                  {APPEARANCE_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.key}
+                      type="button"
+                      className="samplePagesLeftNav__toolsPopoverItem"
+                      onClick={() => handleThemeSelect(opt.key)}>
+                      <div
+                        className="samplePagesLeftNav__navItemIconWrap"
+                      style={{ visibility: appearanceSelection === opt.key ? 'visible' : 'hidden' }}>
+                        <OuiIcon type="check" size="m" />
+                      </div>
+                      <span>{opt.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </OuiPopover>
+        </div>
       </div>
     </div>
   );
@@ -1807,6 +2014,7 @@ const NavGroup = ({ label, isOpen, onToggle, children }) => (
 export const SamplePagesLeftNav = ({
   activePage,
   onPageChange,
+  onPopoverNavigate,
   onItemSelect,
   selectedItem,
   onLogoClick,
@@ -1819,6 +2027,7 @@ export const SamplePagesLeftNav = ({
 }) => {
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
+  const [appearanceSelection, setAppearanceSelection] = useState(isDark ? 'v9-dark' : 'v9-light');
   const [expandedTab, setExpandedTab] = useState(null);
   const [isCollapsing, setIsCollapsing] = useState(false);
   const [appsPopoverOpen, setAppsPopoverOpen] = useState(false);
@@ -1839,12 +2048,15 @@ export const SamplePagesLeftNav = ({
 
   // Expand/collapse state
   const [isNavExpanded, setIsNavExpanded] = useState(false);
+  const [isNavLocked, setIsNavLocked] = useState(false);
   const [isHoveringNav, setIsHoveringNav] = useState(false);
 
-  // Auto-collapse nav when page changes
+  // Auto-collapse nav when page changes (unless locked)
   useEffect(() => {
-    setIsNavExpanded(false);
-  }, [activePage]);
+    if (!isNavLocked) {
+      setIsNavExpanded(false);
+    }
+  }, [activePage, isNavLocked]);
 
   const [groupOpen, setGroupOpen] = useState({
     'agent-monitoring': true,
@@ -1885,12 +2097,13 @@ export const SamplePagesLeftNav = ({
   const renderedNavItems = useMemo(() => NAV_ITEMS, []);
 
   const collapsePanel = useCallback(() => {
+    if (isNavLocked) return;
     setIsCollapsing(true);
     setTimeout(() => {
       setExpandedTab(null);
       setIsCollapsing(false);
     }, 200);
-  }, []);
+  }, [isNavLocked]);
 
   const handleGoToSettings = useCallback(() => {
     collapsePanel();
@@ -1913,17 +2126,10 @@ export const SamplePagesLeftNav = ({
   const NAV_AUTO_SELECT = {
     thread: { page: 'thread', item: 'latency-spike' },
     dashboards: { page: 'dashboards', item: 'system-overview' },
-    logs: { page: 'discover', item: 'error-rate' },
-    metrics: { page: 'discover', item: 'throughput' },
+    logs: { page: 'logs', item: null },
+    metrics: { page: 'metrics', item: null },
   };
 
-  // Items whose auto-select page differs from their key
-  const LOGS_KEYS = new Set(['error-rate', 'auth-failures', 'slow-queries']);
-  const METRICS_KEYS = new Set([
-    'throughput',
-    'cpu-utilization',
-    'memory-pressure',
-  ]);
   const TOOLS_PAGES = new Set([
     'notebooks',
     'forecasters',
@@ -1932,6 +2138,10 @@ export const SamplePagesLeftNav = ({
     'alerts-detail',
     'monitors-detail',
     'destinations',
+    'ai-skills',
+    'ai-memories',
+    'ai-automations',
+    'ai-mcp-servers',
   ]);
   const WORKSPACE_PAGES = new Set([
     'manage-workspace',
@@ -1943,18 +2153,6 @@ export const SamplePagesLeftNav = ({
   ]);
   const isNavItemActive = (itemKey) => {
     if (activePage === itemKey) return true;
-    if (
-      itemKey === 'logs' &&
-      activePage === 'discover' &&
-      LOGS_KEYS.has(selectedItem)
-    )
-      return true;
-    if (
-      itemKey === 'metrics' &&
-      activePage === 'discover' &&
-      METRICS_KEYS.has(selectedItem)
-    )
-      return true;
     if (itemKey === 'tools' && TOOLS_PAGES.has(activePage)) return true;
     if (itemKey === 'manage-workspace' && WORKSPACE_PAGES.has(activePage))
       return true;
@@ -2047,7 +2245,7 @@ export const SamplePagesLeftNav = ({
       <nav
         aria-label="Sample pages navigation"
         className="samplePagesLeftNav samplePagesLeftNav--expanded">
-        {/* Header: logo left, search + collapse icons right */}
+        {/* Header: logo left, lock + collapse icons right */}
         <div className="samplePagesLeftNav__headerExpanded">
           <button
             type="button"
@@ -2061,12 +2259,12 @@ export const SamplePagesLeftNav = ({
           </button>
           <div className="samplePagesLeftNav__headerActions">
             <OuiButtonIcon
-              iconType="search"
-              aria-label="Search"
+              iconType={isNavLocked ? 'lock' : 'lockOpen'}
+              aria-label={isNavLocked ? 'Unlock navigation' : 'Lock navigation open'}
               color="text"
               display="empty"
               size="xs"
-              onClick={() => setIsSearchOpen((open) => !open)}
+              onClick={() => setIsNavLocked((locked) => !locked)}
             />
             <OuiButtonIcon
               iconType="menuLeft"
@@ -2074,13 +2272,29 @@ export const SamplePagesLeftNav = ({
               color="text"
               display="empty"
               size="xs"
-              onClick={() => setIsNavExpanded(false)}
+              onClick={() => {
+                setIsNavLocked(false);
+                setIsNavExpanded(false);
+              }}
             />
           </div>
         </div>
 
         {/* Scrollable items */}
         <div className="samplePagesLeftNav__itemsExpanded">
+          {/* Search — opens search popover */}
+          <button
+            type="button"
+            className="samplePagesLeftNav__navItemExpanded"
+            onClick={() => setIsSearchOpen((open) => !open)}>
+            <div className="samplePagesLeftNav__navItemIconWrap">
+              <OuiIcon type="search" size="m" />
+            </div>
+            <span className="samplePagesLeftNav__navItemExpandedLabel">
+              Search
+            </span>
+          </button>
+
           {/* Threads — with popover on hover */}
           {(() => {
             const threadItem = renderedNavItems.find((i) => i.key === 'thread');
@@ -2120,8 +2334,7 @@ export const SamplePagesLeftNav = ({
                     <ThreadPopoverContent
                       onNavigate={(page, itemKey) => {
                         setNavPopover(null);
-                        onPageChange(page);
-                        onItemSelect(itemKey);
+                        onPopoverNavigate(page, itemKey);
                       }}
                     />
                   </div>
@@ -2181,8 +2394,7 @@ export const SamplePagesLeftNav = ({
                         <PopContent
                           onNavigate={(page, itemKey) => {
                             setNavPopover(null);
-                            onPageChange(page);
-                            onItemSelect(itemKey);
+                            onPopoverNavigate(page, itemKey);
                           }}
                         />
                       </div>
@@ -2314,8 +2526,7 @@ export const SamplePagesLeftNav = ({
                           pageKey={child.page}
                           onNavigate={(page, itemKey) => {
                             setNavPopover(null);
-                            onPageChange(page);
-                            onItemSelect(itemKey);
+                            onPopoverNavigate(page, itemKey);
                           }}
                         />
                       </div>
@@ -2397,8 +2608,7 @@ export const SamplePagesLeftNav = ({
                                     pageKey={child.page}
                                     onNavigate={(page, itemKey) => {
                                       setNavPopover(null);
-                                      onPageChange(page);
-                                      onItemSelect(itemKey);
+                                      onPopoverNavigate(page, itemKey);
                                     }}
                                   />
                                 </div>
@@ -2458,6 +2668,10 @@ export const SamplePagesLeftNav = ({
                       setNavPopover(null);
                       onItemSelect(itemKey);
                     }}
+                    onPopoverNavigate={(page, itemKey) => {
+                      setNavPopover(null);
+                      onPopoverNavigate(page, itemKey);
+                    }}
                   />
                 </div>
               </OuiPopover>
@@ -2474,18 +2688,40 @@ export const SamplePagesLeftNav = ({
                 />
               </OuiToolTip>
             </div>
-            <div className="samplePagesLeftNav__footerItem">
-              <OuiButtonIcon
-                iconType="gear"
-                aria-label="Settings"
-                color="text"
-                display="empty"
-                size="xs"
-                onClick={() => {
-                  collapsePanel();
-                  onPageChange('settings');
-                }}
-              />
+            <div
+              className="samplePagesLeftNav__footerItem"
+              onMouseEnter={() => openNavPopover('settings-footer')}
+              onMouseLeave={() => closeNavPopover()}>
+              <OuiPopover
+                button={
+                  <OuiButtonIcon
+                    iconType="gear"
+                    aria-label="Settings"
+                    color="text"
+                    display="empty"
+                    size="xs"
+                  />
+                }
+                isOpen={navPopover === 'settings-footer'}
+                closePopover={() => setNavPopover(null)}
+                anchorPosition="upCenter"
+                panelPaddingSize="s"
+                panelClassName="samplePagesLeftNav__popoverPanel">
+                <div
+                  onMouseEnter={() => openNavPopover('settings-footer')}
+                  onMouseLeave={() => closeNavPopover()}>
+                  <SettingsPopoverContent
+                    themeContext={themeContext}
+                    appearanceSelection={appearanceSelection}
+                    onAppearanceChange={setAppearanceSelection}
+                    onPageChange={(page) => {
+                      setNavPopover(null);
+                      collapsePanel();
+                      onPageChange(page);
+                    }}
+                  />
+                </div>
+              </OuiPopover>
             </div>
             <div
               className="samplePagesLeftNav__footerItem"
@@ -2611,13 +2847,16 @@ export const SamplePagesLeftNav = ({
                           setNavPopover(null);
                           onItemSelect(itemKey);
                         }}
+                        onPopoverNavigate={(page, itemKey) => {
+                          setNavPopover(null);
+                          onPopoverNavigate(page, itemKey);
+                        }}
                       />
                     ) : (
                       <PopoverContent
                         onNavigate={(page, itemKey) => {
                           setNavPopover(null);
-                          onPageChange(page);
-                          onItemSelect(itemKey);
+                          onPopoverNavigate(page, itemKey);
                         }}
                       />
                     )}
@@ -2686,6 +2925,10 @@ export const SamplePagesLeftNav = ({
                   setNavPopover(null);
                   onItemSelect(itemKey);
                 }}
+                onPopoverNavigate={(page, itemKey) => {
+                  setNavPopover(null);
+                  onPopoverNavigate(page, itemKey);
+                }}
               />
             </div>
           </OuiPopover>
@@ -2702,18 +2945,40 @@ export const SamplePagesLeftNav = ({
             />
           </OuiToolTip>
         </div>
-        <div className="samplePagesLeftNav__footerItem">
-          <OuiButtonIcon
-            iconType="gear"
-            aria-label="Settings"
-            color="text"
-            display="empty"
-            size="xs"
-            onClick={() => {
-              collapsePanel();
-              onPageChange('settings');
-            }}
-          />
+        <div
+          className="samplePagesLeftNav__footerItem"
+          onMouseEnter={() => openNavPopover('settings-footer')}
+          onMouseLeave={() => closeNavPopover()}>
+          <OuiPopover
+            button={
+              <OuiButtonIcon
+                iconType="gear"
+                aria-label="Settings"
+                color="text"
+                display="empty"
+                size="xs"
+              />
+            }
+            isOpen={navPopover === 'settings-footer'}
+            closePopover={() => setNavPopover(null)}
+            anchorPosition="rightDown"
+            panelPaddingSize="s"
+            panelClassName="samplePagesLeftNav__popoverPanel">
+            <div
+              onMouseEnter={() => openNavPopover('settings-footer')}
+              onMouseLeave={() => closeNavPopover()}>
+              <SettingsPopoverContent
+                themeContext={themeContext}
+                appearanceSelection={appearanceSelection}
+                onAppearanceChange={setAppearanceSelection}
+                onPageChange={(page) => {
+                  setNavPopover(null);
+                  collapsePanel();
+                  onPageChange(page);
+                }}
+              />
+            </div>
+          </OuiPopover>
         </div>
         <div
           className="samplePagesLeftNav__footerItem"
@@ -2754,8 +3019,7 @@ export const SamplePagesLeftNav = ({
         onClose={() => setIsSearchOpen(false)}
         onNavigate={(page, itemKey) => {
           collapsePanel();
-          onPageChange(page);
-          onItemSelect(itemKey);
+          onPopoverNavigate(page, itemKey);
         }}
         onAskAi={onAskAi}
       />

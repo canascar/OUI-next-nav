@@ -402,7 +402,7 @@
   }
 }
 
-// Header row in expanded mode: logo left, search + collapse icons right
+// Header row in expanded mode: logo left, lock + collapse icons right
 .samplePagesLeftNav__headerExpanded {
   display: flex;
   align-items: center;
@@ -732,10 +732,10 @@
   height: 100%;
   background-color: $ouiColorEmptyShade;
   border-radius: 8px;
-  overflow: auto;
+  overflow: hidden;
 }
 
-// Side panel (left panel) — animated expand/collapse
+// Side panel (left panel) — now rendered as flyout overlay
 .samplePagesContentPanel--sidePanel {
   width: 280px;
   min-width: 0;

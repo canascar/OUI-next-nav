@@ -50,27 +50,18 @@ const SEARCH_SECTIONS = [
     ],
   },
   {
-    section: 'Discover',
-    page: 'discover',
+    section: 'Logs',
+    page: 'logs',
     items: [
       { key: 'error-rate', label: 'Error rate by service', subtitle: 'Logs' },
       { key: 'auth-failures', label: 'Auth failure events', subtitle: 'Logs' },
       { key: 'slow-queries', label: 'Slow query log', subtitle: 'Logs' },
-      {
-        key: 'latency-percentiles',
-        label: 'Latency percentiles',
-        subtitle: 'Traces',
-      },
-      {
-        key: 'trace-errors',
-        label: 'Trace error breakdown',
-        subtitle: 'Traces',
-      },
-      {
-        key: 'service-deps',
-        label: 'Service dependencies',
-        subtitle: 'Traces',
-      },
+    ],
+  },
+  {
+    section: 'Metrics',
+    page: 'metrics',
+    items: [
       { key: 'throughput', label: 'Throughput over time', subtitle: 'Metrics' },
       { key: 'cpu-utilization', label: 'CPU utilization', subtitle: 'Metrics' },
       { key: 'memory-pressure', label: 'Memory pressure', subtitle: 'Metrics' },

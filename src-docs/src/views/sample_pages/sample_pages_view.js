@@ -14,7 +14,8 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { SamplePagesLeftNav } from './sample_pages_left_nav';
 import { DetailPagePanel } from './detail_page_panel';
 import { ServicePage } from './service_page';
-import { DiscoverPage } from './discover_page';
+import { LogsPage } from './logs_page';
+import { MetricsPage } from './metrics_page';
 import { ThreadPage } from './thread_page';
 import { AlertsPage } from './alerts_page';
 import { DashboardsPage } from './dashboards_page';
@@ -40,6 +41,10 @@ import { IndexPatternsPage } from './index_patterns_page';
 import { DatasetsPage } from './datasets_page';
 import { AssetsDetailPage } from './assets_detail_page';
 import { SampleDataPage } from './sample_data_page';
+import { AiSkillsPage } from './ai_skills_page';
+import { AiMemoriesPage } from './ai_memories_page';
+import { AiAutomationsPage } from './ai_automations_page';
+import { AiMcpServersPage } from './ai_mcp_servers_page';
 import { OuiErrorBoundary } from '../../../../src/components';
 
 import { AskAiPopover } from './ask_ai_popover';
@@ -57,7 +62,8 @@ const renderPage = (
   navProps,
   onItemSelect,
   isPanelOpen,
-  onTogglePanel
+  onTogglePanel,
+  onPageChange
 ) => {
   switch (activePage) {
     case 'home':
@@ -66,10 +72,21 @@ const renderPage = (
           <HomePage />
         </OuiErrorBoundary>
       );
-    case 'discover':
+    case 'logs':
       return (
         <OuiErrorBoundary>
-          <DiscoverPage
+          <LogsPage
+            selectedItem={selectedItem}
+            onContinueAsThread={onContinueAsThread}
+            isPanelOpen={isPanelOpen}
+            onTogglePanel={onTogglePanel}
+          />
+        </OuiErrorBoundary>
+      );
+    case 'metrics':
+      return (
+        <OuiErrorBoundary>
+          <MetricsPage
             selectedItem={selectedItem}
             onContinueAsThread={onContinueAsThread}
             isPanelOpen={isPanelOpen}
@@ -90,6 +107,7 @@ const renderPage = (
             }
             isPanelOpen={isPanelOpen}
             onTogglePanel={onTogglePanel}
+            onPageChange={onPageChange}
           />
         </OuiErrorBoundary>
       );
@@ -294,6 +312,54 @@ const renderPage = (
           <WorkspacePage onContinueAsThread={onContinueAsThread} />
         </OuiErrorBoundary>
       );
+    case 'ai-skills':
+      return (
+        <OuiErrorBoundary>
+          <AiSkillsPage
+            selectedItem={selectedItem}
+            onItemSelect={onItemSelect}
+            onContinueAsThread={onContinueAsThread}
+            isPanelOpen={isPanelOpen}
+            onTogglePanel={onTogglePanel}
+          />
+        </OuiErrorBoundary>
+      );
+    case 'ai-memories':
+      return (
+        <OuiErrorBoundary>
+          <AiMemoriesPage
+            selectedItem={selectedItem}
+            onItemSelect={onItemSelect}
+            onContinueAsThread={onContinueAsThread}
+            isPanelOpen={isPanelOpen}
+            onTogglePanel={onTogglePanel}
+          />
+        </OuiErrorBoundary>
+      );
+    case 'ai-automations':
+      return (
+        <OuiErrorBoundary>
+          <AiAutomationsPage
+            selectedItem={selectedItem}
+            onItemSelect={onItemSelect}
+            onContinueAsThread={onContinueAsThread}
+            isPanelOpen={isPanelOpen}
+            onTogglePanel={onTogglePanel}
+          />
+        </OuiErrorBoundary>
+      );
+    case 'ai-mcp-servers':
+      return (
+        <OuiErrorBoundary>
+          <AiMcpServersPage
+            selectedItem={selectedItem}
+            onItemSelect={onItemSelect}
+            onContinueAsThread={onContinueAsThread}
+            isPanelOpen={isPanelOpen}
+            onTogglePanel={onTogglePanel}
+          />
+        </OuiErrorBoundary>
+      );
     case 'settings':
       return (
         <OuiErrorBoundary>
@@ -323,6 +389,7 @@ export const SamplePagesView = () => {
   const createThreadRef = useRef(null);
   const contentRef = useRef(null);
   const animTimerRef = useRef(null);
+  const skipPanelOpenRef = useRef(false);
 
   // Lifted nav layout state
   const [mainItems, setMainItems] = useState([]);
@@ -381,8 +448,43 @@ export const SamplePagesView = () => {
         },
       ],
     },
-    discover: {
+    logs: {
       title: 'Logs',
+      tabs: [
+        { id: 'saved-logs', name: 'Saved logs' },
+        { id: 'saved-results', name: 'Saved results' },
+      ],
+      tabItems: {
+        'saved-logs': [
+          {
+            key: 'error-rate',
+            title: 'Error rate by service',
+            subtitle: 'source=logs | where level="ERROR"',
+          },
+          {
+            key: 'auth-failures',
+            title: 'Auth failure events',
+            subtitle: 'source=logs | where event="auth_fail"',
+          },
+          {
+            key: 'slow-queries',
+            title: 'Slow query log',
+            subtitle: 'source=logs | where duration > 5000',
+          },
+        ],
+        'saved-results': [
+          {
+            key: 'result-error-rate',
+            title: 'Error rate snapshot',
+            subtitle: 'Saved 2 hours ago',
+          },
+          {
+            key: 'result-slow-queries',
+            title: 'Slow queries snapshot',
+            subtitle: 'Saved 1 day ago',
+          },
+        ],
+      },
       items: [
         {
           key: 'error-rate',
@@ -399,6 +501,46 @@ export const SamplePagesView = () => {
           title: 'Slow query log',
           subtitle: 'source=logs | where duration > 5000',
         },
+      ],
+    },
+    metrics: {
+      title: 'Metrics',
+      tabs: [
+        { id: 'saved-metrics', name: 'Saved metrics' },
+        { id: 'saved-results', name: 'Saved results' },
+      ],
+      tabItems: {
+        'saved-metrics': [
+          {
+            key: 'throughput',
+            title: 'Throughput over time',
+            subtitle: 'source=metrics | stats avg(throughput)',
+          },
+          {
+            key: 'cpu-utilization',
+            title: 'CPU utilization',
+            subtitle: 'source=metrics | stats avg(cpu) by host',
+          },
+          {
+            key: 'memory-pressure',
+            title: 'Memory pressure',
+            subtitle: 'source=metrics | stats max(mem_used)',
+          },
+        ],
+        'saved-results': [
+          {
+            key: 'result-throughput',
+            title: 'Throughput snapshot',
+            subtitle: 'Saved 3 hours ago',
+          },
+          {
+            key: 'result-cpu',
+            title: 'CPU utilization snapshot',
+            subtitle: 'Saved 1 day ago',
+          },
+        ],
+      },
+      items: [
         {
           key: 'throughput',
           title: 'Throughput over time',
@@ -588,13 +730,102 @@ export const SamplePagesView = () => {
         },
       ],
     },
+    'ai-skills': {
+      title: 'Skills',
+      items: [
+        {
+          key: 'skill-anomaly-detector',
+          title: 'Anomaly detector',
+          subtitle: 'ML · Active',
+        },
+        {
+          key: 'skill-log-summarizer',
+          title: 'Log summarizer',
+          subtitle: 'NLP · Active',
+        },
+        {
+          key: 'skill-root-cause',
+          title: 'Root cause analysis',
+          subtitle: 'ML · Active',
+        },
+      ],
+    },
+    'ai-memories': {
+      title: 'Memories',
+      items: [
+        {
+          key: 'memory-incident-patterns',
+          title: 'Incident patterns',
+          subtitle: '24 entries · Updated 1 hour ago',
+        },
+        {
+          key: 'memory-runbook-steps',
+          title: 'Runbook steps',
+          subtitle: '12 entries · Updated 3 hours ago',
+        },
+        {
+          key: 'memory-team-prefs',
+          title: 'Team preferences',
+          subtitle: '8 entries · Updated 1 day ago',
+        },
+      ],
+    },
+    'ai-automations': {
+      title: 'Automations',
+      items: [
+        {
+          key: 'auto-alert-triage',
+          title: 'Alert triage',
+          subtitle: 'Trigger: New alert · Active',
+        },
+        {
+          key: 'auto-log-cleanup',
+          title: 'Log cleanup',
+          subtitle: 'Schedule: Daily · Active',
+        },
+        {
+          key: 'auto-report-gen',
+          title: 'Report generation',
+          subtitle: 'Schedule: Weekly · Paused',
+        },
+      ],
+    },
+    'ai-mcp-servers': {
+      title: 'MCP Servers',
+      items: [
+        {
+          key: 'mcp-opensearch',
+          title: 'OpenSearch',
+          subtitle: 'Connected · 3 tools',
+        },
+        {
+          key: 'mcp-prometheus',
+          title: 'Prometheus',
+          subtitle: 'Connected · 5 tools',
+        },
+        {
+          key: 'mcp-slack',
+          title: 'Slack',
+          subtitle: 'Disconnected · 2 tools',
+        },
+      ],
+    },
   };
 
   const panelConfig = PANEL_CONFIGS[activePage];
 
-  // Reset panel to open when switching pages
+  // Reset panel to open when switching pages (unless navigated from popover item)
+  const PANEL_CLOSED_BY_DEFAULT = new Set(['logs', 'metrics']);
+
   useEffect(() => {
-    setIsPanelOpen(true);
+    if (skipPanelOpenRef.current) {
+      skipPanelOpenRef.current = false;
+      setIsPanelOpen(false);
+    } else if (PANEL_CLOSED_BY_DEFAULT.has(activePage)) {
+      setIsPanelOpen(false);
+    } else {
+      setIsPanelOpen(true);
+    }
     setIsPanelCollapsing(false);
   }, [activePage]);
 
@@ -608,14 +839,13 @@ export const SamplePagesView = () => {
 
   const DEFAULT_ITEMS = {
     service: 'services',
-    discover: 'error-rate',
+    logs: null,
+    metrics: null,
     thread: 'latency-spike',
     alerts: 'cpu-threshold',
     dashboards: 'system-overview',
     skills: 'anomaly-detector',
     assets: 'web-server-fleet',
-    logs: null,
-    metrics: null,
     'topology-map': null,
     'agent-monitoring-traces': null,
     'agent-monitoring-spans': null,
@@ -634,12 +864,22 @@ export const SamplePagesView = () => {
     datasets: 'dataset-web-logs',
     'assets-detail': 'asset-web-fleet',
     'sample-data': 'sample-ecommerce',
+    'ai-skills': 'skill-anomaly-detector',
+    'ai-memories': 'memory-incident-patterns',
+    'ai-automations': 'auto-alert-triage',
+    'ai-mcp-servers': 'mcp-opensearch',
   };
 
   const handlePageChange = (page) => {
     setActivePage(page);
     setSelectedItem(DEFAULT_ITEMS[page] || null);
   };
+
+  const handlePopoverNavigate = useCallback((page, itemKey) => {
+    skipPanelOpenRef.current = true;
+    setActivePage(page);
+    setSelectedItem(itemKey || null);
+  }, []);
 
   const handleNavAskAi = useCallback((text) => {
     setNavAskAiInitialPrompt(text || '');
@@ -737,6 +977,7 @@ export const SamplePagesView = () => {
       <SamplePagesLeftNav
         activePage={activePage}
         onPageChange={handlePageChange}
+        onPopoverNavigate={handlePopoverNavigate}
         onItemSelect={setSelectedItem}
         selectedItem={selectedItem}
         onLogoClick={() => handlePageChange('home')}
@@ -754,28 +995,10 @@ export const SamplePagesView = () => {
           overflow: 'hidden',
           padding: '8px 8px 8px 0',
           display: 'flex',
-          gap: panelConfig && isPanelOpen ? '7px' : '0',
-          transition: 'gap 200ms ease-out',
         }}>
-        {panelConfig && isPanelOpen && (
-          <div
-            className={`samplePagesContentPanel samplePagesContentPanel--sidePanel${
-              isPanelCollapsing
-                ? ' samplePagesContentPanel--sidePanelCollapsing'
-                : ''
-            }`}>
-            <DetailPagePanel
-              title={panelConfig.title}
-              items={panelConfig.items}
-              selectedItem={selectedItem}
-              onItemSelect={setSelectedItem}
-              onClose={handlePanelClose}
-            />
-          </div>
-        )}
         <div
           className="samplePagesContentPanel"
-          style={{ flex: 1, minWidth: 0 }}>
+          style={{ flex: 1, minWidth: 0, position: 'relative' }}>
           {renderPage(
             activePage,
             selectedItem,
@@ -788,7 +1011,27 @@ export const SamplePagesView = () => {
             },
             setSelectedItem,
             isPanelOpen,
-            () => (isPanelOpen ? handlePanelClose() : setIsPanelOpen(true))
+            () => (isPanelOpen ? handlePanelClose() : setIsPanelOpen(true)),
+            handlePageChange
+          )}
+          {panelConfig && isPanelOpen && (
+            <div
+              className={`detailPageFlyout${
+                isPanelCollapsing ? ' detailPageFlyout--closing' : ''
+              }`}>
+              <DetailPagePanel
+                title={panelConfig.title}
+                items={panelConfig.items}
+                tabs={panelConfig.tabs}
+                tabItems={panelConfig.tabItems}
+                selectedItem={selectedItem}
+                onItemSelect={(key) => {
+                  setSelectedItem(key);
+                  handlePanelClose();
+                }}
+                onClose={handlePanelClose}
+              />
+            </div>
           )}
         </div>
       </div>

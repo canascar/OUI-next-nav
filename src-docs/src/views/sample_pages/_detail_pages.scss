@@ -41,10 +41,9 @@
   align-items: center;
   height: 100%;
   padding: 0 12px;
-  gap: 12px;
+  gap: 8px;
   flex-shrink: 0;
   border-bottom: 1px solid $ouiBorderColor;
-  border-left: 1px solid $ouiBorderColor;
 }
 
 // Legacy support — keep old class names working
@@ -80,27 +79,18 @@
 
 // Panel toggle button in header
 .detailPageHeader__panelToggle {
-  width: 48px;
-  height: 48px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 4px;
+  height: 48px;
   flex-shrink: 0;
+  padding: 0 8px;
   border-right: 1px solid $ouiBorderColor;
   border-bottom: 1px solid $ouiBorderColor;
-  background: none;
-  border-top: none;
-  border-left: none;
-  cursor: pointer;
-  padding: 0;
-
-  &:hover {
-    background-color: $ouiColorLightestShade;
-  }
 }
 
 // ============================================================
-// DETAIL PAGE PANEL (standalone left panel component)
+// DETAIL PAGE PANEL (flyout overlay on top of page content)
 // ============================================================
 .detailPagePanel {
   display: flex;
@@ -113,11 +103,23 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 0 12px;
   border-bottom: 1px solid $ouiBorderColor;
-  font-size: $ouiFontSizeXS;
-  color: $ouiColorDarkShade;
   flex-shrink: 0;
+}
+
+.detailPagePanel__headerTitle {
+  font-size: $ouiFontSizeM;
+  font-weight: 500;
+  line-height: 19px;
+  color: $ouiTitleColor;
+  white-space: nowrap;
+}
+
+.detailPagePanel__headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .detailPagePanel__content {
@@ -127,6 +129,12 @@
   padding: 8px;
   overflow-y: auto;
   flex: 1;
+}
+
+.detailPagePanel__tabs {
+  padding: 0 12px;
+  margin-top: 8px;
+  flex-shrink: 0;
 }
 
 .detailPagePanel__item {
@@ -161,4 +169,54 @@
   font-size: $ouiFontSizeXS;
   line-height: 18px;
   color: $ouiTextColor;
+}
+
+// ============================================================
+// DETAIL PAGE FLYOUT (overlay panel on top of page content)
+// ============================================================
+.detailPageFlyout {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 600px;
+  height: 100%;
+  z-index: 1000;
+  background-color: $ouiColorEmptyShade;
+  border-right: 1px solid $ouiColorLightShade;
+  border-radius: 8px 0 0 8px;
+  box-shadow:
+    0 2px 1px rgba(0, 0, 0, 0.05),
+    0 4px 2px rgba(0, 0, 0, 0.05),
+    0 8px 4px rgba(0, 0, 0, 0.05),
+    0 16px 8px rgba(0, 0, 0, 0.05),
+    0 24px 16px rgba(0, 0, 0, 0.05),
+    0 40px 32px rgba(0, 0, 0, 0.05);
+  animation: detailPageFlyoutOpen 200ms ease-out forwards;
+  overflow: hidden;
+}
+
+.detailPageFlyout--closing {
+  animation: detailPageFlyoutClose 200ms ease-in forwards;
+}
+
+@keyframes detailPageFlyoutOpen {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes detailPageFlyoutClose {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
 }

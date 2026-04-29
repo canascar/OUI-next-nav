@@ -10,7 +10,10 @@
  */
 
 import React from 'react';
-import { OuiButtonIcon, OuiToolTip } from '../../../../src/components';
+import {
+  OuiButtonIcon,
+  OuiToolTip,
+} from '../../../../src/components';
 import { AskAiPopover } from './ask_ai_popover';
 
 export const DetailPageHeader = ({
@@ -23,70 +26,101 @@ export const DetailPageHeader = ({
   firstActionLabel = 'Settings',
   onFirstAction,
   hideAskAi = false,
+  extraActions = [],
+  headerControls,
 }) => {
   const [isAskAiOpen, setIsAskAiOpen] = React.useState(false);
 
   return (
     <div className="detailPageHeader">
       {onTogglePanel && (
-        <button
-          type="button"
-          className="detailPageHeader__panelToggle"
-          aria-label={isPanelOpen ? 'Close panel' : 'Open panel'}
-          onClick={onTogglePanel}>
-          <OuiButtonIcon
-            iconType={isPanelOpen ? 'folderOpen' : 'folderClosed'}
-            aria-label={isPanelOpen ? 'Close panel' : 'Open panel'}
-            size="s"
-            color="text"
-            display="empty"
-          />
-        </button>
+        <div className="detailPageHeader__panelToggle">
+          <OuiToolTip content={isPanelOpen ? 'Close panel' : 'Open panel'} position="bottom">
+            <OuiButtonIcon
+              iconType={isPanelOpen ? 'folderOpen' : 'folderClosed'}
+              aria-label={isPanelOpen ? 'Close panel' : 'Open panel'}
+              size="s"
+              color="text"
+              display="empty"
+              onClick={onTogglePanel}
+            />
+          </OuiToolTip>
+          <OuiToolTip content="Add" position="bottom">
+            <OuiButtonIcon
+              iconType="plusInCircle"
+              aria-label="Add"
+              size="s"
+              color="text"
+              display="empty"
+            />
+          </OuiToolTip>
+        </div>
       )}
       <div className="detailPageHeader__title">
         {children}
         {!children && title}
       </div>
       <div className="detailPageHeader__actions">
+        {headerControls}
         <OuiToolTip content={firstActionLabel} position="bottom">
           <OuiButtonIcon
             iconType={firstActionIcon}
             aria-label={firstActionLabel}
-            size="xs"
+            size="s"
             color="text"
             display="empty"
             onClick={onFirstAction}
           />
         </OuiToolTip>
+        {extraActions.map((action, index) =>
+          action.render ? (
+            <React.Fragment key={`extra-${index}`}>
+              {action.render()}
+            </React.Fragment>
+          ) : (
+            <OuiToolTip key={`extra-${index}`} content={action.label} position="bottom">
+              <OuiButtonIcon
+                iconType={action.iconType}
+                aria-label={action.label}
+                size="s"
+                color="text"
+                display="empty"
+                onClick={action.onClick}
+              />
+            </OuiToolTip>
+          )
+        )}
         <OuiToolTip content="Share" position="bottom">
           <OuiButtonIcon
             iconType="share"
             aria-label="Share"
-            size="xs"
+            size="s"
             color="text"
             display="empty"
           />
         </OuiToolTip>
         {!hideAskAi && (
-          <div className="askAiPopover__anchor">
-            <OuiToolTip content="Ask AI" position="bottom">
-              <OuiButtonIcon
-                iconType="generate"
-                aria-label="Ask AI"
-                size="xs"
-                color={isAskAiOpen ? 'primary' : 'text'}
-                display="empty"
-                onClick={() => setIsAskAiOpen(!isAskAiOpen)}
-              />
-            </OuiToolTip>
-            {onContinueAsThread && (
-              <AskAiPopover
-                isOpen={isAskAiOpen}
-                onClose={() => setIsAskAiOpen(false)}
-                onContinueAsThread={onContinueAsThread}
-              />
-            )}
-          </div>
+          <>
+            <div className="askAiPopover__anchor">
+              <OuiToolTip content="Ask AI" position="bottom">
+                <OuiButtonIcon
+                  iconType="generate"
+                  aria-label="Ask AI"
+                  size="s"
+                  color={isAskAiOpen ? 'primary' : 'text'}
+                  display="empty"
+                  onClick={() => setIsAskAiOpen(!isAskAiOpen)}
+                />
+              </OuiToolTip>
+              {onContinueAsThread && (
+                <AskAiPopover
+                  isOpen={isAskAiOpen}
+                  onClose={() => setIsAskAiOpen(false)}
+                  onContinueAsThread={onContinueAsThread}
+                />
+              )}
+            </div>
+          </>
         )}
       </div>
     </div>

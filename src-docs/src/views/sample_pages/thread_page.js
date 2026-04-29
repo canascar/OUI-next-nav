@@ -14,12 +14,16 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   OuiAvatar,
   OuiButtonIcon,
+  OuiContextMenuPanel,
+  OuiContextMenuItem,
   OuiFlyoutHeader,
   OuiFlyoutBody,
   OuiIcon,
   OuiLoadingSpinner,
+  OuiPopover,
   OuiTitle,
   OuiText,
+  OuiToolTip,
   OuiFlexGroup,
   OuiFlexItem,
   OuiCompressedTextArea,
@@ -373,6 +377,7 @@ export const ThreadPage = ({
   pendingMessages,
   isPanelOpen,
   onTogglePanel,
+  onPageChange,
 }) => {
   const threadKey = selectedItem || 'latency-spike';
   const thread = THREADS[threadKey] || NEW_THREAD;
@@ -384,6 +389,7 @@ export const ThreadPage = ({
   const [canvasItems, setCanvasItems] = useState([]);
   const [canvasWidth, setCanvasWidth] = useState(340);
   const [isCanvasDragging, setIsCanvasDragging] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const isDragging = useRef(false);
   const feedRef = useRef(null);
   const responseIndex = useRef(0);
@@ -579,6 +585,49 @@ export const ThreadPage = ({
         firstActionIcon="layers"
         firstActionLabel="Canvas"
         onFirstAction={() => setIsCanvasOpen((open) => !open)}
+        extraActions={[
+          {
+            label: 'Settings',
+            render: () => (
+              <OuiPopover
+                button={
+                  <OuiToolTip content="Settings" position="bottom">
+                    <OuiButtonIcon
+                      iconType="controlsHorizontal"
+                      aria-label="Settings"
+                      size="s"
+                      color="text"
+                      display="empty"
+                      onClick={() => setIsSettingsOpen((open) => !open)}
+                    />
+                  </OuiToolTip>
+                }
+                isOpen={isSettingsOpen}
+                closePopover={() => setIsSettingsOpen(false)}
+                panelPaddingSize="none"
+                anchorPosition="downRight"
+                ownFocus={false}>
+                <OuiContextMenuPanel
+                  hasFocus={false}
+                  items={[
+                    <OuiContextMenuItem key="skills" onClick={() => { setIsSettingsOpen(false); onPageChange && onPageChange('ai-skills'); }}>
+                      Skills
+                    </OuiContextMenuItem>,
+                    <OuiContextMenuItem key="memories" onClick={() => { setIsSettingsOpen(false); onPageChange && onPageChange('ai-memories'); }}>
+                      Memories
+                    </OuiContextMenuItem>,
+                    <OuiContextMenuItem key="automations" onClick={() => { setIsSettingsOpen(false); onPageChange && onPageChange('ai-automations'); }}>
+                      Automations
+                    </OuiContextMenuItem>,
+                    <OuiContextMenuItem key="mcp" onClick={() => { setIsSettingsOpen(false); onPageChange && onPageChange('ai-mcp-servers'); }}>
+                      MCP Servers
+                    </OuiContextMenuItem>,
+                  ]}
+                />
+              </OuiPopover>
+            ),
+          },
+        ]}
         hideAskAi>
         {thread.title}
         <div
