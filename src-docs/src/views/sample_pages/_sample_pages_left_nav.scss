@@ -179,7 +179,7 @@
   left: 60px;
   width: 320px;
   max-height: 400px;
-  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .55); // sass-lint:disable-line no-color-literals
+  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .65); // sass-lint:disable-line no-color-literals
   backdrop-filter: blur(16px);
   border: none;
   border-radius: $ouiBorderRadius;

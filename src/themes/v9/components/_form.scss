@@ -127,12 +127,24 @@
 }
 // sass-lint:enable no-important
 
+// Subdued "Show dates" link in super date picker
+// sass-lint:disable no-important
+.ouiSuperDatePicker__prettyFormatLink {
+  color: $ouiColorMediumShade !important;
+  font-weight: $ouiFontWeightRegular !important;
+
+  &:hover {
+    color: $ouiColorDarkShade !important;
+  }
+}
+// sass-lint:enable no-important
+
 // Large drop shadows on all popovers — no border, higher contrast bg
 // sass-lint:disable no-important, no-color-literals, leading-zero
 .ouiPopover__panel {
   border: none !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, .15), 0 2px 8px rgba(0, 0, 0, .1) !important;
-  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .55) !important;
+  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .65) !important;
   backdrop-filter: blur(16px);
 }
 // sass-lint:enable no-important, no-color-literals, leading-zero
