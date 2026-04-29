@@ -268,6 +268,7 @@ export const SamplePagesLeftNav = ({
   const [expandedTab, setExpandedTab] = useState(null);
   const [hoveredTab, setHoveredTab] = useState(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isPanelClosing, setIsPanelClosing] = useState(false);
   const hoverTimeoutRef = useRef(null);
   const navItemRefs = useRef({});
 
@@ -311,13 +312,22 @@ export const SamplePagesLeftNav = ({
     }, 150);
   }, [clearHoverTimeout]);
 
+  const closePanel = useCallback(() => {
+    setIsPanelClosing(true);
+    setTimeout(() => {
+      setExpandedTab(null);
+      setIsPanelClosing(false);
+    }, 220);
+  }, []);
+
   const handleNavClick = (item) => {
     if (item.isAction || item.hoverOnly) return;
     setHoveredTab(null);
     clearHoverTimeout();
     if (expandedTab === item.key) {
-      setExpandedTab(null);
+      closePanel();
     } else {
+      if (isPanelClosing) return;
       setExpandedTab(item.key);
       onPageChange(item.key);
     }
@@ -427,7 +437,10 @@ export const SamplePagesLeftNav = ({
 
       {/* Expanded (pinned) panel */}
       {PanelComponent && (
-        <div className="samplePagesLeftNav__expandedPanel">
+        <div
+          className={`samplePagesLeftNav__expandedPanel${
+            isPanelClosing ? ' samplePagesLeftNav__expandedPanel--closing' : ''
+          }`}>
           <div className="samplePagesLeftNav__expandedPanelHeader">
             <OuiTitle size="s">
               <h3>{expandedNavItem.label}</h3>
@@ -446,7 +459,7 @@ export const SamplePagesLeftNav = ({
                 color="text"
                 display="empty"
                 size="s"
-                onClick={() => setExpandedTab(null)}
+                onClick={closePanel}
               />
             </div>
           </div>

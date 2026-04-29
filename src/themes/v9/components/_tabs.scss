@@ -14,7 +14,7 @@
   border-radius: $ouiBorderRadius !important;
   padding: 4px !important;
   gap: 2px;
-  border-bottom: none !important;
+  border: 1px solid transparentize($ouiColorLightShade, .5) !important;
 
   // Remove the bottom border line
   &::before {

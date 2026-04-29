@@ -34,7 +34,7 @@
 // Outline (non-fill) buttons — faint border with subtle background
 // sass-lint:disable no-important
 .ouiButton:not(.ouiButton--fill):not(.ouiButton-isDisabled) {
-  background-color: lightOrDarkTheme($ouiColorLightestShade, $ouiColorLightShade) !important;
+  background-color: lightOrDarkTheme($ouiColorLightShade, $ouiColorLightShade) !important;
   border-color: transparentize($ouiColorLightShade, .7) !important;
 
   &:hover,

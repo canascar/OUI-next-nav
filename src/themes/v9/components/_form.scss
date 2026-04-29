@@ -15,9 +15,13 @@
 // sass-lint:enable no-important
 
 // Apply consistent border radius to group form control layouts
+// sass-lint:disable no-important
 .ouiFormControlLayout--group {
-  border-radius: $ouiFormControlBorderRadius;
-  overflow: hidden;
+  border-radius: $ouiFormControlBorderRadius !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  border: 1px solid $ouiFormBorderColor !important;
+  box-shadow: none !important;
 
   // Reset all inner elements to no radius — the group's overflow: hidden clips them
   > .ouiFormControlLayout__prepend,
@@ -28,13 +32,38 @@
   > .ouiButtonIcon,
   > .ouiFormLabel,
   > .ouiText {
-    border-radius: 0;
+    border-radius: 0 !important;
   }
 
   &.ouiFormControlLayout--compressed {
-    border-radius: $ouiFormControlCompressedBorderRadius;
+    border-radius: $ouiFormControlCompressedBorderRadius !important;
   }
 }
+// sass-lint:enable no-important
+
+// Vertically center label text in prepend/append elements
+// sass-lint:disable no-important
+.ouiFormControlLayout--group > .ouiFormControlLayout__prepend,
+.ouiFormControlLayout--group > .ouiFormControlLayout__append {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.ouiFormControlLayout--group .ouiFormLabel,
+.ouiFormControlLayout--group .ouiText {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  line-height: normal !important;
+}
+
+.ouiFormControlLayout__prepend > *,
+.ouiFormControlLayout__append > * {
+  display: flex !important;
+  align-items: center !important;
+}
+// sass-lint:enable no-important
 
 // Remove border-radius from dropdown/select option items
 .ouiComboBoxOption,
