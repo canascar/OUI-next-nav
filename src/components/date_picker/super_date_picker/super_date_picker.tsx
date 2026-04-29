@@ -156,6 +156,7 @@ interface OuiSuperDatePickerState {
   hasChanged: boolean;
   isEndDatePopoverOpen: boolean;
   isInvalid: boolean;
+  isQuickSelectOpen: boolean;
   isStartDatePopoverOpen: boolean;
   prevProps: {
     end: ShortDate;
@@ -222,6 +223,7 @@ export class OuiSuperDatePicker extends Component<
       this.props.end,
       this.props.commonlyUsedRanges
     ),
+    isQuickSelectOpen: false,
     isStartDatePopoverOpen: false,
     isEndDatePopoverOpen: false,
   };
@@ -566,6 +568,9 @@ export class OuiSuperDatePicker extends Component<
         recentlyUsedRanges={recentlyUsedRanges}
         refreshInterval={refreshInterval}
         start={start}
+        onPopoverToggle={(isOpen) =>
+          this.setState({ isQuickSelectOpen: isOpen })
+        }
       />
     );
 
@@ -573,7 +578,9 @@ export class OuiSuperDatePicker extends Component<
       'ouiSuperDatePicker__flexWrapper--noUpdateButton': !showUpdateButton,
       'ouiSuperDatePicker__flexWrapper--isAutoRefreshOnly': isAutoRefreshOnly,
       'ouiSuperDatePicker__flexWrapper--isOpen':
-        this.state.isStartDatePopoverOpen || this.state.isEndDatePopoverOpen,
+        this.state.isStartDatePopoverOpen ||
+        this.state.isEndDatePopoverOpen ||
+        this.state.isQuickSelectOpen,
     });
 
     return (

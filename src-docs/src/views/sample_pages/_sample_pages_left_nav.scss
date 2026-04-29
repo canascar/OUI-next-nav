@@ -243,7 +243,7 @@
   max-height: 400px;
   background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .65); // sass-lint:disable-line no-color-literals
   backdrop-filter: blur(16px);
-  border: none;
+  border: 1px solid transparentize($ouiColorLightShade, .3);
   border-radius: $ouiBorderRadius;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1); // sass-lint:disable-line no-color-literals
   overflow-y: auto;
