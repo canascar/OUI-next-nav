@@ -9,7 +9,28 @@
  * GitHub history for details.
  */
 
-// V9 theme: Use regular font-weight (400) for links instead of semibold (600)
+// V9 theme: Use regular font-weight (400) for links and link-style buttons
+// sass-lint:disable no-important
 .ouiLink {
   font-weight: $ouiFontWeightRegular; // 400
+
+  &.ouiLink--primary {
+    color: $ouiColorMediumShade !important;
+
+    &:hover,
+    &:focus {
+      color: $ouiColorDarkShade !important;
+    }
+  }
 }
+
+// Make primary OuiButtonEmpty (link buttons) match link color
+.ouiButtonEmpty--primary {
+  color: $ouiColorMediumShade !important;
+
+  &:hover,
+  &:focus {
+    color: $ouiColorDarkShade !important;
+  }
+}
+// sass-lint:enable no-important

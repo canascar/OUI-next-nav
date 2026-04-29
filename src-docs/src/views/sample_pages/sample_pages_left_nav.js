@@ -30,7 +30,6 @@ import {
   OuiModalBody,
   OuiModalFooter,
   OuiButton,
-  OuiSwitch,
 } from '../../../../src/components';
 
 import { ThemeContext } from '../../components/with_theme';
@@ -263,15 +262,12 @@ export const SamplePagesLeftNav = ({
   onCardPaddingChange,
   gutter,
   onGutterChange,
-  showLabels,
-  onShowLabelsChange,
 }) => {
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
   const [expandedTab, setExpandedTab] = useState(null);
   const [hoveredTab, setHoveredTab] = useState(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isPanelClosing, setIsPanelClosing] = useState(false);
   const hoverTimeoutRef = useRef(null);
   const navItemRefs = useRef({});
 
@@ -315,22 +311,13 @@ export const SamplePagesLeftNav = ({
     }, 150);
   }, [clearHoverTimeout]);
 
-  const closePanel = useCallback(() => {
-    setIsPanelClosing(true);
-    setTimeout(() => {
-      setExpandedTab(null);
-      setIsPanelClosing(false);
-    }, 220);
-  }, []);
-
   const handleNavClick = (item) => {
     if (item.isAction || item.hoverOnly) return;
     setHoveredTab(null);
     clearHoverTimeout();
     if (expandedTab === item.key) {
-      closePanel();
+      setExpandedTab(null);
     } else {
-      if (isPanelClosing) return;
       setExpandedTab(item.key);
       onPageChange(item.key);
     }
@@ -366,10 +353,7 @@ export const SamplePagesLeftNav = ({
         </div>
 
         {/* Nav items */}
-        <div
-          className={`samplePagesLeftNav__items${
-            !showLabels ? ' samplePagesLeftNav__items--compact' : ''
-          }`}>
+        <div className="samplePagesLeftNav__items">
           {NAV_ITEMS.map((item) => {
             const isActive =
               !item.isAction &&
@@ -391,11 +375,9 @@ export const SamplePagesLeftNav = ({
                 <div className="samplePagesLeftNav__navIcon">
                   <OuiIcon type={item.icon} size="m" />
                 </div>
-                {showLabels && (
-                  <span className="samplePagesLeftNav__navLabel">
-                    {item.label}
-                  </span>
-                )}
+                <span className="samplePagesLeftNav__navLabel">
+                  {item.label}
+                </span>
               </button>
             );
           })}
@@ -408,12 +390,29 @@ export const SamplePagesLeftNav = ({
             className="samplePagesLeftNav__rule"
           />
           <OuiButtonIcon
+            iconType="home"
+            aria-label="Home"
+            color="text"
+            display="empty"
+            size="s"
+          />
+          <OuiButtonIcon
             iconType="gear"
             aria-label="Layout settings"
             color="text"
             display="empty"
             size="s"
             onClick={() => setIsSettingsOpen(true)}
+          />
+          <OuiButtonIcon
+            iconType="brush"
+            aria-label={
+              isDark ? 'Switch to light theme' : 'Switch to dark theme'
+            }
+            color="text"
+            display="empty"
+            size="s"
+            onClick={toggleTheme}
           />
           <OuiButtonIcon
             iconType="iInCircle"
@@ -428,10 +427,7 @@ export const SamplePagesLeftNav = ({
 
       {/* Expanded (pinned) panel */}
       {PanelComponent && (
-        <div
-          className={`samplePagesLeftNav__expandedPanel${
-            isPanelClosing ? ' samplePagesLeftNav__expandedPanel--closing' : ''
-          }`}>
+        <div className="samplePagesLeftNav__expandedPanel">
           <div className="samplePagesLeftNav__expandedPanelHeader">
             <OuiTitle size="s">
               <h3>{expandedNavItem.label}</h3>
@@ -450,7 +446,7 @@ export const SamplePagesLeftNav = ({
                 color="text"
                 display="empty"
                 size="s"
-                onClick={closePanel}
+                onClick={() => setExpandedTab(null)}
               />
             </div>
           </div>
@@ -502,24 +498,6 @@ export const SamplePagesLeftNav = ({
             <OuiModalHeaderTitle>Layout settings</OuiModalHeaderTitle>
           </OuiModalHeader>
           <OuiModalBody>
-            <OuiFormRow label="Dark mode" display="row">
-              <OuiSwitch
-                label=""
-                showLabel={false}
-                checked={isDark}
-                onChange={toggleTheme}
-              />
-            </OuiFormRow>
-            <OuiSpacer size="s" />
-            <OuiFormRow label="Show navigation labels" display="row">
-              <OuiSwitch
-                label=""
-                showLabel={false}
-                checked={showLabels}
-                onChange={(e) => onShowLabelsChange(e.target.checked)}
-              />
-            </OuiFormRow>
-            <OuiSpacer size="m" />
             <OuiFormRow label="Padding" display="row">
               <OuiButtonGroup
                 legend="Padding"

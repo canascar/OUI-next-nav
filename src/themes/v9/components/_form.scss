@@ -3,14 +3,23 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// Apply consistent border radius and background to group form control layouts
+// Keep file picker at the original (larger) height — exclude the large (drag-and-drop) variant
+// sass-lint:disable no-important
+.ouiFilePicker:not(.ouiFilePicker--large) {
+  height: $ouiSizeXXL !important;
+}
+
+.ouiFilePicker:not(.ouiFilePicker--large) > .ouiFilePicker__prompt {
+  height: $ouiSizeXXL !important;
+}
+// sass-lint:enable no-important
+
+// Apply consistent border radius to group form control layouts
 .ouiFormControlLayout--group {
   border-radius: $ouiFormControlBorderRadius;
   overflow: hidden;
-  background-color: $ouiFormBackgroundColor !important; // sass-lint:disable-line no-important
 
-  // Reset inner elements to no radius by default — the group's overflow: hidden clips them
-  // sass-lint:disable no-important
+  // Reset all inner elements to no radius — the group's overflow: hidden clips them
   > .ouiFormControlLayout__prepend,
   > .ouiFormControlLayout__append,
   > *:first-child .ouiFormControlLayout__prepend,
@@ -19,32 +28,8 @@
   > .ouiButtonIcon,
   > .ouiFormLabel,
   > .ouiText {
-    border-radius: 0 !important;
+    border-radius: 0;
   }
-
-  // Restore border radius on the outermost prepend/append so corners match the group
-  > *:first-child,
-  > .ouiFormControlLayout__prepend:first-child,
-  > *:first-child .ouiButtonIcon,
-  > *:first-child .ouiButtonEmpty,
-  > *:first-child .ouiFormLabel,
-  > *:first-child .ouiText,
-  > *:first-child .ouiIcon {
-    border-top-left-radius: $ouiFormControlBorderRadius !important;
-    border-bottom-left-radius: $ouiFormControlBorderRadius !important;
-  }
-
-  > *:last-child,
-  > .ouiFormControlLayout__append:last-child,
-  > *:last-child .ouiButtonIcon,
-  > *:last-child .ouiButtonEmpty,
-  > *:last-child .ouiFormLabel,
-  > *:last-child .ouiText,
-  > *:last-child .ouiIcon {
-    border-top-right-radius: $ouiFormControlBorderRadius !important;
-    border-bottom-right-radius: $ouiFormControlBorderRadius !important;
-  }
-  // sass-lint:enable no-important
 
   &.ouiFormControlLayout--compressed {
     border-radius: $ouiFormControlCompressedBorderRadius;
@@ -68,55 +53,11 @@
 .ouiFieldPassword,
 .ouiSelect,
 .ouiTextArea,
-.ouiFieldText--compressed,
-.ouiFieldSearch--compressed,
-.ouiFieldNumber--compressed,
-.ouiFieldPassword--compressed,
-.ouiSelect--compressed,
 .ouiDatePopoverButton,
-.ouiSuperDatePicker__prettyFormat,
-.ouiFilePicker__prompt {
+.ouiSuperDatePicker__prettyFormat {
   background-color: $ouiFormBackgroundColor !important;
-  border-radius: $ouiFormControlBorderRadius !important;
-
-  &:focus,
-  &:hover {
-    background-color: $ouiFormBackgroundColor !important;
-  }
 }
 
-// Larger drop shadow on hover for form controls
-// sass-lint:disable no-important, no-color-literals, no-mergeable-selectors
-.ouiFieldText,
-.ouiFieldSearch,
-.ouiFieldNumber,
-.ouiFieldPassword,
-.ouiSelect,
-.ouiTextArea,
-.ouiFilePicker__prompt {
-  transition: box-shadow $ouiAnimSpeedNormal ease-in-out !important;
-
-  &:hover {
-    box-shadow:
-    0 2px 8px -2px rgba(0, 0, 0, .12),
-    0 1px 3px -1px rgba(0, 0, 0, .08),
-    inset 0 0 0 1px $ouiFormBorderColor !important;
-  }
-}
-
-.ouiFormControlLayout--group {
-  transition: box-shadow $ouiAnimSpeedNormal ease-in-out !important;
-
-  &:hover {
-    box-shadow:
-    0 2px 8px -2px rgba(0, 0, 0, .12),
-    0 1px 3px -1px rgba(0, 0, 0, .08),
-    inset 0 0 0 1px $ouiFormBorderColor !important;
-  }
-}
-// sass-lint:enable no-important, no-color-literals, no-mergeable-selectors
-
-// sass-lint:disable no-important
 .ouiFormControlLayout:not(.ouiFormControlLayout--group) {
   > .ouiFieldText,
   > .ouiFieldSearch,
@@ -127,16 +68,22 @@
   }
 }
 
-// Inside groups, inputs get no radius and matching bg (group handles radius via overflow)
+.ouiFieldText--compressed,
+.ouiFieldSearch--compressed,
+.ouiFieldNumber--compressed,
+.ouiFieldPassword--compressed,
+.ouiSelect--compressed,
+.ouiDatePopoverButton-compressed {
+  background-color: $ouiFormBackgroundColor !important;
+}
+
+// Inside groups, inputs get no radius (group clips them)
 .ouiFormControlLayout--group .ouiFieldText,
 .ouiFormControlLayout--group .ouiFieldSearch,
 .ouiFormControlLayout--group .ouiFieldNumber,
 .ouiFormControlLayout--group .ouiFieldPassword,
-.ouiFormControlLayout--group .ouiSelect,
-.ouiFormControlLayout--group .ouiTextArea {
+.ouiFormControlLayout--group .ouiSelect {
   border-radius: 0 !important;
-  box-shadow: none !important;
-  background-color: $ouiFormBackgroundColor !important;
 }
 // sass-lint:enable no-important
 
@@ -145,24 +92,6 @@
 .ouiDatePickerRange,
 .ouiDatePickerRange--inGroup {
   background-color: $ouiFormBackgroundColor !important;
-  border-radius: $ouiFormControlBorderRadius !important;
-  box-shadow: none !important;
-}
-
-// When inside a group, the range should have no radius (group handles it)
-// and background should match the group
-.ouiFormControlLayout--group .ouiDatePickerRange,
-.ouiFormControlLayout--group .ouiDatePickerRange--inGroup {
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  background-color: transparent !important;
-}
-// sass-lint:enable no-important
-
-// Add padding to date popover content so tabs don't touch the edges
-// sass-lint:disable no-important
-.ouiDatePopoverContent {
-  padding: $ouiSizeS !important;
 }
 // sass-lint:enable no-important
 
@@ -198,179 +127,68 @@
 }
 // sass-lint:enable no-important
 
-// Large drop shadows on all popovers — light border, higher contrast bg with blur
+// Subdued "Show dates" link in super date picker
+// sass-lint:disable no-important
+.ouiSuperDatePicker__prettyFormatLink {
+  color: $ouiColorMediumShade !important;
+  font-weight: $ouiFontWeightRegular !important;
+
+  &:hover {
+    color: $ouiColorDarkShade !important;
+  }
+}
+// sass-lint:enable no-important
+
+// Large drop shadows on all popovers — no border, higher contrast bg
 // sass-lint:disable no-important, no-color-literals, leading-zero
 .ouiPopover__panel {
-  border: 1px solid $ouiColorLightShade !important;
+  border: none !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, .15), 0 2px 8px rgba(0, 0, 0, .1) !important;
-  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .6) !important;
-  backdrop-filter: blur(12px);
+  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .65) !important;
+  backdrop-filter: blur(16px);
 }
 // sass-lint:enable no-important, no-color-literals, leading-zero
 
-// Ensure dropdown panels have border radius on all corners
-// sass-lint:disable no-important
-.ouiComboBoxOptionsList,
-.ouiPopover__panel-isAttached {
-  border-radius: $ouiFormControlBorderRadius !important;
+// Backdrop blur on modal and flyout overlays
+// sass-lint:disable no-important, no-color-literals
+.ouiOverlayMask {
+  backdrop-filter: blur(16px);
+  background-color: rgba(red($ouiPageBackgroundColor), green($ouiPageBackgroundColor), blue($ouiPageBackgroundColor), .55) !important;
 }
-// sass-lint:enable no-important
+// sass-lint:enable no-important, no-color-literals
 
 // Hover and active states in popovers and nav panels
 // sass-lint:disable no-important, no-color-literals
 .ouiListGroupItem-isClickable:hover,
 .ouiListGroupItem-isClickable:focus-within,
 .ouiListGroupItem-isActive {
-  background-color: lightOrDarkTheme(#D6D3D1, #484441) !important;
+  background-color: lightOrDarkTheme(#D4DADB, #383B3E) !important;
 }
-// sass-lint:enable no-important, no-color-literals
 
-// Fix inner element radius in super date picker grouped layout
+// Grayed out disabled/unclickable states in dropdowns and selectable lists
+.ouiComboBoxOption-isDisabled,
+.ouiSelectableListItem-isDisabled,
+.ouiFilterSelectItem-isDisabled,
+.ouiContextMenuItem:disabled {
+  color: $ouiColorMediumShade !important;
+  opacity: .5 !important;
+  cursor: not-allowed !important;
+}
+
+// Smaller border radius on dropdown panels — match the form input
 // sass-lint:disable no-important
-.ouiSuperDatePicker .ouiFormControlLayout--group,
-.ouiCompressedSuperDatePicker .ouiFormControlLayout--group {
+.ouiComboBoxOptionsList,
+.ouiPopover__panel-isAttached,
+.ouiSuperSelect__listbox,
+.ouiSuperSelect__popoverPanel,
+.ouiPopover__panel.ouiSuperSelect__popoverPanel {
   border-radius: $ouiFormControlBorderRadius !important;
-  overflow: hidden !important;
-  padding: 0 !important;
-  box-shadow: none !important;
-  border: 1px solid $ouiFormBorderColor !important;
-  background-color: $ouiFormInputGroupLabelBackground !important;
+}
 
-  // Reset all inner elements to no radius — overflow: hidden on the group handles clipping
-  * {
-    border-radius: 0 !important;
-    box-shadow: none !important;
-  }
+// Any popover panel that contains a listbox or super select
+.ouiPopover__panel:has(.ouiSuperSelect__listbox),
+.ouiPopover__panel:has(.ouiComboBoxOptionsList__rowWrap) {
+  border-radius: $ouiFormControlBorderRadius !important;
 }
 // sass-lint:enable no-important
-
-// Backdrop blur on modal and flyout overlays
-// sass-lint:disable no-important, no-color-literals
-.ouiOverlayMask {
-  backdrop-filter: blur(20px);
-  background-color: rgba(red($ouiPageBackgroundColor), green($ouiPageBackgroundColor), blue($ouiPageBackgroundColor), .4) !important;
-}
 // sass-lint:enable no-important, no-color-literals
-
-// Form control layout delimited — inputs inside should be transparent
-// sass-lint:disable no-important
-.ouiFormControlLayoutDelimited__input {
-  background-color: transparent !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-}
-
-.ouiFormControlLayoutDelimited {
-  background-color: $ouiFormBackgroundColor !important;
-}
-
-.ouiFormControlLayoutDelimited__delimeter {
-  background-color: transparent !important;
-}
-// sass-lint:enable no-important
-
-// Keep file picker at the original (larger) height — exclude the large (drag-and-drop) variant
-// sass-lint:disable no-important
-.ouiFilePicker:not(.ouiFilePicker--large) {
-  height: $ouiSizeXXL !important;
-}
-
-.ouiFilePicker:not(.ouiFilePicker--large) > .ouiFilePicker__prompt {
-  height: $ouiSizeXXL !important;
-}
-
-// Ensure file picker prompt background matches other form inputs
-.ouiFilePicker__prompt {
-  background-image: none !important;
-  box-shadow: inset 0 0 0 1px $ouiFormBorderColor !important;
-}
-// sass-lint:enable no-important
-
-// Prepend/append labels and buttons in form groups — accent bg for separation
-// Targets prepend/append wrappers and any buttons inside them
-// sass-lint:disable no-important
-.ouiFormControlLayout--group > .ouiFormControlLayout__prepend,
-.ouiFormControlLayout--group > .ouiFormControlLayout__append,
-.ouiFormControlLayout--group > *:first-child:not(.ouiFormControlLayout__childrenWrapper):not(input),
-.ouiFormControlLayout--group > *:last-child:not(.ouiFormControlLayout__childrenWrapper):not(input),
-.ouiFormControlLayout--group > .ouiFormLabel,
-.ouiFormControlLayout--group > .ouiText,
-.ouiFormControlLayout--group .ouiFormControlLayout__prepend .ouiButtonEmpty,
-.ouiFormControlLayout--group .ouiFormControlLayout__append .ouiButtonEmpty,
-.ouiFormControlLayout--group .ouiFormControlLayout__prepend .ouiButtonIcon,
-.ouiFormControlLayout--group .ouiFormControlLayout__append .ouiButtonIcon {
-  background-color: $ouiFormInputGroupLabelBackground !important;
-
-  &:hover,
-  &:focus {
-    background-color: shade($ouiFormInputGroupLabelBackground, 10%) !important;
-  }
-}
-
-// Vertically center label text in prepend/append elements
-.ouiFormControlLayout--group .ouiFormLabel,
-.ouiFormControlLayout--group .ouiText {
-  @include ouiFontSizeXS;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  line-height: normal !important;
-}
-
-// Ensure all elements inside prepend/append stretch and center (e.g. tooltip spans)
-.ouiFormControlLayout--group > .ouiFormControlLayout__prepend,
-.ouiFormControlLayout--group > .ouiFormControlLayout__append {
-  display: flex !important;
-  align-items: center !important;
-}
-
-.ouiFormControlLayout__prepend > *,
-.ouiFormControlLayout__append > * {
-  display: flex !important;
-  align-items: center !important;
-}
-
-// Normalize line-height on text elements inside prepend/append so text sits centered
-.ouiFormControlLayout__prepend .ouiText,
-.ouiFormControlLayout__append .ouiText,
-.ouiFormControlLayout__prepend .ouiText p,
-.ouiFormControlLayout__append .ouiText p {
-  line-height: 1 !important;
-  margin-bottom: 0 !important;
-}
-// sass-lint:enable no-important
-
-// Super date picker — compacted by default, expands on interaction
-// sass-lint:disable no-important, leading-zero
-.ouiSuperDatePicker__flexWrapper {
-  width: 300px !important;
-  transition: width 450ms cubic-bezier(0.16, 1, 0.3, 1) !important;
-  overflow: hidden;
-
-  &:focus-within,
-  &:hover,
-  &--isOpen {
-    width: $ouiSuperDatePickerWidth + $ouiSuperDatePickerButtonWidth + $ouiSizeS !important;
-  }
-}
-
-.ouiSuperDatePicker__flexWrapper--noUpdateButton {
-  &:focus-within,
-  &:hover,
-  &.ouiSuperDatePicker__flexWrapper--isOpen {
-    width: $ouiSuperDatePickerWidth !important;
-  }
-}
-
-// Compressed variant
-.ouiCompressedSuperDatePicker .ouiSuperDatePicker__flexWrapper {
-  width: 260px !important;
-
-  &:focus-within,
-  &:hover,
-  &.ouiSuperDatePicker__flexWrapper--isOpen {
-    width: $ouiSuperDatePickerWidth + $ouiSuperDatePickerButtonWidth + $ouiSizeS !important;
-  }
-}
-// sass-lint:enable no-important, leading-zero

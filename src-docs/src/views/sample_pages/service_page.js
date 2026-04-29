@@ -12,6 +12,7 @@
 import React, { useState } from 'react';
 
 import {
+  OuiSimplifiedBreadcrumbs,
   OuiSuperDatePicker,
   OuiFieldSearch,
   OuiBasicTable,
@@ -144,6 +145,11 @@ const LATENCY_TABS = [
   { id: 'p99', label: 'P99' },
   { id: 'p90', label: 'P90' },
   { id: 'p50', label: 'P50' },
+];
+
+const breadcrumbs = [
+  { text: 'APM Observability', href: '#', onClick: (e) => e.preventDefault() },
+  { text: '' },
 ];
 
 // --- Sparkline placeholder (simple inline SVG) ---
@@ -330,7 +336,7 @@ const TopFaultServicesPanel = () => (
     <OuiSpacer size="s" />
     <OuiFlexGroup gutterSize="xs" direction="column">
       <OuiFlexItem>
-        <OuiFlexGroup responsive={false} gutterSize="l" alignItems="center">
+        <OuiFlexGroup responsive={false} gutterSize="s" alignItems="center">
           <OuiFlexItem grow={false} style={{ width: 120 }}>
             <OuiText size="xs">
               <strong>Service</strong>
@@ -345,7 +351,7 @@ const TopFaultServicesPanel = () => (
       </OuiFlexItem>
       {TOP_FAULT_SERVICES.map((item) => (
         <OuiFlexItem key={item.service}>
-          <OuiFlexGroup responsive={false} gutterSize="l" alignItems="center">
+          <OuiFlexGroup responsive={false} gutterSize="s" alignItems="center">
             <OuiFlexItem grow={false} style={{ width: 120 }}>
               <OuiLink href="#" onClick={(e) => e.preventDefault()}>
                 {item.service}
@@ -369,13 +375,13 @@ const TopDependencyPathsPanel = () => (
     <OuiSpacer size="s" />
     <OuiFlexGroup gutterSize="xs" direction="column">
       <OuiFlexItem>
-        <OuiFlexGroup responsive={false} gutterSize="l" alignItems="center">
-          <OuiFlexItem grow={false} style={{ width: 140 }}>
+        <OuiFlexGroup responsive={false} gutterSize="s" alignItems="center">
+          <OuiFlexItem grow={false} style={{ width: 110 }}>
             <OuiText size="xs">
               <strong>Dependency service</strong>
             </OuiText>
           </OuiFlexItem>
-          <OuiFlexItem grow={false} style={{ width: 140 }}>
+          <OuiFlexItem grow={false} style={{ width: 110 }}>
             <OuiText size="xs">
               <strong>Service</strong>
             </OuiText>
@@ -389,13 +395,13 @@ const TopDependencyPathsPanel = () => (
       </OuiFlexItem>
       {TOP_DEPENDENCY_PATHS.map((item, i) => (
         <OuiFlexItem key={i}>
-          <OuiFlexGroup responsive={false} gutterSize="l" alignItems="center">
-            <OuiFlexItem grow={false} style={{ width: 140 }}>
+          <OuiFlexGroup responsive={false} gutterSize="s" alignItems="center">
+            <OuiFlexItem grow={false} style={{ width: 110 }}>
               <OuiLink href="#" onClick={(e) => e.preventDefault()}>
                 {item.depService}
               </OuiLink>
             </OuiFlexItem>
-            <OuiFlexItem grow={false} style={{ width: 140 }}>
+            <OuiFlexItem grow={false} style={{ width: 110 }}>
               <OuiLink href="#" onClick={(e) => e.preventDefault()}>
                 {item.service}
               </OuiLink>
@@ -577,6 +583,26 @@ export const ServicePage = () => {
 
   return (
     <div style={{ minHeight: '100%' }}>
+      {/* Breadcrumbs */}
+      <OuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
+        <OuiFlexItem grow={false}>
+          <OuiButtonIcon
+            iconType="gear"
+            aria-label="Settings"
+            size="s"
+            color="text"
+          />
+        </OuiFlexItem>
+        <OuiFlexItem grow={false}>
+          <OuiSimplifiedBreadcrumbs
+            breadcrumbs={breadcrumbs}
+            truncate={false}
+            aria-label="Service page breadcrumbs"
+          />
+        </OuiFlexItem>
+      </OuiFlexGroup>
+      <OuiSpacer size="s" />
+
       {/* Page title + APM Settings */}
       <OuiFlexGroup
         justifyContent="spaceBetween"
@@ -608,16 +634,15 @@ export const ServicePage = () => {
             start={start}
             end={end}
             onTimeChange={onTimeChange}
-            showUpdateButton={false}
           />
         </OuiFlexItem>
         <OuiFlexItem grow={false}>
           <OuiButtonIcon
             iconType="refresh"
             aria-label="Refresh"
-            display="base"
+            display="fill"
             color="primary"
-            size="s"
+            size="m"
           />
         </OuiFlexItem>
       </OuiFlexGroup>
