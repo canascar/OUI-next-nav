@@ -165,7 +165,7 @@ const CollapsibleNavAll = () => {
   const leftSectionItems = [
     collapsibleNav,
     <OuiHeaderLogo href={exitPath} iconType="logoOpenSearch">
-      OpenSearch UI
+      OpenSearch AUI
     </OuiHeaderLogo>,
   ];
 

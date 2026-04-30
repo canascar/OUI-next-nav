@@ -48,17 +48,17 @@ export const HomeView = () => (
           className="guideHome__hero">
           <OuiFlexItem>
             <OuiTitle size="l">
-              <h1>OpenSearch UI</h1>
+              <h1>OpenSearch AUI</h1>
             </OuiTitle>
             <OuiSpacer />
             <OuiSpacer />
             <OuiTitle size="s">
-              <h2>The framework powering OpenSearch</h2>
+              <h2>The framework powering Agentic OpenSearch</h2>
             </OuiTitle>
             <OuiSpacer size="s" />
             <OuiText grow={false}>
               <p>
-                The OpenSearch UI framework (OUI) is the design library we use
+                The OpenSearch AUI framework (OUI) is the design library we use
                 at the OpenSearch Project to build projects that share our
                 aesthetics. It distributes UI React components and static assets
                 for use in building web layouts.

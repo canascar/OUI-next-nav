@@ -93,7 +93,18 @@ export const LoginPage = ({ onLogin }) => {
             {/* Logo */}
             <OuiFlexGroup justifyContent="center" gutterSize="none">
               <OuiFlexItem grow={false}>
-                <OuiIcon type="logoOpenSearch" size="xxl" />
+                <OuiIcon
+                  type="logoOpenSearch"
+                  size="xxl"
+                  style={
+                    isDark
+                      ? {
+                          '--ouiLogoPrimary': '#3B9FD9',
+                          '--ouiLogoSecondary': '#1A7BBF',
+                        }
+                      : {}
+                  }
+                />
               </OuiFlexItem>
             </OuiFlexGroup>
 

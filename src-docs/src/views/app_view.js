@@ -66,7 +66,7 @@ export class AppView extends Component {
     return (
       <>
         <Helmet>
-          <title>{`${this.props.currentRoute.name} - OpenSearch UI Framework`}</title>
+          <title>{`${this.props.currentRoute.name} - OpenSearch AUI Framework`}</title>
           <link
             rel="icon"
             type="image/png"

@@ -56,7 +56,7 @@ const routes = [
   {
     path: '/',
     component: HomeView,
-    name: 'OpenSearch UI',
+    name: 'OpenSearch AUI',
   },
   ...childRoutes,
 ];

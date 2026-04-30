@@ -15,10 +15,17 @@ import { SamplePagesLeftNav } from './sample_pages_left_nav';
 import { ServicePage } from './service_page';
 import { DiscoverPage } from './discover_page';
 import { ThreadPage } from './thread_page';
+import { LoginPage } from './login_page';
 import { OuiErrorBoundary, OuiPanel } from '../../../../src/components';
 
-const renderPage = (activePage, selectedItem) => {
+const renderPage = (activePage, selectedItem, handlePageChange) => {
   switch (activePage) {
+    case 'login':
+      return (
+        <OuiErrorBoundary>
+          <LoginPage onLogin={() => handlePageChange('service')} />
+        </OuiErrorBoundary>
+      );
     case 'discover':
       return (
         <OuiErrorBoundary>
@@ -60,6 +67,28 @@ export const SamplePagesView = () => {
     setActivePage(page);
     setSelectedItem(DEFAULT_ITEMS[page] || null);
   };
+
+  if (activePage === 'login') {
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          animation: 'fadeInLogin 400ms ease-out forwards',
+        }}>
+        <style>{`
+          @keyframes fadeInLogin {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+        `}</style>
+        <LoginPage onLogin={() => handlePageChange('service')} />
+      </div>
+    );
+  }
 
   return (
     <div
@@ -131,7 +160,7 @@ export const SamplePagesView = () => {
           paddingSize="none"
           className="samplePagesMainPanel"
           style={{ minHeight: '100%' }}>
-          {renderPage(activePage, selectedItem)}
+          {renderPage(activePage, selectedItem, handlePageChange)}
         </OuiPanel>
       </div>
     </div>

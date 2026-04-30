@@ -405,6 +405,7 @@ export const SamplePagesLeftNav = ({
             color="text"
             display="empty"
             size="s"
+            onClick={() => onPageChange('login')}
           />
           <OuiButtonIcon
             iconType="gear"

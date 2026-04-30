@@ -1,6 +1,6 @@
 ## Installation
 
-To install the OpenSearch UI Framework into an existing project, use the `yarn` CLI (`npm` is not supported).
+To install the OpenSearch AUI Framework into an existing project, use the `yarn` CLI (`npm` is not supported).
 
 ```js
 yarn add @opensearch-project/oui
@@ -49,7 +49,7 @@ OUI also has `moment` as a dependency itself. This is already loaded in most Ope
 
 ## What's available
 
-OUI publishes React UI components, JavaScript helpers called services, and utilities for writing Jest tests. Please refer to the [OpenSearch UI Framework website](https://oui.opensearch.org) for comprehensive info on what's available.
+OUI publishes React UI components, JavaScript helpers called services, and utilities for writing Jest tests. Please refer to the [OpenSearch AUI Framework website](https://oui.opensearch.org) for comprehensive info on what's available.
 
 OUI is published through [NPM](https://www.npmjs.com/package/@opensearch-project/oui) as a dependency.
 
