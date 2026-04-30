@@ -203,6 +203,8 @@ import { SuggestExample } from './views/suggest/suggest_example';
 
 import { SuperDatePickerExample } from './views/super_date_picker/super_date_picker_example';
 
+import { DatePickerUnifiedExample } from './views/date_picker/date_picker_unified_example';
+
 import { TableExample } from './views/tables/tables_example';
 
 import { TableInMemoryExample } from './views/tables/tables_in_memory_example';
@@ -427,6 +429,7 @@ const navigation = [
       SelectableExample,
       SuggestExample,
       SuperDatePickerExample,
+      DatePickerUnifiedExample,
     ].map((example) => createExample(example)),
   },
   {

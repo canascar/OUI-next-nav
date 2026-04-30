@@ -32,7 +32,12 @@ export const GuidePageHeader: React.FunctionComponent<{}> = () => {
   function renderLogo() {
     return (
       <OuiHeaderLogo iconType="logoOpenSearch" href="#/" aria-label="OUI home">
-        OpenSearch UI v2.0.1 <OuiBetaBadge label="Beta" size="s" />
+        OpenSearch AUI{' '}
+        <OuiBetaBadge
+          label="Beta"
+          size="s"
+          style={{ verticalAlign: 'middle' }}
+        />
       </OuiHeaderLogo>
     );
   }
@@ -70,7 +75,7 @@ export const GuidePageHeader: React.FunctionComponent<{}> = () => {
   }
 
   function renderSamplePages() {
-    const href = '#/sample-pages';
+    const href = '#/login';
     const label = 'Sample Pages';
     return (
       <OuiButton

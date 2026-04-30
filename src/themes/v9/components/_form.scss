@@ -158,9 +158,15 @@
 
 // Subdued "Show dates" link in super date picker
 // sass-lint:disable no-important
+.ouiSuperDatePicker__prettyFormat {
+  align-items: center !important;
+}
+
 .ouiSuperDatePicker__prettyFormatLink {
   color: $ouiColorMediumShade !important;
   font-weight: $ouiFontWeightRegular !important;
+  padding-left: $ouiSizeM !important;
+  font-size: $ouiFontSizeXS !important;
 
   &:hover {
     color: $ouiColorDarkShade !important;
@@ -232,20 +238,20 @@
 // Super date picker — compacted by default, expands on interaction
 // sass-lint:disable no-important, leading-zero
 .ouiSuperDatePicker__flexWrapper {
-  width: 340px !important;
-  transition: width 450ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+  width: auto !important;
   overflow: hidden;
 
-  &:focus-within,
-  &:hover,
+  // Only animate width changes after the first interaction
+  &.ouiSuperDatePicker__flexWrapper--hasInteracted {
+    transition: width 450ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
   &--isOpen {
     width: $ouiSuperDatePickerWidth + $ouiSuperDatePickerButtonWidth + $ouiSizeS !important;
   }
 }
 
 .ouiSuperDatePicker__flexWrapper--noUpdateButton {
-  &:focus-within,
-  &:hover,
   &.ouiSuperDatePicker__flexWrapper--isOpen {
     width: $ouiSuperDatePickerWidth !important;
   }

@@ -87,6 +87,7 @@ export {
 export {
   OuiDatePicker,
   OuiDatePickerRange,
+  OuiDatePickerUnified,
   OuiSuperDatePicker,
   OuiCompressedSuperDatePicker,
   OuiSuperUpdateButton,
