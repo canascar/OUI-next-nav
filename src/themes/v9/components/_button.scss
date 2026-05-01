@@ -18,6 +18,18 @@
   }
 }
 
+// Ensure filled primary buttons use the full-vibrancy primary color
+.ouiButton--primary.ouiButton--fill:not(.ouiButton-isDisabled) {
+  background-color: $ouiColorPrimary !important;
+  border-color: $ouiColorPrimary !important;
+
+  &:hover,
+  &:focus {
+    background-color: lighten($ouiColorPrimary, 4%) !important;
+    border-color: lighten($ouiColorPrimary, 4%) !important;
+  }
+}
+
 // Icon buttons with fill display
 .ouiButtonIcon--primary.ouiButtonIcon--fill,
 .ouiButtonIcon--success.ouiButtonIcon--fill,
@@ -122,6 +134,21 @@
   .ouiButton__text,
   .ouiButton__icon {
     color: $ouiColorMediumShade !important;
+  }
+}
+// sass-lint:enable no-important
+
+// Icon buttons with base display — match outline button treatment
+// sass-lint:disable no-important
+.ouiButtonIcon:not(.ouiButtonIcon--empty):not(.ouiButtonIcon--fill):not(.ouiButtonIcon-isDisabled) {
+  background-color: $ouiColorLightShade !important;
+  border-color: transparentize($ouiColorLightShade, .7) !important;
+  box-shadow: none !important;
+
+  &:hover,
+  &:focus,
+  &:focus-within {
+    background-color: lightOrDarkTheme(darken($ouiColorLightestShade, 3%), lighten($ouiColorLightShade, 3%)) !important;
   }
 }
 // sass-lint:enable no-important

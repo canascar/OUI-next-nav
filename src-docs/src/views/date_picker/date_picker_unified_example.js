@@ -23,9 +23,11 @@ export const DatePickerUnifiedExample = {
       title: 'Unified date picker',
       text: (
         <p>
-          <strong>OuiDatePickerUnified</strong> is a simplified date range
-          picker that combines quick select, absolute, relative, and now options
-          into a single popover with tabs.
+          <strong>OuiDatePickerUnified</strong> is a single-screen date range
+          picker. The left sidebar lists relative quick-select ranges, the main
+          area has From/To inputs with calendar popovers, and a recents list
+          tracks previously selected ranges. A timezone dropdown and
+          documentation link sit in the footer.
         </p>
       ),
       source: [

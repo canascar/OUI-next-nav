@@ -11,13 +11,13 @@
 
 import React, { useState, useCallback, useMemo } from 'react';
 import classNames from 'classnames';
+import moment, { Moment } from 'moment'; // eslint-disable-line import/named
+import dateMath from '@opensearch/datemath';
 
 // @ts-ignore - JS component import
 import { OuiPopover } from '../../popover';
 // @ts-ignore - JS component import
-import { OuiTabs, OuiTab } from '../../tabs';
-// @ts-ignore - JS component import
-import { OuiButton, OuiButtonEmpty } from '../../button';
+import { OuiButton, OuiButtonEmpty, OuiButtonIcon } from '../../button';
 // @ts-ignore - JS component import
 import { OuiFlexGroup, OuiFlexItem } from '../../flex';
 // @ts-ignore - JS component import
@@ -25,37 +25,75 @@ import { OuiSpacer } from '../../spacer';
 // @ts-ignore - JS component import
 import { OuiText } from '../../text';
 // @ts-ignore - JS component import
-import { OuiFormRow } from '../../form/form_row';
-// @ts-ignore - JS component import
-import { OuiFieldNumber } from '../../form/field_number';
+import { OuiTitle } from '../../title';
 // @ts-ignore - JS component import
 import { OuiFieldText } from '../../form/field_text';
 // @ts-ignore - JS component import
 import { OuiSelect } from '../../form/select';
+// @ts-ignore - JS component import
+import { OuiFormLabel } from '../../form/form_label';
+// @ts-ignore - JS component import
+import { OuiHorizontalRule } from '../../horizontal_rule';
+// @ts-ignore - JS component import
+import { OuiListGroup, OuiListGroupItem } from '../../list_group';
+import { OuiIcon } from '../../icon';
+import { OuiDatePicker } from '../date_picker';
 
 import {
   prettyDuration,
   commonDurationRanges,
 } from '../super_date_picker/pretty_duration';
 
-import { DurationRange, TimeUnitId } from '../types';
+import { DurationRange } from '../types';
 
-const TIME_TENSE_OPTIONS = [
-  { value: 'last', text: 'Last' },
-  { value: 'next', text: 'Next' },
+/**
+ * Relative quick-select ranges shown in the sidebar.
+ * These are the "Last X" style ranges.
+ */
+const RELATIVE_RANGES: DurationRange[] = [
+  { start: 'now-15m', end: 'now', label: 'Last 15 minutes' },
+  { start: 'now-30m', end: 'now', label: 'Last 30 minutes' },
+  { start: 'now-3h', end: 'now', label: 'Last 3 hours' },
+  { start: 'now-6h', end: 'now', label: 'Last 6 hours' },
+  { start: 'now-12h', end: 'now', label: 'Last 12 hours' },
+  { start: 'now-24h', end: 'now', label: 'Last 24 hours' },
+  { start: 'now-2d', end: 'now', label: 'Last 2 days' },
+  { start: 'now-7d', end: 'now', label: 'Last 7 days' },
+  { start: 'now-14d', end: 'now', label: 'Last 14 days' },
+  { start: 'now-30d', end: 'now', label: 'Last 30 days' },
+  { start: 'now-90d', end: 'now', label: 'Last 90 days' },
+  { start: 'now-7M', end: 'now', label: 'Last 7 months' },
+  { start: 'now-1y', end: 'now', label: 'Last 1 year' },
+  { start: 'now-2y', end: 'now', label: 'Last 2 years' },
+  { start: 'now-5y', end: 'now', label: 'Last 5 years' },
 ];
 
-const TIME_UNIT_OPTIONS: Array<{ value: TimeUnitId; text: string }> = [
-  { value: 's', text: 'Seconds' },
-  { value: 'm', text: 'Minutes' },
-  { value: 'h', text: 'Hours' },
-  { value: 'd', text: 'Days' },
-  { value: 'w', text: 'Weeks' },
-  { value: 'M', text: 'Months' },
-  { value: 'y', text: 'Years' },
+/**
+ * Common timezone options.
+ */
+const TIMEZONE_OPTIONS = [
+  { value: 'UTC', text: 'UTC' },
+  { value: 'America/New_York', text: 'GMT-05 (Eastern US & Canada)' },
+  { value: 'America/Chicago', text: 'GMT-06 (Central US & Canada)' },
+  { value: 'America/Denver', text: 'GMT-07 (Mountain US & Canada)' },
+  { value: 'America/Los_Angeles', text: 'GMT-08 (Pacific US & Canada)' },
+  { value: 'America/Anchorage', text: 'GMT-09 (Alaska)' },
+  { value: 'Pacific/Honolulu', text: 'GMT-10 (Hawaii)' },
+  { value: 'Europe/London', text: 'GMT+00 (London)' },
+  { value: 'Europe/Paris', text: 'GMT+01 (Central Europe)' },
+  { value: 'Europe/Helsinki', text: 'GMT+02 (Eastern Europe)' },
+  { value: 'Asia/Kolkata', text: 'GMT+05:30 (India)' },
+  { value: 'Asia/Shanghai', text: 'GMT+08 (China)' },
+  { value: 'Asia/Tokyo', text: 'GMT+09 (Japan)' },
+  { value: 'Australia/Sydney', text: 'GMT+11 (Sydney)' },
 ];
 
-type TabId = 'quick' | 'absolute' | 'relative' | 'now';
+/** Shape of a recent range entry */
+interface RecentRange {
+  start: string;
+  end: string;
+  label: string;
+}
 
 export interface OuiDatePickerUnifiedProps {
   /** Start date string, e.g. 'now-15m' or an absolute ISO date */
@@ -79,6 +117,8 @@ export interface OuiDatePickerUnifiedProps {
   showUpdateButton?: boolean;
   /** Whether to use compressed styling */
   compressed?: boolean;
+  /** URL for the documentation link in the footer */
+  documentationUrl?: string;
 }
 
 export const OuiDatePickerUnified: React.FC<OuiDatePickerUnifiedProps> = ({
@@ -90,370 +130,454 @@ export const OuiDatePickerUnified: React.FC<OuiDatePickerUnifiedProps> = ({
   isDisabled = false,
   showUpdateButton = true,
   compressed = false,
+  documentationUrl = '#/components/date-picker',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedTab, setSelectedTab] = useState<TabId>('quick');
 
-  // Internal state for pending changes
+  // Pending from/to values inside the popover
   const [pendingStart, setPendingStart] = useState(start);
   const [pendingEnd, setPendingEnd] = useState(end);
 
-  // Quick select custom state
-  const [quickSelectValue, setQuickSelectValue] = useState(15);
-  const [quickSelectUnit, setQuickSelectUnit] = useState<TimeUnitId>('m');
-  const [quickSelectTense, setQuickSelectTense] = useState('last');
+  // Calendar popover state
+  const [isStartCalendarOpen, setIsStartCalendarOpen] = useState(false);
+  const [isEndCalendarOpen, setIsEndCalendarOpen] = useState(false);
 
-  // Relative tab state
-  const [relStartCount, setRelStartCount] = useState(15);
-  const [relStartUnit, setRelStartUnit] = useState<TimeUnitId>('m');
-  const [relStartTense, setRelStartTense] = useState('last');
-  const [relEndCount, setRelEndCount] = useState(0);
-  const [relEndUnit, setRelEndUnit] = useState<TimeUnitId>('m');
-  const [relEndTense, setRelEndTense] = useState('last');
+  // Timezone
+  const [timezone, setTimezone] = useState(
+    Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+  );
 
-  // Absolute tab state
-  const [absStart, setAbsStart] = useState(start);
-  const [absEnd, setAbsEnd] = useState(end);
+  // Recents — persisted across open/close via ref-backed state
+  const [recentRanges, setRecentRanges] = useState<RecentRange[]>([]);
 
   const displayText = useMemo(
     () => prettyDuration(start, end, commonlyUsedRanges, dateFormat),
     [start, end, commonlyUsedRanges, dateFormat]
   );
 
+  // --- Popover lifecycle ---
+
   const openPopover = useCallback(() => {
     if (!isDisabled) {
       setPendingStart(start);
       setPendingEnd(end);
-      setAbsStart(start);
-      setAbsEnd(end);
+      setIsStartCalendarOpen(false);
+      setIsEndCalendarOpen(false);
       setIsOpen(true);
     }
   }, [isDisabled, start, end]);
 
   const closePopover = useCallback(() => {
+    // Don't close the main popover if a calendar sub-popover is open
+    if (isStartCalendarOpen || isEndCalendarOpen) return;
     setIsOpen(false);
-  }, []);
+  }, [isStartCalendarOpen, isEndCalendarOpen]);
 
-  const applyTime = useCallback(
-    (
-      newStart: string,
-      newEnd: string,
-      isQuickSelection: boolean,
-      closeAfter = true
-    ) => {
+  // --- Apply helpers ---
+
+  const addToRecents = useCallback(
+    (newStart: string, newEnd: string) => {
+      const label = prettyDuration(
+        newStart,
+        newEnd,
+        [...RELATIVE_RANGES, ...commonlyUsedRanges],
+        dateFormat
+      );
+      setRecentRanges((prev) => {
+        // Deduplicate
+        const filtered = prev.filter(
+          (r) => !(r.start === newStart && r.end === newEnd)
+        );
+        return [{ start: newStart, end: newEnd, label }, ...filtered].slice(
+          0,
+          10
+        );
+      });
+    },
+    [commonlyUsedRanges, dateFormat]
+  );
+
+  const applyAndClose = useCallback(
+    (newStart: string, newEnd: string, isQuickSelection: boolean) => {
+      addToRecents(newStart, newEnd);
       onTimeChange({
         start: newStart,
         end: newEnd,
         isQuickSelection,
         isInvalid: false,
       });
-      if (closeAfter) {
-        closePopover();
-      }
+      closePopover();
     },
-    [onTimeChange, closePopover]
+    [onTimeChange, closePopover, addToRecents]
   );
 
-  const handleQuickRangeClick = useCallback(
+  // --- Event handlers ---
+
+  const handleRelativeRangeClick = useCallback(
     (range: DurationRange) => {
-      applyTime(range.start, range.end, true);
+      applyAndClose(range.start, range.end, true);
     },
-    [applyTime]
+    [applyAndClose]
   );
 
-  const handleCustomQuickSelect = useCallback(() => {
-    const newStart =
-      quickSelectTense === 'last'
-        ? `now-${quickSelectValue}${quickSelectUnit}`
-        : 'now';
-    const newEnd =
-      quickSelectTense === 'last'
-        ? 'now'
-        : `now+${quickSelectValue}${quickSelectUnit}`;
-    applyTime(newStart, newEnd, true);
-  }, [quickSelectTense, quickSelectValue, quickSelectUnit, applyTime]);
+  const handleApply = useCallback(() => {
+    applyAndClose(pendingStart, pendingEnd, false);
+  }, [pendingStart, pendingEnd, applyAndClose]);
 
-  const handleRelativeApply = useCallback(() => {
-    let newStart: string;
-    if (relStartCount === 0) {
-      newStart = 'now';
-    } else if (relStartTense === 'last') {
-      newStart = `now-${relStartCount}${relStartUnit}`;
-    } else {
-      newStart = `now+${relStartCount}${relStartUnit}`;
-    }
+  const handleCancel = useCallback(() => {
+    closePopover();
+  }, [closePopover]);
 
-    let newEnd: string;
-    if (relEndCount === 0) {
-      newEnd = 'now';
-    } else if (relEndTense === 'last') {
-      newEnd = `now-${relEndCount}${relEndUnit}`;
-    } else {
-      newEnd = `now+${relEndCount}${relEndUnit}`;
-    }
-
-    applyTime(newStart, newEnd, false);
-  }, [
-    relStartCount,
-    relStartUnit,
-    relStartTense,
-    relEndCount,
-    relEndUnit,
-    relEndTense,
-    applyTime,
-  ]);
-
-  const handleAbsoluteApply = useCallback(() => {
-    applyTime(absStart, absEnd, false);
-  }, [absStart, absEnd, applyTime]);
-
-  const handleNowClick = useCallback(() => {
-    const now = new Date().toISOString();
-    applyTime(now, now, false);
-  }, [applyTime]);
+  const handleResetToNow = useCallback(() => {
+    setPendingEnd(new Date().toISOString());
+  }, []);
 
   const handleUpdateClick = useCallback(() => {
-    applyTime(pendingStart, pendingEnd, false, false);
-  }, [pendingStart, pendingEnd, applyTime]);
+    addToRecents(start, end);
+    onTimeChange({
+      start,
+      end,
+      isQuickSelection: false,
+      isInvalid: false,
+    });
+  }, [start, end, onTimeChange, addToRecents]);
 
-  // --- Tab content renderers ---
+  const getBounds = useCallback(() => {
+    const startMoment = dateMath.parse(start);
+    const endMoment = dateMath.parse(end, { roundUp: true });
+    return {
+      min:
+        startMoment && startMoment.isValid()
+          ? startMoment
+          : moment().subtract(15, 'minute'),
+      max: endMoment && endMoment.isValid() ? endMoment : moment(),
+    };
+  }, [start, end]);
 
-  const renderQuickSelectTab = () => (
-    <div style={{ padding: '8px 0' }}>
-      {/* Custom quick select */}
-      <OuiFlexGroup gutterSize="s" alignItems="center" responsive={false}>
-        <OuiFlexItem grow={false}>
-          <OuiSelect
-            compressed
-            options={TIME_TENSE_OPTIONS}
-            value={quickSelectTense}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              setQuickSelectTense(e.target.value)
-            }
-            aria-label="Time tense"
+  const handleStepBackward = useCallback(() => {
+    const { min, max } = getBounds();
+    const diff = max.diff(min);
+    const newStart = moment(min)
+      .subtract(diff + 1, 'ms')
+      .toISOString();
+    const newEnd = moment(min).subtract(1, 'ms').toISOString();
+    addToRecents(newStart, newEnd);
+    onTimeChange({
+      start: newStart,
+      end: newEnd,
+      isQuickSelection: false,
+      isInvalid: false,
+    });
+  }, [getBounds, onTimeChange, addToRecents]);
+
+  const handleStepForward = useCallback(() => {
+    const { min, max } = getBounds();
+    const diff = max.diff(min);
+    const newStart = moment(max).add(1, 'ms').toISOString();
+    const newEnd = moment(max)
+      .add(diff + 1, 'ms')
+      .toISOString();
+    addToRecents(newStart, newEnd);
+    onTimeChange({
+      start: newStart,
+      end: newEnd,
+      isQuickSelection: false,
+      isInvalid: false,
+    });
+  }, [getBounds, onTimeChange, addToRecents]);
+
+  const handleRecentClick = useCallback(
+    (recent: RecentRange) => {
+      applyAndClose(recent.start, recent.end, false);
+    },
+    [applyAndClose]
+  );
+
+  const handleStartCalendarChange = useCallback((date: Moment) => {
+    if (date) {
+      setPendingStart(date.toISOString());
+    }
+  }, []);
+
+  const handleEndCalendarChange = useCallback((date: Moment) => {
+    if (date) {
+      setPendingEnd(date.toISOString());
+    }
+  }, []);
+
+  // --- Derived values ---
+
+  const startMoment = useMemo(
+    () => moment(pendingStart, moment.ISO_8601, true),
+    [pendingStart]
+  );
+  const endMoment = useMemo(
+    () => moment(pendingEnd, moment.ISO_8601, true),
+    [pendingEnd]
+  );
+
+  // --- Render ---
+
+  const renderSidebar = () => (
+    <div
+      className="ouiDatePickerUnified__sidebar"
+      style={{
+        width: 180,
+        minWidth: 180,
+        overflowY: 'auto',
+        maxHeight: 360,
+        borderRight: '1px solid rgba(128, 128, 128, 0.35)',
+        paddingRight: 12,
+      }}>
+      <OuiListGroup flush gutterSize="none" maxWidth={false}>
+        {RELATIVE_RANGES.map((range, i) => (
+          <OuiListGroupItem
+            key={i}
+            label={range.label}
+            onClick={() => handleRelativeRangeClick(range)}
+            size="s"
+            wrapText={false}
+            data-test-subj={`ouiDatePickerUnified-relative-${i}`}
           />
+        ))}
+      </OuiListGroup>
+    </div>
+  );
+
+  const renderMainContent = () => (
+    <div style={{ flex: 1, minWidth: 0, paddingLeft: 16 }}>
+      {/* Header */}
+      <OuiTitle size="xs">
+        <h4>Time range</h4>
+      </OuiTitle>
+
+      <OuiSpacer size="s" />
+
+      {/* From / To inputs */}
+      <OuiFlexGroup gutterSize="m" responsive={false}>
+        <OuiFlexItem>
+          <OuiFormLabel>From</OuiFormLabel>
+          <OuiSpacer size="xs" />
+          <OuiFlexGroup gutterSize="xs" responsive={false} alignItems="center">
+            <OuiFlexItem>
+              <OuiFieldText
+                compressed
+                fullWidth
+                value={pendingStart}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setPendingStart(e.target.value)
+                }
+                aria-label="Start date"
+              />
+            </OuiFlexItem>
+            <OuiFlexItem grow={false}>
+              <OuiPopover
+                button={
+                  <OuiButtonIcon
+                    iconType="calendar"
+                    aria-label="Select start date from calendar"
+                    display="base"
+                    size="s"
+                    onClick={() =>
+                      setIsStartCalendarOpen(!isStartCalendarOpen)
+                    }
+                  />
+                }
+                isOpen={isStartCalendarOpen}
+                closePopover={() => setIsStartCalendarOpen(false)}
+                anchorPosition="downRight"
+                panelPaddingSize="s">
+                <OuiDatePicker
+                  inline
+                  showTimeSelect
+                  shadow={false}
+                  selected={startMoment.isValid() ? startMoment : moment()}
+                  onChange={handleStartCalendarChange}
+                />
+                <OuiSpacer size="s" />
+                <OuiButton
+                  size="s"
+                  fullWidth
+                  onClick={() => setIsStartCalendarOpen(false)}
+                  data-test-subj="ouiDatePickerUnified-startCalendarSelect">
+                  Select
+                </OuiButton>
+              </OuiPopover>
+            </OuiFlexItem>
+          </OuiFlexGroup>
         </OuiFlexItem>
-        <OuiFlexItem grow={false}>
-          <OuiFieldNumber
-            compressed
-            min={1}
-            value={quickSelectValue}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setQuickSelectValue(parseInt(e.target.value, 10) || 1)
-            }
-            style={{ width: 64 }}
-            aria-label="Time value"
-          />
+        <OuiFlexItem>
+          <OuiFlexGroup
+            gutterSize="xs"
+            alignItems="center"
+            justifyContent="spaceBetween"
+            responsive={false}>
+            <OuiFlexItem grow={false}>
+              <OuiFormLabel>To</OuiFormLabel>
+            </OuiFlexItem>
+            <OuiFlexItem grow={false}>
+              <OuiButtonEmpty
+                size="xs"
+                flush="right"
+                onClick={handleResetToNow}
+                style={{ fontSize: 11 }}
+                data-test-subj="ouiDatePickerUnified-resetToNow">
+                Reset to now
+              </OuiButtonEmpty>
+            </OuiFlexItem>
+          </OuiFlexGroup>
+          <OuiSpacer size="xs" />
+          <OuiFlexGroup gutterSize="xs" responsive={false} alignItems="center">
+            <OuiFlexItem>
+              <OuiFieldText
+                compressed
+                fullWidth
+                value={pendingEnd}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setPendingEnd(e.target.value)
+                }
+                aria-label="End date"
+              />
+            </OuiFlexItem>
+            <OuiFlexItem grow={false}>
+              <OuiPopover
+                button={
+                  <OuiButtonIcon
+                    iconType="calendar"
+                    aria-label="Select end date from calendar"
+                    display="base"
+                    size="s"
+                    onClick={() => setIsEndCalendarOpen(!isEndCalendarOpen)}
+                  />
+                }
+                isOpen={isEndCalendarOpen}
+                closePopover={() => setIsEndCalendarOpen(false)}
+                anchorPosition="downRight"
+                panelPaddingSize="s">
+                <OuiDatePicker
+                  inline
+                  showTimeSelect
+                  shadow={false}
+                  selected={endMoment.isValid() ? endMoment : moment()}
+                  onChange={handleEndCalendarChange}
+                />
+                <OuiSpacer size="s" />
+                <OuiButton
+                  size="s"
+                  fullWidth
+                  onClick={() => setIsEndCalendarOpen(false)}
+                  data-test-subj="ouiDatePickerUnified-endCalendarSelect">
+                  Select
+                </OuiButton>
+              </OuiPopover>
+            </OuiFlexItem>
+          </OuiFlexGroup>
         </OuiFlexItem>
-        <OuiFlexItem grow={false}>
-          <OuiSelect
-            compressed
-            options={TIME_UNIT_OPTIONS}
-            value={quickSelectUnit}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              setQuickSelectUnit(e.target.value as TimeUnitId)
-            }
-            aria-label="Time unit"
-          />
-        </OuiFlexItem>
+      </OuiFlexGroup>
+
+      <OuiSpacer size="m" />
+
+      {/* Cancel / Apply buttons */}
+      <OuiFlexGroup
+        justifyContent="flexEnd"
+        gutterSize="s"
+        responsive={false}>
         <OuiFlexItem grow={false}>
           <OuiButtonEmpty
             size="s"
-            onClick={handleCustomQuickSelect}
-            data-test-subj="ouiDatePickerUnified-quickSelectApply">
-            Apply
+            onClick={handleCancel}
+            data-test-subj="ouiDatePickerUnified-cancel">
+            Cancel
           </OuiButtonEmpty>
         </OuiFlexItem>
-      </OuiFlexGroup>
-
-      <OuiSpacer size="m" />
-
-      {/* Commonly used ranges */}
-      <OuiText size="xs">
-        <strong>Commonly used</strong>
-      </OuiText>
-      <OuiSpacer size="s" />
-      <OuiFlexGroup gutterSize="s" wrap responsive={false}>
-        {commonlyUsedRanges.map((range, index) => (
-          <OuiFlexItem key={index} grow={false}>
-            <OuiButtonEmpty
-              size="s"
-              onClick={() => handleQuickRangeClick(range)}
-              data-test-subj={`ouiDatePickerUnified-commonRange-${
-                range.label || index
-              }`}>
-              {range.label ||
-                prettyDuration(
-                  range.start,
-                  range.end,
-                  commonlyUsedRanges,
-                  dateFormat
-                )}
-            </OuiButtonEmpty>
-          </OuiFlexItem>
-        ))}
-      </OuiFlexGroup>
-    </div>
-  );
-
-  const renderAbsoluteTab = () => (
-    <div style={{ padding: '8px 0' }}>
-      <OuiFormRow label="Start date" fullWidth>
-        <OuiFieldText
-          compressed
-          fullWidth
-          value={absStart}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setAbsStart(e.target.value)
-          }
-          placeholder="e.g. 2024-01-01T00:00:00.000Z"
-          aria-label="Absolute start date"
-        />
-      </OuiFormRow>
-      <OuiSpacer size="m" />
-      <OuiFormRow label="End date" fullWidth>
-        <OuiFieldText
-          compressed
-          fullWidth
-          value={absEnd}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setAbsEnd(e.target.value)
-          }
-          placeholder="e.g. 2024-12-31T23:59:59.999Z"
-          aria-label="Absolute end date"
-        />
-      </OuiFormRow>
-      <OuiSpacer size="m" />
-      <OuiButton
-        size="s"
-        fill
-        onClick={handleAbsoluteApply}
-        data-test-subj="ouiDatePickerUnified-absoluteApply">
-        Apply
-      </OuiButton>
-    </div>
-  );
-
-  const renderRelativeInput = (
-    label: string,
-    count: number,
-    setCount: (v: number) => void,
-    unit: TimeUnitId,
-    setUnit: (v: TimeUnitId) => void,
-    tense: string,
-    setTense: (v: string) => void
-  ) => (
-    <OuiFormRow label={label} fullWidth>
-      <OuiFlexGroup gutterSize="s" alignItems="center" responsive={false}>
         <OuiFlexItem grow={false}>
-          <OuiFieldNumber
-            compressed
-            min={0}
-            value={count}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setCount(parseInt(e.target.value, 10) || 0)
-            }
-            style={{ width: 64 }}
-            aria-label={`${label} value`}
-          />
+          <OuiButton
+            size="s"
+            fill
+            onClick={handleApply}
+            data-test-subj="ouiDatePickerUnified-apply">
+            Apply
+          </OuiButton>
         </OuiFlexItem>
+      </OuiFlexGroup>
+
+      {/* Recent section */}
+      {recentRanges.length > 0 && (
+        <>
+          <OuiHorizontalRule margin="m" style={{ opacity: 1 }} />
+          <OuiTitle size="xxs">
+            <h5>Recent</h5>
+          </OuiTitle>
+          <OuiSpacer size="s" />
+          <div
+            style={{ maxHeight: 160, overflowY: 'auto', overflowX: 'hidden' }}
+            className="ouiDatePickerUnified__recents">
+            {recentRanges.map((recent, i) => (
+              <OuiFlexGroup
+                key={i}
+                gutterSize="s"
+                alignItems="center"
+                responsive={false}
+                style={{ cursor: 'pointer', padding: '4px 0' }}
+                onClick={() => handleRecentClick(recent)}
+                data-test-subj={`ouiDatePickerUnified-recent-${i}`}>
+                <OuiFlexItem grow={false}>
+                  <OuiIcon type="clock" size="s" color="subdued" />
+                </OuiFlexItem>
+                <OuiFlexItem>
+                  <OuiText size="xs" color="default">
+                    {recent.label}
+                  </OuiText>
+                </OuiFlexItem>
+              </OuiFlexGroup>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+
+  const renderFooter = () => (
+    <>
+      <OuiHorizontalRule margin="none" style={{ opacity: 0.8 }} />
+      <OuiFlexGroup
+        alignItems="center"
+        justifyContent="spaceBetween"
+        responsive={false}
+        gutterSize="none"
+        style={{ paddingTop: 16 }}>
         <OuiFlexItem grow={false}>
+          <OuiButtonEmpty
+            size="xs"
+            iconType="popout"
+            iconSide="right"
+            href={documentationUrl}
+            target="_blank"
+            data-test-subj="ouiDatePickerUnified-docsLink">
+            Documentation
+          </OuiButtonEmpty>
+        </OuiFlexItem>
+        <OuiFlexItem grow={false} style={{ minWidth: 240 }}>
           <OuiSelect
             compressed
-            options={TIME_UNIT_OPTIONS}
-            value={unit}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              setUnit(e.target.value as TimeUnitId)
+            options={TIMEZONE_OPTIONS}
+            value={
+              TIMEZONE_OPTIONS.find((tz) => tz.value === timezone)
+                ? timezone
+                : 'UTC'
             }
-            aria-label={`${label} unit`}
-          />
-        </OuiFlexItem>
-        <OuiFlexItem grow={false}>
-          <OuiSelect
-            compressed
-            options={[
-              { value: 'last', text: 'ago' },
-              { value: 'next', text: 'from now' },
-            ]}
-            value={tense}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              setTense(e.target.value)
+              setTimezone(e.target.value)
             }
-            aria-label={`${label} direction`}
+            aria-label="Timezone"
           />
         </OuiFlexItem>
       </OuiFlexGroup>
-    </OuiFormRow>
+    </>
   );
-
-  const renderRelativeTab = () => (
-    <div style={{ padding: '8px 0' }}>
-      {renderRelativeInput(
-        'Start',
-        relStartCount,
-        setRelStartCount,
-        relStartUnit,
-        setRelStartUnit,
-        relStartTense,
-        setRelStartTense
-      )}
-      <OuiSpacer size="m" />
-      {renderRelativeInput(
-        'End',
-        relEndCount,
-        setRelEndCount,
-        relEndUnit,
-        setRelEndUnit,
-        relEndTense,
-        setRelEndTense
-      )}
-      <OuiSpacer size="m" />
-      <OuiButton
-        size="s"
-        fill
-        onClick={handleRelativeApply}
-        data-test-subj="ouiDatePickerUnified-relativeApply">
-        Apply
-      </OuiButton>
-    </div>
-  );
-
-  const renderNowTab = () => (
-    <div style={{ padding: '16px 0', textAlign: 'center' }}>
-      <OuiText size="s">
-        <p>
-          Setting the time to &quot;now&quot; means the time will be calculated
-          at query time. Use this for dashboards that should always show the
-          most recent data.
-        </p>
-      </OuiText>
-      <OuiSpacer size="m" />
-      <OuiButton
-        fill
-        onClick={handleNowClick}
-        data-test-subj="ouiDatePickerUnified-setNow">
-        Set start &amp; end to now
-      </OuiButton>
-    </div>
-  );
-
-  const renderTabContent = () => {
-    switch (selectedTab) {
-      case 'quick':
-        return renderQuickSelectTab();
-      case 'absolute':
-        return renderAbsoluteTab();
-      case 'relative':
-        return renderRelativeTab();
-      case 'now':
-        return renderNowTab();
-      default:
-        return null;
-    }
-  };
 
   const triggerButton = (
-    <OuiButtonEmpty
+    <OuiButton
       className={classNames('ouiDatePickerUnified__trigger', {
         'ouiDatePickerUnified__trigger--compressed': compressed,
       })}
@@ -461,14 +585,25 @@ export const OuiDatePickerUnified: React.FC<OuiDatePickerUnifiedProps> = ({
       isDisabled={isDisabled}
       iconType="calendar"
       iconSide="left"
-      size={compressed ? 'xs' : 's'}
+      size={compressed ? 's' : 's'}
       data-test-subj="ouiDatePickerUnified-triggerButton">
       {displayText}
-    </OuiButtonEmpty>
+    </OuiButton>
   );
 
   return (
-    <OuiFlexGroup gutterSize="s" responsive={false} alignItems="center">
+    <OuiFlexGroup gutterSize="xs" responsive={false} alignItems="center">
+      <OuiFlexItem grow={false}>
+        <OuiButtonIcon
+          iconType="arrowLeft"
+          aria-label="Previous time window"
+          display="base"
+          size="s"
+          isDisabled={isDisabled}
+          onClick={handleStepBackward}
+          data-test-subj="ouiDatePickerUnified-stepBackward"
+        />
+      </OuiFlexItem>
       <OuiFlexItem grow={false}>
         <OuiPopover
           button={triggerButton}
@@ -476,42 +611,42 @@ export const OuiDatePickerUnified: React.FC<OuiDatePickerUnifiedProps> = ({
           closePopover={closePopover}
           anchorPosition="downLeft"
           panelPaddingSize="m"
-          ownFocus
           data-test-subj="ouiDatePickerUnified-popover">
           <div
-            style={{ width: 400 }}
+            style={{ width: 680 }}
             data-test-subj="ouiDatePickerUnified-panel">
-            <OuiTabs size="s">
-              <OuiTab
-                isSelected={selectedTab === 'quick'}
-                onClick={() => setSelectedTab('quick')}>
-                Quick select
-              </OuiTab>
-              <OuiTab
-                isSelected={selectedTab === 'absolute'}
-                onClick={() => setSelectedTab('absolute')}>
-                Absolute
-              </OuiTab>
-              <OuiTab
-                isSelected={selectedTab === 'relative'}
-                onClick={() => setSelectedTab('relative')}>
-                Relative
-              </OuiTab>
-              <OuiTab
-                isSelected={selectedTab === 'now'}
-                onClick={() => setSelectedTab('now')}>
-                Now
-              </OuiTab>
-            </OuiTabs>
-            {renderTabContent()}
+            <OuiFlexGroup
+              gutterSize="none"
+              responsive={false}
+              style={{ height: 360 }}>
+              {/* Left sidebar — relative ranges */}
+              <OuiFlexItem grow={false}>{renderSidebar()}</OuiFlexItem>
+
+              {/* Right main area */}
+              <OuiFlexItem>{renderMainContent()}</OuiFlexItem>
+            </OuiFlexGroup>
+
+            {/* Footer — docs link + timezone */}
+            {renderFooter()}
           </div>
         </OuiPopover>
+      </OuiFlexItem>
+      <OuiFlexItem grow={false}>
+        <OuiButtonIcon
+          iconType="arrowRight"
+          aria-label="Next time window"
+          display="base"
+          size="s"
+          isDisabled={isDisabled}
+          onClick={handleStepForward}
+          data-test-subj="ouiDatePickerUnified-stepForward"
+        />
       </OuiFlexItem>
       {showUpdateButton && (
         <OuiFlexItem grow={false}>
           <OuiButton
-            size={compressed ? 'xs' : 's'}
             fill
+            iconType="refresh"
             isDisabled={isDisabled}
             onClick={handleUpdateClick}
             data-test-subj="ouiDatePickerUnified-updateButton">

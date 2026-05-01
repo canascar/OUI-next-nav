@@ -58,7 +58,7 @@ $ouiTextSubduedColor: #A9B1B7;
 $ouiColorDisabled: $ouiColorLightestShade !default;
 
 // Contrasty text variants
-$ouiColorPrimaryText: makeHighContrastColor($ouiColorPrimary) !default;
+$ouiColorPrimaryText: $ouiColorPrimary !default;
 $ouiColorSecondaryText: makeHighContrastColor($ouiColorSecondary) !default;
 $ouiColorAccentText: makeHighContrastColor($ouiColorAccent) !default;
 $ouiColorWarningText: makeHighContrastColor($ouiColorWarning) !default;

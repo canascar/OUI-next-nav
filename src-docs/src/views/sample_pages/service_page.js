@@ -610,15 +610,6 @@ export const ServicePage = () => {
             onTimeChange={onTimeChange}
           />
         </OuiFlexItem>
-        <OuiFlexItem grow={false}>
-          <OuiButtonIcon
-            iconType="refresh"
-            aria-label="Refresh"
-            display="fill"
-            color="primary"
-            size="m"
-          />
-        </OuiFlexItem>
       </OuiFlexGroup>
       <OuiSpacer size="l" />
 

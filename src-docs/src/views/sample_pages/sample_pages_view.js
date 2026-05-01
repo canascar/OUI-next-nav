@@ -16,6 +16,7 @@ import { ServicePage } from './service_page';
 import { DiscoverPage } from './discover_page';
 import { ThreadPage } from './thread_page';
 import { LoginPage } from './login_page';
+import { OverviewPage } from './overview_page';
 import { OuiErrorBoundary, OuiPanel } from '../../../../src/components';
 
 const renderPage = (activePage, selectedItem, handlePageChange) => {
@@ -24,6 +25,12 @@ const renderPage = (activePage, selectedItem, handlePageChange) => {
       return (
         <OuiErrorBoundary>
           <LoginPage onLogin={() => handlePageChange('service')} />
+        </OuiErrorBoundary>
+      );
+    case 'overview':
+      return (
+        <OuiErrorBoundary>
+          <OverviewPage />
         </OuiErrorBoundary>
       );
     case 'discover':

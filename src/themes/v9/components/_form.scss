@@ -257,3 +257,14 @@
   }
 }
 // sass-lint:enable no-important, leading-zero
+
+// Reduce border radius on calendar navigation arrows
+// sass-lint:disable no-important
+.react-datepicker__navigation--previous,
+.react-datepicker__navigation--next {
+  &:hover,
+  &:focus {
+    border-radius: $ouiBorderRadiusSmall / 2 !important;
+  }
+}
+// sass-lint:enable no-important

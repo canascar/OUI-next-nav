@@ -31,13 +31,13 @@
 import React, { Component, MouseEventHandler, Ref } from 'react';
 import classNames from 'classnames';
 
-import { OuiButton, OuiButtonProps } from '../../button';
+import { OuiButtonIcon, OuiButtonIconProps } from '../../button';
 import { OuiI18n } from '../../i18n';
 import { OuiToolTip, OuiToolTipProps } from '../../tool_tip';
 import { CommonProps } from '../../common';
 
 export type OuiSuperUpdateButtonProps = CommonProps &
-  Partial<Omit<OuiButtonProps, 'isDisabled' | 'isLoading' | 'onClick'>> & {
+  Partial<Omit<OuiButtonIconProps, 'isDisabled' | 'onClick' | 'iconType'>> & {
     className?: string;
     isDisabled: boolean;
     isLoading: boolean;
@@ -119,7 +119,7 @@ export class OuiSuperUpdateButton extends Component<OuiSuperUpdateButtonProps> {
       toolTipProps,
       showTooltip,
       compressed,
-      textProps: restTextProps,
+      textProps: _restTextProps,
       ...rest
     } = this.props;
 
@@ -168,24 +168,18 @@ export class OuiSuperUpdateButton extends Component<OuiSuperUpdateButtonProps> {
         content={tooltipContent}
         position="bottom"
         {...toolTipProps}>
-        <OuiButton
+        <OuiButtonIcon
           className={classes}
-          color={needsUpdate || isLoading ? 'success' : 'primary'}
-          iconType="refresh"
-          textProps={{
-            ...restTextProps,
-            className: classNames(
-              'ouiSuperUpdateButton__text',
-              restTextProps?.className
-            ),
-          }}
+          color={needsUpdate || isLoading ? 'success' as any : 'primary'}
+          iconType={isLoading ? 'loading' : 'refresh'}
+          aria-label={typeof buttonText === 'string' ? buttonText : 'Refresh'}
           isDisabled={isDisabled}
           onClick={onClick}
-          isLoading={isLoading}
-          size={compressed ? 's' : 'm'}
-          {...rest}>
-          {buttonText}
-        </OuiButton>
+          display="fill"
+          size="s"
+          style={{ minWidth: 0 }}
+          {...rest}
+        />
       </OuiToolTip>
     );
   }
