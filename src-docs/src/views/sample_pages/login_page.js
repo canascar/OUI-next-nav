@@ -46,6 +46,14 @@ export const LoginPage = ({ onLogin }) => {
 
   const pageBackground = isDark ? '#111' : '#E5E5E5';
 
+  const gradientBackground = isDark
+    ? `radial-gradient(ellipse at 30% 40%, rgba(0, 184, 219, 0.18) 0%, transparent 50%),
+       radial-gradient(ellipse at 70% 60%, rgba(0, 105, 170, 0.12) 0%, transparent 50%),
+       #111`
+    : `radial-gradient(ellipse at 30% 40%, rgba(0, 146, 184, 0.14) 0%, transparent 50%),
+       radial-gradient(ellipse at 70% 60%, rgba(0, 85, 140, 0.08) 0%, transparent 50%),
+       #E5E5E5`;
+
   const loginStyles = '';
   return (
     <div
@@ -56,6 +64,7 @@ export const LoginPage = ({ onLogin }) => {
         alignItems: 'center',
         minHeight: '100vh',
         backgroundColor: pageBackground,
+        background: gradientBackground,
         position: 'relative',
       }}>
       <style>{loginStyles}</style>
@@ -88,8 +97,21 @@ export const LoginPage = ({ onLogin }) => {
             borderRadius: 12,
             boxShadow:
               '0 40px 60px rgba(0, 0, 0, 0.06), 0 16px 20px rgba(0, 0, 0, 0.04)',
+            backdropFilter: 'blur(50px)',
+            WebkitBackdropFilter: 'blur(50px)',
+            border: isDark
+              ? '1px solid rgba(255, 255, 255, 0.06)'
+              : '1px solid rgba(0, 0, 0, 0.05)',
+            overflow: 'hidden',
           }}>
-          <OuiPanel paddingSize="xl" style={{ padding: 48 }}>
+          <OuiPanel
+            paddingSize="xl"
+            style={{
+              padding: 48,
+              backgroundColor: isDark
+                ? 'rgba(36, 37, 38, 0.4)'
+                : 'rgba(255, 255, 255, 0.4)',
+            }}>
             {/* Logo */}
             <OuiFlexGroup justifyContent="center" gutterSize="none">
               <OuiFlexItem grow={false}>
