@@ -644,14 +644,16 @@ export const OuiDatePickerUnified: React.FC<OuiDatePickerUnifiedProps> = ({
       </OuiFlexItem>
       {showUpdateButton && (
         <OuiFlexItem grow={false}>
-          <OuiButton
-            fill
+          <OuiButtonIcon
             iconType="refresh"
+            aria-label="Refresh"
+            display="fill"
+            color="primary"
+            size="s"
             isDisabled={isDisabled}
             onClick={handleUpdateClick}
-            data-test-subj="ouiDatePickerUnified-updateButton">
-            Update
-          </OuiButton>
+            data-test-subj="ouiDatePickerUnified-updateButton"
+          />
         </OuiFlexItem>
       )}
     </OuiFlexGroup>
