@@ -49,6 +49,8 @@ import { BeaconExample } from './views/beacon/beacon_example';
 
 import { BottomBarExample } from './views/bottom_bar/bottom_bar_example';
 
+import { BrandGradientExample } from './views/brand_gradient/brand_gradient_example';
+
 import { BreadcrumbsExample } from './views/breadcrumbs/breadcrumbs_example';
 
 import { ButtonExample } from './views/button/button_example';
@@ -389,6 +391,7 @@ const navigation = [
       AspectRatioExample,
       AvatarExample,
       BadgeExample,
+      BrandGradientExample,
       CallOutExample,
       CardExample,
       CommentListExample,

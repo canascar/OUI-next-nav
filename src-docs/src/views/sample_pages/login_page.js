@@ -25,6 +25,7 @@ import {
   OuiPanel,
   OuiFlexGroup,
   OuiFlexItem,
+  OuiBrandGradient,
 } from '../../../../src/components';
 
 import { ThemeContext } from '../../components/with_theme';
@@ -44,30 +45,18 @@ export const LoginPage = ({ onLogin }) => {
     onLogin();
   };
 
-  const pageBackground = isDark ? '#111' : '#E5E5E5';
-
-  const gradientBackground = isDark
-    ? `radial-gradient(ellipse at 30% 40%, rgba(0, 184, 219, 0.18) 0%, transparent 50%),
-       radial-gradient(ellipse at 70% 60%, rgba(0, 105, 170, 0.12) 0%, transparent 50%),
-       #111`
-    : `radial-gradient(ellipse at 30% 40%, rgba(0, 146, 184, 0.14) 0%, transparent 50%),
-       radial-gradient(ellipse at 70% 60%, rgba(0, 85, 140, 0.08) 0%, transparent 50%),
-       #E5E5E5`;
-
-  const loginStyles = '';
   return (
-    <div
+    <OuiBrandGradient
+      variant="vivid"
+      isDark={isDark}
       className="loginPage"
       style={{
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
-        backgroundColor: pageBackground,
-        background: gradientBackground,
         position: 'relative',
       }}>
-      <style>{loginStyles}</style>
 
       {/* Back arrow */}
       <OuiButtonIcon
@@ -205,6 +194,6 @@ export const LoginPage = ({ onLogin }) => {
           </OuiPanel>
         </div>
       </div>
-    </div>
+    </OuiBrandGradient>
   );
 };

@@ -26,6 +26,8 @@ export { OuiBeacon } from './beacon';
 
 export { OuiBottomBar } from './bottom_bar';
 
+export { OuiBrandGradient } from './brand_gradient';
+
 export { OuiBreadcrumbs, OuiSimplifiedBreadcrumbs } from './breadcrumbs';
 
 export {
