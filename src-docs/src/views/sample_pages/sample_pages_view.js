@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 import { SamplePagesLeftNav } from './sample_pages_left_nav';
 import { ServicePage } from './service_page';
@@ -18,6 +18,7 @@ import { ThreadPage } from './thread_page';
 import { LoginPage } from './login_page';
 import { OverviewPage } from './overview_page';
 import { OuiErrorBoundary, OuiPanel } from '../../../../src/components';
+import { ThemeContext } from '../../components/with_theme';
 
 const renderPage = (activePage, selectedItem, handlePageChange) => {
   switch (activePage) {
@@ -63,6 +64,16 @@ export const SamplePagesView = () => {
   const [cardPadding, setCardPadding] = useState(8);
   const [gutter, setGutter] = useState(8);
   const [showLabels, setShowLabels] = useState(true);
+  const themeContext = useContext(ThemeContext);
+  const isDark = themeContext.theme === 'v9-dark';
+
+  const gradientBackground = isDark
+    ? `radial-gradient(ellipse at 30% 40%, rgba(0, 184, 219, 0.18) 0%, transparent 50%),
+       radial-gradient(ellipse at 70% 60%, rgba(0, 105, 170, 0.12) 0%, transparent 50%),
+       #111`
+    : `radial-gradient(ellipse at 30% 40%, rgba(0, 146, 184, 0.14) 0%, transparent 50%),
+       radial-gradient(ellipse at 70% 60%, rgba(0, 85, 140, 0.08) 0%, transparent 50%),
+       #E5E5E5`;
 
   const DEFAULT_ITEMS = {
     service: 'services',
@@ -106,6 +117,7 @@ export const SamplePagesView = () => {
         left: 0,
         right: 0,
         bottom: 0,
+        background: gradientBackground,
       }}>
       <style>{`
         .samplePagesContent .ouiPanel {
