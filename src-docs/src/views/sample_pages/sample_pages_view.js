@@ -120,6 +120,10 @@ export const SamplePagesView = () => {
         background: gradientBackground,
       }}>
       <style>{`
+        .samplePagesMainPanel.ouiPanel {
+          background: transparent !important;
+          background-color: transparent !important;
+        }
         .samplePagesContent .ouiPanel {
           padding: ${cardPadding}px !important;
         }
@@ -174,11 +178,12 @@ export const SamplePagesView = () => {
           overflowY: 'auto',
           padding,
           paddingLeft: 0,
+          background: 'transparent',
         }}>
         <OuiPanel
           paddingSize="none"
           className="samplePagesMainPanel"
-          style={{ minHeight: '100%' }}>
+          style={{ minHeight: '100%', background: 'transparent' }}>
           {renderPage(activePage, selectedItem, handlePageChange)}
         </OuiPanel>
       </div>
