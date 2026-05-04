@@ -268,3 +268,97 @@
   }
 }
 // sass-lint:enable no-important
+
+// Enhanced hover shadows on buttons and form fields
+// sass-lint:disable no-important, no-color-literals
+.ouiButton {
+  transition: box-shadow 150ms ease-in-out, background-color 150ms ease-in-out, transform 150ms ease-in-out, filter 150ms ease-in-out !important;
+  box-shadow: none !important;
+  transform: translateY(0) !important;
+}
+
+.ouiButton:not(.ouiButton-isDisabled):hover,
+.ouiButton:not(.ouiButton-isDisabled):focus {
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25) !important;
+  transform: translateY(-1px) !important;
+}
+
+.ouiButton:not(.ouiButton-isDisabled):active {
+  box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.4) !important;
+  transform: translateY(1px) !important;
+  filter: brightness(0.85) !important;
+}
+
+.ouiButton--fill:not(.ouiButton-isDisabled):hover,
+.ouiButton--fill:not(.ouiButton-isDisabled):focus {
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25) !important;
+  transform: translateY(-1px) !important;
+}
+
+.ouiButton--fill:not(.ouiButton-isDisabled):active {
+  box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.4) !important;
+  transform: translateY(1px) !important;
+  filter: brightness(0.85) !important;
+}
+
+.ouiFieldText,
+.ouiFieldSearch,
+.ouiFieldNumber,
+.ouiFieldPassword,
+.ouiSelect,
+.ouiTextArea {
+  transition: box-shadow 150ms ease-in-out !important;
+}
+
+.ouiFieldText:hover,
+.ouiFieldText:focus,
+.ouiFieldSearch:hover,
+.ouiFieldSearch:focus,
+.ouiFieldNumber:hover,
+.ouiFieldNumber:focus,
+.ouiFieldPassword:hover,
+.ouiFieldPassword:focus,
+.ouiSelect:hover,
+.ouiSelect:focus,
+.ouiTextArea:hover,
+.ouiTextArea:focus {
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12), inset 0 0 0 1px $ouiFormBorderColor !important;
+}
+
+.ouiFieldText:active,
+.ouiFieldSearch:active,
+.ouiFieldNumber:active,
+.ouiFieldPassword:active,
+.ouiSelect:active,
+.ouiTextArea:active {
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12), inset 0 0 0 1px $ouiFormBorderColor !important;
+}
+// sass-lint:enable no-important, no-color-literals
+
+// Hover shadows on prepend/append grouped form controls
+// sass-lint:disable no-important, no-color-literals
+.ouiFormControlLayout--group {
+  transition: box-shadow 150ms ease-in-out !important;
+}
+
+.ouiFormControlLayout--group:hover,
+.ouiFormControlLayout--group:focus-within {
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12) !important;
+}
+
+.ouiFormControlLayout--group:active {
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12) !important;
+}
+
+// Suppress individual element shadows inside grouped controls
+.ouiFormControlLayout--group .ouiButton,
+.ouiFormControlLayout--group .ouiButtonIcon,
+.ouiFormControlLayout--group .ouiButtonEmpty,
+.ouiFormControlLayout--group .ouiFieldText,
+.ouiFormControlLayout--group .ouiFieldSearch,
+.ouiFormControlLayout--group .ouiFieldNumber,
+.ouiFormControlLayout--group .ouiFieldPassword,
+.ouiFormControlLayout--group .ouiSelect {
+  box-shadow: none !important;
+}
+// sass-lint:enable no-important, no-color-literals

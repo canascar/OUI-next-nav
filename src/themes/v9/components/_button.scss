@@ -30,6 +30,18 @@
   }
 }
 
+// Ensure filled primary icon buttons match the same hover behavior
+.ouiButtonIcon--primary.ouiButtonIcon--fill:not(.ouiButtonIcon-isDisabled) {
+  background-color: $ouiColorPrimary !important;
+  border-color: $ouiColorPrimary !important;
+
+  &:hover,
+  &:focus {
+    background-color: lighten($ouiColorPrimary, 4%) !important;
+    border-color: lighten($ouiColorPrimary, 4%) !important;
+  }
+}
+
 // Icon buttons with fill display
 .ouiButtonIcon--primary.ouiButtonIcon--fill,
 .ouiButtonIcon--success.ouiButtonIcon--fill,
@@ -144,11 +156,41 @@
   background-color: $ouiColorLightShade !important;
   border-color: transparentize($ouiColorLightShade, .7) !important;
   box-shadow: none !important;
+  transform: translateY(0) !important;
+  transition: box-shadow 150ms ease-in-out, background-color 150ms ease-in-out, transform 150ms ease-in-out, filter 150ms ease-in-out !important;
 
   &:hover,
   &:focus,
   &:focus-within {
     background-color: lightOrDarkTheme(darken($ouiColorLightestShade, 3%), lighten($ouiColorLightShade, 3%)) !important;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25) !important;
+    transform: translateY(-1px) !important;
+  }
+
+  &:active {
+    box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.4) !important;
+    transform: translateY(1px) !important;
+    filter: brightness(0.85) !important;
+  }
+}
+
+// Icon buttons with fill display — hover/active shadows
+.ouiButtonIcon--fill:not(.ouiButtonIcon-isDisabled) {
+  transition: box-shadow 150ms ease-in-out, background-color 150ms ease-in-out, transform 150ms ease-in-out, filter 150ms ease-in-out !important;
+  box-shadow: none !important;
+  transform: translateY(0) !important;
+
+  &:hover,
+  &:focus,
+  &:focus-within {
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25) !important;
+    transform: translateY(-1px) !important;
+  }
+
+  &:active {
+    box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.4) !important;
+    transform: translateY(1px) !important;
+    filter: brightness(0.85) !important;
   }
 }
 // sass-lint:enable no-important
