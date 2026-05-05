@@ -508,7 +508,7 @@ const TabbedPanel = ({ tabs, activeTab, onTabChange, children }) => (
 );
 
 // Default threads for the Thread panel
-const DEFAULT_THREADS = [
+export const DEFAULT_THREADS = [
   {
     key: 'latency-spike',
     title: 'Latency spike investigation',
@@ -523,6 +523,31 @@ const DEFAULT_THREADS = [
     key: 'weekly-review',
     title: 'Weekly service review',
     subtitle: 'Team Ops · 1 day ago',
+  },
+  {
+    key: 'memory-leak',
+    title: 'Memory leak in catalog service',
+    subtitle: 'Jordan Park · 3 hours ago',
+  },
+  {
+    key: 'dns-timeout',
+    title: 'DNS resolution timeouts',
+    subtitle: 'Priya Sharma · 6 hours ago',
+  },
+  {
+    key: 'deployment-rollback',
+    title: 'Failed deployment rollback',
+    subtitle: 'Marcus Webb · 8 hours ago',
+  },
+  {
+    key: 'cert-expiry',
+    title: 'TLS certificate expiry warning',
+    subtitle: 'Dana Kim · 12 hours ago',
+  },
+  {
+    key: 'disk-pressure',
+    title: 'Node disk pressure alerts',
+    subtitle: 'Riley Tanaka · 1 day ago',
   },
 ];
 
@@ -1038,7 +1063,7 @@ const MorePanelContent = ({
 };
 
 // Popover content for Thread (collapsed mode)
-const ThreadPopoverContent = ({ onNavigate }) => {
+const ThreadPopoverContent = ({ onNavigate, onViewAll }) => {
   const items = [
     {
       key: 'latency-spike',
@@ -1055,10 +1080,44 @@ const ThreadPopoverContent = ({ onNavigate }) => {
       title: 'Weekly service review',
       subtitle: 'Team Ops · 1 day ago',
     },
+    {
+      key: 'memory-leak',
+      title: 'Memory leak in catalog service',
+      subtitle: 'Jordan Park · 3 hours ago',
+    },
+    {
+      key: 'dns-timeout',
+      title: 'DNS resolution timeouts',
+      subtitle: 'Priya Sharma · 6 hours ago',
+    },
+    {
+      key: 'deployment-rollback',
+      title: 'Failed deployment rollback',
+      subtitle: 'Marcus Webb · 8 hours ago',
+    },
+    {
+      key: 'cert-expiry',
+      title: 'TLS certificate expiry warning',
+      subtitle: 'Dana Kim · 12 hours ago',
+    },
+    {
+      key: 'disk-pressure',
+      title: 'Node disk pressure alerts',
+      subtitle: 'Riley Tanaka · 1 day ago',
+    },
   ];
   return (
     <div className="samplePagesLeftNav__threadPopover">
-      <div className="samplePagesLeftNav__threadPopoverHeader">Thread</div>
+      <div className="samplePagesLeftNav__threadPopoverHeader">
+        <span>Recent threads</span>
+        <OuiButtonIcon
+          iconType="plus"
+          size="xs"
+          aria-label="Create new thread"
+          color="primary"
+          display="fill"
+        />
+      </div>
       <div className="samplePagesLeftNav__threadPopoverContent">
         {items.map((item, index) => (
           <button
@@ -1075,12 +1134,19 @@ const ThreadPopoverContent = ({ onNavigate }) => {
           </button>
         ))}
       </div>
+      <div className="samplePagesLeftNav__threadPopoverFooter">
+        <OuiButtonEmpty
+          size="xs"
+          onClick={() => onViewAll('thread')}>
+          View all
+        </OuiButtonEmpty>
+      </div>
     </div>
   );
 };
 
 // Popover content for Dashboards (collapsed mode)
-const DashboardsPopoverContent = ({ onNavigate }) => {
+const DashboardsPopoverContent = ({ onNavigate, onViewAll }) => {
   const items = [
     {
       key: 'system-overview',
@@ -1100,7 +1166,16 @@ const DashboardsPopoverContent = ({ onNavigate }) => {
   ];
   return (
     <div className="samplePagesLeftNav__threadPopover">
-      <div className="samplePagesLeftNav__threadPopoverHeader">Dashboards</div>
+      <div className="samplePagesLeftNav__threadPopoverHeader">
+        <span>Recent dashboards</span>
+        <OuiButtonIcon
+          iconType="plus"
+          size="xs"
+          aria-label="Create new dashboard"
+          color="primary"
+          display="fill"
+        />
+      </div>
       <div className="samplePagesLeftNav__threadPopoverContent">
         {items.map((item, index) => (
           <button
@@ -1117,12 +1192,19 @@ const DashboardsPopoverContent = ({ onNavigate }) => {
           </button>
         ))}
       </div>
+      <div className="samplePagesLeftNav__threadPopoverFooter">
+        <OuiButtonEmpty
+          size="xs"
+          onClick={() => onViewAll('dashboards')}>
+          View all
+        </OuiButtonEmpty>
+      </div>
     </div>
   );
 };
 
 // Popover content for Logs (collapsed mode)
-const LogsPopoverContent = ({ onNavigate }) => {
+const LogsPopoverContent = ({ onNavigate, onViewAll }) => {
   const [activeTab, setActiveTab] = useState('saved-results');
   const tabItems = {
     'saved-results': [
@@ -1163,7 +1245,16 @@ const LogsPopoverContent = ({ onNavigate }) => {
   const items = tabItems[activeTab];
   return (
     <div className="samplePagesLeftNav__threadPopover">
-      <div className="samplePagesLeftNav__threadPopoverHeader">Logs</div>
+      <div className="samplePagesLeftNav__threadPopoverHeader">
+        <span>Recent logs</span>
+        <OuiButtonIcon
+          iconType="plus"
+          size="xs"
+          aria-label="Create new log query"
+          color="primary"
+          display="fill"
+        />
+      </div>
       <div style={{ padding: '0 12px', marginTop: 8 }}>
         <OuiTabs size="s" display="condensed">
           <OuiTab isSelected={activeTab === 'saved-results'} onClick={() => setActiveTab('saved-results')}>
@@ -1190,12 +1281,19 @@ const LogsPopoverContent = ({ onNavigate }) => {
           </button>
         ))}
       </div>
+      <div className="samplePagesLeftNav__threadPopoverFooter">
+        <OuiButtonEmpty
+          size="xs"
+          onClick={() => onViewAll('logs')}>
+          View all
+        </OuiButtonEmpty>
+      </div>
     </div>
   );
 };
 
 // Popover content for Metrics (collapsed mode)
-const MetricsPopoverContent = ({ onNavigate }) => {
+const MetricsPopoverContent = ({ onNavigate, onViewAll }) => {
   const [activeTab, setActiveTab] = useState('saved-results');
   const tabItems = {
     'saved-results': [
@@ -1236,7 +1334,16 @@ const MetricsPopoverContent = ({ onNavigate }) => {
   const items = tabItems[activeTab];
   return (
     <div className="samplePagesLeftNav__threadPopover">
-      <div className="samplePagesLeftNav__threadPopoverHeader">Metrics</div>
+      <div className="samplePagesLeftNav__threadPopoverHeader">
+        <span>Recent metrics</span>
+        <OuiButtonIcon
+          iconType="plus"
+          size="xs"
+          aria-label="Create new metric query"
+          color="primary"
+          display="fill"
+        />
+      </div>
       <div style={{ padding: '0 12px', marginTop: 8 }}>
         <OuiTabs size="s" display="condensed">
           <OuiTab isSelected={activeTab === 'saved-results'} onClick={() => setActiveTab('saved-results')}>
@@ -1262,6 +1369,13 @@ const MetricsPopoverContent = ({ onNavigate }) => {
             </span>
           </button>
         ))}
+      </div>
+      <div className="samplePagesLeftNav__threadPopoverFooter">
+        <OuiButtonEmpty
+          size="xs"
+          onClick={() => onViewAll('metrics')}>
+          View all
+        </OuiButtonEmpty>
       </div>
     </div>
   );
@@ -2077,6 +2191,7 @@ export const SamplePagesLeftNav = ({
   activePage,
   onPageChange,
   onPopoverNavigate,
+  onViewAll,
   onItemSelect,
   selectedItem,
   onLogoClick,
@@ -2398,6 +2513,10 @@ export const SamplePagesLeftNav = ({
                         setNavPopover(null);
                         onPopoverNavigate(page, itemKey);
                       }}
+                      onViewAll={(page) => {
+                        setNavPopover(null);
+                        onViewAll(page);
+                      }}
                     />
                   </div>
                 </OuiPopover>
@@ -2458,6 +2577,10 @@ export const SamplePagesLeftNav = ({
                           onNavigate={(page, itemKey) => {
                             setNavPopover(null);
                             onPopoverNavigate(page, itemKey);
+                          }}
+                          onViewAll={(page) => {
+                            setNavPopover(null);
+                            onViewAll(page);
                           }}
                         />
                       </div>
@@ -2921,6 +3044,10 @@ export const SamplePagesLeftNav = ({
                         onNavigate={(page, itemKey) => {
                           setNavPopover(null);
                           onPopoverNavigate(page, itemKey);
+                        }}
+                        onViewAll={(page) => {
+                          setNavPopover(null);
+                          onViewAll(page);
                         }}
                       />
                     )}

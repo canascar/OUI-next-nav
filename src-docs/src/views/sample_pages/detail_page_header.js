@@ -35,6 +35,19 @@ export const DetailPageHeader = ({
     <div className="detailPageHeader">
       {onTogglePanel && (
         <div className="detailPageHeader__panelToggle">
+          <OuiToolTip content="Add" position="bottom">
+            <OuiButtonIcon
+              iconType="plus"
+              aria-label="Add"
+              size="xs"
+              color="primary"
+              display="fill"
+            />
+          </OuiToolTip>
+        </div>
+      )}
+      <div className="detailPageHeader__title">
+        {onTogglePanel && (
           <OuiToolTip content={isPanelOpen ? 'Close panel' : 'Open panel'} position="bottom">
             <OuiButtonIcon
               iconType={isPanelOpen ? 'folderOpen' : 'folderClosed'}
@@ -45,18 +58,7 @@ export const DetailPageHeader = ({
               onClick={onTogglePanel}
             />
           </OuiToolTip>
-          <OuiToolTip content="Add" position="bottom">
-            <OuiButtonIcon
-              iconType="plusInCircle"
-              aria-label="Add"
-              size="s"
-              color="text"
-              display="empty"
-            />
-          </OuiToolTip>
-        </div>
-      )}
-      <div className="detailPageHeader__title">
+        )}
         {children}
         {!children && title}
       </div>

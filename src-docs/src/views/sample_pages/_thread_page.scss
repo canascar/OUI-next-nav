@@ -394,3 +394,24 @@
     opacity: 1;
   }
 }
+
+
+// Thread list on the home page — matches the left nav flyout item style
+.homePage__threadList {
+  // Match the vertical padding used in the flyout for each list item
+  .ouiListGroupItem {
+    padding: 8px 0;
+  }
+
+  // Match the flyout hover/active background color
+  .ouiListGroupItem.ouiListGroupItem-isClickable:hover,
+  .ouiListGroupItem.ouiListGroupItem-isClickable:focus-within,
+  .ouiListGroupItem.ouiListGroupItem-isActive {
+    background-color: lightOrDarkTheme(#D4DADB, #383B3E) !important;
+  }
+
+  // Allow the multi-line label (title + subtitle) to wrap naturally
+  .ouiListGroupItem__label {
+    white-space: normal;
+  }
+}

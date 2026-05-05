@@ -70,7 +70,7 @@ const renderPage = (
     case 'home':
       return (
         <OuiErrorBoundary>
-          <HomePage />
+          <HomePage onNavigate={onNavigate} onContinueAsThread={onContinueAsThread} />
         </OuiErrorBoundary>
       );
     case 'logs':
@@ -426,6 +426,31 @@ export const SamplePagesView = () => {
           key: 'weekly-review',
           title: 'Weekly service review',
           subtitle: 'Team Ops · 1 day ago',
+        },
+        {
+          key: 'memory-leak',
+          title: 'Memory leak in catalog service',
+          subtitle: 'Jordan Park · 3 hours ago',
+        },
+        {
+          key: 'dns-timeout',
+          title: 'DNS resolution timeouts',
+          subtitle: 'Priya Sharma · 6 hours ago',
+        },
+        {
+          key: 'deployment-rollback',
+          title: 'Failed deployment rollback',
+          subtitle: 'Marcus Webb · 8 hours ago',
+        },
+        {
+          key: 'cert-expiry',
+          title: 'TLS certificate expiry warning',
+          subtitle: 'Dana Kim · 12 hours ago',
+        },
+        {
+          key: 'disk-pressure',
+          title: 'Node disk pressure alerts',
+          subtitle: 'Riley Tanaka · 1 day ago',
         },
       ],
     },
@@ -901,6 +926,22 @@ export const SamplePagesView = () => {
     setSelectedItem(itemKey || null);
   }, []);
 
+  const handleViewAll = useCallback((page) => {
+    if (page === activePage) {
+      setIsPanelOpen(true);
+      setIsPanelCollapsing(false);
+    } else {
+      skipPanelOpenRef.current = true;
+      setActivePage(page);
+      setSelectedItem(DEFAULT_ITEMS[page] || null);
+      // Force panel open after the skipPanelOpenRef useEffect runs
+      setTimeout(() => {
+        setIsPanelOpen(true);
+        setIsPanelCollapsing(false);
+      }, 0);
+    }
+  }, [activePage]);
+
   const handleNavAskAi = useCallback((text) => {
     setNavAskAiInitialPrompt(text || '');
     setIsNavAskAiOpen(true);
@@ -927,6 +968,7 @@ export const SamplePagesView = () => {
         // After animation completes, navigate
         animTimerRef.current = setTimeout(() => {
           setExpandAnim(null);
+          skipPanelOpenRef.current = true;
           setActivePage('thread');
           if (createThreadRef.current) {
             const newKey = createThreadRef.current();
@@ -935,6 +977,7 @@ export const SamplePagesView = () => {
         }, 350);
       } else {
         // Fallback: no animation
+        skipPanelOpenRef.current = true;
         setActivePage('thread');
         if (createThreadRef.current) {
           const newKey = createThreadRef.current();
@@ -998,6 +1041,7 @@ export const SamplePagesView = () => {
         activePage={activePage}
         onPageChange={handlePageChange}
         onPopoverNavigate={handlePopoverNavigate}
+        onViewAll={handleViewAll}
         onItemSelect={setSelectedItem}
         selectedItem={selectedItem}
         onLogoClick={() => handlePageChange('home')}

@@ -48,6 +48,31 @@ const SEARCH_SECTIONS = [
         label: 'Weekly service review',
         subtitle: 'Team Ops · 1 day ago',
       },
+      {
+        key: 'memory-leak',
+        label: 'Memory leak in catalog service',
+        subtitle: 'Jordan Park · 3 hours ago',
+      },
+      {
+        key: 'dns-timeout',
+        label: 'DNS resolution timeouts',
+        subtitle: 'Priya Sharma · 6 hours ago',
+      },
+      {
+        key: 'deployment-rollback',
+        label: 'Failed deployment rollback',
+        subtitle: 'Marcus Webb · 8 hours ago',
+      },
+      {
+        key: 'cert-expiry',
+        label: 'TLS certificate expiry warning',
+        subtitle: 'Dana Kim · 12 hours ago',
+      },
+      {
+        key: 'disk-pressure',
+        label: 'Node disk pressure alerts',
+        subtitle: 'Riley Tanaka · 1 day ago',
+      },
     ],
   },
   {
@@ -353,7 +378,7 @@ export const SearchPopover = ({ isOpen, onClose, onNavigate, onAskAi }) => {
         <div className="searchPopover__inputWrapper">
           <OuiCompressedFieldText
             inputRef={inputRef}
-            placeholder="Search..."
+            placeholder="Search anything or Ask AI"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -388,7 +413,7 @@ export const SearchPopover = ({ isOpen, onClose, onNavigate, onAskAi }) => {
                     <strong>{section.section}</strong>
                   </OuiText>
                 </div>
-                <OuiListGroup gutterSize="none">
+                <OuiListGroup gutterSize="none" maxWidth={false}>
                   {section.items.map((item, index) => (
                     <React.Fragment key={item.key}>
                       {index > 0 && (

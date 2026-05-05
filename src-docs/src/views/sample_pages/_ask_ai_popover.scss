@@ -21,7 +21,7 @@
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  width: 380px;
+  width: 400px;
   max-height: 480px;
   background-color: $ouiColorEmptyShade;
   border: 1px solid $ouiBorderColor;
@@ -60,6 +60,12 @@
   top: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 150ms ease-in-out;
+
+  .askAiPopover__header:hover & {
+    opacity: 1;
+  }
 }
 
 .askAiPopover__headerLeft {
@@ -198,14 +204,19 @@
 // Nav-triggered Ask AI popover — positioned like the search popover
 .navAskAiPopover__anchor {
   position: fixed;
-  top: 68px;
-  left: 80px;
+  top: 240px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
   z-index: 9999;
+  pointer-events: none;
 
   .askAiPopover {
     position: relative;
     top: 0;
     right: auto;
     left: 0;
+    pointer-events: all;
   }
 }

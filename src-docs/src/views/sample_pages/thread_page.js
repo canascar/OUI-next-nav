@@ -12,7 +12,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 import {
-  OuiAvatar,
   OuiButtonIcon,
   OuiContextMenuPanel,
   OuiContextMenuItem,
@@ -108,6 +107,134 @@ const THREADS = {
           type: 'query',
           query:
             'source=opensearch_dashboards_sample_data_logs | stats avg(latency) as avg_latency, count() as requests by service | sort -avg_latency',
+        },
+      },
+    ],
+  },
+  'memory-leak': {
+    title: 'Memory leak in catalog service',
+    messages: [
+      {
+        role: 'user',
+        author: 'Jordan Park',
+        content:
+          'The catalog service keeps getting OOM-killed every 4 hours. Can you look into it?',
+      },
+      {
+        role: 'assistant',
+        content:
+          'I analyzed the heap dumps and memory allocation patterns for the catalog service.\n\n**Findings**\n\n- Heap usage grows linearly at ~12 MB/min after each restart, reaching the 2 GB limit in roughly 4 hours.\n- The leak originates from an unbounded in-memory cache in the product-search module. Entries are added on every search request but never evicted.\n- GC full-pause frequency increased from 2/hr to 18/hr in the last 24 hours.\n\n**Recommendation**\n\n1. Add a TTL-based eviction policy (e.g., 10 min) to the product-search cache.\n2. Set a max entry cap of 50,000 items.\n3. Switch to an LRU cache implementation to bound memory growth.',
+        attachment: {
+          type: 'page',
+          title: 'Catalog service memory dashboard',
+          description:
+            'Heap usage, GC pause duration, and object allocation rates for the catalog service.',
+        },
+      },
+    ],
+  },
+  'dns-timeout': {
+    title: 'DNS resolution timeouts',
+    messages: [
+      {
+        role: 'user',
+        author: 'Priya Sharma',
+        content:
+          'We are seeing intermittent DNS resolution failures across multiple services. What is going on?',
+      },
+      {
+        role: 'assistant',
+        content:
+          'I checked the DNS resolver metrics and correlated them with the service error logs.\n\n**Root Cause**\n\n- The internal DNS resolver (CoreDNS) is running at 96% CPU on 2 of 3 pods.\n- Query volume spiked 3x after the new service mesh sidecar rollout, which issues a DNS lookup per request instead of caching.\n- Timeout rate is at 8.4%, concentrated on the two overloaded pods.\n\n**Recommended Actions**\n\n1. Scale CoreDNS from 3 to 6 pods to handle the increased query volume.\n2. Enable DNS caching in the service mesh sidecar configuration (ndots: 2, TTL: 30s).\n3. Add a node-local DNS cache DaemonSet to reduce cross-node DNS traffic.',
+        attachment: {
+          type: 'query',
+          query:
+            'source=opensearch_dashboards_sample_data_logs | where component="coredns" | stats avg(cpu_percent) as avg_cpu, count() as queries by pod_name | sort -avg_cpu',
+        },
+      },
+      {
+        role: 'user',
+        author: 'Priya Sharma',
+        content: 'How quickly can we roll out the CoreDNS scaling fix?',
+      },
+      {
+        role: 'assistant',
+        content:
+          'The CoreDNS HPA is already configured but the max replica count is set to 3. Updating the max to 6 and lowering the CPU target to 60% should trigger an immediate scale-up. Estimated time to stabilize: under 5 minutes once applied. I recommend applying this change first while the sidecar DNS caching fix goes through the normal release pipeline.',
+      },
+    ],
+  },
+  'deployment-rollback': {
+    title: 'Failed deployment rollback',
+    messages: [
+      {
+        role: 'user',
+        author: 'Marcus Webb',
+        content:
+          'The v2.14 deployment to the order service failed and the automatic rollback did not trigger. Can you check why?',
+      },
+      {
+        role: 'assistant',
+        content:
+          'I reviewed the deployment pipeline logs and the rollback controller configuration.\n\n**Analysis**\n\n- The v2.14 deployment passed the readiness probe but failed the liveness probe 3 minutes after going live.\n- The rollback controller requires 3 consecutive liveness failures within a 60s window, but the failures were spaced 90s apart due to a misconfigured probe interval.\n- As a result, the failure count never reached the threshold and the rollback was not triggered.\n\n**Fix**\n\n1. Reduce the liveness probe period from 90s to 20s for the order service.\n2. Lower the rollback failure threshold from 3 to 2 consecutive failures.\n3. Add a deployment health alert that fires if error rate exceeds 5% within 2 minutes of a deploy.',
+        attachment: {
+          type: 'page',
+          title: 'Order service deployment history',
+          description:
+            'Deployment timeline, rollback events, and probe status for the order service over the last 7 days.',
+        },
+      },
+    ],
+  },
+  'cert-expiry': {
+    title: 'TLS certificate expiry warning',
+    messages: [
+      {
+        role: 'user',
+        author: 'Dana Kim',
+        content:
+          'We got an alert that several TLS certificates are expiring in the next 48 hours. Which services are affected?',
+      },
+      {
+        role: 'assistant',
+        content:
+          'I scanned the certificate inventory across all namespaces.\n\n**Expiring Certificates**\n\n- api-gateway.prod: expires in 36 hours\n- auth-service.prod: expires in 42 hours\n- webhook-receiver.prod: expires in 47 hours\n\nAll three are managed by cert-manager but the ClusterIssuer has a stale ACME account key. Renewal requests have been failing silently for the past 5 days.\n\n**Immediate Actions**\n\n1. Rotate the ACME account key in the ClusterIssuer resource.\n2. Manually trigger certificate renewal for the three affected services.\n3. Add a monitoring rule to alert when cert-manager renewal failures exceed 0 over a 24h window.',
+        attachment: {
+          type: 'query',
+          query:
+            'source=opensearch_dashboards_sample_data_logs | where event_type="cert_renewal" | stats count() as attempts, sum(case(status="failed", 1)) as failures by certificate_name | sort -failures',
+        },
+      },
+      {
+        role: 'user',
+        author: 'Dana Kim',
+        content: 'Can you confirm the ACME key rotation will not cause downtime?',
+      },
+      {
+        role: 'assistant',
+        content:
+          'The ACME account key rotation is a control-plane operation only. Existing certificates remain valid until their expiry time regardless of the key change. The rotation updates the account credentials used for future renewal requests. No TLS connections will be interrupted during the process. After rotation, cert-manager will automatically retry the pending renewals within its next reconciliation loop (default: 1 minute).',
+      },
+    ],
+  },
+  'disk-pressure': {
+    title: 'Node disk pressure alerts',
+    messages: [
+      {
+        role: 'user',
+        author: 'Riley Tanaka',
+        content:
+          'Three nodes in the production cluster are showing disk pressure. What is filling up the disks?',
+      },
+      {
+        role: 'assistant',
+        content:
+          'I checked the disk usage breakdown on the affected nodes.\n\n**Disk Usage Analysis**\n\n- node-prod-07: 91% used, 68 GB consumed by container logs from the analytics-pipeline service\n- node-prod-12: 88% used, 54 GB of orphaned container images from failed garbage collection\n- node-prod-19: 93% used, 72 GB of emptyDir volumes from the batch-processor service that were never cleaned up\n\n**Recommended Actions**\n\n1. Enable log rotation on the analytics-pipeline with a 500 MB max size and 3 file retention.\n2. Restart the kubelet image GC on node-prod-12 and lower the image GC high threshold from 90% to 80%.\n3. Add resource limits for emptyDir volumes on the batch-processor pods (sizeLimit: 2Gi).',
+        attachment: {
+          type: 'page',
+          title: 'Cluster node disk usage dashboard',
+          description:
+            'Per-node disk utilization, top consumers, and garbage collection status across the production cluster.',
         },
       },
     ],
@@ -564,11 +691,6 @@ export const ThreadPage = ({
     }
   };
 
-  // Collect unique participants for the avatar group
-  const authors = [
-    ...new Set(messages.filter((m) => m.role === 'user').map((m) => m.author)),
-  ];
-
   return (
     <div
       style={{
@@ -630,13 +752,6 @@ export const ThreadPage = ({
         ]}
         hideAskAi>
         {thread.title}
-        <div
-          className="threadPage__avatarGroup"
-          style={{ display: 'inline-flex', marginLeft: 8 }}>
-          {authors.map((name) => (
-            <OuiAvatar key={name} size="s" name={name} />
-          ))}
-        </div>
       </DetailPageHeader>
 
       {/* Body: feed + optional canvas flyout */}
