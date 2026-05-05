@@ -317,16 +317,30 @@ const AddToCanvasButton = ({ onClick, added }) => (
   </button>
 );
 
-// Attachment card: page reference (title + description, no link)
-const PageAttachment = ({ title, description, onAddToCanvas, canvasItems }) => {
+// Attachment card: page reference (title + description, clickable to view in canvas)
+const PageAttachment = ({ title, description, onAddToCanvas, onViewInCanvas, canvasItems }) => {
   const added = canvasItems.some((c) => c.type === 'page' && c.title === title);
+  const handleClick = () => {
+    onViewInCanvas({ type: 'page', title, description });
+  };
   return (
     <div className="threadPage__attachmentWrap">
       <AddToCanvasButton
         added={added}
         onClick={() => onAddToCanvas({ type: 'page', title, description })}
       />
-      <div className="threadPage__attachment">
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+      <div
+        className="threadPage__attachment threadPage__attachment--clickable"
+        onClick={handleClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleClick();
+          }
+        }}>
         <OuiText size="xs">
           <strong>{title}</strong>
         </OuiText>
@@ -364,6 +378,7 @@ const AssistantMessage = ({
   streaming,
   attachment,
   onAddToCanvas,
+  onViewInCanvas,
   canvasItems,
 }) => (
   <div className="threadPage__message threadPage__message--assistant">
@@ -374,6 +389,7 @@ const AssistantMessage = ({
           title={attachment.title}
           description={attachment.description}
           onAddToCanvas={onAddToCanvas}
+          onViewInCanvas={onViewInCanvas}
           canvasItems={canvasItems}
         />
       )}
@@ -514,7 +530,8 @@ export const ThreadPage = ({
   const [isTyping, setIsTyping] = useState(false);
   const [isCanvasOpen, setIsCanvasOpen] = useState(false);
   const [canvasItems, setCanvasItems] = useState([]);
-  const [canvasWidth, setCanvasWidth] = useState(340);
+  const [canvasDetailItem, setCanvasDetailItem] = useState(null);
+  const [canvasWidth, setCanvasWidth] = useState(480);
   const [isCanvasDragging, setIsCanvasDragging] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const isDragging = useRef(false);
@@ -569,7 +586,23 @@ export const ThreadPage = ({
     setIsCanvasOpen(true);
   }, []);
 
-  // Reset messages when switching threads
+  const handleViewInCanvas = useCallback((item) => {
+    setCanvasItems((prev) => {
+      const exists = prev.some(
+        (existing) =>
+          existing.type === item.type &&
+          (item.type === 'page'
+            ? existing.title === item.title
+            : existing.query === item.query)
+      );
+      if (exists) return prev;
+      return [...prev, item];
+    });
+    setCanvasDetailItem(item);
+    setIsCanvasOpen(true);
+  }, []);
+
+  // Reset messages and canvas when switching threads
   useEffect(() => {
     if (pendingMessages) {
       setMessages(pendingMessages);
@@ -578,6 +611,9 @@ export const ThreadPage = ({
     }
     setMessage('');
     setIsTyping(false);
+    setCanvasItems([]);
+    setCanvasDetailItem(null);
+    setIsCanvasOpen(false);
     streamTimers.current.forEach(clearTimeout);
     streamTimers.current = [];
   }, [threadKey, thread.messages, pendingMessages]);
@@ -787,6 +823,7 @@ export const ThreadPage = ({
                   streaming={msg.streaming}
                   attachment={msg.attachment}
                   onAddToCanvas={handleAddToCanvas}
+                  onViewInCanvas={handleViewInCanvas}
                   canvasItems={canvasItems}
                 />
               );
@@ -857,9 +894,31 @@ export const ThreadPage = ({
                 responsive={false}
                 gutterSize="none">
                 <OuiFlexItem grow={false}>
-                  <OuiTitle size="xs">
-                    <h2>Canvas</h2>
-                  </OuiTitle>
+                  <OuiFlexGroup
+                    alignItems="center"
+                    gutterSize="s"
+                    responsive={false}>
+                    {canvasDetailItem && (
+                      <OuiFlexItem grow={false}>
+                        <OuiButtonIcon
+                          iconType="arrowLeft"
+                          aria-label="Back to canvas"
+                          size="s"
+                          color="text"
+                          onClick={() => setCanvasDetailItem(null)}
+                        />
+                      </OuiFlexItem>
+                    )}
+                    <OuiFlexItem grow={false}>
+                      <OuiTitle size="xs">
+                        <h2>
+                          {canvasDetailItem
+                            ? canvasDetailItem.title
+                            : 'Canvas'}
+                        </h2>
+                      </OuiTitle>
+                    </OuiFlexItem>
+                  </OuiFlexGroup>
                 </OuiFlexItem>
                 <OuiFlexItem grow={false}>
                   <OuiButtonIcon
@@ -867,13 +926,25 @@ export const ThreadPage = ({
                     aria-label="Close canvas"
                     size="s"
                     color="text"
-                    onClick={() => setIsCanvasOpen(false)}
+                    onClick={() => {
+                      setIsCanvasOpen(false);
+                      setCanvasDetailItem(null);
+                    }}
                   />
                 </OuiFlexItem>
               </OuiFlexGroup>
             </OuiFlyoutHeader>
             <OuiFlyoutBody>
-              {canvasItems.length === 0 ? (
+              {canvasDetailItem ? (
+                <OuiText size="s" color="subdued">
+                  <p>
+                    This is a placeholder for the detail view of &ldquo;{canvasDetailItem.title}&rdquo;.
+                  </p>
+                  {canvasDetailItem.description && (
+                    <p>{canvasDetailItem.description}</p>
+                  )}
+                </OuiText>
+              ) : canvasItems.length === 0 ? (
                 <OuiText size="s" color="subdued">
                   <p>
                     Items added to the canvas will appear here. Hover over
@@ -884,7 +955,30 @@ export const ThreadPage = ({
               ) : (
                 <div className="threadPage__canvasItems">
                   {canvasItems.map((item, i) => (
-                    <div key={i} className="threadPage__canvasItem">
+                    <div
+                      key={i}
+                      className={`threadPage__canvasItem${
+                        item.type === 'page'
+                          ? ' threadPage__canvasItem--clickable'
+                          : ''
+                      }`}
+                      onClick={
+                        item.type === 'page'
+                          ? () => setCanvasDetailItem(item)
+                          : undefined
+                      }
+                      onKeyDown={
+                        item.type === 'page'
+                          ? (e) => {
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                setCanvasDetailItem(item);
+                              }
+                            }
+                          : undefined
+                      }
+                      role={item.type === 'page' ? 'button' : undefined}
+                      tabIndex={item.type === 'page' ? 0 : undefined}>
                       <div className="threadPage__canvasItemHeader">
                         <OuiIcon
                           type={item.type === 'page' ? 'document' : 'console'}
@@ -901,11 +995,12 @@ export const ThreadPage = ({
                           size="xs"
                           color="danger"
                           className="threadPage__canvasItemRemove"
-                          onClick={() =>
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setCanvasItems((prev) =>
                               prev.filter((_, idx) => idx !== i)
-                            )
-                          }
+                            );
+                          }}
                         />
                       </div>
                       {item.type === 'page' ? (

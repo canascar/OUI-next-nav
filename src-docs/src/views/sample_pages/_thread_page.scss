@@ -164,6 +164,22 @@
   }
 }
 
+// Clickable attachment card (page type)
+.threadPage__attachment--clickable {
+  cursor: pointer;
+  transition: background-color 150ms ease-in-out, border-color 150ms ease-in-out;
+
+  &:hover {
+    background-color: rgba($ouiColorPrimary, 0.05);
+    border-color: $ouiColorPrimary;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $ouiColorPrimary;
+    outline-offset: 1px;
+  }
+}
+
 // Move margin from attachment to wrapper when wrapped
 .threadPage__attachmentWrap .threadPage__attachment {
   margin-top: 0;
@@ -254,7 +270,7 @@
   min-width: 240px;
 
   .ouiFlyoutHeader {
-    padding: 12px 16px;
+    padding: 12px;
   }
 
   .ouiFlyoutBody {
@@ -267,7 +283,7 @@
     }
 
     .ouiFlyoutBody__overflowContent {
-      padding: 16px;
+      padding: 12px;
     }
   }
 }
@@ -392,6 +408,21 @@
 
   .threadPage__canvasItem:hover & {
     opacity: 1;
+  }
+}
+
+.threadPage__canvasItem--clickable {
+  cursor: pointer;
+  transition: background-color 150ms ease-in-out, border-color 150ms ease-in-out;
+
+  &:hover {
+    background-color: rgba($ouiColorPrimary, 0.05);
+    border-color: $ouiColorPrimary;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $ouiColorPrimary;
+    outline-offset: 1px;
   }
 }
 

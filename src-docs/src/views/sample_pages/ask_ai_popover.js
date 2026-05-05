@@ -30,8 +30,10 @@ const MOCK_AI_RESPONSES = [
 export const AskAiPopover = ({
   isOpen,
   onClose,
+  onMinimize,
   onContinueAsThread,
   initialPrompt,
+  anchorPosition,
 }) => {
   const [message, setMessage] = useState('');
   const [conversation, setConversation] = useState(null); // { prompt, response }
@@ -54,16 +56,13 @@ export const AskAiPopover = ({
     return () => streamTimers.current.forEach(clearTimeout);
   }, []);
 
-  // Reset state when popover closes
+  // Reset state when popover is fully dismissed (onClose resets isOpen)
+  // We no longer reset conversation here — the parent controls lifecycle.
+  // Only reset drag position when popover hides.
   useEffect(() => {
     if (!isOpen) {
-      setMessage('');
-      setConversation(null);
-      setIsStreaming(false);
       setHasBeenDragged(false);
       setPosition({ x: 0, y: 0 });
-      streamTimers.current.forEach(clearTimeout);
-      streamTimers.current = [];
     }
   }, [isOpen]);
 
@@ -172,6 +171,8 @@ export const AskAiPopover = ({
 
   const popoverStyle = hasBeenDragged
     ? { position: 'fixed', left: position.x, top: position.y, zIndex: 10000 }
+    : anchorPosition
+    ? { position: 'fixed', top: anchorPosition.top, left: anchorPosition.left, transform: 'translateX(-50%)', zIndex: 10000 }
     : {};
 
   return (
@@ -179,7 +180,7 @@ export const AskAiPopover = ({
       ref={popoverRef}
       className={`askAiPopover${
         hasBeenDragged ? ' askAiPopover--dragged' : ''
-      }`}
+      }${!hasBeenDragged && anchorPosition ? ' askAiPopover--anchored' : ''}`}
       style={popoverStyle}>
       {/* Header */}
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
@@ -198,11 +199,26 @@ export const AskAiPopover = ({
         />
         <div className="askAiPopover__headerRight">
           <OuiButtonIcon
+            iconType="minus"
+            aria-label="Minimize"
+            size="xs"
+            color="text"
+            onClick={onMinimize}
+          />
+          <OuiButtonIcon
             iconType="cross"
             aria-label="Close"
             size="xs"
             color="text"
-            onClick={onClose}
+            onClick={() => {
+              // Full dismiss — clear conversation
+              setMessage('');
+              setConversation(null);
+              setIsStreaming(false);
+              streamTimers.current.forEach(clearTimeout);
+              streamTimers.current = [];
+              onClose();
+            }}
           />
         </div>
       </div>

@@ -30,6 +30,65 @@ export const DetailPageHeader = ({
   headerControls,
 }) => {
   const [isAskAiOpen, setIsAskAiOpen] = React.useState(false);
+  const [isAskAiActive, setIsAskAiActive] = React.useState(false);
+  const [isHighlightMode, setIsHighlightMode] = React.useState(false);
+  const [highlightPrompt, setHighlightPrompt] = React.useState(null);
+  const [highlightPosition, setHighlightPosition] = React.useState(null);
+
+  const handleAskAiToggle = () => {
+    if (isAskAiOpen) {
+      setIsAskAiOpen(false);
+    } else {
+      setHighlightPrompt(null);
+      setHighlightPosition(null);
+      setIsAskAiOpen(true);
+      setIsAskAiActive(true);
+    }
+  };
+
+  const handleAskAiClose = () => {
+    setIsAskAiOpen(false);
+    setIsAskAiActive(false);
+    setHighlightPrompt(null);
+    setHighlightPosition(null);
+  };
+
+  const handleAskAiMinimize = () => {
+    setIsAskAiOpen(false);
+  };
+
+  const handleHighlightToggle = () => {
+    setIsHighlightMode((prev) => !prev);
+  };
+
+  // Listen for text selection when highlight mode is active
+  React.useEffect(() => {
+    if (!isHighlightMode) return;
+
+    const handleMouseUp = () => {
+      const selection = window.getSelection();
+      const text = selection ? selection.toString().trim() : '';
+      if (text && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+
+        selection.removeAllRanges();
+
+        // Position popover near the highlight
+        setHighlightPosition({
+          top: rect.bottom + 8,
+          left: rect.left + rect.width / 2,
+        });
+        setHighlightPrompt(text);
+        setIsAskAiOpen(true);
+        setIsAskAiActive(true);
+        setIsHighlightMode(false);
+      }
+    };
+
+    document.addEventListener('mouseup', handleMouseUp);
+    return () => document.removeEventListener('mouseup', handleMouseUp);
+  }, [isHighlightMode]);
 
   return (
     <div className="detailPageHeader">
@@ -101,30 +160,43 @@ export const DetailPageHeader = ({
             display="empty"
           />
         </OuiToolTip>
-        {!hideAskAi && (
-          <>
-            <div className="askAiPopover__anchor">
-              <OuiToolTip content="Ask AI" position="bottom">
-                <OuiButtonIcon
-                  iconType="generate"
-                  aria-label="Ask AI"
-                  size="s"
-                  color={isAskAiOpen ? 'primary' : 'text'}
-                  display="empty"
-                  onClick={() => setIsAskAiOpen(!isAskAiOpen)}
-                />
-              </OuiToolTip>
-              {onContinueAsThread && (
-                <AskAiPopover
-                  isOpen={isAskAiOpen}
-                  onClose={() => setIsAskAiOpen(false)}
-                  onContinueAsThread={onContinueAsThread}
-                />
-              )}
-            </div>
-          </>
-        )}
       </div>
+      {!hideAskAi && (
+        <div className="askAiFloating">
+          <OuiToolTip content="Highlight to Ask AI" position="top">
+            <OuiButtonIcon
+              className={`askAiFloating__button${isHighlightMode ? ' askAiFloating__button--active' : ''}`}
+              iconType="visText"
+              aria-label="Highlight to Ask AI"
+              size="m"
+              color={isHighlightMode ? 'ghost' : 'text'}
+              display="fill"
+              onClick={handleHighlightToggle}
+            />
+          </OuiToolTip>
+          <OuiToolTip content="Ask AI" position="top">
+            <OuiButtonIcon
+              className={`askAiFloating__button${isAskAiActive ? ' askAiFloating__button--active' : ''}`}
+              iconType="generate"
+              aria-label="Ask AI"
+              size="m"
+              color={isAskAiActive ? 'ghost' : 'text'}
+              display="fill"
+              onClick={handleAskAiToggle}
+            />
+          </OuiToolTip>
+          {onContinueAsThread && (
+            <AskAiPopover
+              isOpen={isAskAiOpen}
+              onClose={handleAskAiClose}
+              onMinimize={handleAskAiMinimize}
+              onContinueAsThread={onContinueAsThread}
+              initialPrompt={highlightPrompt}
+              anchorPosition={highlightPosition}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 };

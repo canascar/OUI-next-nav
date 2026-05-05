@@ -335,104 +335,38 @@ const CHILD_PAGE_POPOVER_ITEMS = {
       },
     ],
   },
-  'data-sources': {
-    title: 'Data sources',
-    items: [
-      {
-        key: 'ds-faos219prod',
-        title: 'FAOS219prod',
-        subtitle: 'OpenSearch 2.19 · Production',
-      },
-      {
-        key: 'ds-os-219',
-        title: 'OS 219',
-        subtitle: 'OpenSearch 2.19 · Development',
-      },
-      {
-        key: 'ds-olly-stable',
-        title: 'Olly@stableDefault',
-        subtitle: 'OpenSearch · Observability',
-      },
-    ],
-  },
-  'index-patterns': {
-    title: 'Index patterns',
-    items: [
-      { key: 'ip-logs', title: 'logs-*', subtitle: 'Matches 12 indices' },
-      { key: 'ip-metrics', title: 'metrics-*', subtitle: 'Matches 8 indices' },
-      { key: 'ip-traces', title: 'traces-*', subtitle: 'Matches 5 indices' },
-    ],
-  },
-  datasets: {
-    title: 'Datasets',
-    items: [
-      {
-        key: 'dataset-web-logs',
-        title: 'Web server logs',
-        subtitle: '2.4 GB · Updated 5 min ago',
-      },
-      {
-        key: 'dataset-app-traces',
-        title: 'Application traces',
-        subtitle: '1.1 GB · Updated 10 min ago',
-      },
-      {
-        key: 'dataset-system-metrics',
-        title: 'System metrics',
-        subtitle: '890 MB · Updated 1 min ago',
-      },
-    ],
-  },
-  'assets-detail': {
-    title: 'Assets',
-    items: [
-      {
-        key: 'asset-web-fleet',
-        title: 'Web server fleet',
-        subtitle: '12 hosts · Healthy',
-      },
-      {
-        key: 'asset-payment',
-        title: 'Payment gateway',
-        subtitle: '3 endpoints · Warning',
-      },
-      {
-        key: 'asset-pipeline',
-        title: 'Data pipeline cluster',
-        subtitle: '8 nodes · Healthy',
-      },
-    ],
-  },
-  'sample-data': {
-    title: 'Sample data',
-    items: [
-      {
-        key: 'sample-ecommerce',
-        title: 'Sample eCommerce orders',
-        subtitle: 'Preloaded dataset',
-      },
-      {
-        key: 'sample-flights',
-        title: 'Sample flight data',
-        subtitle: 'Preloaded dataset',
-      },
-      {
-        key: 'sample-web-logs',
-        title: 'Sample web logs',
-        subtitle: 'Preloaded dataset',
-      },
-    ],
-  },
 };
 
+// Pages that get the "Recent" prefix, plus button, and View all footer
+const POPOVER_ENHANCED_PAGES = new Set([
+  'notebooks',
+  'detectors',
+  'alerts-detail',
+  'monitors-detail',
+]);
+
 // Generic popover content for child pages — same card style as thread popover
-const ChildPagePopoverContent = ({ pageKey, onNavigate }) => {
+const ChildPagePopoverContent = ({ pageKey, onNavigate, onViewAll }) => {
   const config = CHILD_PAGE_POPOVER_ITEMS[pageKey];
   if (!config) return null;
+  const isEnhanced = POPOVER_ENHANCED_PAGES.has(pageKey);
   return (
     <div className="samplePagesLeftNav__threadPopover">
       <div className="samplePagesLeftNav__threadPopoverHeader">
-        {config.title}
+        {isEnhanced ? (
+          <>
+            <span>Recent {config.title.toLowerCase()}</span>
+            <OuiButtonIcon
+              iconType="plus"
+              size="xs"
+              aria-label={`Create new ${config.title.toLowerCase()}`}
+              color="primary"
+              display="fill"
+            />
+          </>
+        ) : (
+          config.title
+        )}
       </div>
       <div className="samplePagesLeftNav__threadPopoverContent">
         {config.items.map((item) => (
@@ -452,6 +386,15 @@ const ChildPagePopoverContent = ({ pageKey, onNavigate }) => {
           </button>
         ))}
       </div>
+      {isEnhanced && onViewAll && (
+        <div className="samplePagesLeftNav__threadPopoverFooter">
+          <OuiButtonEmpty
+            size="xs"
+            onClick={() => onViewAll(pageKey)}>
+            View all
+          </OuiButtonEmpty>
+        </div>
+      )}
     </div>
   );
 };
@@ -1382,7 +1325,7 @@ const MetricsPopoverContent = ({ onNavigate, onViewAll }) => {
 };
 
 // Helper: wraps a popover item button with a nested hover popover if data exists
-const PopoverItemWithHover = ({ pageKey, children, onNavigate }) => {
+const PopoverItemWithHover = ({ pageKey, children, onNavigate, onViewAll }) => {
   const [isOpen, setIsOpen] = useState(false);
   const timer = useRef(null);
   const open = () => {
@@ -1405,7 +1348,7 @@ const PopoverItemWithHover = ({ pageKey, children, onNavigate }) => {
         panelPaddingSize="s"
         panelClassName="samplePagesLeftNav__popoverPanel">
         <div onMouseEnter={open} onMouseLeave={close}>
-          <ChildPagePopoverContent pageKey={pageKey} onNavigate={onNavigate} />
+          <ChildPagePopoverContent pageKey={pageKey} onNavigate={onNavigate} onViewAll={onViewAll} />
         </div>
       </OuiPopover>
     </div>
@@ -1418,6 +1361,7 @@ const ToolsPanelContent = ({
   onOpenPanel,
   onItemSelect: onSelectItem,
   onPopoverNavigate,
+  onViewAll,
 }) => {
   const [subOpen, setSubOpen] = useState({
     'anomaly-detection': false,
@@ -1438,7 +1382,7 @@ const ToolsPanelContent = ({
     <div className="samplePagesLeftNav__toolsPopover">
       <div className="samplePagesLeftNav__toolsPopoverHeader">More</div>
       <div className="samplePagesLeftNav__toolsPopoverContent">
-        <PopoverItemWithHover pageKey="notebooks" onNavigate={handleNavigate}>
+        <PopoverItemWithHover pageKey="notebooks" onNavigate={handleNavigate} onViewAll={onViewAll}>
           <button
             type="button"
             className="samplePagesLeftNav__toolsPopoverItem"
@@ -1487,7 +1431,8 @@ const ToolsPanelContent = ({
               </button>
               <PopoverItemWithHover
                 pageKey="detectors"
-                onNavigate={handleNavigate}>
+                onNavigate={handleNavigate}
+                onViewAll={onViewAll}>
                 <button
                   type="button"
                   className="samplePagesLeftNav__toolsPopoverItem samplePagesLeftNav__toolsPopoverItem--child"
@@ -1521,7 +1466,8 @@ const ToolsPanelContent = ({
             <div className="samplePagesLeftNav__subgroupChildren">
               <PopoverItemWithHover
                 pageKey="alerts-detail"
-                onNavigate={handleNavigate}>
+                onNavigate={handleNavigate}
+                onViewAll={onViewAll}>
                 <button
                   type="button"
                   className="samplePagesLeftNav__toolsPopoverItem samplePagesLeftNav__toolsPopoverItem--child"
@@ -1532,7 +1478,8 @@ const ToolsPanelContent = ({
               </PopoverItemWithHover>
               <PopoverItemWithHover
                 pageKey="monitors-detail"
-                onNavigate={handleNavigate}>
+                onNavigate={handleNavigate}
+                onViewAll={onViewAll}>
                 <button
                   type="button"
                   className="samplePagesLeftNav__toolsPopoverItem samplePagesLeftNav__toolsPopoverItem--child"
@@ -1659,56 +1606,42 @@ const WorkspaceNavPanelContent = ({
           </div>
           <span>Collaborators</span>
         </button>
-        <PopoverItemWithHover
-          pageKey="data-sources"
-          onNavigate={handleNavigate}>
-          <button
-            type="button"
-            className="samplePagesLeftNav__toolsPopoverItem"
-            onClick={() => onOpenPanel('data-sources')}>
-            <div className="samplePagesLeftNav__navItemIconWrap">
-              <OuiIcon type="database" size="m" />
-            </div>
-            <span>Data sources</span>
-          </button>
-        </PopoverItemWithHover>
-        <PopoverItemWithHover
-          pageKey="index-patterns"
-          onNavigate={handleNavigate}>
-          <button
-            type="button"
-            className="samplePagesLeftNav__toolsPopoverItem"
-            onClick={() => onOpenPanel('index-patterns')}>
-            <div className="samplePagesLeftNav__navItemIconWrap">
-              <OuiIcon type="indexSettings" size="m" />
-            </div>
-            <span>Index patterns</span>
-          </button>
-        </PopoverItemWithHover>
-        <PopoverItemWithHover
-          pageKey="assets-detail"
-          onNavigate={handleNavigate}>
-          <button
-            type="button"
-            className="samplePagesLeftNav__toolsPopoverItem"
-            onClick={() => onOpenPanel('assets-detail')}>
-            <div className="samplePagesLeftNav__navItemIconWrap">
-              <OuiIcon type="package" size="m" />
-            </div>
-            <span>Assets</span>
-          </button>
-        </PopoverItemWithHover>
-        <PopoverItemWithHover pageKey="sample-data" onNavigate={handleNavigate}>
-          <button
-            type="button"
-            className="samplePagesLeftNav__toolsPopoverItem"
-            onClick={() => onOpenPanel('sample-data')}>
-            <div className="samplePagesLeftNav__navItemIconWrap">
-              <OuiIcon type="documents" size="m" />
-            </div>
-            <span>Sample data</span>
-          </button>
-        </PopoverItemWithHover>
+        <button
+          type="button"
+          className="samplePagesLeftNav__toolsPopoverItem"
+          onClick={() => onOpenPanel('data-sources')}>
+          <div className="samplePagesLeftNav__navItemIconWrap">
+            <OuiIcon type="database" size="m" />
+          </div>
+          <span>Data sources</span>
+        </button>
+        <button
+          type="button"
+          className="samplePagesLeftNav__toolsPopoverItem"
+          onClick={() => onOpenPanel('index-patterns')}>
+          <div className="samplePagesLeftNav__navItemIconWrap">
+            <OuiIcon type="indexSettings" size="m" />
+          </div>
+          <span>Index patterns</span>
+        </button>
+        <button
+          type="button"
+          className="samplePagesLeftNav__toolsPopoverItem"
+          onClick={() => onOpenPanel('assets-detail')}>
+          <div className="samplePagesLeftNav__navItemIconWrap">
+            <OuiIcon type="package" size="m" />
+          </div>
+          <span>Assets</span>
+        </button>
+        <button
+          type="button"
+          className="samplePagesLeftNav__toolsPopoverItem"
+          onClick={() => onOpenPanel('sample-data')}>
+          <div className="samplePagesLeftNav__navItemIconWrap">
+            <OuiIcon type="documents" size="m" />
+          </div>
+          <span>Sample data</span>
+        </button>
         <button
           type="button"
           className="samplePagesLeftNav__toolsPopoverItem"
@@ -2714,6 +2647,10 @@ export const SamplePagesLeftNav = ({
                             setNavPopover(null);
                             onPopoverNavigate(page, itemKey);
                           }}
+                          onViewAll={(page) => {
+                            setNavPopover(null);
+                            onViewAll(page);
+                          }}
                         />
                       </div>
                     </OuiPopover>
@@ -2795,6 +2732,10 @@ export const SamplePagesLeftNav = ({
                                     onNavigate={(page, itemKey) => {
                                       setNavPopover(null);
                                       onPopoverNavigate(page, itemKey);
+                                    }}
+                                    onViewAll={(page) => {
+                                      setNavPopover(null);
+                                      onViewAll(page);
                                     }}
                                   />
                                 </div>
@@ -3038,8 +2979,11 @@ export const SamplePagesLeftNav = ({
                           setNavPopover(null);
                           onPopoverNavigate(page, itemKey);
                         }}
-                      />
-                    ) : (
+                        onViewAll={(page) => {
+                          setNavPopover(null);
+                          onViewAll(page);
+                        }}
+                      />) : (
                       <PopoverContent
                         onNavigate={(page, itemKey) => {
                           setNavPopover(null);
