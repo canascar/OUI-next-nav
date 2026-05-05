@@ -7,19 +7,25 @@
 
 // V9 theme gradient backgrounds with frosted glass overlay
 
-$v9DarkGradient: linear-gradient(241deg, #0F1B2D 0%, #25405C 28%, #2E4C6E 61%, #132838 100%);
+$v9DarkGradient:
+  radial-gradient(ellipse at 15% 25%, rgba(217, 216, 220, 0.06) 0%, transparent 50%),
+  radial-gradient(ellipse at 75% 65%, rgba(217, 216, 220, 0.04) 0%, transparent 50%),
+  radial-gradient(ellipse at 50% 50%, rgba(217, 216, 220, 0.02) 0%, transparent 70%),
+  linear-gradient(180deg, #111 0%, #111 100%);
 
-$v9LightGradient: linear-gradient(241deg, #94A3B8 0%, #A5D0F0 28%, #E2E8F0 61%, #CBD5E1 100%);
+$v9LightGradient:
+  radial-gradient(ellipse at 15% 25%, rgba(0, 146, 184, 0.20) 0%, transparent 50%),
+  radial-gradient(ellipse at 75% 65%, rgba(217, 216, 220, 0.40) 0%, transparent 50%),
+  radial-gradient(ellipse at 50% 50%, rgba(0, 120, 160, 0.06) 0%, transparent 70%),
+  linear-gradient(180deg, #E5E5E5 0%, #D9D8DC 100%);
 
 @if (lightness($ouiPageBackgroundColor) < 50) {
-  // Dark mode — deep cosmic
+  // Dark mode — vivid brand gradient
   html {
     background-color: $ouiPageBackgroundColor;
     background-image: $v9DarkGradient;
-    background-size: 200% 200%;
     background-attachment: fixed;
     min-height: 100vh;
-    animation: gradient-drift 12s ease-in-out infinite;
   }
 
   body {
@@ -47,7 +53,7 @@ $v9LightGradient: linear-gradient(241deg, #94A3B8 0%, #A5D0F0 28%, #E2E8F0 61%, 
   }
 
 } @else {
-  // Light mode — soft dawn
+  // Light mode — vivid brand gradient
   html {
     background-color: $ouiPageBackgroundColor;
     background-image: $v9LightGradient;
@@ -78,10 +84,4 @@ $v9LightGradient: linear-gradient(241deg, #94A3B8 0%, #A5D0F0 28%, #E2E8F0 61%, 
     position: relative;
     z-index: 1;
   }
-}
-
-@keyframes gradient-drift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
 }

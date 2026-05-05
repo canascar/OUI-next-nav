@@ -22,7 +22,7 @@
 .samplePagesLeftNav {
   width: 72px;
   min-width: 72px;
-  background-color: transparent;
+  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .2);
   border-right: none;
   display: flex;
   flex-direction: column;
@@ -109,6 +109,8 @@
 .samplePagesLeftNav__rule {
   width: 100%;
   flex-shrink: 0;
+  background-color: lightOrDarkTheme($ouiColorLightShade, $ouiColorEmptyShade) !important; // sass-lint:disable-line no-important
+  border: none !important; // sass-lint:disable-line no-important
 }
 
 // Footer — stacked vertically at bottom, full nav width
@@ -130,9 +132,11 @@
 .samplePagesLeftNav__expandedPanel {
   width: 320px;
   min-width: 320px;
-  background-color: transparent;
+  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), 0);
+  backdrop-filter: blur(60px);
+  -webkit-backdrop-filter: blur(60px);
   border-right: none;
-  border-left: 1px solid $ouiColorLightShade;
+  border-left: none;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
   box-shadow: none;
@@ -241,7 +245,7 @@
   left: 60px;
   width: 320px;
   max-height: 400px;
-  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .65); // sass-lint:disable-line no-color-literals
+  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .35); // sass-lint:disable-line no-color-literals
   backdrop-filter: blur(16px);
   border: 1px solid transparentize($ouiColorLightShade, .3);
   border-radius: $ouiBorderRadius;

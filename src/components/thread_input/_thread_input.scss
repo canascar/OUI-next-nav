@@ -1,0 +1,77 @@
+/*!
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+.ouiThreadInput {
+  width: 100%;
+}
+
+.ouiThreadInput--fullWidth {
+  max-width: 100%;
+}
+
+.ouiThreadInput__wrapper {
+  position: relative;
+  border: 1px solid $ouiFormBorderColor;
+  border-radius: $ouiBorderRadius;
+  background-color: $ouiFormBackgroundColor;
+  transition: transform 150ms ease-in-out, box-shadow 150ms ease-in-out, background-color 150ms ease-in-out;
+  transform: translateY(0);
+
+  &:hover,
+  &:focus-within {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12);
+  }
+}
+
+.ouiThreadInput__textarea {
+  display: block;
+  width: 100%;
+  padding: $ouiSizeM;
+  padding-bottom: $ouiSizeXS;
+  border: none;
+  background: transparent;
+  resize: none;
+  font-family: $ouiFontFamily;
+  font-size: $ouiFontSize;
+  line-height: $ouiLineHeight;
+  color: $ouiTextColor;
+  outline: none;
+
+  &::placeholder {
+    color: $ouiColorMediumShade;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.ouiThreadInput__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $ouiSizeXS $ouiSizeM;
+  padding-top: 0;
+}
+
+.ouiThreadInput__actionsLeft {
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeXS;
+}
+
+.ouiThreadInput__actionsRight {
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeXS;
+  margin-left: auto;
+}
+
+.ouiThreadInput--disabled .ouiThreadInput__wrapper {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

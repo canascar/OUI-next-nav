@@ -84,7 +84,7 @@
 .ouiTextArea,
 .ouiDatePopoverButton,
 .ouiSuperDatePicker__prettyFormat {
-  background-color: $ouiFormBackgroundColor !important;
+  background-color: rgba(red($ouiFormBackgroundColor), green($ouiFormBackgroundColor), blue($ouiFormBackgroundColor), 0.55) !important;
 }
 
 .ouiFormControlLayout:not(.ouiFormControlLayout--group) {
@@ -103,7 +103,7 @@
 .ouiFieldPassword--compressed,
 .ouiSelect--compressed,
 .ouiDatePopoverButton-compressed {
-  background-color: $ouiFormBackgroundColor !important;
+  background-color: rgba(red($ouiFormBackgroundColor), green($ouiFormBackgroundColor), blue($ouiFormBackgroundColor), 0.55) !important;
 }
 
 // Inside groups, inputs get no radius (group clips them)
@@ -120,7 +120,7 @@
 // sass-lint:disable no-important
 .ouiDatePickerRange,
 .ouiDatePickerRange--inGroup {
-  background-color: $ouiFormBackgroundColor !important;
+  background-color: rgba(red($ouiFormBackgroundColor), green($ouiFormBackgroundColor), blue($ouiFormBackgroundColor), 0.55) !important;
 }
 // sass-lint:enable no-important
 
@@ -147,12 +147,46 @@
 }
 // sass-lint:enable no-important
 
-// Remove shadows and borders from all panels and cards
-// sass-lint:disable no-important
+// Soft drop shadow on all panels, cards, and form control groups
+// sass-lint:disable no-important, no-color-literals
 .ouiPanel,
 .ouiCard {
-  box-shadow: none !important;
+  box-shadow: lightOrDarkTheme(
+    0 2px 12px rgba(0, 60, 120, 0.05) #{','} 0 1px 3px rgba(0, 60, 120, 0.03),
+    0 2px 12px rgba(0, 0, 0, 0.04) #{','} 0 1px 3px rgba(0, 0, 0, 0.03)
+  ) !important;
   border: none !important;
+  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), 0.45) !important;
+  backdrop-filter: blur(60px) !important;
+  -webkit-backdrop-filter: blur(60px) !important;
+}
+
+.ouiFormControlLayout--group {
+  box-shadow: none !important;
+  border: 1px solid $ouiFormBorderColor !important;
+  background-color: rgba(red($ouiFormBackgroundColor), green($ouiFormBackgroundColor), blue($ouiFormBackgroundColor), 0.55) !important;
+  backdrop-filter: blur(60px) !important;
+  -webkit-backdrop-filter: blur(60px) !important;
+  transition: box-shadow 150ms ease-in-out, background-color 150ms ease-in-out, transform 150ms ease-in-out !important;
+  transform: translateY(0) !important;
+}
+
+.ouiFormControlLayout--group:hover,
+.ouiFormControlLayout--group:focus-within {
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12) !important;
+  transform: translateY(-1px) !important;
+}
+
+.ouiFormControlLayout--group:focus-within {
+  background-color: $ouiFormBackgroundColor !important;
+}
+
+// Remove shadow from nested panels to prevent overlap
+.ouiPanel .ouiPanel,
+.ouiPanel .ouiCard,
+.ouiCard .ouiPanel,
+.ouiCard .ouiCard {
+  box-shadow: none !important;
 }
 // sass-lint:enable no-important
 
@@ -186,8 +220,9 @@
 .ouiPopover__panel {
   border: 1px solid transparentize($ouiColorLightShade, .3) !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, .15), 0 2px 8px rgba(0, 0, 0, .1) !important;
-  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .65) !important;
-  backdrop-filter: blur(16px);
+  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .30) !important;
+  backdrop-filter: blur(40px) !important;
+  -webkit-backdrop-filter: blur(40px) !important;
 }
 // sass-lint:enable no-important, no-color-literals, leading-zero
 
@@ -204,7 +239,7 @@
 .ouiListGroupItem-isClickable:hover,
 .ouiListGroupItem-isClickable:focus-within,
 .ouiListGroupItem-isActive {
-  background-color: lightOrDarkTheme(#D4DADB, #383B3E) !important;
+  background-color: lightOrDarkTheme(#C4CDD0, #383B3E) !important;
 }
 
 // Grayed out disabled/unclickable states in dropdowns and selectable lists
@@ -306,8 +341,30 @@
 .ouiFieldNumber,
 .ouiFieldPassword,
 .ouiSelect,
-.ouiTextArea {
-  transition: box-shadow 150ms ease-in-out !important;
+.ouiTextArea,
+.ouiDatePopoverButton,
+.ouiSuperDatePicker__prettyFormat {
+  transition: box-shadow 150ms ease-in-out, background-color 150ms ease-in-out, transform 150ms ease-in-out !important;
+  transform: translateY(0) !important;
+}
+
+.ouiFieldText:hover,
+.ouiFieldText:focus,
+.ouiFieldSearch:hover,
+.ouiFieldSearch:focus,
+.ouiFieldNumber:hover,
+.ouiFieldNumber:focus,
+.ouiFieldPassword:hover,
+.ouiFieldPassword:focus,
+.ouiSelect:hover,
+.ouiSelect:focus,
+.ouiTextArea:hover,
+.ouiTextArea:focus,
+.ouiDatePopoverButton:hover,
+.ouiDatePopoverButton:focus,
+.ouiSuperDatePicker__prettyFormat:hover,
+.ouiSuperDatePicker__prettyFormat:focus {
+  background-color: $ouiFormBackgroundColor !important;
 }
 
 .ouiFieldText:hover,
@@ -323,6 +380,7 @@
 .ouiTextArea:hover,
 .ouiTextArea:focus {
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12), inset 0 0 0 1px $ouiFormBorderColor !important;
+  transform: translateY(-1px) !important;
 }
 
 .ouiFieldText:active,
@@ -334,21 +392,6 @@
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12), inset 0 0 0 1px $ouiFormBorderColor !important;
 }
 // sass-lint:enable no-important, no-color-literals
-
-// Hover shadows on prepend/append grouped form controls
-// sass-lint:disable no-important, no-color-literals
-.ouiFormControlLayout--group {
-  transition: box-shadow 150ms ease-in-out !important;
-}
-
-.ouiFormControlLayout--group:hover,
-.ouiFormControlLayout--group:focus-within {
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12) !important;
-}
-
-.ouiFormControlLayout--group:active {
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12) !important;
-}
 
 // Suppress individual element shadows inside grouped controls
 .ouiFormControlLayout--group .ouiButton,
@@ -362,3 +405,69 @@
   box-shadow: none !important;
 }
 // sass-lint:enable no-important, no-color-literals
+
+// Transparent table cell backgrounds
+// sass-lint:disable no-important
+.ouiTableRowCell,
+.ouiTableHeaderCell,
+.ouiTableRow,
+.ouiTable {
+  background-color: transparent !important;
+}
+// sass-lint:enable no-important
+
+// Animate entire form control layout (inputs with icons) on focus
+// sass-lint:disable no-important
+.ouiFormControlLayout:not(.ouiFormControlLayout--group) {
+  transition: box-shadow 150ms ease-in-out, background-color 150ms ease-in-out !important;
+}
+// sass-lint:enable no-important
+
+// Make form control layout wrappers transparent so input transparency shows through
+// sass-lint:disable no-important
+.ouiFormControlLayout {
+  background-color: transparent !important;
+}
+
+.ouiFormControlLayout__childrenWrapper {
+  background-color: transparent !important;
+}
+// sass-lint:enable no-important
+
+// Stronger header border in light mode
+// sass-lint:disable no-important, no-color-literals
+.ouiHeader {
+  border-bottom: 1px solid #A0A8B0 !important;
+}
+
+@if (lightness($ouiPageBackgroundColor) < 50) {
+  .ouiHeader {
+    border-bottom: 1px solid $ouiColorLightShade !important;
+  }
+}
+// sass-lint:enable no-important, no-color-literals
+
+// More visible horizontal rules in light mode
+// sass-lint:disable no-important, no-color-literals
+.ouiHorizontalRule {
+  background-color: lightOrDarkTheme(#A0A8B0, $ouiColorLightShade) !important;
+}
+// sass-lint:enable no-important, no-color-literals
+
+// Form rows and panels — no transform animation
+// sass-lint:disable no-important
+.ouiFormRow,
+.ouiFormControlLayout--group {
+  transition: box-shadow 150ms ease-in-out, background-color 150ms ease-in-out !important;
+}
+// sass-lint:enable no-important
+
+// Inside form rows/panels, elements don't need individual transforms
+// (removed — let individual fields animate)
+
+// Panels with focused inputs keep shadows only, no transform
+// sass-lint:disable no-important
+.ouiPanel:focus-within {
+  transition: box-shadow 150ms ease-in-out !important;
+}
+// sass-lint:enable no-important
