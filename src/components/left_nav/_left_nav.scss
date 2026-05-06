@@ -1,0 +1,33 @@
+/*!
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+.ouiLeftNav {
+  position: relative;
+}
+
+.ouiLeftNav__logo {
+  padding: 12px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ouiLeftNav__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.ouiLeftNav__footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+}

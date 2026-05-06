@@ -226,6 +226,8 @@ export {
 
 export { OuiKeyPadMenu, OuiKeyPadMenuItem } from './key_pad_menu';
 
+export { OuiLeftNav } from './left_nav';
+
 export { OuiLink } from './link';
 
 export {

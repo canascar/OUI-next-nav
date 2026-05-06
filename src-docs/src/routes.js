@@ -139,6 +139,8 @@ import { InnerTextExample } from './views/inner_text/inner_text_example';
 
 import { KeyPadMenuExample } from './views/key_pad_menu/key_pad_menu_example';
 
+import { LeftNavExample } from './views/left_nav/left_nav_example';
+
 import { LinkExample } from './views/link/link_example';
 
 import { ListGroupExample } from './views/list_group/list_group_example';
@@ -363,6 +365,7 @@ const navigation = [
       ControlBarExample,
       FacetExample,
       KeyPadMenuExample,
+      LeftNavExample,
       LinkExample,
       PaginationExample,
       TreeViewExample,
