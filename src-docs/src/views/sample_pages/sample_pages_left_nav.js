@@ -347,7 +347,7 @@ export const SamplePagesLeftNav = ({
           </div>
           <span
             className="samplePagesLeftNav__navLabel"
-            style={{ fontSize: '14px', whiteSpace: 'nowrap' }}>
+            style={{ fontSize: '14px', whiteSpace: 'nowrap', display: 'inline' }}>
             {label}
           </span>
         </button>
@@ -407,7 +407,7 @@ export const SamplePagesLeftNav = ({
             </div>
             <span
               className="samplePagesLeftNav__navLabel"
-              style={{ fontSize: '14px', whiteSpace: 'nowrap' }}>
+              style={{ fontSize: '14px', whiteSpace: 'nowrap', display: 'inline' }}>
               {item.label}
             </span>
           </button>
@@ -444,7 +444,7 @@ export const SamplePagesLeftNav = ({
           </div>
           <span
             className="samplePagesLeftNav__navLabel"
-            style={{ fontSize: '14px', whiteSpace: 'nowrap' }}>
+            style={{ fontSize: '14px', whiteSpace: 'nowrap', display: 'inline' }}>
             {moreItem.label}
           </span>
         </button>
