@@ -312,7 +312,7 @@ export const SamplePagesLeftNav = ({
       if (item.group) {
         if (!groups[item.group]) groups[item.group] = [];
         groups[item.group].push(item);
-      } else {
+      } else if (item.key !== 'more') {
         ungrouped.push(item);
       }
     });
