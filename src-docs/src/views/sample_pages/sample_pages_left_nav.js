@@ -30,6 +30,9 @@ import {
   OuiModalBody,
   OuiModalFooter,
   OuiButton,
+  OuiPopover,
+  OuiPopoverTitle,
+  OuiPopoverFooter,
 } from '../../../../src/components';
 
 import { ThemeContext } from '../../components/with_theme';
@@ -51,10 +54,10 @@ const SPACING_MAP = {
 const NAV_ITEMS = [
   { key: 'expand', label: 'Expand navigation', icon: 'menuRight', isAction: true },
   { key: 'search', label: 'Search', icon: 'search', isAction: true },
-  { key: 'threads', label: 'Threads', icon: 'discuss' },
+  { key: 'threads', label: 'Threads', icon: 'discuss', hasPopover: true },
   { key: 'separator-1', isSeparator: true },
   { key: 'dashboards', label: 'Dashboards', icon: 'grid', group: 'Essentials' },
-  { key: 'logs', label: 'Logs', icon: 'editorLink', group: 'Essentials' },
+  { key: 'logs', label: 'Logs', icon: 'editorLink', group: 'Essentials', hasPopover: true },
   { key: 'metrics', label: 'Metrics', icon: 'visLine', group: 'Essentials' },
   { key: 'topology', label: 'Topology map', icon: 'graphApp', group: 'Essentials' },
   { key: 'separator-2', isSeparator: true },
@@ -64,73 +67,67 @@ const NAV_ITEMS = [
   { key: 'app-traces', label: 'Traces', icon: 'apmTrace', group: 'Application Performance' },
   { key: 'service', label: 'Services', icon: 'compute', group: 'Application Performance' },
   { key: 'separator-4', isSeparator: true },
-  { key: 'more', label: 'More', icon: 'plusInCircle', hoverOnly: true },
+  { key: 'more', label: 'More', icon: 'plusInCircle', hasPopover: true },
 ];
 
-// Panel content for Threads tab
-const ThreadPanelContent = ({ onItemSelect, selectedItem }) => (
-  <OuiListGroup gutterSize="none">
-    <OuiListGroupItem
-      isActive={selectedItem === 'latency-spike'}
-      label={
-        <div>
-          <OuiText size="s">
-            <strong>Latency spike investigation</strong>
-          </OuiText>
-          <OuiText size="xs" color="subdued">
-            Sarah Lee · 2 hours ago
-          </OuiText>
-        </div>
-      }
-      onClick={() => onItemSelect('latency-spike')}
-    />
-    <div className="samplePagesLeftNav__ruleDivider">
-      <OuiHorizontalRule margin="none" />
-    </div>
-    <OuiListGroupItem
-      isActive={selectedItem === 'checkout-error'}
-      label={
-        <div>
-          <OuiText size="s">
-            <strong>Checkout error rate alert</strong>
-          </OuiText>
-          <OuiText size="xs" color="subdued">
-            Alex Chen · 5 hours ago
-          </OuiText>
-        </div>
-      }
-      onClick={() => onItemSelect('checkout-error')}
-    />
-    <div className="samplePagesLeftNav__ruleDivider">
-      <OuiHorizontalRule margin="none" />
-    </div>
-    <OuiListGroupItem
-      isActive={selectedItem === 'weekly-review'}
-      label={
-        <div>
-          <OuiText size="s">
-            <strong>Weekly service review</strong>
-          </OuiText>
-          <OuiText size="xs" color="subdued">
-            Team Ops · 1 day ago
-          </OuiText>
-        </div>
-      }
-      onClick={() => onItemSelect('weekly-review')}
-    />
-  </OuiListGroup>
+const FOOTER_ITEMS = [
+  { key: 'workspace', label: 'Workspace', icon: 'grid' },
+  { key: 'devtools', label: 'Developer tools', icon: 'wrench' },
+  { key: 'settings', label: 'Settings', icon: 'gear' },
+];
+
+// Popover content for Threads
+const ThreadsPopoverContent = ({ onItemSelect, selectedItem }) => (
+  <div>
+    <OuiListGroup gutterSize="none">
+      <OuiListGroupItem
+        isActive={selectedItem === 'latency-spike'}
+        label={
+          <div>
+            <OuiText size="s"><strong>Latency spike investigation</strong></OuiText>
+            <OuiText size="xs" color="subdued">Sarah Lee · 2 hours ago</OuiText>
+          </div>
+        }
+        onClick={() => onItemSelect && onItemSelect('latency-spike')}
+      />
+      <div className="samplePagesLeftNav__ruleDivider">
+        <OuiHorizontalRule margin="none" />
+      </div>
+      <OuiListGroupItem
+        isActive={selectedItem === 'checkout-error'}
+        label={
+          <div>
+            <OuiText size="s"><strong>Checkout error rate alert</strong></OuiText>
+            <OuiText size="xs" color="subdued">Alex Chen · 5 hours ago</OuiText>
+          </div>
+        }
+        onClick={() => onItemSelect && onItemSelect('checkout-error')}
+      />
+      <div className="samplePagesLeftNav__ruleDivider">
+        <OuiHorizontalRule margin="none" />
+      </div>
+      <OuiListGroupItem
+        isActive={selectedItem === 'weekly-review'}
+        label={
+          <div>
+            <OuiText size="s"><strong>Weekly service review</strong></OuiText>
+            <OuiText size="xs" color="subdued">Team Ops · 1 day ago</OuiText>
+          </div>
+        }
+        onClick={() => onItemSelect && onItemSelect('weekly-review')}
+      />
+    </OuiListGroup>
+  </div>
 );
 
-// Panel content for Logs
-const LogsPanelContent = () => (
+// Popover content for Logs
+const LogsPopoverContent = () => (
   <div>
     <OuiListGroup gutterSize="none">
       <OuiListGroupItem
         label={
           <div>
-            <OuiText size="s">
-              <strong>Error rate by service</strong>
-            </OuiText>
+            <OuiText size="s"><strong>Error rate by service</strong></OuiText>
             <OuiText size="xs" color="subdued">
               source=logs | where level=&quot;ERROR&quot;
             </OuiText>
@@ -144,9 +141,7 @@ const LogsPanelContent = () => (
       <OuiListGroupItem
         label={
           <div>
-            <OuiText size="s">
-              <strong>Auth failure events</strong>
-            </OuiText>
+            <OuiText size="s"><strong>Auth failure events</strong></OuiText>
             <OuiText size="xs" color="subdued">
               source=logs | where event=&quot;auth_fail&quot;
             </OuiText>
@@ -160,9 +155,7 @@ const LogsPanelContent = () => (
       <OuiListGroupItem
         label={
           <div>
-            <OuiText size="s">
-              <strong>Slow query log</strong>
-            </OuiText>
+            <OuiText size="s"><strong>Slow query log</strong></OuiText>
             <OuiText size="xs" color="subdued">
               source=logs | where duration &gt; 5000
             </OuiText>
@@ -171,108 +164,16 @@ const LogsPanelContent = () => (
         onClick={() => {}}
       />
     </OuiListGroup>
-    <OuiHorizontalRule margin="none" />
-    <OuiButtonEmpty size="s" flush="both" style={{ width: '100%', justifyContent: 'center' }}>
-      View all
-    </OuiButtonEmpty>
   </div>
 );
 
-// Panel content for Discover tab
-const DiscoverPanelContent = ({ onItemSelect, selectedItem }) => (
-  <OuiListGroup gutterSize="none">
-    <OuiListGroupItem
-      isActive={selectedItem === 'error-rate'}
-      label={
-        <div>
-          <OuiText size="s">
-            <strong>Error rate by service</strong>
-          </OuiText>
-          <OuiText size="xs" color="subdued">
-            source=logs | where level=&quot;ERROR&quot; | stats count() by
-            service
-          </OuiText>
-        </div>
-      }
-      onClick={() => onItemSelect('error-rate')}
-    />
-    <div className="samplePagesLeftNav__ruleDivider">
-      <OuiHorizontalRule margin="none" />
-    </div>
-    <OuiListGroupItem
-      isActive={selectedItem === 'latency-percentiles'}
-      label={
-        <div>
-          <OuiText size="s">
-            <strong>Latency percentiles</strong>
-          </OuiText>
-          <OuiText size="xs" color="subdued">
-            source=traces | stats p99(latency), p50(latency) by service
-          </OuiText>
-        </div>
-      }
-      onClick={() => onItemSelect('latency-percentiles')}
-    />
-    <div className="samplePagesLeftNav__ruleDivider">
-      <OuiHorizontalRule margin="none" />
-    </div>
-    <OuiListGroupItem
-      isActive={selectedItem === 'throughput'}
-      label={
-        <div>
-          <OuiText size="s">
-            <strong>Throughput over time</strong>
-          </OuiText>
-          <OuiText size="xs" color="subdued">
-            source=metrics | stats avg(throughput) by span(timestamp, 5m)
-          </OuiText>
-        </div>
-      }
-      onClick={() => onItemSelect('throughput')}
-    />
-  </OuiListGroup>
-);
-
-// Panel content for APM tab
-const ServicesPanelContent = ({ onPageChange, selectedItem }) => (
-  <OuiListGroup gutterSize="none">
-    <OuiListGroupItem
-      isActive={selectedItem === 'services'}
-      iconType="navServices"
-      label={
-        <OuiText size="s">
-          <strong>Services</strong>
-        </OuiText>
-      }
-      onClick={() => onPageChange('service')}
-    />
-    <div className="samplePagesLeftNav__ruleDivider">
-      <OuiHorizontalRule margin="none" />
-    </div>
-    <OuiListGroupItem
-      isActive={selectedItem === 'application-map'}
-      iconType="navServiceMap"
-      label={
-        <OuiText size="s">
-          <strong>Application map</strong>
-        </OuiText>
-      }
-      onClick={() => onPageChange('service')}
-    />
-  </OuiListGroup>
-);
-
-// Panel content for More tab
-const MorePanelContent = () => (
+// Popover content for More
+const MorePopoverContent = () => (
   <div>
     <OuiListGroup gutterSize="none">
       <OuiListGroupItem
         iconType="navAlerting"
-        label={
-          <OuiText size="s">
-            <strong>Alerts</strong>
-          </OuiText>
-        }
+        label={<OuiText size="s"><strong>Alerts</strong></OuiText>}
         onClick={() => {}}
       />
       <div className="samplePagesLeftNav__ruleDivider">
@@ -280,11 +181,7 @@ const MorePanelContent = () => (
       </div>
       <OuiListGroupItem
         iconType="navDashboards"
-        label={
-          <OuiText size="s">
-            <strong>Dashboards</strong>
-          </OuiText>
-        }
+        label={<OuiText size="s"><strong>Dashboards</strong></OuiText>}
         onClick={() => {}}
       />
       <div className="samplePagesLeftNav__ruleDivider">
@@ -292,31 +189,34 @@ const MorePanelContent = () => (
       </div>
       <OuiListGroupItem
         iconType="wsSelector"
-        label={
-          <OuiText size="s">
-            <strong>Manage workspace</strong>
-          </OuiText>
-        }
+        label={<OuiText size="s"><strong>Manage workspace</strong></OuiText>}
         onClick={() => {}}
       />
     </OuiListGroup>
-    <OuiHorizontalRule margin="none" />
-    <OuiButtonEmpty
-      size="s"
-      flush="both"
-      style={{ width: '100%', justifyContent: 'center' }}>
-      Customize navigation bar
-    </OuiButtonEmpty>
   </div>
 );
 
-const PANEL_CONTENT = {
-  threads: ThreadPanelContent,
-  logs: LogsPanelContent,
-  discover: DiscoverPanelContent,
-  dashboards: ServicesPanelContent,
-  service: ServicesPanelContent,
-  more: MorePanelContent,
+const POPOVER_CONTENT = {
+  threads: {
+    title: 'Threads',
+    Component: ThreadsPopoverContent,
+    hasAddButton: false,
+    hasFooter: false,
+  },
+  logs: {
+    title: 'Recent logs',
+    Component: LogsPopoverContent,
+    hasAddButton: true,
+    hasFooter: true,
+    footerText: 'View all',
+  },
+  more: {
+    title: 'More',
+    Component: MorePopoverContent,
+    hasAddButton: false,
+    hasFooter: true,
+    footerText: 'Customize navigation bar',
+  },
 };
 
 export const SamplePagesLeftNav = ({
@@ -335,12 +235,10 @@ export const SamplePagesLeftNav = ({
 }) => {
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
-  const [expandedTab, setExpandedTab] = useState(null);
-  const [hoveredTab, setHoveredTab] = useState(null);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [openPopover, setOpenPopover] = useState(null);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isPanelClosing, setIsPanelClosing] = useState(false);
   const hoverTimeoutRef = useRef(null);
-  const navItemRefs = useRef({});
 
   const toggleTheme = () => {
     themeContext.changeTheme(isDark ? 'v9-light' : 'v9-dark');
@@ -355,21 +253,21 @@ export const SamplePagesLeftNav = ({
 
   const handleNavMouseEnter = useCallback(
     (item) => {
-      if (item.isAction) return;
-      // Don't show hover popover if this tab is already pinned open
-      if (expandedTab === item.key) return;
+      if (isExpanded) return;
+      if (!item.hasPopover) return;
       clearHoverTimeout();
-      setHoveredTab(item.key);
+      setOpenPopover(item.key);
     },
-    [expandedTab, clearHoverTimeout]
+    [isExpanded, clearHoverTimeout]
   );
 
   const handleNavMouseLeave = useCallback(() => {
+    if (isExpanded) return;
     clearHoverTimeout();
     hoverTimeoutRef.current = setTimeout(() => {
-      setHoveredTab(null);
-    }, 150);
-  }, [clearHoverTimeout]);
+      setOpenPopover(null);
+    }, 200);
+  }, [isExpanded, clearHoverTimeout]);
 
   const handlePopoverMouseEnter = useCallback(() => {
     clearHoverTimeout();
@@ -378,103 +276,291 @@ export const SamplePagesLeftNav = ({
   const handlePopoverMouseLeave = useCallback(() => {
     clearHoverTimeout();
     hoverTimeoutRef.current = setTimeout(() => {
-      setHoveredTab(null);
-    }, 150);
+      setOpenPopover(null);
+    }, 200);
   }, [clearHoverTimeout]);
 
-  const closePanel = useCallback(() => {
-    setIsPanelClosing(true);
-    setTimeout(() => {
-      setExpandedTab(null);
-      setIsPanelClosing(false);
-    }, 220);
+  const closePopover = useCallback(() => {
+    setOpenPopover(null);
   }, []);
 
   const handleNavClick = (item) => {
     if (item.key === 'expand') {
-      // Toggle expand/collapse — handled by parent or local state
+      setIsExpanded(!isExpanded);
+      setOpenPopover(null);
       return;
     }
     if (item.key === 'search') return;
-    if (item.hoverOnly) return;
-    setHoveredTab(null);
-    clearHoverTimeout();
-    if (expandedTab === item.key) {
-      closePanel();
-    } else {
-      if (isPanelClosing) return;
-      setExpandedTab(item.key);
-      onPageChange(item.key);
+    if (item.key === 'threads') {
+      onPageChange('threads');
+      return;
     }
+    if (item.key === 'service') {
+      onPageChange('service');
+      return;
+    }
+    if (item.key === 'more') return;
   };
 
-  const expandedNavItem = expandedTab
-    ? NAV_ITEMS.find((i) => i.key === expandedTab)
-    : null;
-  const PanelComponent = expandedTab ? PANEL_CONTENT[expandedTab] : null;
+  // Group items for expanded state rendering
+  const renderExpandedNavItems = () => {
+    const items = NAV_ITEMS.filter((item) => !item.isSeparator);
+    const groups = {};
+    const ungrouped = [];
 
-  // Hover popover
-  const hoveredNavItem =
-    hoveredTab && hoveredTab !== expandedTab
-      ? NAV_ITEMS.find((i) => i.key === hoveredTab)
-      : null;
-  const HoverPanelComponent = hoveredNavItem
-    ? PANEL_CONTENT[hoveredNavItem.key]
-    : null;
+    items.forEach((item) => {
+      if (item.group) {
+        if (!groups[item.group]) groups[item.group] = [];
+        groups[item.group].push(item);
+      } else {
+        ungrouped.push(item);
+      }
+    });
 
-  // Calculate popover position based on the hovered nav item
-  let hoverPopoverTop = 0;
-  if (hoveredTab && navItemRefs.current[hoveredTab]) {
-    const rect = navItemRefs.current[hoveredTab].getBoundingClientRect();
-    hoverPopoverTop = rect.top - 32;
-  }
+    const sections = [];
+
+    // Ungrouped items first (expand toggle, search, threads)
+    ungrouped.forEach((item) => {
+      const isActive = !item.isAction && activePage === item.key;
+      const icon = item.key === 'expand' ? 'menuLeft' : item.icon;
+      const label = item.key === 'expand' ? 'Collapse navigation' : item.label;
+
+      sections.push(
+        <button
+          key={item.key}
+          type="button"
+          className={`samplePagesLeftNav__navItem${
+            isActive ? ' samplePagesLeftNav__navItem--active' : ''
+          }`}
+          style={{
+            flexDirection: 'row',
+            width: '100%',
+            height: 'auto',
+            padding: '8px 12px',
+            gap: '12px',
+            justifyContent: 'flex-start',
+          }}
+          aria-current={isActive ? 'page' : undefined}
+          onClick={() => handleNavClick(item)}>
+          <div className="samplePagesLeftNav__navIcon">
+            <OuiIcon type={icon} size="m" />
+          </div>
+          <span
+            className="samplePagesLeftNav__navLabel"
+            style={{ fontSize: '14px', whiteSpace: 'nowrap' }}>
+            {label}
+          </span>
+        </button>
+      );
+    });
+
+    // Grouped items with section headers
+    const groupNames = ['Essentials', 'Agent monitoring', 'Application Performance'];
+    groupNames.forEach((groupName) => {
+      if (!groups[groupName]) return;
+
+      sections.push(
+        <OuiHorizontalRule
+          key={`rule-${groupName}`}
+          margin="none"
+          className="samplePagesLeftNav__rule"
+        />
+      );
+
+      sections.push(
+        <OuiText
+          key={`header-${groupName}`}
+          size="xs"
+          color="subdued"
+          style={{
+            textTransform: 'uppercase',
+            fontWeight: 600,
+            letterSpacing: '0.5px',
+            padding: '8px 12px 4px',
+            width: '100%',
+          }}>
+          {groupName}
+        </OuiText>
+      );
+
+      groups[groupName].forEach((item) => {
+        const isActive = activePage === item.key;
+        sections.push(
+          <button
+            key={item.key}
+            type="button"
+            className={`samplePagesLeftNav__navItem${
+              isActive ? ' samplePagesLeftNav__navItem--active' : ''
+            }`}
+            style={{
+              flexDirection: 'row',
+              width: '100%',
+              height: 'auto',
+              padding: '8px 12px',
+              gap: '12px',
+              justifyContent: 'flex-start',
+            }}
+            aria-current={isActive ? 'page' : undefined}
+            onClick={() => handleNavClick(item)}>
+            <div className="samplePagesLeftNav__navIcon">
+              <OuiIcon type={item.icon} size="m" />
+            </div>
+            <span
+              className="samplePagesLeftNav__navLabel"
+              style={{ fontSize: '14px', whiteSpace: 'nowrap' }}>
+              {item.label}
+            </span>
+          </button>
+        );
+      });
+    });
+
+    // More section
+    const moreItem = items.find((i) => i.key === 'more');
+    if (moreItem) {
+      sections.push(
+        <OuiHorizontalRule
+          key="rule-more"
+          margin="none"
+          className="samplePagesLeftNav__rule"
+        />
+      );
+      sections.push(
+        <button
+          key={moreItem.key}
+          type="button"
+          className="samplePagesLeftNav__navItem"
+          style={{
+            flexDirection: 'row',
+            width: '100%',
+            height: 'auto',
+            padding: '8px 12px',
+            gap: '12px',
+            justifyContent: 'flex-start',
+          }}
+          onClick={() => handleNavClick(moreItem)}>
+          <div className="samplePagesLeftNav__navIcon">
+            <OuiIcon type={moreItem.icon} size="m" />
+          </div>
+          <span
+            className="samplePagesLeftNav__navLabel"
+            style={{ fontSize: '14px', whiteSpace: 'nowrap' }}>
+            {moreItem.label}
+          </span>
+        </button>
+      );
+    }
+
+    return sections;
+  };
+
+  // Render collapsed nav items with hover popovers
+  const renderCollapsedNavItems = () => {
+    return NAV_ITEMS.map((item) => {
+      if (item.isSeparator) {
+        return (
+          <OuiHorizontalRule
+            key={item.key}
+            margin="none"
+            className="samplePagesLeftNav__rule"
+          />
+        );
+      }
+
+      const isActive = !item.isAction && activePage === item.key;
+      const popoverConfig = POPOVER_CONTENT[item.key];
+
+      const navButton = (
+        <button
+          type="button"
+          className={`samplePagesLeftNav__navItem${
+            isActive ? ' samplePagesLeftNav__navItem--active' : ''
+          }`}
+          aria-current={isActive ? 'page' : undefined}
+          onClick={() => handleNavClick(item)}
+          onMouseEnter={() => handleNavMouseEnter(item)}
+          onMouseLeave={handleNavMouseLeave}>
+          <div className="samplePagesLeftNav__navIcon">
+            <OuiIcon type={item.icon} size="m" />
+          </div>
+          <span className="samplePagesLeftNav__navLabel">{item.label}</span>
+        </button>
+      );
+
+      if (item.hasPopover && popoverConfig) {
+        const { title, Component, hasAddButton, hasFooter, footerText } = popoverConfig;
+        return (
+          <OuiPopover
+            key={item.key}
+            button={navButton}
+            isOpen={openPopover === item.key}
+            closePopover={closePopover}
+            anchorPosition="rightUp"
+            panelPaddingSize="none"
+            hasArrow={false}
+            onMouseEnter={handlePopoverMouseEnter}
+            onMouseLeave={handlePopoverMouseLeave}>
+            <OuiPopoverTitle paddingSize="s">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span>{title}</span>
+                {hasAddButton && (
+                  <OuiButtonIcon
+                    iconType="plusInCircle"
+                    aria-label="Add new"
+                    color="text"
+                    display="empty"
+                    size="s"
+                  />
+                )}
+              </div>
+            </OuiPopoverTitle>
+            <div style={{ width: 280 }}>
+              <Component onItemSelect={onItemSelect} selectedItem={selectedItem} />
+            </div>
+            {hasFooter && (
+              <OuiPopoverFooter paddingSize="s">
+                <OuiButtonEmpty
+                  size="s"
+                  flush="both"
+                  style={{ width: '100%', justifyContent: 'center' }}>
+                  {footerText}
+                </OuiButtonEmpty>
+              </OuiPopoverFooter>
+            )}
+          </OuiPopover>
+        );
+      }
+
+      return (
+        <React.Fragment key={item.key}>
+          {navButton}
+        </React.Fragment>
+      );
+    });
+  };
+
+  const navStyle = {
+    width: isExpanded ? 220 : 72,
+    minWidth: isExpanded ? 220 : 72,
+    transition: 'width 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94), min-width 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+  };
 
   return (
     <div className="samplePagesLeftNav__wrapper">
-      <nav aria-label="Sample pages navigation" className="samplePagesLeftNav">
+      <nav
+        aria-label="Sample pages navigation"
+        className="samplePagesLeftNav"
+        style={navStyle}>
         {/* Logo */}
         <div className="samplePagesLeftNav__header">
           <OuiIcon type="logoOpenSearch" size="l" aria-label="OpenSearch" />
         </div>
 
         {/* Nav items */}
-        <div className="samplePagesLeftNav__items">
-          {NAV_ITEMS.map((item) => {
-            if (item.isSeparator) {
-              return (
-                <OuiHorizontalRule
-                  key={item.key}
-                  margin="none"
-                  className="samplePagesLeftNav__rule"
-                />
-              );
-            }
-            const isActive =
-              !item.isAction &&
-              (activePage === item.key || expandedTab === item.key);
-            return (
-              <button
-                key={item.key}
-                ref={(el) => {
-                  navItemRefs.current[item.key] = el;
-                }}
-                type="button"
-                className={`samplePagesLeftNav__navItem${
-                  isActive ? ' samplePagesLeftNav__navItem--active' : ''
-                }`}
-                aria-current={isActive ? 'page' : undefined}
-                onClick={() => handleNavClick(item)}
-                onMouseEnter={() => handleNavMouseEnter(item)}
-                onMouseLeave={handleNavMouseLeave}>
-                <div className="samplePagesLeftNav__navIcon">
-                  <OuiIcon type={item.icon} size="m" />
-                </div>
-                <span className="samplePagesLeftNav__navLabel">
-                  {item.label}
-                </span>
-              </button>
-            );
-          })}
+        <div
+          className="samplePagesLeftNav__items"
+          style={isExpanded ? { alignItems: 'stretch', gap: '4px' } : undefined}>
+          {isExpanded ? renderExpandedNavItems() : renderCollapsedNavItems()}
         </div>
 
         {/* Footer */}
@@ -483,109 +569,42 @@ export const SamplePagesLeftNav = ({
             margin="none"
             className="samplePagesLeftNav__rule"
           />
-          <OuiButtonIcon
-            iconType="home"
-            aria-label="Home"
-            color="text"
-            display="empty"
-            size="s"
-            onClick={() => onPageChange('login')}
-          />
-          <OuiButtonIcon
-            iconType="gear"
-            aria-label="Layout settings"
-            color="text"
-            display="empty"
-            size="s"
-            onClick={() => setIsSettingsOpen(true)}
-          />
+          {FOOTER_ITEMS.map((item) => {
+            if (item.key === 'settings') {
+              return (
+                <OuiButtonIcon
+                  key={item.key}
+                  iconType={item.icon}
+                  aria-label={item.label}
+                  color="text"
+                  display="empty"
+                  size="s"
+                  onClick={() => setIsSettingsOpen(true)}
+                />
+              );
+            }
+            return (
+              <OuiButtonIcon
+                key={item.key}
+                iconType={item.icon}
+                aria-label={item.label}
+                color="text"
+                display="empty"
+                size="s"
+              />
+            );
+          })}
           <OuiButtonIcon
             iconType="brush"
-            aria-label={
-              isDark ? 'Switch to light theme' : 'Switch to dark theme'
-            }
+            aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
             color="text"
             display="empty"
             size="s"
             onClick={toggleTheme}
           />
-          <OuiButtonIcon
-            iconType="iInCircle"
-            aria-label="Info"
-            color="text"
-            display="empty"
-            size="s"
-          />
           <OuiAvatar name="OS" size="s" />
         </div>
       </nav>
-
-      {/* Expanded (pinned) panel */}
-      {PanelComponent && (
-        <div
-          className={`samplePagesLeftNav__expandedPanel${
-            isPanelClosing ? ' samplePagesLeftNav__expandedPanel--closing' : ''
-          }`}>
-          <div className="samplePagesLeftNav__expandedPanelHeader">
-            <OuiTitle size="s">
-              <h3>{expandedNavItem.label}</h3>
-            </OuiTitle>
-            <div style={{ display: 'flex', gap: 4 }}>
-              <OuiButtonIcon
-                iconType="plusInCircle"
-                aria-label="New item"
-                color="text"
-                display="empty"
-                size="s"
-              />
-              <OuiButtonIcon
-                iconType="menuLeft"
-                aria-label="Collapse panel"
-                color="text"
-                display="empty"
-                size="s"
-                onClick={closePanel}
-              />
-            </div>
-          </div>
-          <PanelComponent
-            onPageChange={onPageChange}
-            onItemSelect={onItemSelect}
-            selectedItem={selectedItem}
-          />
-        </div>
-      )}
-
-      {/* Hover popover */}
-      {HoverPanelComponent && (
-        <div
-          className="samplePagesLeftNav__hoverPopover"
-          style={{ top: hoverPopoverTop }}
-          onMouseEnter={handlePopoverMouseEnter}
-          onMouseLeave={handlePopoverMouseLeave}>
-          <div className="samplePagesLeftNav__expandedPanelHeader">
-            <OuiTitle size="s">
-              <h3>{hoveredNavItem.label}</h3>
-            </OuiTitle>
-          </div>
-          <HoverPanelComponent
-            onPageChange={(page) => {
-              const tabKey = hoveredTab;
-              setExpandedTab(tabKey);
-              setHoveredTab(null);
-              onPageChange(page);
-            }}
-            onItemSelect={(item) => {
-              const tabKey = hoveredTab;
-              setExpandedTab(tabKey);
-              setHoveredTab(null);
-              onPageChange(tabKey);
-              onItemSelect(item);
-            }}
-            selectedItem={selectedItem}
-          />
-        </div>
-      )}
 
       {/* Layout settings modal */}
       {isSettingsOpen && (

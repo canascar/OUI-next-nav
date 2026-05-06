@@ -91,7 +91,7 @@
   transition: background-color 150ms ease-in-out;
 }
 
-// Label below the icon
+// Label below the icon — hidden in collapsed state, shown in expanded
 .samplePagesLeftNav__navLabel {
   font-family: $ouiFontFamily;
   font-size: 12px;
@@ -103,6 +103,7 @@
   letter-spacing: -0.12px;
   pointer-events: none;
   user-select: none;
+  display: none;
 }
 
 // Horizontal rule in footer — full width of the nav
