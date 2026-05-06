@@ -71,8 +71,8 @@ const NAV_ITEMS = [
 ];
 
 const FOOTER_ITEMS = [
-  { key: 'workspace', label: 'Workspace', icon: 'grid' },
-  { key: 'devtools', label: 'Developer tools', icon: 'wrench' },
+  { key: 'workspace', label: 'Workspace', icon: 'spacesApp' },
+  { key: 'devtools', label: 'Developer tools', icon: 'console' },
   { key: 'settings', label: 'Settings', icon: 'gear' },
 ];
 
@@ -594,14 +594,6 @@ export const SamplePagesLeftNav = ({
               />
             );
           })}
-          <OuiButtonIcon
-            iconType="brush"
-            aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
-            color="text"
-            display="empty"
-            size="s"
-            onClick={toggleTheme}
-          />
           <OuiAvatar name="OS" size="s" />
         </div>
       </nav>

@@ -112,14 +112,15 @@
   border: none !important; // sass-lint:disable-line no-important
 }
 
-// Footer — stacked vertically at bottom, full nav width
+// Footer — horizontal row at bottom
 .samplePagesLeftNav__footer {
   flex-shrink: 0;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  padding-bottom: 16px;
-  gap: 16px;
+  justify-content: center;
+  padding: 12px 0;
+  gap: 8px;
   width: 100%;
 }
 
