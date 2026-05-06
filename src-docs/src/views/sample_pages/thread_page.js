@@ -305,7 +305,7 @@ const parseContent = (content) => {
   return elements;
 };
 
-// Floating "Add to canvas" button shown on attachment hover
+// Floating "Add to related assets" button shown on attachment hover
 const AddToCanvasButton = ({ onClick, added }) => (
   <button
     type="button"
@@ -313,11 +313,11 @@ const AddToCanvasButton = ({ onClick, added }) => (
       added ? ' threadPage__addToCanvas--added' : ''
     }`}
     onClick={added ? undefined : onClick}>
-    {added ? 'Added to canvas' : 'Add to canvas'}
+    {added ? 'Added as related asset' : 'Add as related asset'}
   </button>
 );
 
-// Attachment card: page reference (title + description, clickable to view in canvas)
+// Attachment card: page reference (title + description, clickable to view in related assets)
 const PageAttachment = ({ title, description, onAddToCanvas, onViewInCanvas, canvasItems }) => {
   const added = canvasItems.some((c) => c.type === 'page' && c.title === title);
   const handleClick = () => {
@@ -540,7 +540,7 @@ export const ThreadPage = ({
 
   const streamTimers = useRef([]);
 
-  // Drag-to-resize handlers for canvas flyout
+  // Drag-to-resize handlers for related assets flyout
   const handleDragStart = useCallback((e) => {
     e.preventDefault();
     isDragging.current = true;
@@ -741,7 +741,7 @@ export const ThreadPage = ({
         isPanelOpen={isPanelOpen}
         onTogglePanel={onTogglePanel}
         firstActionIcon="layers"
-        firstActionLabel="Canvas"
+        firstActionLabel="Related Assets"
         onFirstAction={() => setIsCanvasOpen((open) => !open)}
         extraActions={[
           {
@@ -902,7 +902,7 @@ export const ThreadPage = ({
                       <OuiFlexItem grow={false}>
                         <OuiButtonIcon
                           iconType="arrowLeft"
-                          aria-label="Back to canvas"
+                          aria-label="Back to related assets"
                           size="s"
                           color="text"
                           onClick={() => setCanvasDetailItem(null)}
@@ -914,7 +914,7 @@ export const ThreadPage = ({
                         <h2>
                           {canvasDetailItem
                             ? canvasDetailItem.title
-                            : 'Canvas'}
+                            : 'Related Assets'}
                         </h2>
                       </OuiTitle>
                     </OuiFlexItem>
@@ -980,29 +980,23 @@ export const ThreadPage = ({
                       role={item.type === 'page' ? 'button' : undefined}
                       tabIndex={item.type === 'page' ? 0 : undefined}>
                       <div className="threadPage__canvasItemHeader">
-                        <OuiIcon
-                          type={item.type === 'page' ? 'document' : 'console'}
-                          size="s"
-                        />
                         <OuiText size="xs">
                           <strong>
-                            {item.type === 'page' ? item.title : 'Query'}
+                            {item.type === 'page' ? item.title : null}
                           </strong>
                         </OuiText>
-                        <OuiButtonIcon
-                          iconType="trash"
-                          aria-label="Remove from canvas"
-                          size="xs"
-                          color="danger"
-                          className="threadPage__canvasItemRemove"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setCanvasItems((prev) =>
-                              prev.filter((_, idx) => idx !== i)
-                            );
-                          }}
-                        />
                       </div>
+                      <button
+                        className="threadPage__canvasItemRemove"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCanvasItems((prev) =>
+                            prev.filter((_, idx) => idx !== i)
+                          );
+                        }}
+                        aria-label="Remove as related asset">
+                        Remove as related asset
+                      </button>
                       {item.type === 'page' ? (
                         item.description && (
                           <OuiText size="xs" color="subdued">

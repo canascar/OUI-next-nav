@@ -370,13 +370,19 @@
 .threadPage__canvasItems {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 .threadPage__canvasItem {
+  position: relative;
   border: 1px solid $ouiBorderColor;
   border-radius: $ouiBorderRadius;
   padding: 8px 12px;
+
+  &:hover .threadPage__canvasItemRemove {
+    opacity: 1;
+    pointer-events: auto;
+  }
 
   a {
     color: $ouiLinkColor;
@@ -402,12 +408,26 @@
 }
 
 .threadPage__canvasItemRemove {
-  flex-shrink: 0;
+  position: absolute;
+  top: -8px;
+  right: 8px;
+  z-index: 1;
   opacity: 0;
+  pointer-events: none;
   transition: opacity 150ms ease-in-out;
+  padding: 2px 8px;
+  font-size: $ouiFontSizeXS;
+  line-height: 20px;
+  font-family: inherit;
+  color: $ouiTextColor;
+  background-color: $ouiColorEmptyShade;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  cursor: pointer;
+  white-space: nowrap;
 
-  .threadPage__canvasItem:hover & {
-    opacity: 1;
+  &:hover {
+    background-color: $ouiColorLightestShade;
   }
 }
 
