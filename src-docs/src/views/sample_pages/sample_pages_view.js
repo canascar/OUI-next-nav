@@ -54,6 +54,13 @@ const renderPage = (activePage, selectedItem, handlePageChange) => {
         </OuiErrorBoundary>
       );
     case 'service':
+    case 'dashboards':
+    case 'logs':
+    case 'metrics':
+    case 'topology':
+    case 'agent-traces':
+    case 'spans':
+    case 'app-traces':
     default:
       return (
         <OuiErrorBoundary>

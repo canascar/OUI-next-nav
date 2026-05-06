@@ -49,16 +49,25 @@ const SPACING_MAP = {
 };
 
 const NAV_ITEMS = [
+  { key: 'expand', label: 'Expand navigation', icon: 'menuRight', isAction: true },
   { key: 'search', label: 'Search', icon: 'search', isAction: true },
   { key: 'threads', label: 'Threads', icon: 'discuss' },
-  { key: 'overview', label: 'Overview', icon: 'grid' },
-  { key: 'thread', label: 'Thread', icon: 'navTicketing' },
-  { key: 'discover', label: 'Discover', icon: 'navDiscover' },
-  { key: 'service', label: 'APM', icon: 'navAnomalyDetection' },
-  { key: 'more', label: 'More', icon: 'navQuerySets', hoverOnly: true },
+  { key: 'separator-1', isSeparator: true },
+  { key: 'dashboards', label: 'Dashboards', icon: 'grid', group: 'Essentials' },
+  { key: 'logs', label: 'Logs', icon: 'editorLink', group: 'Essentials' },
+  { key: 'metrics', label: 'Metrics', icon: 'visLine', group: 'Essentials' },
+  { key: 'topology', label: 'Topology map', icon: 'graphApp', group: 'Essentials' },
+  { key: 'separator-2', isSeparator: true },
+  { key: 'agent-traces', label: 'Traces', icon: 'document', group: 'Agent monitoring' },
+  { key: 'spans', label: 'Spans', icon: 'layers', group: 'Agent monitoring' },
+  { key: 'separator-3', isSeparator: true },
+  { key: 'app-traces', label: 'Traces', icon: 'apmTrace', group: 'Application Performance' },
+  { key: 'service', label: 'Services', icon: 'compute', group: 'Application Performance' },
+  { key: 'separator-4', isSeparator: true },
+  { key: 'more', label: 'More', icon: 'plusInCircle', hoverOnly: true },
 ];
 
-// Panel content for Thread tab
+// Panel content for Threads tab
 const ThreadPanelContent = ({ onItemSelect, selectedItem }) => (
   <OuiListGroup gutterSize="none">
     <OuiListGroupItem
@@ -110,6 +119,63 @@ const ThreadPanelContent = ({ onItemSelect, selectedItem }) => (
       onClick={() => onItemSelect('weekly-review')}
     />
   </OuiListGroup>
+);
+
+// Panel content for Logs
+const LogsPanelContent = () => (
+  <div>
+    <OuiListGroup gutterSize="none">
+      <OuiListGroupItem
+        label={
+          <div>
+            <OuiText size="s">
+              <strong>Error rate by service</strong>
+            </OuiText>
+            <OuiText size="xs" color="subdued">
+              source=logs | where level=&quot;ERROR&quot;
+            </OuiText>
+          </div>
+        }
+        onClick={() => {}}
+      />
+      <div className="samplePagesLeftNav__ruleDivider">
+        <OuiHorizontalRule margin="none" />
+      </div>
+      <OuiListGroupItem
+        label={
+          <div>
+            <OuiText size="s">
+              <strong>Auth failure events</strong>
+            </OuiText>
+            <OuiText size="xs" color="subdued">
+              source=logs | where event=&quot;auth_fail&quot;
+            </OuiText>
+          </div>
+        }
+        onClick={() => {}}
+      />
+      <div className="samplePagesLeftNav__ruleDivider">
+        <OuiHorizontalRule margin="none" />
+      </div>
+      <OuiListGroupItem
+        label={
+          <div>
+            <OuiText size="s">
+              <strong>Slow query log</strong>
+            </OuiText>
+            <OuiText size="xs" color="subdued">
+              source=logs | where duration &gt; 5000
+            </OuiText>
+          </div>
+        }
+        onClick={() => {}}
+      />
+    </OuiListGroup>
+    <OuiHorizontalRule margin="none" />
+    <OuiButtonEmpty size="s" flush="both" style={{ width: '100%', justifyContent: 'center' }}>
+      View all
+    </OuiButtonEmpty>
+  </div>
 );
 
 // Panel content for Discover tab
@@ -245,8 +311,10 @@ const MorePanelContent = () => (
 );
 
 const PANEL_CONTENT = {
-  thread: ThreadPanelContent,
+  threads: ThreadPanelContent,
+  logs: LogsPanelContent,
   discover: DiscoverPanelContent,
+  dashboards: ServicesPanelContent,
   service: ServicesPanelContent,
   more: MorePanelContent,
 };
@@ -323,7 +391,12 @@ export const SamplePagesLeftNav = ({
   }, []);
 
   const handleNavClick = (item) => {
-    if (item.isAction || item.hoverOnly) return;
+    if (item.key === 'expand') {
+      // Toggle expand/collapse — handled by parent or local state
+      return;
+    }
+    if (item.key === 'search') return;
+    if (item.hoverOnly) return;
     setHoveredTab(null);
     clearHoverTimeout();
     if (expandedTab === item.key) {
@@ -367,6 +440,15 @@ export const SamplePagesLeftNav = ({
         {/* Nav items */}
         <div className="samplePagesLeftNav__items">
           {NAV_ITEMS.map((item) => {
+            if (item.isSeparator) {
+              return (
+                <OuiHorizontalRule
+                  key={item.key}
+                  margin="none"
+                  className="samplePagesLeftNav__rule"
+                />
+              );
+            }
             const isActive =
               !item.isAction &&
               (activePage === item.key || expandedTab === item.key);
