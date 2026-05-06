@@ -19,8 +19,6 @@ import {
   OuiTitle,
   OuiText,
   OuiIcon,
-  OuiButton,
-  OuiButtonEmpty,
   OuiButtonIcon,
   OuiBadge,
   OuiThreadInput,
@@ -130,25 +128,22 @@ export const ThreadsPage = () => {
         onChange={setInputValue}
         onSubmit={handleSubmit}
         actionsLeft={
-          <OuiFlexGroup gutterSize="s" alignItems="center" responsive={false}>
-            <OuiFlexItem grow={false}>
-              <OuiButtonEmpty size="xs" iconType="plus">
-                Add
-              </OuiButtonEmpty>
-            </OuiFlexItem>
-            <OuiFlexItem grow={false}>
-              <OuiButtonEmpty size="xs" iconType="starEmpty">
-                Favorites
-              </OuiButtonEmpty>
-            </OuiFlexItem>
-          </OuiFlexGroup>
+          <OuiButtonIcon
+            iconType="plus"
+            aria-label="Add attachment"
+            size="s"
+            color="text"
+          />
         }
         actionsRight={
           <OuiButtonIcon
-            iconType="inputOutput"
-            aria-label="Voice input"
+            iconType="sortUp"
+            aria-label="Send message"
+            display="fill"
             size="s"
-            color="text"
+            color="primary"
+            isDisabled={!inputValue.trim()}
+            onClick={() => handleSubmit(inputValue)}
           />
         }
       />
@@ -163,18 +158,15 @@ export const ThreadsPage = () => {
         justifyContent="center">
         {QUICK_ACTIONS.map((action, i) => (
           <OuiFlexItem key={i} grow={false}>
-            <OuiButton size="s" iconType={action.icon}>
+            <OuiBadge iconType={action.icon} color="hollow">
               {action.label}
-            </OuiButton>
+            </OuiBadge>
           </OuiFlexItem>
         ))}
         <OuiFlexItem grow={false}>
-          <OuiButtonIcon
-            iconType="plus"
-            aria-label="More actions"
-            size="s"
-            display="base"
-          />
+          <OuiBadge iconType="plus" color="hollow">
+            More
+          </OuiBadge>
         </OuiFlexItem>
       </OuiFlexGroup>
 
@@ -194,7 +186,7 @@ export const ThreadsPage = () => {
             alignItems="center"
             gutterSize="m"
             responsive={false}
-            style={{ padding: '8px 0' }}>
+            style={{ padding: '12px 0' }}>
             <OuiFlexItem grow={false}>
               <OuiIcon type={thread.icon} size="m" color="subdued" />
             </OuiFlexItem>
