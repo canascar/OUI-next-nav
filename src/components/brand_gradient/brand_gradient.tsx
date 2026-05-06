@@ -43,7 +43,7 @@ const GRADIENTS = {
            #111`,
     light: `radial-gradient(ellipse at 20% 30%, rgba(0, 146, 184, 0.10) 0%, transparent 55%),
             radial-gradient(ellipse at 80% 70%, rgba(0, 85, 140, 0.06) 0%, transparent 55%),
-            #D9D8DC`,
+            #f4f4f5`,
   },
   vivid: {
     dark: `radial-gradient(ellipse at 15% 25%, rgba(217, 216, 220, 0.10) 0%, transparent 50%),
@@ -53,7 +53,7 @@ const GRADIENTS = {
     light: `radial-gradient(ellipse at 15% 25%, rgba(0, 146, 184, 0.20) 0%, transparent 50%),
             radial-gradient(ellipse at 75% 65%, rgba(0, 85, 140, 0.14) 0%, transparent 50%),
             radial-gradient(ellipse at 50% 50%, rgba(0, 120, 160, 0.06) 0%, transparent 70%),
-            #D9D8DC`,
+            #f4f4f5`,
   },
   radial: {
     dark: `radial-gradient(ellipse at 50% 40%, rgba(217, 216, 220, 0.08) 0%, transparent 45%),
@@ -61,7 +61,7 @@ const GRADIENTS = {
            #111`,
     light: `radial-gradient(ellipse at 50% 40%, rgba(0, 146, 184, 0.16) 0%, transparent 45%),
             radial-gradient(ellipse at 50% 60%, rgba(0, 85, 140, 0.10) 0%, transparent 55%),
-            #D9D8DC`,
+            #f4f4f5`,
   },
 };
 

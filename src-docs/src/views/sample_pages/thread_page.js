@@ -21,7 +21,7 @@ import {
   OuiText,
   OuiFlexGroup,
   OuiFlexItem,
-  OuiTextArea,
+  OuiThreadInput,
 } from '../../../../src/components';
 
 const THREADS = {
@@ -519,40 +519,35 @@ export const ThreadPage = ({ selectedItem }) => {
         {isTyping && null}
       </div>
 
-      {/* Input area — textarea with buttons inside at bottom */}
+      {/* Input area */}
       <div className="threadPage__inputArea">
-        <div className="threadPage__inputWrapper">
-          <OuiTextArea
-            placeholder="Ask anything. Type / for actions."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={handleKeyDown}
-            rows={3}
-            resize="none"
-            fullWidth
-            className="threadPage__textarea"
-          />
-          <div className="threadPage__inputActions">
+        <OuiThreadInput
+          value={message}
+          onChange={setMessage}
+          onSubmit={handleSend}
+          isDisabled={isTyping || messages.some((m) => m.streaming)}
+          actionsLeft={
             <OuiButtonIcon
               iconType="plus"
               aria-label="Add attachment"
               size="s"
               color="text"
             />
+          }
+          actionsRight={
             <OuiButtonIcon
               iconType="sortUp"
               aria-label="Send message"
               display="fill"
               size="s"
               color="primary"
-              style={{ color: '#FFFFFF' }}
               isDisabled={
                 !message.trim() || isTyping || messages.some((m) => m.streaming)
               }
-              onClick={handleSend}
+              onClick={() => handleSend(message)}
             />
-          </div>
-        </div>
+          }
+        />
       </div>
     </div>
   );

@@ -149,7 +149,7 @@
 
 // Soft drop shadow on all panels, cards, and form control groups
 // sass-lint:disable no-important, no-color-literals
-.ouiPanel,
+.ouiPanel:not(.ouiPageContent),
 .ouiCard {
   box-shadow: lightOrDarkTheme(
     0 2px 12px rgba(0, 60, 120, 0.05) #{','} 0 1px 3px rgba(0, 60, 120, 0.03),
@@ -229,8 +229,8 @@
 // Backdrop blur on modal and flyout overlays
 // sass-lint:disable no-important, no-color-literals
 .ouiOverlayMask {
-  backdrop-filter: blur(16px);
-  background-color: rgba(red($ouiPageBackgroundColor), green($ouiPageBackgroundColor), blue($ouiPageBackgroundColor), .55) !important;
+  backdrop-filter: blur(65px);
+  background-color: rgba(red($ouiPageBackgroundColor), green($ouiPageBackgroundColor), blue($ouiPageBackgroundColor), .30) !important;
 }
 // sass-lint:enable no-important, no-color-literals
 
@@ -344,8 +344,7 @@
 .ouiTextArea,
 .ouiDatePopoverButton,
 .ouiSuperDatePicker__prettyFormat {
-  transition: box-shadow 150ms ease-in-out, background-color 150ms ease-in-out, transform 150ms ease-in-out !important;
-  transform: translateY(0) !important;
+  transition: box-shadow 150ms ease-in-out, background-color 150ms ease-in-out !important;
 }
 
 .ouiFieldText:hover,
@@ -380,7 +379,6 @@
 .ouiTextArea:hover,
 .ouiTextArea:focus {
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12), inset 0 0 0 1px $ouiFormBorderColor !important;
-  transform: translateY(-1px) !important;
 }
 
 .ouiFieldText:active,
@@ -419,7 +417,13 @@
 // Animate entire form control layout (inputs with icons) on focus
 // sass-lint:disable no-important
 .ouiFormControlLayout:not(.ouiFormControlLayout--group) {
-  transition: box-shadow 150ms ease-in-out, background-color 150ms ease-in-out !important;
+  transition: box-shadow 150ms ease-in-out, background-color 150ms ease-in-out, transform 150ms ease-in-out !important;
+  transform: translateY(0) !important;
+
+  &:hover,
+  &:focus-within {
+    transform: translateY(-1px) !important;
+  }
 }
 // sass-lint:enable no-important
 
@@ -469,5 +473,15 @@
 // sass-lint:disable no-important
 .ouiPanel:focus-within {
   transition: box-shadow 150ms ease-in-out !important;
+}
+// sass-lint:enable no-important
+
+// Page content panels — transparent, no shadow
+// sass-lint:disable no-important
+.ouiPageContent {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 // sass-lint:enable no-important

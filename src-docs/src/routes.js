@@ -410,7 +410,6 @@ const navigation = [
       SchemaExample,
       StatExample,
       TextExample,
-      ThreadInputExample,
       TitleExample,
       ToastExample,
       ToolTipExample,
@@ -436,6 +435,7 @@ const navigation = [
       SuggestExample,
       SuperDatePickerExample,
       DatePickerUnifiedExample,
+      ThreadInputExample,
     ].map((example) => createExample(example)),
   },
   {

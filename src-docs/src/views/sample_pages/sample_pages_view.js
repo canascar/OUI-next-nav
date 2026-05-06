@@ -15,6 +15,7 @@ import { SamplePagesLeftNav } from './sample_pages_left_nav';
 import { ServicePage } from './service_page';
 import { DiscoverPage } from './discover_page';
 import { ThreadPage } from './thread_page';
+import { ThreadsPage } from './threads_page';
 import { LoginPage } from './login_page';
 import { OverviewPage } from './overview_page';
 import { OuiErrorBoundary } from '../../../../src/components';
@@ -32,6 +33,12 @@ const renderPage = (activePage, selectedItem, handlePageChange) => {
       return (
         <OuiErrorBoundary>
           <OverviewPage />
+        </OuiErrorBoundary>
+      );
+    case 'threads':
+      return (
+        <OuiErrorBoundary>
+          <ThreadsPage />
         </OuiErrorBoundary>
       );
     case 'discover':
@@ -75,7 +82,7 @@ export const SamplePagesView = () => {
     : `radial-gradient(ellipse at 15% 25%, rgba(0, 146, 184, 0.20) 0%, transparent 50%),
        radial-gradient(ellipse at 75% 65%, rgba(217, 216, 220, 0.40) 0%, transparent 50%),
        radial-gradient(ellipse at 50% 50%, rgba(0, 120, 160, 0.06) 0%, transparent 70%),
-       linear-gradient(180deg, #E5E5E5 0%, #D9D8DC 100%)`;
+       linear-gradient(180deg, #E5E5E5 0%, #f4f4f5 100%)`;
 
   const DEFAULT_ITEMS = {
     service: 'services',

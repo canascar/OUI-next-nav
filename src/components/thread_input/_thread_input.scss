@@ -15,7 +15,7 @@
   position: relative;
   border: 1px solid $ouiFormBorderColor;
   border-radius: $ouiBorderRadius;
-  background-color: $ouiFormBackgroundColor;
+  background-color: rgba(red($ouiFormBackgroundColor), green($ouiFormBackgroundColor), blue($ouiFormBackgroundColor), 0.55);
   transition: transform 150ms ease-in-out, box-shadow 150ms ease-in-out, background-color 150ms ease-in-out;
   transform: translateY(0);
 
@@ -23,6 +23,7 @@
   &:focus-within {
     transform: translateY(-1px);
     box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12);
+    background-color: $ouiFormBackgroundColor;
   }
 }
 
@@ -54,8 +55,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: $ouiSizeXS $ouiSizeM;
-  padding-top: 0;
+  padding: $ouiSizeXS $ouiSizeM $ouiSizeM;
 }
 
 .ouiThreadInput__actionsLeft {

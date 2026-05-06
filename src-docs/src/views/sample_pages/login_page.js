@@ -98,7 +98,7 @@ export const LoginPage = ({ onLogin }) => {
             style={{
               padding: 48,
               backgroundColor: isDark
-                ? 'rgba(36, 37, 38, 0.4)'
+                ? 'rgba(36, 37, 38, 0.75)'
                 : 'rgba(255, 255, 255, 0.4)',
             }}>
             {/* Logo */}

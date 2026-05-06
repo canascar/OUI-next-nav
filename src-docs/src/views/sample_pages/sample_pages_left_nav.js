@@ -50,6 +50,7 @@ const SPACING_MAP = {
 
 const NAV_ITEMS = [
   { key: 'search', label: 'Search', icon: 'search', isAction: true },
+  { key: 'threads', label: 'Threads', icon: 'discuss' },
   { key: 'overview', label: 'Overview', icon: 'grid' },
   { key: 'thread', label: 'Thread', icon: 'navTicketing' },
   { key: 'discover', label: 'Discover', icon: 'navDiscover' },
