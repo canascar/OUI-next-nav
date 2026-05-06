@@ -312,7 +312,7 @@ export const SamplePagesLeftNav = ({
       if (item.group) {
         if (!groups[item.group]) groups[item.group] = [];
         groups[item.group].push(item);
-      } else if (item.key !== 'more') {
+      } else if (item.key !== 'more' && item.key !== 'expand') {
         ungrouped.push(item);
       }
     });
@@ -551,9 +551,28 @@ export const SamplePagesLeftNav = ({
         aria-label="Sample pages navigation"
         className="samplePagesLeftNav"
         style={navStyle}>
-        {/* Logo */}
-        <div className="samplePagesLeftNav__header">
+        {/* Logo + header actions */}
+        <div className="samplePagesLeftNav__header" style={isExpanded ? { justifyContent: 'space-between', width: '100%', padding: '0 12px' } : undefined}>
           <OuiIcon type="logoOpenSearch" size="l" aria-label="OpenSearch" />
+          {isExpanded && (
+            <div style={{ display: 'flex', gap: 4 }}>
+              <OuiButtonIcon
+                iconType="popout"
+                aria-label="Open in new window"
+                color="text"
+                display="empty"
+                size="xs"
+              />
+              <OuiButtonIcon
+                iconType="menuLeft"
+                aria-label="Collapse navigation"
+                color="text"
+                display="empty"
+                size="xs"
+                onClick={() => setIsExpanded(false)}
+              />
+            </div>
+          )}
         </div>
 
         {/* Nav items */}
@@ -565,10 +584,6 @@ export const SamplePagesLeftNav = ({
 
         {/* Footer */}
         <div className="samplePagesLeftNav__footer">
-          <OuiHorizontalRule
-            margin="none"
-            className="samplePagesLeftNav__rule"
-          />
           {FOOTER_ITEMS.map((item) => {
             if (item.key === 'settings') {
               return (
