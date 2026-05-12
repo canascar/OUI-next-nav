@@ -34,6 +34,8 @@ export const MonitorsPage = ({
   onContinueAsThread,
   isPanelOpen,
   onTogglePanel,
+  isAskAiPanelOpen,
+  onAskAiToggle,
 }) => (
   <PlaceholderPage
     title={ITEMS_MAP[selectedItem] || 'Monitors'}
@@ -45,5 +47,7 @@ export const MonitorsPage = ({
     onContinueAsThread={onContinueAsThread}
     isPanelOpen={isPanelOpen}
     onTogglePanel={onTogglePanel}
+    isAskAiPanelOpen={isAskAiPanelOpen}
+    onAskAiToggle={onAskAiToggle}
   />
 );

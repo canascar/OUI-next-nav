@@ -193,6 +193,154 @@
   word-break: break-all;
 }
 
+// Link preview attachment (Tool UI style)
+.threadPage__attachment--linkPreview {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  text-decoration: none;
+  max-width: 320px;
+  transition: background-color 150ms ease-in-out, border-color 150ms ease-in-out;
+
+  &:hover {
+    background-color: rgba($ouiColorPrimary, 0.05);
+    border-color: $ouiColorPrimary;
+    text-decoration: none;
+  }
+}
+
+.threadPage__linkPreviewImage {
+  margin: -8px -12px 8px;
+  overflow: hidden;
+  height: 140px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.threadPage__linkPreviewBody {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.threadPage__linkPreviewUrl {
+  font-size: $ouiFontSizeXS;
+  color: $ouiColorMediumShade;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+// Stats display attachment (Tool UI style)
+.threadPage__attachment--statsDisplay {
+  max-width: 480px;
+}
+
+.threadPage__statsGrid {
+  margin-top: 8px;
+}
+
+// Data table attachment (Tool UI style)
+.threadPage__attachment--dataTable {
+  max-width: 520px;
+  padding: 8px 0 8px 12px;
+}
+
+.threadPage__dataTableScroll {
+  overflow-x: auto;
+  padding-right: 12px;
+}
+
+.threadPage__dataTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: $ouiFontSizeXS;
+
+  th,
+  td {
+    padding: 6px 10px;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  th {
+    font-weight: 600;
+    color: $ouiTextColor;
+    border-bottom: 1px solid $ouiBorderColor;
+  }
+
+  td {
+    color: $ouiTextSubduedColor;
+    border-bottom: 1px solid rgba($ouiBorderColor, 0.5);
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+// Code block attachment (Tool UI style)
+.threadPage__attachment--codeBlock {
+  max-width: 520px;
+  padding: 8px 12px 4px;
+
+  .ouiCodeBlock {
+    margin-top: 4px;
+  }
+}
+
+// Chart attachment (Tool UI style)
+.threadPage__attachment--chart {
+  max-width: 400px;
+}
+
+.threadPage__chartBars {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 100px;
+  padding-top: 4px;
+}
+
+.threadPage__chartBarCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.threadPage__chartBar {
+  width: 100%;
+  max-width: 32px;
+  min-height: 4px;
+  background-color: $ouiColorPrimary;
+  border-radius: 2px 2px 0 0;
+  transition: background-color 150ms ease-in-out;
+
+  &:hover {
+    background-color: darken($ouiColorPrimary, 10%);
+  }
+}
+
+.threadPage__chartBarLabel {
+  font-size: 10px;
+  color: $ouiTextSubduedColor;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 48px;
+  text-align: center;
+}
+
 // Task list
 .threadPage__taskList {
   display: flex;
@@ -444,6 +592,55 @@
     outline: 2px solid $ouiColorPrimary;
     outline-offset: 1px;
   }
+}
+
+// Canvas detail drill-in view
+.threadPage__canvasDetail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// Canvas tabs
+.threadPage__canvasTabs {
+  margin-top: 0;
+  display: inline-flex;
+  width: auto;
+
+  .ouiTab {
+    width: 160px;
+    max-width: 160px;
+    min-width: 160px;
+
+    .ouiTab__content {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: block;
+    }
+  }
+}
+
+.threadPage__canvasTabContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.threadPage__canvasDetailImage {
+  border-radius: $ouiBorderRadius;
+  overflow: hidden;
+  margin-bottom: 4px;
+
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+.threadPage__chartBars--detail {
+  height: 160px;
 }
 
 

@@ -16,6 +16,8 @@ export const AiSkillsPage = ({
   onContinueAsThread,
   isPanelOpen,
   onTogglePanel,
+  isAskAiPanelOpen,
+  onAskAiToggle,
 }) => (
   <PlaceholderPage
     title={ITEMS_MAP[selectedItem] || 'Skills'}
@@ -25,5 +27,7 @@ export const AiSkillsPage = ({
     onContinueAsThread={onContinueAsThread}
     isPanelOpen={isPanelOpen}
     onTogglePanel={onTogglePanel}
+    isAskAiPanelOpen={isAskAiPanelOpen}
+    onAskAiToggle={onAskAiToggle}
   />
 );

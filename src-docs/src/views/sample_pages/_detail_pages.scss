@@ -256,3 +256,24 @@
     opacity: 0;
   }
 }
+
+// ============================================================
+// DASHBOARD PAGES
+// ============================================================
+
+.dashboardPage__content {
+  max-width: 1200px;
+}
+
+.dashboardPage__alertList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dashboardPage__alertItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px 0;
+}

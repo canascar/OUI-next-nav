@@ -13,18 +13,22 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 import {
   OuiButtonIcon,
+  OuiCodeBlock,
   OuiContextMenuPanel,
   OuiContextMenuItem,
   OuiFlyoutHeader,
   OuiFlyoutBody,
+  OuiFlexGroup,
+  OuiFlexItem,
   OuiIcon,
   OuiLoadingSpinner,
   OuiPopover,
+  OuiStat,
+  OuiTab,
+  OuiTabs,
   OuiTitle,
   OuiText,
   OuiToolTip,
-  OuiFlexGroup,
-  OuiFlexItem,
   OuiCompressedTextArea,
 } from '../../../../src/components';
 
@@ -67,6 +71,19 @@ const THREADS = {
             'source=opensearch_dashboards_sample_data_logs | where service="checkout" | stats count() as retries by span(timestamp, 1m)',
         },
       },
+      {
+        role: 'assistant',
+        content:
+          'Here is a relevant runbook that covers retry storm mitigation for this service:',
+        attachment: {
+          type: 'link-preview',
+          href: 'https://runbooks.internal.io/checkout/retry-storm-mitigation',
+          title: 'Retry Storm Mitigation Runbook',
+          description:
+            'Step-by-step guide for identifying and resolving retry storms in the checkout service, including circuit breaker configuration and connection pool tuning.',
+          image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=200&fit=crop',
+        },
+      },
     ],
   },
   'checkout-error': {
@@ -83,10 +100,35 @@ const THREADS = {
         content:
           'The checkout service error rate is at 58.8%, primarily driven by 503 responses from the payment-service dependency. The upstream connection pool appears exhausted — active connections are at the configured maximum of 100 with a queue depth of 2,400 pending requests.\n\n**Recommended Actions**\n\n1. Increase the connection pool max from 100 to 250.\n2. Enable circuit breaker with a 50% error threshold and 30s recovery window.\n3. Add retry budget limiting to cap retries at 10% of total requests.',
         attachment: {
-          type: 'page',
-          title: 'Checkout error rate dashboard',
-          description:
-            'Real-time error rates, connection pool usage, and 503 response breakdown for the checkout service.',
+          type: 'stats-display',
+          title: 'Checkout Service Health',
+          stats: [
+            { label: 'Error Rate', value: '58.8%', color: 'danger' },
+            { label: 'Active Connections', value: '100/100', color: 'accent' },
+            { label: 'Queue Depth', value: '2,400', color: 'danger' },
+            { label: 'P99 Latency', value: '4.2s', color: 'accent' },
+          ],
+        },
+      },
+      {
+        role: 'user',
+        author: 'Alex Chen',
+        content: 'Show me the breakdown by error code.',
+      },
+      {
+        role: 'assistant',
+        content:
+          'Here is the error breakdown for the checkout service over the last hour:',
+        attachment: {
+          type: 'data-table',
+          title: 'Error Code Breakdown (last 1h)',
+          columns: ['Status Code', 'Count', 'Percentage', 'Service'],
+          rows: [
+            ['503', '1,842', '62.3%', 'payment-service'],
+            ['504', '689', '23.3%', 'payment-service'],
+            ['500', '312', '10.6%', 'checkout-api'],
+            ['429', '114', '3.8%', 'rate-limiter'],
+          ],
         },
       },
     ],
@@ -102,11 +144,49 @@ const THREADS = {
       {
         role: 'assistant',
         content:
-          'Weekly summary: overall uptime 99.92%. Two incidents this week — payment-service latency spike (resolved) and a brief DNS issue on the recommendation service. Action items are tracked in the runbook.\n\n**Service Highlights**\n\n- cart: Healthy, 0% failure rate, 5ms avg latency\n- checkout: Recovered, failure rate back to 0.2% after connection pool fix\n- frontend: Stable, 310 req/s throughput\n- recommendation: Minor DNS blip resolved, no customer impact',
+          'Weekly summary: overall uptime 99.92%. Two incidents this week — payment-service latency spike (resolved) and a brief DNS issue on the recommendation service. Here is the request volume by service:',
         attachment: {
-          type: 'query',
-          query:
-            'source=opensearch_dashboards_sample_data_logs | stats avg(latency) as avg_latency, count() as requests by service | sort -avg_latency',
+          type: 'chart',
+          title: 'Requests per Service (this week)',
+          data: [
+            { label: 'frontend', value: 48200 },
+            { label: 'checkout', value: 31500 },
+            { label: 'cart', value: 27800 },
+            { label: 'payment', value: 22100 },
+            { label: 'recommend', value: 15600 },
+            { label: 'search', value: 12400 },
+          ],
+        },
+      },
+      {
+        role: 'user',
+        author: 'Team Ops',
+        content: 'Can you give me the config fix for the connection pool?',
+      },
+      {
+        role: 'assistant',
+        content:
+          'Here is the recommended configuration change for the payment-service connection pool:',
+        attachment: {
+          type: 'code-block',
+          title: 'payment-service/config.yaml',
+          language: 'yaml',
+          code: `connection_pool:
+  max_connections: 250
+  min_idle: 20
+  max_idle_time: 30s
+  acquire_timeout: 5s
+
+circuit_breaker:
+  enabled: true
+  error_threshold: 50
+  recovery_window: 30s
+  half_open_requests: 5
+
+retry_budget:
+  enabled: true
+  max_retry_ratio: 0.10
+  ttl: 60s`,
         },
       },
     ],
@@ -317,12 +397,9 @@ const AddToCanvasButton = ({ onClick, added }) => (
   </button>
 );
 
-// Attachment card: page reference (title + description, clickable to view in related assets)
-const PageAttachment = ({ title, description, onAddToCanvas, onViewInCanvas, canvasItems }) => {
+// Attachment card: page reference (title + description, clickable)
+const PageAttachment = ({ title, description, onAddToCanvas, canvasItems }) => {
   const added = canvasItems.some((c) => c.type === 'page' && c.title === title);
-  const handleClick = () => {
-    onViewInCanvas({ type: 'page', title, description });
-  };
   return (
     <div className="threadPage__attachmentWrap">
       <AddToCanvasButton
@@ -331,16 +408,8 @@ const PageAttachment = ({ title, description, onAddToCanvas, onViewInCanvas, can
       />
       {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
       <div
-        className="threadPage__attachment threadPage__attachment--clickable"
-        onClick={handleClick}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            handleClick();
-          }
-        }}>
+        className="threadPage__attachment"
+        role="presentation">
         <OuiText size="xs">
           <strong>{title}</strong>
         </OuiText>
@@ -349,6 +418,184 @@ const PageAttachment = ({ title, description, onAddToCanvas, onViewInCanvas, can
             <p style={{ margin: 0 }}>{description}</p>
           </OuiText>
         )}
+      </div>
+    </div>
+  );
+};
+
+// Attachment card: link preview (Tool UI style — image + title + description + URL)
+const LinkPreviewAttachment = ({ href, title, description, image, onAddToCanvas, canvasItems }) => {
+  const added = canvasItems.some(
+    (c) => c.type === 'link-preview' && c.href === href
+  );
+  return (
+    <div className="threadPage__attachmentWrap">
+      <AddToCanvasButton
+        added={added}
+        onClick={() =>
+          onAddToCanvas({ type: 'link-preview', href, title, description, image })
+        }
+      />
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="threadPage__attachment threadPage__attachment--linkPreview">
+        {image && (
+          <div className="threadPage__linkPreviewImage">
+            <img src={image} alt="" />
+          </div>
+        )}
+        <div className="threadPage__linkPreviewBody">
+          <OuiText size="xs">
+            <strong>{title}</strong>
+          </OuiText>
+          {description && (
+            <OuiText size="xs" color="subdued">
+              <p style={{ margin: 0 }}>{description}</p>
+            </OuiText>
+          )}
+          <OuiText size="xs" color="subdued">
+            <span className="threadPage__linkPreviewUrl">{href}</span>
+          </OuiText>
+        </div>
+      </a>
+    </div>
+  );
+};
+
+// Attachment card: stats display (Tool UI style — grid of key metrics)
+const StatsDisplayAttachment = ({ title, stats, onAddToCanvas, canvasItems }) => {
+  const added = canvasItems.some(
+    (c) => c.type === 'stats-display' && c.title === title
+  );
+  return (
+    <div className="threadPage__attachmentWrap">
+      <AddToCanvasButton
+        added={added}
+        onClick={() => onAddToCanvas({ type: 'stats-display', title, stats })}
+      />
+      <div className="threadPage__attachment threadPage__attachment--statsDisplay">
+        {title && (
+          <OuiText size="xs">
+            <strong>{title}</strong>
+          </OuiText>
+        )}
+        <OuiFlexGroup gutterSize="l" wrap responsive={false} className="threadPage__statsGrid">
+          {stats.map((stat, i) => (
+            <OuiFlexItem key={i} grow={false}>
+              <OuiStat
+                title={stat.value}
+                description={stat.label}
+                titleSize="s"
+                titleColor={stat.color || 'default'}
+                isLoading={false}
+              />
+            </OuiFlexItem>
+          ))}
+        </OuiFlexGroup>
+      </div>
+    </div>
+  );
+};
+
+// Attachment card: data table (Tool UI style — tabular data)
+const DataTableAttachment = ({ title, columns, rows, onAddToCanvas, canvasItems }) => {
+  const added = canvasItems.some(
+    (c) => c.type === 'data-table' && c.title === title
+  );
+  return (
+    <div className="threadPage__attachmentWrap">
+      <AddToCanvasButton
+        added={added}
+        onClick={() => onAddToCanvas({ type: 'data-table', title, columns, rows })}
+      />
+      <div className="threadPage__attachment threadPage__attachment--dataTable">
+        {title && (
+          <OuiText size="xs" style={{ marginBottom: 8 }}>
+            <strong>{title}</strong>
+          </OuiText>
+        )}
+        <div className="threadPage__dataTableScroll">
+          <table className="threadPage__dataTable">
+            <thead>
+              <tr>
+                {columns.map((col, i) => (
+                  <th key={i}>{col}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, i) => (
+                <tr key={i}>
+                  {row.map((cell, j) => (
+                    <td key={j}>{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Attachment card: code block (Tool UI style — syntax-highlighted code)
+const CodeBlockAttachment = ({ title, language, code, onAddToCanvas, canvasItems }) => {
+  const added = canvasItems.some(
+    (c) => c.type === 'code-block' && c.code === code
+  );
+  return (
+    <div className="threadPage__attachmentWrap">
+      <AddToCanvasButton
+        added={added}
+        onClick={() => onAddToCanvas({ type: 'code-block', title, language, code })}
+      />
+      <div className="threadPage__attachment threadPage__attachment--codeBlock">
+        {title && (
+          <OuiText size="xs" style={{ marginBottom: 4 }}>
+            <strong>{title}</strong>
+          </OuiText>
+        )}
+        <OuiCodeBlock language={language} fontSize="s" paddingSize="s" isCopyable>
+          {code}
+        </OuiCodeBlock>
+      </div>
+    </div>
+  );
+};
+
+// Attachment card: chart (Tool UI style — simple inline bar/sparkline chart)
+const ChartAttachment = ({ title, data, onAddToCanvas, canvasItems }) => {
+  const added = canvasItems.some(
+    (c) => c.type === 'chart' && c.title === title
+  );
+  const maxVal = Math.max(...data.map((d) => d.value));
+  return (
+    <div className="threadPage__attachmentWrap">
+      <AddToCanvasButton
+        added={added}
+        onClick={() => onAddToCanvas({ type: 'chart', title, data })}
+      />
+      <div className="threadPage__attachment threadPage__attachment--chart">
+        {title && (
+          <OuiText size="xs" style={{ marginBottom: 8 }}>
+            <strong>{title}</strong>
+          </OuiText>
+        )}
+        <div className="threadPage__chartBars">
+          {data.map((d, i) => (
+            <div key={i} className="threadPage__chartBarCol">
+              <div
+                className="threadPage__chartBar"
+                style={{ height: `${(d.value / maxVal) * 100}%` }}
+                title={`${d.label}: ${d.value}`}
+              />
+              <span className="threadPage__chartBarLabel">{d.label}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -378,7 +625,6 @@ const AssistantMessage = ({
   streaming,
   attachment,
   onAddToCanvas,
-  onViewInCanvas,
   canvasItems,
 }) => (
   <div className="threadPage__message threadPage__message--assistant">
@@ -389,13 +635,56 @@ const AssistantMessage = ({
           title={attachment.title}
           description={attachment.description}
           onAddToCanvas={onAddToCanvas}
-          onViewInCanvas={onViewInCanvas}
           canvasItems={canvasItems}
         />
       )}
       {!streaming && attachment && attachment.type === 'query' && (
         <QueryAttachment
           query={attachment.query}
+          onAddToCanvas={onAddToCanvas}
+          canvasItems={canvasItems}
+        />
+      )}
+      {!streaming && attachment && attachment.type === 'link-preview' && (
+        <LinkPreviewAttachment
+          href={attachment.href}
+          title={attachment.title}
+          description={attachment.description}
+          image={attachment.image}
+          onAddToCanvas={onAddToCanvas}
+          canvasItems={canvasItems}
+        />
+      )}
+      {!streaming && attachment && attachment.type === 'stats-display' && (
+        <StatsDisplayAttachment
+          title={attachment.title}
+          stats={attachment.stats}
+          onAddToCanvas={onAddToCanvas}
+          canvasItems={canvasItems}
+        />
+      )}
+      {!streaming && attachment && attachment.type === 'data-table' && (
+        <DataTableAttachment
+          title={attachment.title}
+          columns={attachment.columns}
+          rows={attachment.rows}
+          onAddToCanvas={onAddToCanvas}
+          canvasItems={canvasItems}
+        />
+      )}
+      {!streaming && attachment && attachment.type === 'code-block' && (
+        <CodeBlockAttachment
+          title={attachment.title}
+          language={attachment.language}
+          code={attachment.code}
+          onAddToCanvas={onAddToCanvas}
+          canvasItems={canvasItems}
+        />
+      )}
+      {!streaming && attachment && attachment.type === 'chart' && (
+        <ChartAttachment
+          title={attachment.title}
+          data={attachment.data}
           onAddToCanvas={onAddToCanvas}
           canvasItems={canvasItems}
         />
@@ -530,8 +819,8 @@ export const ThreadPage = ({
   const [isTyping, setIsTyping] = useState(false);
   const [isCanvasOpen, setIsCanvasOpen] = useState(false);
   const [canvasItems, setCanvasItems] = useState([]);
-  const [canvasDetailItem, setCanvasDetailItem] = useState(null);
-  const [canvasWidth, setCanvasWidth] = useState(480);
+  const [activeCanvasTab, setActiveCanvasTab] = useState(0);
+  const [canvasWidth, setCanvasWidth] = useState(600);
   const [isCanvasDragging, setIsCanvasDragging] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const isDragging = useRef(false);
@@ -553,7 +842,8 @@ export const ThreadPage = ({
     const handleDragMove = (e) => {
       if (!isDragging.current) return;
       const newWidth = window.innerWidth - e.clientX;
-      setCanvasWidth(Math.max(240, Math.min(newWidth, 700)));
+      const maxCanvasWidth = window.innerWidth - 400;
+      setCanvasWidth(Math.max(240, Math.min(newWidth, maxCanvasWidth)));
     };
     const handleDragEnd = () => {
       if (!isDragging.current) return;
@@ -572,38 +862,29 @@ export const ThreadPage = ({
 
   const handleAddToCanvas = useCallback((item) => {
     setCanvasItems((prev) => {
-      // Deduplicate by matching type + title/query
+      // Deduplicate by matching type + title/query/href/code
       const exists = prev.some(
         (existing) =>
           existing.type === item.type &&
           (item.type === 'page'
+            ? existing.title === item.title
+            : item.type === 'link-preview'
+            ? existing.href === item.href
+            : item.type === 'code-block'
+            ? existing.code === item.code
+            : item.type === 'stats-display' || item.type === 'data-table' || item.type === 'chart'
             ? existing.title === item.title
             : existing.query === item.query)
       );
       if (exists) return prev;
       return [...prev, item];
     });
-    setIsCanvasOpen(true);
-  }, []);
-
-  const handleViewInCanvas = useCallback((item) => {
-    setCanvasItems((prev) => {
-      const exists = prev.some(
-        (existing) =>
-          existing.type === item.type &&
-          (item.type === 'page'
-            ? existing.title === item.title
-            : existing.query === item.query)
-      );
-      if (exists) return prev;
-      return [...prev, item];
-    });
-    setCanvasDetailItem(item);
     setIsCanvasOpen(true);
   }, []);
 
   // Reset messages and canvas when switching threads
   useEffect(() => {
+    const msgs = pendingMessages || thread.messages;
     if (pendingMessages) {
       setMessages(pendingMessages);
     } else {
@@ -611,9 +892,18 @@ export const ThreadPage = ({
     }
     setMessage('');
     setIsTyping(false);
-    setCanvasItems([]);
-    setCanvasDetailItem(null);
-    setIsCanvasOpen(false);
+
+    // Pre-populate canvas with all attachments from messages
+    const items = [];
+    msgs.forEach((msg) => {
+      if (msg.attachment) {
+        const a = msg.attachment;
+        items.push(a);
+      }
+    });
+    setCanvasItems(items);
+    setActiveCanvasTab(0);
+    setIsCanvasOpen(items.length > 0);
     streamTimers.current.forEach(clearTimeout);
     streamTimers.current = [];
   }, [threadKey, thread.messages, pendingMessages]);
@@ -740,7 +1030,7 @@ export const ThreadPage = ({
         title={thread.title}
         isPanelOpen={isPanelOpen}
         onTogglePanel={onTogglePanel}
-        firstActionIcon="layers"
+        firstActionIcon="dockedRight"
         firstActionLabel="Related Assets"
         onFirstAction={() => setIsCanvasOpen((open) => !open)}
         extraActions={[
@@ -823,7 +1113,6 @@ export const ThreadPage = ({
                   streaming={msg.streaming}
                   attachment={msg.attachment}
                   onAddToCanvas={handleAddToCanvas}
-                  onViewInCanvas={handleViewInCanvas}
                   canvasItems={canvasItems}
                 />
               );
@@ -887,64 +1176,22 @@ export const ThreadPage = ({
                 <OuiIcon type="grab" size="s" />
               </span>
             </div>
-            <OuiFlyoutHeader hasBorder>
-              <OuiFlexGroup
-                alignItems="center"
-                justifyContent="spaceBetween"
-                responsive={false}
-                gutterSize="none">
-                <OuiFlexItem grow={false}>
-                  <OuiFlexGroup
-                    alignItems="center"
-                    gutterSize="s"
-                    responsive={false}>
-                    {canvasDetailItem && (
-                      <OuiFlexItem grow={false}>
-                        <OuiButtonIcon
-                          iconType="arrowLeft"
-                          aria-label="Back to related assets"
-                          size="s"
-                          color="text"
-                          onClick={() => setCanvasDetailItem(null)}
-                        />
-                      </OuiFlexItem>
-                    )}
-                    <OuiFlexItem grow={false}>
-                      <OuiTitle size="xs">
-                        <h2>
-                          {canvasDetailItem
-                            ? canvasDetailItem.title
-                            : 'Related Assets'}
-                        </h2>
-                      </OuiTitle>
-                    </OuiFlexItem>
-                  </OuiFlexGroup>
-                </OuiFlexItem>
-                <OuiFlexItem grow={false}>
-                  <OuiButtonIcon
-                    iconType="cross"
-                    aria-label="Close canvas"
-                    size="s"
-                    color="text"
-                    onClick={() => {
-                      setIsCanvasOpen(false);
-                      setCanvasDetailItem(null);
-                    }}
-                  />
-                </OuiFlexItem>
-              </OuiFlexGroup>
+            <OuiFlyoutHeader>
+              {canvasItems.length > 0 && (
+                <OuiTabs size="s" className="threadPage__canvasTabs">
+                  {canvasItems.map((item, i) => (
+                    <OuiTab
+                      key={i}
+                      isSelected={activeCanvasTab === i}
+                      onClick={() => setActiveCanvasTab(i)}>
+                      {item.title || (item.type === 'query' ? 'Query' : `Asset ${i + 1}`)}
+                    </OuiTab>
+                  ))}
+                </OuiTabs>
+              )}
             </OuiFlyoutHeader>
             <OuiFlyoutBody>
-              {canvasDetailItem ? (
-                <OuiText size="s" color="subdued">
-                  <p>
-                    This is a placeholder for the detail view of &ldquo;{canvasDetailItem.title}&rdquo;.
-                  </p>
-                  {canvasDetailItem.description && (
-                    <p>{canvasDetailItem.description}</p>
-                  )}
-                </OuiText>
-              ) : canvasItems.length === 0 ? (
+              {canvasItems.length === 0 ? (
                 <OuiText size="s" color="subdued">
                   <p>
                     Items added to the canvas will appear here. Hover over
@@ -953,63 +1200,97 @@ export const ThreadPage = ({
                   </p>
                 </OuiText>
               ) : (
-                <div className="threadPage__canvasItems">
-                  {canvasItems.map((item, i) => (
-                    <div
-                      key={i}
-                      className={`threadPage__canvasItem${
-                        item.type === 'page'
-                          ? ' threadPage__canvasItem--clickable'
-                          : ''
-                      }`}
-                      onClick={
-                        item.type === 'page'
-                          ? () => setCanvasDetailItem(item)
-                          : undefined
-                      }
-                      onKeyDown={
-                        item.type === 'page'
-                          ? (e) => {
-                              if (e.key === 'Enter' || e.key === ' ') {
-                                e.preventDefault();
-                                setCanvasDetailItem(item);
-                              }
-                            }
-                          : undefined
-                      }
-                      role={item.type === 'page' ? 'button' : undefined}
-                      tabIndex={item.type === 'page' ? 0 : undefined}>
-                      <div className="threadPage__canvasItemHeader">
-                        <OuiText size="xs">
-                          <strong>
-                            {item.type === 'page' ? item.title : null}
-                          </strong>
-                        </OuiText>
-                      </div>
-                      <button
-                        className="threadPage__canvasItemRemove"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setCanvasItems((prev) =>
-                            prev.filter((_, idx) => idx !== i)
-                          );
-                        }}
-                        aria-label="Remove as related asset">
-                        Remove as related asset
-                      </button>
-                      {item.type === 'page' ? (
-                        item.description && (
-                          <OuiText size="xs" color="subdued">
-                            <p style={{ margin: 0 }}>{item.description}</p>
+                <div className="threadPage__canvasTabContent">
+                  {(() => {
+                    const item = canvasItems[activeCanvasTab];
+                    if (!item) return null;
+                    return (
+                      <>
+                        {item.type === 'page' && (
+                          <OuiText size="s" color="subdued">
+                            <p>{item.description || 'Dashboard view placeholder'}</p>
                           </OuiText>
-                        )
-                      ) : (
-                        <code className="threadPage__attachmentQuery">
-                          {item.query}
-                        </code>
-                      )}
-                    </div>
-                  ))}
+                        )}
+                        {item.type === 'link-preview' && (
+                          <>
+                            {item.image && (
+                              <div className="threadPage__canvasDetailImage">
+                                <img src={item.image} alt="" />
+                              </div>
+                            )}
+                            <OuiText size="s">
+                              {item.description && <p>{item.description}</p>}
+                              <p>
+                                <a href={item.href} target="_blank" rel="noopener noreferrer">
+                                  {item.href}
+                                </a>
+                              </p>
+                            </OuiText>
+                          </>
+                        )}
+                        {item.type === 'stats-display' && (
+                          <OuiFlexGroup gutterSize="l" wrap responsive={false}>
+                            {item.stats.map((stat, i) => (
+                              <OuiFlexItem key={i} grow={false}>
+                                <OuiStat
+                                  title={stat.value}
+                                  description={stat.label}
+                                  titleSize="s"
+                                  titleColor={stat.color || 'default'}
+                                />
+                              </OuiFlexItem>
+                            ))}
+                          </OuiFlexGroup>
+                        )}
+                        {item.type === 'data-table' && (
+                          <div className="threadPage__dataTableScroll">
+                            <table className="threadPage__dataTable">
+                              <thead>
+                                <tr>
+                                  {item.columns.map((col, ci) => (
+                                    <th key={ci}>{col}</th>
+                                  ))}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {item.rows.map((row, ri) => (
+                                  <tr key={ri}>
+                                    {row.map((cell, ci) => (
+                                      <td key={ci}>{cell}</td>
+                                    ))}
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+                        {item.type === 'code-block' && (
+                          <OuiCodeBlock language={item.language} fontSize="s" paddingSize="m" isCopyable>
+                            {item.code}
+                          </OuiCodeBlock>
+                        )}
+                        {item.type === 'chart' && (
+                          <div className="threadPage__chartBars threadPage__chartBars--detail">
+                            {item.data.map((d, di) => (
+                              <div key={di} className="threadPage__chartBarCol">
+                                <div
+                                  className="threadPage__chartBar"
+                                  style={{ height: `${(d.value / Math.max(...item.data.map((x) => x.value))) * 100}%` }}
+                                  title={`${d.label}: ${d.value}`}
+                                />
+                                <span className="threadPage__chartBarLabel">{d.label}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {item.type === 'query' && (
+                          <OuiCodeBlock fontSize="s" paddingSize="m" isCopyable>
+                            {item.query}
+                          </OuiCodeBlock>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               )}
             </OuiFlyoutBody>

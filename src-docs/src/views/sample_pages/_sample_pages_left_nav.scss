@@ -325,6 +325,15 @@
   appearance: none;
 }
 
+// 24x24 wrapper for the 16x16 expand icon (matches logo dimensions)
+.samplePagesLeftNav__expandIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
 // (Logo wrap and floating expand button removed — expand is now a nav item)
 
 // Nav items container (collapsed)
@@ -333,7 +342,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 4px;
   padding: 0 8px;
   min-height: 0;
   overflow-y: auto;
@@ -382,6 +391,8 @@
 .samplePagesLeftNav__rule {
   flex-shrink: 0;
   border-color: $ouiBorderColor;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
 // Footer (collapsed)

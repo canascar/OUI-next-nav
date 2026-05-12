@@ -34,6 +34,8 @@ export const DatasetsPage = ({
   onContinueAsThread,
   isPanelOpen,
   onTogglePanel,
+  isAskAiPanelOpen,
+  onAskAiToggle,
 }) => (
   <PlaceholderPage
     title={ITEMS_MAP[selectedItem] || 'Datasets'}
@@ -45,5 +47,7 @@ export const DatasetsPage = ({
     onContinueAsThread={onContinueAsThread}
     isPanelOpen={isPanelOpen}
     onTogglePanel={onTogglePanel}
+    isAskAiPanelOpen={isAskAiPanelOpen}
+    onAskAiToggle={onAskAiToggle}
   />
 );

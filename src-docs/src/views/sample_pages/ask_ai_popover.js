@@ -17,6 +17,7 @@ import {
   OuiCompressedFieldText,
   OuiIcon,
   OuiText,
+  OuiToolTip,
 } from '../../../../src/components';
 
 // Mock AI responses cycled through on each prompt
@@ -32,8 +33,10 @@ export const AskAiPopover = ({
   onClose,
   onMinimize,
   onContinueAsThread,
+  onDetach,
   initialPrompt,
   anchorPosition,
+  mode = 'popover', // 'panel' or 'popover'
 }) => {
   const [message, setMessage] = useState('');
   const [conversation, setConversation] = useState(null); // { prompt, response }
@@ -51,14 +54,14 @@ export const AskAiPopover = ({
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [hasBeenDragged, setHasBeenDragged] = useState(false);
 
+  const isPanel = mode === 'panel';
+
   // Clean up stream timers on unmount or close
   useEffect(() => {
     return () => streamTimers.current.forEach(clearTimeout);
   }, []);
 
-  // Reset state when popover is fully dismissed (onClose resets isOpen)
-  // We no longer reset conversation here — the parent controls lifecycle.
-  // Only reset drag position when popover hides.
+  // Reset drag position when popover hides
   useEffect(() => {
     if (!isOpen) {
       setHasBeenDragged(false);
@@ -95,8 +98,9 @@ export const AskAiPopover = ({
     }
   }, [isOpen, initialPrompt]);
 
-  // Drag handlers for the popover header
+  // Drag handlers — only for popover mode
   const handleDragStart = useCallback((e) => {
+    if (isPanel) return;
     if (!popoverRef.current) return;
     e.preventDefault();
     const rect = popoverRef.current.getBoundingClientRect();
@@ -108,9 +112,10 @@ export const AskAiPopover = ({
       origY: rect.top,
     };
     document.body.style.userSelect = 'none';
-  }, []);
+  }, [isPanel]);
 
   useEffect(() => {
+    if (isPanel) return;
     const handleDragMove = (e) => {
       if (!dragState.current.isDragging) return;
       const dx = e.clientX - dragState.current.startX;
@@ -131,7 +136,7 @@ export const AskAiPopover = ({
       window.removeEventListener('mousemove', handleDragMove);
       window.removeEventListener('mouseup', handleDragEnd);
     };
-  }, []);
+  }, [isPanel]);
 
   const handleSend = () => {
     const text = message.trim();
@@ -169,35 +174,55 @@ export const AskAiPopover = ({
 
   if (!isOpen) return null;
 
-  const popoverStyle = hasBeenDragged
+  // Panel mode: no inline positioning, rendered as a flex child
+  const popoverStyle = isPanel
+    ? {}
+    : hasBeenDragged
     ? { position: 'fixed', left: position.x, top: position.y, zIndex: 10000 }
     : anchorPosition
     ? { position: 'fixed', top: anchorPosition.top, left: anchorPosition.left, transform: 'translateX(-50%)', zIndex: 10000 }
     : {};
 
+  const className = isPanel
+    ? 'askAiPopover askAiPopover--panel'
+    : `askAiPopover${hasBeenDragged ? ' askAiPopover--dragged' : ''}${
+        !hasBeenDragged && anchorPosition ? ' askAiPopover--anchored' : ''
+      }`;
+
   return (
     <div
       ref={popoverRef}
-      className={`askAiPopover${
-        hasBeenDragged ? ' askAiPopover--dragged' : ''
-      }${!hasBeenDragged && anchorPosition ? ' askAiPopover--anchored' : ''}`}
+      className={className}
       style={popoverStyle}>
       {/* Header */}
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <div
-        className="askAiPopover__header"
-        onMouseDown={handleDragStart}
+        className={`askAiPopover__header${isPanel ? ' askAiPopover__header--panel' : ''}`}
+        onMouseDown={!isPanel ? handleDragStart : undefined}
         role="banner">
         <div className="askAiPopover__headerLeft">
           <span className="askAiPopover__title">Ask AI</span>
         </div>
-        <OuiIcon
-          className="askAiPopover__grabIcon"
-          type="grab"
-          size="m"
-          color="subdued"
-        />
+        {!isPanel && (
+          <OuiIcon
+            className="askAiPopover__grabIcon"
+            type="grab"
+            size="m"
+            color="subdued"
+          />
+        )}
         <div className="askAiPopover__headerRight">
+          {isPanel && onDetach && (
+            <OuiToolTip content="Detach to popover" position="bottom">
+              <OuiButtonIcon
+                iconType="dockedDetached"
+                aria-label="Detach to popover"
+                size="xs"
+                color="text"
+                onClick={onDetach}
+              />
+            </OuiToolTip>
+          )}
           <OuiButtonIcon
             iconType="minus"
             aria-label="Minimize"

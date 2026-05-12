@@ -34,6 +34,8 @@ export const DataSourcesPage = ({
   onContinueAsThread,
   isPanelOpen,
   onTogglePanel,
+  isAskAiPanelOpen,
+  onAskAiToggle,
 }) => (
   <PlaceholderPage
     title={ITEMS_MAP[selectedItem] || 'Data Sources'}
@@ -45,5 +47,7 @@ export const DataSourcesPage = ({
     onContinueAsThread={onContinueAsThread}
     isPanelOpen={isPanelOpen}
     onTogglePanel={onTogglePanel}
+    isAskAiPanelOpen={isAskAiPanelOpen}
+    onAskAiToggle={onAskAiToggle}
   />
 );

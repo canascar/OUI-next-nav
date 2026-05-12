@@ -35,6 +35,8 @@ export const PlaceholderPage = ({
   onContinueAsThread,
   isPanelOpen,
   onTogglePanel,
+  isAskAiPanelOpen,
+  onAskAiToggle,
 }) => {
   // Always show detail view — the left panel handles the list
   return (
@@ -50,6 +52,8 @@ export const PlaceholderPage = ({
         onContinueAsThread={onContinueAsThread}
         isPanelOpen={isPanelOpen}
         onTogglePanel={onTogglePanel}
+        isAskAiPanelOpen={isAskAiPanelOpen}
+        onAskAiToggle={onAskAiToggle}
       />
       <div
         style={{

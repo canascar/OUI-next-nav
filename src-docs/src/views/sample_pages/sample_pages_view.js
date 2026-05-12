@@ -64,13 +64,15 @@ const renderPage = (
   isPanelOpen,
   onTogglePanel,
   onPageChange,
-  onNavigate
+  onNavigate,
+  isAskAiPanelOpen,
+  onAskAiToggle
 ) => {
   switch (activePage) {
     case 'home':
       return (
         <OuiErrorBoundary>
-          <HomePage onNavigate={onNavigate} onContinueAsThread={onContinueAsThread} />
+          <HomePage onNavigate={onNavigate} onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
         </OuiErrorBoundary>
       );
     case 'logs':
@@ -81,6 +83,8 @@ const renderPage = (
             onContinueAsThread={onContinueAsThread}
             isPanelOpen={isPanelOpen}
             onTogglePanel={onTogglePanel}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
           />
         </OuiErrorBoundary>
       );
@@ -92,6 +96,8 @@ const renderPage = (
             onContinueAsThread={onContinueAsThread}
             isPanelOpen={isPanelOpen}
             onTogglePanel={onTogglePanel}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
           />
         </OuiErrorBoundary>
       );
@@ -118,6 +124,8 @@ const renderPage = (
           <AlertsPage
             selectedItem={selectedItem}
             onContinueAsThread={onContinueAsThread}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
           />
         </OuiErrorBoundary>
       );
@@ -130,6 +138,8 @@ const renderPage = (
             onContinueAsThread={onContinueAsThread}
             isPanelOpen={isPanelOpen}
             onTogglePanel={onTogglePanel}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
           />
         </OuiErrorBoundary>
       );
@@ -139,6 +149,8 @@ const renderPage = (
           <SkillsPage
             selectedItem={selectedItem}
             onContinueAsThread={onContinueAsThread}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
           />
         </OuiErrorBoundary>
       );
@@ -148,37 +160,39 @@ const renderPage = (
           <AssetsPage
             selectedItem={selectedItem}
             onContinueAsThread={onContinueAsThread}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
           />
         </OuiErrorBoundary>
       );
     case 'application-map':
       return (
         <OuiErrorBoundary>
-          <ApplicationMapPage onContinueAsThread={onContinueAsThread} />
+          <ApplicationMapPage onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
         </OuiErrorBoundary>
       );
     case 'topology-map':
       return (
         <OuiErrorBoundary>
-          <TopologyMapPage onContinueAsThread={onContinueAsThread} />
+          <TopologyMapPage onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
         </OuiErrorBoundary>
       );
     case 'agent-monitoring-traces':
       return (
         <OuiErrorBoundary>
-          <AgentMonitoringTracesPage onContinueAsThread={onContinueAsThread} />
+          <AgentMonitoringTracesPage onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
         </OuiErrorBoundary>
       );
     case 'agent-monitoring-spans':
       return (
         <OuiErrorBoundary>
-          <AgentMonitoringSpansPage onContinueAsThread={onContinueAsThread} />
+          <AgentMonitoringSpansPage onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
         </OuiErrorBoundary>
       );
     case 'app-perf-traces':
       return (
         <OuiErrorBoundary>
-          <AppPerfTracesPage onContinueAsThread={onContinueAsThread} />
+          <AppPerfTracesPage onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
         </OuiErrorBoundary>
       );
     case 'notebooks':
@@ -190,13 +204,15 @@ const renderPage = (
             onContinueAsThread={onContinueAsThread}
             isPanelOpen={isPanelOpen}
             onTogglePanel={onTogglePanel}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
           />
         </OuiErrorBoundary>
       );
     case 'anomaly-dashboard':
       return (
         <OuiErrorBoundary>
-          <AnomalyDashboardPage onContinueAsThread={onContinueAsThread} />
+          <AnomalyDashboardPage onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
         </OuiErrorBoundary>
       );
     case 'detectors':
@@ -208,13 +224,15 @@ const renderPage = (
             onContinueAsThread={onContinueAsThread}
             isPanelOpen={isPanelOpen}
             onTogglePanel={onTogglePanel}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
           />
         </OuiErrorBoundary>
       );
     case 'forecasters':
       return (
         <OuiErrorBoundary>
-          <ForecastersPage onContinueAsThread={onContinueAsThread} />
+          <ForecastersPage onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
         </OuiErrorBoundary>
       );
     case 'alerts-detail':
@@ -226,6 +244,8 @@ const renderPage = (
             onContinueAsThread={onContinueAsThread}
             isPanelOpen={isPanelOpen}
             onTogglePanel={onTogglePanel}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
           />
         </OuiErrorBoundary>
       );
@@ -238,13 +258,15 @@ const renderPage = (
             onContinueAsThread={onContinueAsThread}
             isPanelOpen={isPanelOpen}
             onTogglePanel={onTogglePanel}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
           />
         </OuiErrorBoundary>
       );
     case 'destinations':
       return (
         <OuiErrorBoundary>
-          <DestinationsPage onContinueAsThread={onContinueAsThread} />
+          <DestinationsPage onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
         </OuiErrorBoundary>
       );
     case 'data-sources':
@@ -256,6 +278,8 @@ const renderPage = (
             onContinueAsThread={onContinueAsThread}
             isPanelOpen={isPanelOpen}
             onTogglePanel={onTogglePanel}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
           />
         </OuiErrorBoundary>
       );
@@ -268,6 +292,8 @@ const renderPage = (
             onContinueAsThread={onContinueAsThread}
             isPanelOpen={isPanelOpen}
             onTogglePanel={onTogglePanel}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
           />
         </OuiErrorBoundary>
       );
@@ -280,6 +306,8 @@ const renderPage = (
             onContinueAsThread={onContinueAsThread}
             isPanelOpen={isPanelOpen}
             onTogglePanel={onTogglePanel}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
           />
         </OuiErrorBoundary>
       );
@@ -292,6 +320,8 @@ const renderPage = (
             onContinueAsThread={onContinueAsThread}
             isPanelOpen={isPanelOpen}
             onTogglePanel={onTogglePanel}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
           />
         </OuiErrorBoundary>
       );
@@ -304,13 +334,15 @@ const renderPage = (
             onContinueAsThread={onContinueAsThread}
             isPanelOpen={isPanelOpen}
             onTogglePanel={onTogglePanel}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
           />
         </OuiErrorBoundary>
       );
     case 'manage-workspace':
       return (
         <OuiErrorBoundary>
-          <WorkspacePage onContinueAsThread={onContinueAsThread} />
+          <WorkspacePage onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
         </OuiErrorBoundary>
       );
     case 'ai-skills':
@@ -322,6 +354,8 @@ const renderPage = (
             onContinueAsThread={onContinueAsThread}
             isPanelOpen={isPanelOpen}
             onTogglePanel={onTogglePanel}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
           />
         </OuiErrorBoundary>
       );
@@ -334,6 +368,8 @@ const renderPage = (
             onContinueAsThread={onContinueAsThread}
             isPanelOpen={isPanelOpen}
             onTogglePanel={onTogglePanel}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
           />
         </OuiErrorBoundary>
       );
@@ -346,6 +382,8 @@ const renderPage = (
             onContinueAsThread={onContinueAsThread}
             isPanelOpen={isPanelOpen}
             onTogglePanel={onTogglePanel}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
           />
         </OuiErrorBoundary>
       );
@@ -358,6 +396,8 @@ const renderPage = (
             onContinueAsThread={onContinueAsThread}
             isPanelOpen={isPanelOpen}
             onTogglePanel={onTogglePanel}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
           />
         </OuiErrorBoundary>
       );
@@ -372,7 +412,7 @@ const renderPage = (
     default:
       return (
         <OuiErrorBoundary>
-          <ServicePage onContinueAsThread={onContinueAsThread} />
+          <ServicePage onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
         </OuiErrorBoundary>
       );
   }
@@ -387,6 +427,9 @@ export const SamplePagesView = () => {
   const [navAskAiInitialPrompt, setNavAskAiInitialPrompt] = useState('');
   const [isPanelOpen, setIsPanelOpen] = useState(true);
   const [isPanelCollapsing, setIsPanelCollapsing] = useState(false);
+  const [isAskAiPanelOpen, setIsAskAiPanelOpen] = useState(false);
+  const [isAskAiPanelClosing, setIsAskAiPanelClosing] = useState(false);
+  const [askAiDetached, setAskAiDetached] = useState(false);
   const createThreadRef = useRef(null);
   const contentRef = useRef(null);
   const animTimerRef = useRef(null);
@@ -947,6 +990,49 @@ export const SamplePagesView = () => {
     setIsNavAskAiOpen(true);
   }, []);
 
+  const handleAskAiToggle = useCallback(() => {
+    if (isAskAiPanelOpen) {
+      // Trigger close animation
+      setIsAskAiPanelClosing(true);
+      setTimeout(() => {
+        setIsAskAiPanelOpen(false);
+        setIsAskAiPanelClosing(false);
+      }, 200);
+    } else {
+      setIsAskAiPanelOpen(true);
+      setAskAiDetached(false);
+    }
+  }, [isAskAiPanelOpen]);
+
+  const handleAskAiDetach = useCallback(() => {
+    setIsAskAiPanelClosing(true);
+    setTimeout(() => {
+      setIsAskAiPanelOpen(false);
+      setIsAskAiPanelClosing(false);
+      setAskAiDetached(true);
+    }, 200);
+  }, []);
+
+  const handleAskAiDetachedClose = useCallback(() => {
+    setAskAiDetached(false);
+  }, []);
+
+  const handleAskAiPanelClose = useCallback(() => {
+    setIsAskAiPanelClosing(true);
+    setTimeout(() => {
+      setIsAskAiPanelOpen(false);
+      setIsAskAiPanelClosing(false);
+    }, 200);
+  }, []);
+
+  const handleAskAiPanelMinimize = useCallback(() => {
+    setIsAskAiPanelClosing(true);
+    setTimeout(() => {
+      setIsAskAiPanelOpen(false);
+      setIsAskAiPanelClosing(false);
+    }, 200);
+  }, []);
+
   // Clean up animation timer on unmount
   useEffect(() => {
     return () => {
@@ -1077,7 +1163,9 @@ export const SamplePagesView = () => {
             isPanelOpen,
             () => (isPanelOpen ? handlePanelClose() : setIsPanelOpen(true)),
             handlePageChange,
-            handlePopoverNavigate
+            handlePopoverNavigate,
+            isAskAiPanelOpen,
+            handleAskAiToggle
           )}
           {panelConfig && isPanelOpen && (
             <>
@@ -1107,8 +1195,33 @@ export const SamplePagesView = () => {
             </>
           )}
         </div>
+        {isAskAiPanelOpen && (
+          <div className={`askAiPanel${isAskAiPanelClosing ? ' askAiPanel--closing' : ''}`}>
+            <AskAiPopover
+              isOpen={isAskAiPanelOpen}
+              mode="panel"
+              onClose={handleAskAiPanelClose}
+              onMinimize={handleAskAiPanelMinimize}
+              onDetach={handleAskAiDetach}
+              onContinueAsThread={handleContinueAsThread}
+            />
+          </div>
+        )}
       </div>
       {renderExpandOverlay()}
+
+      {/* Ask AI detached popover (floating mode after clicking detach from panel) */}
+      {askAiDetached && (
+        <div className="askAiFloating" style={{ pointerEvents: 'auto' }}>
+          <AskAiPopover
+            isOpen={askAiDetached}
+            mode="popover"
+            onClose={handleAskAiDetachedClose}
+            onMinimize={handleAskAiDetachedClose}
+            onContinueAsThread={handleContinueAsThread}
+          />
+        </div>
+      )}
 
       {/* Ask AI popover triggered from search */}
       {isNavAskAiOpen && (

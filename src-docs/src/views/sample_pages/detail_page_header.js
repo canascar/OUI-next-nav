@@ -14,7 +14,7 @@ import {
   OuiButtonIcon,
   OuiToolTip,
 } from '../../../../src/components';
-import { AskAiPopover } from './ask_ai_popover';
+import { AskAiInline } from './ask_ai_inline';
 
 export const DetailPageHeader = ({
   title,
@@ -28,33 +28,34 @@ export const DetailPageHeader = ({
   hideAskAi = false,
   extraActions = [],
   headerControls,
+  isAskAiPanelOpen,
+  onAskAiToggle,
 }) => {
-  const [isAskAiOpen, setIsAskAiOpen] = React.useState(false);
-  const [isAskAiActive, setIsAskAiActive] = React.useState(false);
+  // Detached popover state (only used when user clicks "detach" from the panel)
+  const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
   const [isHighlightMode, setIsHighlightMode] = React.useState(false);
   const [highlightPrompt, setHighlightPrompt] = React.useState(null);
   const [highlightPosition, setHighlightPosition] = React.useState(null);
 
+  const isAskAiActive = isAskAiPanelOpen || isPopoverOpen;
+
   const handleAskAiToggle = () => {
-    if (isAskAiOpen) {
-      setIsAskAiOpen(false);
+    if (isPopoverOpen) {
+      setIsPopoverOpen(false);
     } else {
-      setHighlightPrompt(null);
-      setHighlightPosition(null);
-      setIsAskAiOpen(true);
-      setIsAskAiActive(true);
+      // Open inline Ask AI
+      setIsPopoverOpen(true);
     }
   };
 
-  const handleAskAiClose = () => {
-    setIsAskAiOpen(false);
-    setIsAskAiActive(false);
+  const handlePopoverClose = () => {
+    setIsPopoverOpen(false);
     setHighlightPrompt(null);
     setHighlightPosition(null);
   };
 
-  const handleAskAiMinimize = () => {
-    setIsAskAiOpen(false);
+  const handlePopoverMinimize = () => {
+    setIsPopoverOpen(false);
   };
 
   const handleHighlightToggle = () => {
@@ -80,8 +81,7 @@ export const DetailPageHeader = ({
           left: rect.left + rect.width / 2,
         });
         setHighlightPrompt(text);
-        setIsAskAiOpen(true);
-        setIsAskAiActive(true);
+        setIsPopoverOpen(true);
         setIsHighlightMode(false);
       }
     };
@@ -174,25 +174,25 @@ export const DetailPageHeader = ({
               onClick={handleHighlightToggle}
             />
           </OuiToolTip>
-          <OuiToolTip content="Ask AI" position="top">
-            <OuiButtonIcon
-              className={`askAiFloating__button${isAskAiActive ? ' askAiFloating__button--active' : ''}`}
-              iconType="generate"
-              aria-label="Ask AI"
-              size="m"
-              color={isAskAiActive ? 'ghost' : 'text'}
-              display="fill"
-              onClick={handleAskAiToggle}
-            />
-          </OuiToolTip>
-          {onContinueAsThread && (
-            <AskAiPopover
-              isOpen={isAskAiOpen}
-              onClose={handleAskAiClose}
-              onMinimize={handleAskAiMinimize}
+          {!isPopoverOpen && (
+            <OuiToolTip content="Ask AI" position="top">
+              <OuiButtonIcon
+                className={`askAiFloating__button${isAskAiActive ? ' askAiFloating__button--active' : ''}`}
+                iconType="generate"
+                aria-label="Ask AI"
+                size="m"
+                color={isAskAiActive ? 'ghost' : 'text'}
+                display="fill"
+                onClick={handleAskAiToggle}
+              />
+            </OuiToolTip>
+          )}
+          {isPopoverOpen && (
+            <AskAiInline
+              isOpen={isPopoverOpen}
+              onClose={handlePopoverClose}
               onContinueAsThread={onContinueAsThread}
               initialPrompt={highlightPrompt}
-              anchorPosition={highlightPosition}
             />
           )}
         </div>

@@ -34,6 +34,8 @@ export const AlertsDetailPage = ({
   onContinueAsThread,
   isPanelOpen,
   onTogglePanel,
+  isAskAiPanelOpen,
+  onAskAiToggle,
 }) => (
   <PlaceholderPage
     title={ITEMS_MAP[selectedItem] || 'Alerts'}
@@ -45,5 +47,7 @@ export const AlertsDetailPage = ({
     onContinueAsThread={onContinueAsThread}
     isPanelOpen={isPanelOpen}
     onTogglePanel={onTogglePanel}
+    isAskAiPanelOpen={isAskAiPanelOpen}
+    onAskAiToggle={onAskAiToggle}
   />
 );

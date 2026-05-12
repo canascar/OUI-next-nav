@@ -39,6 +39,7 @@ import { ALL_DRAGGABLE_ITEMS } from './nav_layout_utils';
 import { SearchPopover } from './search_popover';
 
 const NAV_ITEMS = [
+  { key: 'home', label: 'Overview', icon: 'home', hoverOnly: false },
   { key: 'search', label: 'Search', icon: 'search', isAction: true },
   { key: 'thread', label: 'Threads', icon: 'navTicketing', rulerAfter: true },
   // Essentials
@@ -2392,6 +2393,25 @@ export const SamplePagesLeftNav = ({
 
         {/* Scrollable items */}
         <div className="samplePagesLeftNav__itemsExpanded">
+          {/* Overview — navigates to home page */}
+          <button
+            type="button"
+            className={`samplePagesLeftNav__navItemExpanded${
+              activePage === 'home' ? ' samplePagesLeftNav__navItemExpanded--active' : ''
+            }`}
+            aria-current={activePage === 'home' ? 'page' : undefined}
+            onClick={() => {
+              collapsePanel();
+              onPageChange('home');
+            }}>
+            <div className="samplePagesLeftNav__navItemIconWrap">
+              <OuiIcon type="home" size="m" />
+            </div>
+            <span className="samplePagesLeftNav__navItemExpandedLabel">
+              Overview
+            </span>
+          </button>
+
           {/* Search — opens search popover */}
           <button
             type="button"
@@ -2875,33 +2895,38 @@ export const SamplePagesLeftNav = ({
   };
 
   // ---------- COLLAPSED NAV RENDER ----------
+  const [isLogoHovered, setIsLogoHovered] = useState(false);
+
+  // Reset logo hover state when nav collapses (cursor may still be over the button)
+  useEffect(() => {
+    if (!isNavExpanded) {
+      setIsLogoHovered(false);
+    }
+  }, [isNavExpanded]);
+
   const renderCollapsedNav = () => (
     <nav aria-label="Sample pages navigation" className="samplePagesLeftNav">
-      {/* Logo */}
+      {/* Logo — on hover shows expand icon, click expands nav */}
       <div className="samplePagesLeftNav__header">
         <button
           type="button"
           className="samplePagesLeftNav__logoButton"
-          aria-label="Go to home page"
-          onClick={() => {
-            collapsePanel();
-            onLogoClick();
-          }}>
-          <OuiIcon type="logoOpenSearch" size="l" aria-hidden="true" />
+          aria-label="Expand navigation"
+          onMouseEnter={() => setIsLogoHovered(true)}
+          onMouseLeave={() => setIsLogoHovered(false)}
+          onClick={() => setIsNavExpanded(true)}>
+          {isLogoHovered ? (
+            <div className="samplePagesLeftNav__expandIconWrap">
+              <OuiIcon type="menuRight" size="m" aria-hidden="true" />
+            </div>
+          ) : (
+            <OuiIcon type="logoOpenSearch" size="l" aria-hidden="true" />
+          )}
         </button>
       </div>
 
-      {/* Nav items — expand button first */}
+      {/* Nav items */}
       <div className="samplePagesLeftNav__items">
-        <button
-          type="button"
-          className="samplePagesLeftNav__navItem"
-          aria-label="Expand navigation"
-          onClick={() => setIsNavExpanded(true)}>
-          <div className="samplePagesLeftNav__navIcon">
-            <OuiIcon type="menuRight" size="m" />
-          </div>
-        </button>
         {renderedNavItems.map((item) => {
           const isActive = !item.isAction && isNavItemActive(item.key);
           const buttonEl = (

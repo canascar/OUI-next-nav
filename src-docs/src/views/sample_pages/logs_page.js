@@ -338,6 +338,8 @@ export const LogsPage = ({
   onContinueAsThread,
   isPanelOpen,
   onTogglePanel,
+  isAskAiPanelOpen,
+  onAskAiToggle,
 }) => {
   const queryDef = selectedItem && QUERY_DEFS[selectedItem];
   const results = queryDef && !queryDef.queryOnly ? (QUERY_DATA[selectedItem] || []) : [];
@@ -445,6 +447,8 @@ export const LogsPage = ({
         onContinueAsThread={onContinueAsThread}
         isPanelOpen={isPanelOpen}
         onTogglePanel={onTogglePanel}
+        isAskAiPanelOpen={isAskAiPanelOpen}
+        onAskAiToggle={onAskAiToggle}
         firstActionIcon={isQueryEditable ? 'save' : 'pencil'}
         firstActionLabel={isQueryEditable ? 'Save' : 'Edit'}
         onFirstAction={() => {

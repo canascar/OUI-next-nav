@@ -574,7 +574,7 @@ const catalogColumns = [
 
 // --- Main ServicePage Component ---
 
-export const ServicePage = ({ onContinueAsThread }) => {
+export const ServicePage = ({ onContinueAsThread, isAskAiPanelOpen, onAskAiToggle }) => {
   const [latencyTab, setLatencyTab] = useState('p99');
   const [filterWidth, setFilterWidth] = useState(240);
   const [isDragging, setIsDragging] = useState(false);
@@ -625,6 +625,8 @@ export const ServicePage = ({ onContinueAsThread }) => {
       <DetailPageHeader
         title="Application Performance Services"
         onContinueAsThread={onContinueAsThread}
+        isAskAiPanelOpen={isAskAiPanelOpen}
+        onAskAiToggle={onAskAiToggle}
       />
 
       {/* Tab bar */}
