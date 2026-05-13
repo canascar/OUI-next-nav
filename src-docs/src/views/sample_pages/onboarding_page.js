@@ -24,45 +24,14 @@ import {
   OuiTab,
   OuiTabs,
   OuiText,
+  OuiTitle,
   OuiToolTip,
   OuiCompressedTextArea,
 } from '../../../../src/components';
 
 const THREAD = {
-  title: 'Getting started with OpenSearch',
-  messages: [
-    {
-      role: 'user',
-      author: 'You',
-      content: 'Help me get started with OpenSearch observability.',
-    },
-    {
-      role: 'assistant',
-      content:
-        'Welcome to OpenSearch Observability. Here is a quick overview of what you can do.\n\n**Key Capabilities**\n\n- Logs: Ingest, search, and analyze log data from your applications and infrastructure.\n- Metrics: Monitor system and application performance with time-series data.\n- Traces: Track requests across distributed services to identify bottlenecks.\n- Alerts: Set up monitors and notifications for anomalous behavior.\n\n**Getting Started Steps**\n\n1. Connect a data source to begin ingesting telemetry data.\n2. Create an index pattern to make your data searchable.\n3. Build a dashboard to visualize key metrics.\n4. Configure alerts to stay informed of issues.',
-      attachment: {
-        type: 'page',
-        title: 'Observability quickstart guide',
-        description:
-          'Step-by-step guide to setting up log ingestion, creating dashboards, and configuring alerts.',
-      },
-    },
-    {
-      role: 'user',
-      author: 'You',
-      content: 'What data sources are supported?',
-    },
-    {
-      role: 'assistant',
-      content:
-        'OpenSearch supports a wide range of data sources for observability.\n\n**Supported Integrations**\n\n- OpenTelemetry Collector (logs, metrics, traces)\n- Fluent Bit / Fluentd (log forwarding)\n- Prometheus remote write (metrics)\n- Jaeger (distributed tracing)\n- Data Prepper (event processing pipeline)\n\nYou can configure these from the Data Sources page. Would you like me to walk you through connecting your first data source?',
-      attachment: {
-        type: 'query',
-        query:
-          'source=opensearch_sample_data | stats count() as total_events by data_source | sort -total_events',
-      },
-    },
-  ],
+  title: 'Getting started',
+  messages: [],
 };
 
 // Parses simple markdown-ish content into React elements
@@ -161,35 +130,84 @@ const QueryAttachment = ({ query, onAddToCanvas, canvasItems }) => {
   );
 };
 
-// Assistant message with attachments and feedback
-const AssistantMessage = ({ content, streaming, attachment, onAddToCanvas, canvasItems }) => (
-  <div className="threadPage__message threadPage__message--assistant">
-    <div className="threadPage__bubble threadPage__bubble--assistant">
-      <OuiText size="s">{parseContent(content)}</OuiText>
-      {!streaming && attachment && attachment.type === 'page' && (
-        <PageAttachment
-          title={attachment.title}
-          description={attachment.description}
-          onAddToCanvas={onAddToCanvas}
-          canvasItems={canvasItems}
-        />
-      )}
-      {!streaming && attachment && attachment.type === 'query' && (
-        <QueryAttachment
-          query={attachment.query}
-          onAddToCanvas={onAddToCanvas}
-          canvasItems={canvasItems}
-        />
-      )}
-      {!streaming && (
-        <div className="threadPage__feedback">
-          <OuiButtonIcon iconType="thumbsUp" aria-label="Helpful" size="xs" color="text" />
-          <OuiButtonIcon iconType="thumbsDown" aria-label="Not helpful" size="xs" color="text" />
+// Renders a single attachment by type
+const renderAttachment = (att, idx, onAddToCanvas, canvasItems) => {
+  if (att.type === 'page') {
+    return <PageAttachment key={idx} title={att.title} description={att.description} onAddToCanvas={onAddToCanvas} canvasItems={canvasItems} />;
+  }
+  if (att.type === 'query') {
+    return <QueryAttachment key={idx} query={att.query} onAddToCanvas={onAddToCanvas} canvasItems={canvasItems} />;
+  }
+  if (att.type === 'code-block') {
+    return (
+      <div key={idx} className="threadPage__attachmentWrap">
+        <div className="threadPage__attachment threadPage__attachment--codeBlock">
+          {att.title && (
+            <OuiText size="xs" style={{ marginBottom: 4 }}>
+              <strong>{att.title}</strong>
+            </OuiText>
+          )}
+          <OuiCodeBlock language={att.language} fontSize="s" paddingSize="s" isCopyable>
+            {att.code}
+          </OuiCodeBlock>
         </div>
-      )}
+      </div>
+    );
+  }
+  if (att.type === 'data-table') {
+    return (
+      <div key={idx} className="threadPage__attachmentWrap">
+        <div className="threadPage__attachment threadPage__attachment--dataTable">
+          {att.title && (
+            <OuiText size="xs" style={{ marginBottom: 8 }}>
+              <strong>{att.title}</strong>
+            </OuiText>
+          )}
+          <div className="threadPage__dataTableScroll">
+            <table className="threadPage__dataTable">
+              <thead>
+                <tr>
+                  {att.columns.map((col, i) => (
+                    <th key={i}>{col}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {att.rows.map((row, i) => (
+                  <tr key={i}>
+                    {row.map((cell, j) => (
+                      <td key={j}>{cell}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
+// Assistant message with attachments and feedback
+const AssistantMessage = ({ content, streaming, attachment, attachments, onAddToCanvas, canvasItems }) => {
+  const allAttachments = attachments || (attachment ? [attachment] : []);
+  return (
+    <div className="threadPage__message threadPage__message--assistant">
+      <div className="threadPage__bubble threadPage__bubble--assistant">
+        {content && <OuiText size="s">{parseContent(content)}</OuiText>}
+        {!streaming && allAttachments.map((att, idx) => renderAttachment(att, idx, onAddToCanvas, canvasItems))}
+        {!streaming && (
+          <div className="threadPage__feedback">
+            <OuiButtonIcon iconType="thumbsUp" aria-label="Helpful" size="xs" color="text" />
+            <OuiButtonIcon iconType="thumbsDown" aria-label="Not helpful" size="xs" color="text" />
+          </div>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // Task list message
 const TaskListMessage = ({ tasks, statuses, collapsed }) => {
@@ -233,41 +251,135 @@ const TaskListMessage = ({ tasks, statuses, collapsed }) => {
   );
 };
 
-// Mock responses for new messages
-const MOCK_TASKS = [
-  ['Searching documentation', 'Preparing response'],
-  ['Querying data sources', 'Analyzing results'],
-];
-
-const MOCK_RESPONSES = [
+// Scripted conversation steps (triggered sequentially)
+const CONVERSATION_STEPS = [
   {
-    content:
-      'Here is what I found.\n\n**Summary**\n\n- Your cluster is healthy and ready to receive data.\n- No data sources are currently configured.\n- I recommend starting with the OpenTelemetry Collector for a unified ingestion pipeline.\n\nWould you like me to generate a sample collector configuration?',
-    attachment: {
-      type: 'page',
-      title: 'OpenTelemetry Collector setup',
-      description: 'Configuration guide for deploying the OTel Collector with OpenSearch as the backend.',
-    },
+    // Step 0: User says "I am using k8s"
+    tasks: ['Scanning project structure', 'Detecting infrastructure', 'Analyzing dependencies'],
+    responses: [
+      {
+        content:
+          'Got it, Kubernetes. I have prepared an OpenTelemetry Collector configuration for your cluster that will capture logs and metrics from your pods and nodes:',
+        attachment: {
+          type: 'code-block',
+          title: 'otel-collector-config.yaml',
+          language: 'yaml',
+          code: `apiVersion: opentelemetry.io/v1alpha1
+kind: OpenTelemetryCollector
+metadata:
+  name: otel-collector
+spec:
+  mode: daemonset
+  config: |
+    receivers:
+      otlp:
+        protocols:
+          grpc: { endpoint: 0.0.0.0:4317 }
+    exporters:
+      opensearch:
+        endpoint: "https://opensearch-cluster:9200"
+    service:
+      pipelines:
+        logs:
+          receivers: [otlp]
+          exporters: [opensearch]
+        metrics:
+          receivers: [otlp]
+          exporters: [opensearch]`,
+        },
+      },
+      {
+        content:
+          'Where do you want to store your observability data? I can send logs, metrics, and traces to either of these:\n\n- CloudWatch — AWS-native, integrates with your existing AWS monitoring stack.\n- OpenSearch — Full-text search, flexible dashboards, and advanced analytics with PPL queries.\n\nWhich one works best for your team?',
+      },
+    ],
   },
   {
-    content:
-      'I checked the cluster status and here are the details.\n\n**Cluster Health**\n\n1. Status: Green\n2. Nodes: 3 active\n3. Indices: 0 (no data ingested yet)\n4. Disk usage: 12% utilized\n\nEverything looks good to start ingesting data. Let me know what you would like to do next.',
-    attachment: {
-      type: 'query',
-      query: 'source=cluster_health | stats latest(status), count(nodes) as active_nodes',
-    },
+    // Step 1: User says "OpenSearch"
+    tasks: null,
+    responses: [
+      {
+        content:
+          'Got it. I will configure OpenSearch as your data store. I am setting up the index templates for logs, metrics, and traces with optimized mappings for Kubernetes metadata.\n\nWhen you are ready, I will start collecting data from your cluster. Just say the word.',
+      },
+    ],
+  },
+  {
+    // Step 2: User says "I am ready"
+    tasks: ['Deploying collector to cluster', 'Verifying data pipeline', 'Waiting for first events'],
+    responses: [
+      {
+        content:
+          'Now collecting data from your project. Here is what is flowing in so far:',
+        attachment: {
+          type: 'data-table',
+          title: 'Ingestion Summary',
+          columns: ['Signal', 'Count', 'Status'],
+          rows: [
+            ['Logs', '12,847', 'Active'],
+            ['Metrics', '3,291', 'Active'],
+            ['Traces', '1,056', 'Active'],
+          ],
+        },
+      },
+      {
+        content:
+          'I also mapped your service dependencies based on the trace data:',
+        tasksBefore: ['Mapping service topology', 'Analyzing trace spans'],
+        attachment: {
+          type: 'page',
+          title: 'Application service map',
+          description:
+            'Auto-discovered service topology showing frontend → checkout → payment-service → inventory, with health indicators and latency between nodes.',
+        },
+      },
+      {
+        content:
+          "I've generated a few dashboards for you to get started:",
+        tasksBefore: ['Building dashboards', 'Configuring visualizations'],
+        attachments: [
+          {
+            type: 'page',
+            title: 'Kubernetes Cluster Overview',
+            description: 'Node health, pod status, resource requests vs limits, and namespace utilization across your cluster.',
+          },
+          {
+            type: 'page',
+            title: 'Service Latency & Error Rates',
+            description: 'P50/P95/P99 latency and error rate trends for each service, with breakdown by endpoint.',
+          },
+          {
+            type: 'page',
+            title: 'Log Volume by Namespace',
+            description: 'Log ingestion rates per namespace with severity distribution and top error patterns.',
+          },
+        ],
+      },
+      {
+        content:
+          'Great. Your OpenSearch dashboard is live, data is flowing, and your first dashboards are ready. Welcome aboard.',
+      },
+    ],
+  },
+  {
+    // Step 3: User says "Start use" — navigate to sample-pages
+    tasks: null,
+    responses: [],
+    navigate: '/sample-pages',
   },
 ];
 
 export const OnboardingPage = () => {
   const [messages, setMessages] = useState(THREAD.messages);
   const [message, setMessage] = useState('');
+  const [selectedOption, setSelectedOption] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
   const [isCanvasOpen, setIsCanvasOpen] = useState(false);
   const [canvasItems, setCanvasItems] = useState([]);
   const [activeCanvasTab, setActiveCanvasTab] = useState(0);
   const [canvasWidth, setCanvasWidth] = useState(600);
   const [isCanvasDragging, setIsCanvasDragging] = useState(false);
+  const [setupPlanSteps, setSetupPlanSteps] = useState([]);
   const isDragging = useRef(false);
   const feedRef = useRef(null);
   const responseIndex = useRef(0);
@@ -304,29 +416,9 @@ export const OnboardingPage = () => {
     };
   }, []);
 
-  const handleAddToCanvas = useCallback((item) => {
-    setCanvasItems((prev) => {
-      const exists = prev.some(
-        (existing) =>
-          existing.type === item.type &&
-          (item.type === 'page'
-            ? existing.title === item.title
-            : existing.query === item.query)
-      );
-      if (exists) return prev;
-      return [...prev, item];
-    });
-    setIsCanvasOpen(true);
-  }, []);
-
-  // Pre-populate canvas with attachments from initial messages
+  // Pre-populate panel (empty by default)
   useEffect(() => {
-    const items = [];
-    THREAD.messages.forEach((msg) => {
-      if (msg.attachment) items.push(msg.attachment);
-    });
-    setCanvasItems(items);
-    setIsCanvasOpen(items.length > 0);
+    setIsCanvasOpen(false);
   }, []);
 
   // Clean up timers on unmount
@@ -350,72 +442,222 @@ export const OnboardingPage = () => {
     setMessage('');
     setIsTyping(true);
 
-    const idx = responseIndex.current % MOCK_RESPONSES.length;
-    const mockResponse = MOCK_RESPONSES[idx];
-    const tasks = MOCK_TASKS[idx % MOCK_TASKS.length];
+    const stepIdx = responseIndex.current;
+    const step = CONVERSATION_STEPS[stepIdx % CONVERSATION_STEPS.length];
     responseIndex.current += 1;
-    const fullContent = mockResponse.content;
-    const attachment = mockResponse.attachment;
 
-    // Phase 1: Show task list
-    const taskMsg = { role: 'tasks', tasks, statuses: ['running'], collapsed: false };
-    setMessages((prev) => [...prev, taskMsg]);
-
-    const t1 = setTimeout(() => {
-      setMessages((prev) => {
-        const updated = [...prev];
-        const ti = updated.findLastIndex((m) => m.role === 'tasks');
-        if (ti >= 0) updated[ti] = { ...updated[ti], statuses: ['done', 'running'] };
-        return updated;
-      });
-    }, 1500);
-    streamTimers.current.push(t1);
-
-    const t2 = setTimeout(() => {
-      setMessages((prev) => {
-        const updated = [...prev];
-        const ti = updated.findLastIndex((m) => m.role === 'tasks');
-        if (ti >= 0) updated[ti] = { ...updated[ti], statuses: ['done', 'done'] };
-        return updated;
-      });
-    }, 3000);
-    streamTimers.current.push(t2);
-
-    const t3 = setTimeout(() => {
-      setMessages((prev) => {
-        const updated = [...prev];
-        const ti = updated.findLastIndex((m) => m.role === 'tasks');
-        if (ti >= 0) updated[ti] = { ...updated[ti], collapsed: true };
-        return updated;
-      });
-
+    // If this step triggers navigation, redirect after a short delay
+    if (step.navigate) {
       setIsTyping(false);
+      setTimeout(() => {
+        window.location.hash = step.navigate;
+      }, 800);
+      return;
+    }
 
-      const tokens = fullContent.split(/(\s+)/);
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', content: '', streaming: true, attachment },
-      ]);
+    const tasks = step.tasks;
+    const responses = step.responses;
 
-      let built = '';
-      tokens.forEach((token, i) => {
-        const timer = setTimeout(() => {
-          built += token;
+    // Reveal setup plan steps based on conversation progress
+    const PLAN_STEPS_BY_STAGE = [
+      // Step 0: after "Check my project set up"
+      [
+        { label: 'Detect project infrastructure', status: 'done' },
+        { label: 'Configure collector', status: 'done' },
+        { label: 'Choose data store', status: 'current' },
+      ],
+      // Step 1: after "OpenSearch"
+      [
+        { label: 'Detect project infrastructure', status: 'done' },
+        { label: 'Configure collector', status: 'done' },
+        { label: 'Choose data store', status: 'done' },
+        { label: 'Start data collection', status: 'current' },
+      ],
+      // Step 2: after "I am ready"
+      [
+        { label: 'Detect project infrastructure', status: 'done' },
+        { label: 'Configure collector', status: 'done' },
+        { label: 'Choose data store', status: 'done' },
+        { label: 'Start data collection', status: 'done' },
+        { label: 'Generate dashboards', status: 'done' },
+        { label: 'Setup complete', status: 'done' },
+      ],
+    ];
+
+    if (stepIdx < PLAN_STEPS_BY_STAGE.length) {
+      setSetupPlanSteps(PLAN_STEPS_BY_STAGE[stepIdx]);
+      setIsCanvasOpen(true);
+      setActiveCanvasTab(0);
+    }
+
+    const startStreaming = (delay) => {
+      let cumulativeDelay = delay;
+
+      responses.forEach((response, rIdx) => {
+        // If this response has tasksBefore, show a task list first
+        if (response.tasksBefore && response.tasksBefore.length > 0) {
+          const inlineTasks = response.tasksBefore;
+          const taskDelay = cumulativeDelay;
+
+          // Add task list message
+          const tTask = setTimeout(() => {
+            const taskMsg = { role: 'tasks', tasks: inlineTasks, statuses: ['running'], collapsed: false };
+            setMessages((prev) => [...prev, taskMsg]);
+          }, taskDelay);
+          streamTimers.current.push(tTask);
+
+          // Animate each task
+          inlineTasks.forEach((_, ti) => {
+            if (ti === 0) return;
+            const tAnim = setTimeout(() => {
+              setMessages((prev) => {
+                const updated = [...prev];
+                const idx = updated.findLastIndex((m) => m.role === 'tasks' && !m.collapsed);
+                if (idx >= 0) {
+                  const newStatuses = [...updated[idx].statuses];
+                  newStatuses[ti - 1] = 'done';
+                  newStatuses[ti] = 'running';
+                  updated[idx] = { ...updated[idx], statuses: newStatuses };
+                }
+                return updated;
+              });
+            }, taskDelay + ti * 1000);
+            streamTimers.current.push(tAnim);
+          });
+
+          // Finish and collapse
+          const finishDelay = taskDelay + inlineTasks.length * 1000;
+          const tFinish = setTimeout(() => {
+            setMessages((prev) => {
+              const updated = [...prev];
+              const idx = updated.findLastIndex((m) => m.role === 'tasks' && !m.collapsed);
+              if (idx >= 0) {
+                updated[idx] = { ...updated[idx], statuses: inlineTasks.map(() => 'done') };
+              }
+              return updated;
+            });
+          }, finishDelay);
+          streamTimers.current.push(tFinish);
+
+          const collapseDelay = finishDelay + 400;
+          const tCollapse = setTimeout(() => {
+            setMessages((prev) => {
+              const updated = [...prev];
+              const idx = updated.findLastIndex((m) => m.role === 'tasks' && !m.collapsed);
+              if (idx >= 0) {
+                updated[idx] = { ...updated[idx], collapsed: true };
+              }
+              return updated;
+            });
+          }, collapseDelay);
+          streamTimers.current.push(tCollapse);
+
+          cumulativeDelay = collapseDelay + 300;
+        }
+
+        const responseDelay = cumulativeDelay;
+        const t = setTimeout(() => {
+          if (rIdx === 0) setIsTyping(false);
+
+          const tokens = response.content.split(/(\s+)/);
+          const msgData = {
+            role: 'assistant',
+            content: '',
+            streaming: true,
+            ...(response.attachments ? { attachments: response.attachments } : { attachment: response.attachment }),
+          };
+          setMessages((prev) => [...prev, msgData]);
+
+          let built = '';
+          tokens.forEach((token, i) => {
+            const timer = setTimeout(() => {
+              built += token;
+              setMessages((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1] = {
+                  ...updated[updated.length - 1],
+                  content: built,
+                  streaming: i < tokens.length - 1,
+                };
+                return updated;
+              });
+
+              // Auto-add attachments to right panel when streaming finishes
+              if (i === tokens.length - 1) {
+                const atts = response.attachments || (response.attachment ? [response.attachment] : []);
+                if (atts.length > 0) {
+                  setCanvasItems((prev) => [...prev, ...atts]);
+                  setIsCanvasOpen(true);
+                }
+              }
+            }, i * 30);
+            streamTimers.current.push(timer);
+          });
+        }, responseDelay);
+        streamTimers.current.push(t);
+
+        // Estimate time for this response to finish streaming
+        const tokenCount = response.content.split(/(\s+)/).length;
+        cumulativeDelay += tokenCount * 30 + 800; // streaming time + gap between responses
+      });
+    };
+
+    if (tasks) {
+      // Show task list first
+      const taskMsg = { role: 'tasks', tasks, statuses: ['running'], collapsed: false };
+      setMessages((prev) => [...prev, taskMsg]);
+
+      // Animate tasks
+      tasks.forEach((_, i) => {
+        if (i === 0) return; // first task starts as running
+        const t = setTimeout(() => {
           setMessages((prev) => {
             const updated = [...prev];
-            updated[updated.length - 1] = {
-              role: 'assistant',
-              content: built,
-              streaming: i < tokens.length - 1,
-              attachment,
-            };
+            const ti = updated.findLastIndex((m) => m.role === 'tasks');
+            if (ti >= 0) {
+              const newStatuses = [...updated[ti].statuses];
+              newStatuses[i - 1] = 'done';
+              newStatuses[i] = 'running';
+              updated[ti] = { ...updated[ti], statuses: newStatuses };
+            }
             return updated;
           });
-        }, i * 30);
-        streamTimers.current.push(timer);
+        }, i * 1500);
+        streamTimers.current.push(t);
       });
-    }, 3500);
-    streamTimers.current.push(t3);
+
+      // Finish last task
+      const finishTasksDelay = tasks.length * 1500;
+      const tFinish = setTimeout(() => {
+        setMessages((prev) => {
+          const updated = [...prev];
+          const ti = updated.findLastIndex((m) => m.role === 'tasks');
+          if (ti >= 0) {
+            const newStatuses = tasks.map(() => 'done');
+            updated[ti] = { ...updated[ti], statuses: newStatuses };
+          }
+          return updated;
+        });
+      }, finishTasksDelay);
+      streamTimers.current.push(tFinish);
+
+      // Collapse tasks and start streaming
+      const collapseDelay = finishTasksDelay + 500;
+      const tCollapse = setTimeout(() => {
+        setMessages((prev) => {
+          const updated = [...prev];
+          const ti = updated.findLastIndex((m) => m.role === 'tasks');
+          if (ti >= 0) updated[ti] = { ...updated[ti], collapsed: true };
+          return updated;
+        });
+      }, collapseDelay);
+      streamTimers.current.push(tCollapse);
+
+      startStreaming(collapseDelay + 300);
+    } else {
+      // No tasks, start streaming immediately
+      startStreaming(800);
+    }
   };
 
   const handleKeyDown = (e) => {
@@ -454,7 +696,15 @@ export const OnboardingPage = () => {
       {/* Simple header — no left nav toggle, no thread flyout */}
       <div className="detailPageHeader">
         <div className="detailPageHeader__title">
-          {THREAD.title}
+          {messages.length > 0 ? 'Set up from new' : THREAD.title}
+          {messages.length > 0 && (
+            <button
+              type="button"
+              className="onboardingPage__startOver"
+              onClick={() => window.location.reload()}>
+              Start over
+            </button>
+          )}
         </div>
         <div className="detailPageHeader__actions">
           <OuiToolTip content="Related Assets" position="bottom">
@@ -475,7 +725,54 @@ export const OnboardingPage = () => {
         {/* Conversation column */}
         <div className="threadPage__conversationCol">
           <div className="threadPage__feed" ref={feedRef}>
-            {messages.map((msg, i) => {
+            {messages.length === 0 ? (
+              <div className="onboardingPage__options">
+                <OuiTitle size="m">
+                  <h2>Set up observability solution</h2>
+                </OuiTitle>
+                <OuiFlexGroup gutterSize="l" style={{ marginTop: 24 }}>
+                  <OuiFlexItem key="new">
+                    <button
+                      type="button"
+                      className={`onboardingPage__optionCard${selectedOption === 'new' ? ' onboardingPage__optionCard--selected' : ''}`}
+                      onClick={() => setSelectedOption('new')}>
+                      <OuiIcon type="plusInCircle" size="l" color="primary" />
+                      <OuiText size="s">
+                        <strong>Set up from new</strong>
+                      </OuiText>
+                      <OuiText size="xs" color="subdued">
+                        <p style={{ margin: 0 }}>Start fresh with a new observability configuration tailored to your environment.</p>
+                      </OuiText>
+                    </button>
+                    {selectedOption === 'new' && (
+                      <OuiText size="s" className="onboardingPage__optionDetail">
+                        <p>Tell me about your infrastructure setup — what services are you running, and where are they deployed? I will configure the right collectors and pipelines for you.</p>
+                      </OuiText>
+                    )}
+                  </OuiFlexItem>
+                  <OuiFlexItem key="migrate">
+                    <button
+                      type="button"
+                      className={`onboardingPage__optionCard${selectedOption === 'migrate' ? ' onboardingPage__optionCard--selected' : ''}`}
+                      onClick={() => setSelectedOption('migrate')}>
+                      <OuiIcon type="importAction" size="l" color="primary" />
+                      <OuiText size="s">
+                        <strong>Migrate from others</strong>
+                      </OuiText>
+                      <OuiText size="xs" color="subdued">
+                        <p style={{ margin: 0 }}>Bring your existing observability configuration from another platform to OpenSearch.</p>
+                      </OuiText>
+                    </button>
+                    {selectedOption === 'migrate' && (
+                      <OuiText size="s" className="onboardingPage__optionDetail">
+                        <p>Tell me about your current observability platform — what tools are you using today, and what data are you collecting? I will help you migrate everything over.</p>
+                      </OuiText>
+                    )}
+                  </OuiFlexItem>
+                </OuiFlexGroup>
+              </div>
+            ) : (
+              messages.map((msg, i) => {
               if (msg.role === 'user') {
                 return <UserMessage key={i} content={msg.content} />;
               }
@@ -495,11 +792,13 @@ export const OnboardingPage = () => {
                   content={msg.content}
                   streaming={msg.streaming}
                   attachment={msg.attachment}
-                  onAddToCanvas={handleAddToCanvas}
+                  attachments={msg.attachments}
+                  onAddToCanvas={() => {}}
                   canvasItems={canvasItems}
                 />
               );
-            })}
+            })
+            )}
           </div>
 
           {/* Input area */}
@@ -552,47 +851,105 @@ export const OnboardingPage = () => {
               </span>
             </div>
             <OuiFlyoutHeader>
-              {canvasItems.length > 0 && (
-                <OuiTabs size="s" className="threadPage__canvasTabs">
-                  {canvasItems.map((item, i) => (
-                    <OuiTab
-                      key={i}
-                      isSelected={activeCanvasTab === i}
-                      onClick={() => setActiveCanvasTab(i)}>
-                      {item.title || (item.type === 'query' ? 'Query' : `Asset ${i + 1}`)}
-                    </OuiTab>
-                  ))}
-                </OuiTabs>
-              )}
+              <OuiTabs size="s" className="threadPage__canvasTabs">
+                <OuiTab
+                  isSelected={activeCanvasTab === 0}
+                  onClick={() => setActiveCanvasTab(0)}>
+                  Setup plan
+                </OuiTab>
+                {canvasItems.map((item, i) => (
+                  <OuiTab
+                    key={i}
+                    isSelected={activeCanvasTab === i + 1}
+                    onClick={() => setActiveCanvasTab(i + 1)}>
+                    {item.title || (item.type === 'query' ? 'Query' : `Asset ${i + 1}`)}
+                  </OuiTab>
+                ))}
+              </OuiTabs>
             </OuiFlyoutHeader>
             <OuiFlyoutBody>
-              {canvasItems.length === 0 ? (
-                <OuiText size="s" color="subdued">
-                  <p>
-                    Items added here will appear as related assets. Hover over
-                    attachments in the conversation and click &ldquo;Add as related asset&rdquo;.
-                  </p>
-                </OuiText>
+              {activeCanvasTab === 0 ? (
+                <div className="onboardingPage__planList">
+                  {setupPlanSteps.length === 0 ? (
+                    <OuiText size="s" color="subdued">
+                      <p>Your setup plan will appear here as you progress.</p>
+                    </OuiText>
+                  ) : (
+                    setupPlanSteps.map((step, i) => (
+                      <div key={i} className="onboardingPage__planItem">
+                        <div className="onboardingPage__planIcon">
+                          {step.status === 'done' ? (
+                            <OuiIcon type="checkInCircleEmpty" size="m" color="success" />
+                          ) : (
+                            <OuiIcon type="dot" size="m" color="primary" />
+                          )}
+                        </div>
+                        <OuiText size="s">
+                          <span className={step.status === 'current' ? 'onboardingPage__planLabel--current' : ''}>
+                            {step.label}
+                          </span>
+                        </OuiText>
+                      </div>
+                    ))
+                  )}
+                </div>
               ) : (
-                <div className="threadPage__canvasTabContent">
-                  {canvasItems[activeCanvasTab] && (
-                    <div className="threadPage__canvasDetail">
-                      {canvasItems[activeCanvasTab].type === 'page' && (
-                        <>
-                          <OuiText size="s">
-                            <strong>{canvasItems[activeCanvasTab].title}</strong>
-                          </OuiText>
-                          <OuiText size="s" color="subdued">
-                            <p>{canvasItems[activeCanvasTab].description}</p>
-                          </OuiText>
-                        </>
+                <div className="threadPage__canvasDetail">
+                  {canvasItems[activeCanvasTab - 1] && canvasItems[activeCanvasTab - 1].type === 'page' && (
+                    <>
+                      <OuiText size="s">
+                        <strong>{canvasItems[activeCanvasTab - 1].title}</strong>
+                      </OuiText>
+                      <OuiText size="s" color="subdued">
+                        <p>{canvasItems[activeCanvasTab - 1].description}</p>
+                      </OuiText>
+                    </>
+                  )}
+                  {canvasItems[activeCanvasTab - 1] && canvasItems[activeCanvasTab - 1].type === 'query' && (
+                    <OuiCodeBlock fontSize="s" paddingSize="s" isCopyable>
+                      {canvasItems[activeCanvasTab - 1].query}
+                    </OuiCodeBlock>
+                  )}
+                  {canvasItems[activeCanvasTab - 1] && canvasItems[activeCanvasTab - 1].type === 'code-block' && (
+                    <>
+                      {canvasItems[activeCanvasTab - 1].title && (
+                        <OuiText size="s">
+                          <strong>{canvasItems[activeCanvasTab - 1].title}</strong>
+                        </OuiText>
                       )}
-                      {canvasItems[activeCanvasTab].type === 'query' && (
-                        <OuiCodeBlock fontSize="s" paddingSize="s" isCopyable>
-                          {canvasItems[activeCanvasTab].query}
-                        </OuiCodeBlock>
+                      <OuiCodeBlock language={canvasItems[activeCanvasTab - 1].language} fontSize="s" paddingSize="s" isCopyable>
+                        {canvasItems[activeCanvasTab - 1].code}
+                      </OuiCodeBlock>
+                    </>
+                  )}
+                  {canvasItems[activeCanvasTab - 1] && canvasItems[activeCanvasTab - 1].type === 'data-table' && (
+                    <>
+                      {canvasItems[activeCanvasTab - 1].title && (
+                        <OuiText size="s">
+                          <strong>{canvasItems[activeCanvasTab - 1].title}</strong>
+                        </OuiText>
                       )}
-                    </div>
+                      <div className="threadPage__dataTableScroll">
+                        <table className="threadPage__dataTable">
+                          <thead>
+                            <tr>
+                              {canvasItems[activeCanvasTab - 1].columns.map((col, i) => (
+                                <th key={i}>{col}</th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {canvasItems[activeCanvasTab - 1].rows.map((row, i) => (
+                              <tr key={i}>
+                                {row.map((cell, j) => (
+                                  <td key={j}>{cell}</td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </>
                   )}
                 </div>
               )}
