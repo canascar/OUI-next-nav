@@ -67,13 +67,14 @@
   }
 }
 
-// Colored text for each outline button variant
-.ouiButton--primary:not(.ouiButton--fill):not(.ouiButton-isDisabled) {
-  color: $ouiColorPrimary !important;
+// Outline (non-fill) buttons — primary uses monotone text, others keep their color
+.ouiButton--primary:not(.ouiButton--fill):not(.ouiButton-isDisabled),
+.ouiButton--text:not(.ouiButton--fill):not(.ouiButton-isDisabled) {
+  color: $ouiTextColor !important;
 
   .ouiButton__text,
   .ouiButton__icon {
-    color: $ouiColorPrimary !important;
+    color: $ouiTextColor !important;
   }
 }
 
@@ -110,15 +111,6 @@
   .ouiButton__text,
   .ouiButton__icon {
     color: $ouiColorAccent !important;
-  }
-}
-
-.ouiButton--text:not(.ouiButton--fill):not(.ouiButton-isDisabled) {
-  color: $ouiTextColor !important;
-
-  .ouiButton__text,
-  .ouiButton__icon {
-    color: $ouiTextColor !important;
   }
 }
 

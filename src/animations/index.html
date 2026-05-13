@@ -426,5 +426,387 @@
     </div>
 
   </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <h1 style="margin-top: 80px;">Sequences</h1>
+
+  <h2 style="margin-top: 32px;">Light mode</h2>
+  <div class="grid" style="margin-top: 16px; background: #f5f5f5; border-radius: 12px; padding: 32px;">
+
+    <div class="sample" style="min-height: 160px; align-items: flex-start;">
+      <style>
+        .seq-thinking {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .seq-thinking svg {
+          width: 28px; height: 28px;
+          flex-shrink: 0;
+        }
+        .seq-thinking .seq-outline path {
+          fill: none;
+          stroke: #1A6FA3;
+          stroke-width: 2;
+          stroke-dasharray: 300;
+          stroke-dashoffset: 300;
+          animation: seqDraw 2s ease forwards;
+        }
+        .seq-thinking .seq-outline path:nth-child(2) {
+          animation-delay: 0.4s;
+          stroke: #0F3D5C;
+        }
+        .seq-thinking .seq-outline path:nth-child(3) {
+          animation-delay: 0.8s;
+        }
+        /* After draw completes, fade in the fill */
+        .seq-thinking .seq-fill {
+          opacity: 0;
+          animation: seqFillIn 0.8s ease forwards;
+          animation-delay: 2.2s;
+        }
+        .seq-thinking .seq-fill path:nth-child(1) { fill: #1A6FA3; }
+        .seq-thinking .seq-fill path:nth-child(2) { fill: #0F3D5C; }
+        .seq-thinking .seq-fill path:nth-child(3) { fill: #1A6FA3; }
+        /* Breathe starts after fill */
+        .seq-thinking .seq-pulse-wrap {
+          animation: seqBreathe 3s ease-in-out infinite;
+          animation-delay: 3s;
+          position: relative;
+          width: 28px;
+          height: 28px;
+          flex-shrink: 0;
+        }
+        .seq-thinking .seq-text {
+          opacity: 0;
+          font-size: 13px;
+          font-style: italic;
+          color: #888;
+          animation: seqTextIn 0.5s ease forwards, seqShimmer 2.5s ease-in-out infinite;
+          animation-delay: 3.2s, 3.7s;
+          background: linear-gradient(90deg, #888 0%, #ccc 50%, #888 100%);
+          background-size: 200% 100%;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+        @keyframes seqShimmer {
+          0% { background-position: 100% 0; }
+          100% { background-position: -100% 0; }
+        }
+        @keyframes seqDraw {
+          0% { stroke-dashoffset: 300; }
+          80% { stroke-dashoffset: 0; }
+          100% { stroke-dashoffset: 0; }
+        }
+        @keyframes seqFillIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes seqBreathe {
+          0%, 100% { transform: scale(0.92); opacity: 0.6; }
+          50% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes seqTextIn {
+          from { opacity: 0; transform: translateX(-4px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+      </style>
+      <div class="seq-thinking">
+        <div class="seq-pulse-wrap">
+          <!-- Outline draw layer -->
+          <svg class="seq-outline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" style="position: absolute; top: 0; left: 0;">
+            <path d="M61.7374 23.5C60.4878 23.5 59.4748 24.513 59.4748 25.7626C59.4748 44.3813 44.3813 59.4748 25.7626 59.4748C24.513 59.4748 23.5 60.4878 23.5 61.7374C23.5 62.987 24.513 64 25.7626 64C46.8805 64 64 46.8805 64 25.7626C64 24.513 62.987 23.5 61.7374 23.5Z"/>
+            <path d="M48.0814 38C50.2572 34.4505 52.3615 29.7178 51.9475 23.0921C51.0899 9.36725 38.6589 -1.04463 26.9206 0.0837327C22.3253 0.525465 17.6068 4.2712 18.026 10.9805C18.2082 13.8961 19.6352 15.6169 21.9544 16.9399C24.1618 18.1992 26.9978 18.9969 30.2128 19.9011C34.0962 20.9934 38.6009 22.2203 42.063 24.7717C46.2125 27.8295 49.0491 31.3743 48.0814 38Z"/>
+            <path d="M3.91861 14C1.74276 17.5495 -0.361506 22.2822 0.0524931 28.9079C0.910072 42.6327 13.3411 53.0446 25.0794 51.9163C29.6747 51.4745 34.3932 47.7288 33.974 41.0195C33.7918 38.1039 32.3647 36.3831 30.0456 35.0601C27.8382 33.8008 25.0022 33.0031 21.7872 32.0989C17.9038 31.0066 13.3991 29.7797 9.93694 27.2283C5.78746 24.1704 2.95092 20.6257 3.91861 14Z"/>
+          </svg>
+          <!-- Fill layer (fades in after draw) -->
+          <svg class="seq-fill" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" style="position: relative;">
+            <path d="M61.7374 23.5C60.4878 23.5 59.4748 24.513 59.4748 25.7626C59.4748 44.3813 44.3813 59.4748 25.7626 59.4748C24.513 59.4748 23.5 60.4878 23.5 61.7374C23.5 62.987 24.513 64 25.7626 64C46.8805 64 64 46.8805 64 25.7626C64 24.513 62.987 23.5 61.7374 23.5Z"/>
+            <path d="M48.0814 38C50.2572 34.4505 52.3615 29.7178 51.9475 23.0921C51.0899 9.36725 38.6589 -1.04463 26.9206 0.0837327C22.3253 0.525465 17.6068 4.2712 18.026 10.9805C18.2082 13.8961 19.6352 15.6169 21.9544 16.9399C24.1618 18.1992 26.9978 18.9969 30.2128 19.9011C34.0962 20.9934 38.6009 22.2203 42.063 24.7717C46.2125 27.8295 49.0491 31.3743 48.0814 38Z"/>
+            <path d="M3.91861 14C1.74276 17.5495 -0.361506 22.2822 0.0524931 28.9079C0.910072 42.6327 13.3411 53.0446 25.0794 51.9163C29.6747 51.4745 34.3932 47.7288 33.974 41.0195C33.7918 38.1039 32.3647 36.3831 30.0456 35.0601C27.8382 33.8008 25.0022 33.0031 21.7872 32.0989C17.9038 31.0066 13.3991 29.7797 9.93694 27.2283C5.78746 24.1704 2.95092 20.6257 3.91861 14Z"/>
+          </svg>
+        </div>
+        <div class="seq-text" id="processLabel">Thinking...</div>
+      </div>
+      <script>
+        (function() {
+          const labels = ['Thinking...', 'Processing...', 'Gathering...', 'Sifting through...', 'Mining...', 'Uncovering...', 'Searching...'];
+          const el = document.getElementById('processLabel');
+          el.textContent = labels[Math.floor(Math.random() * labels.length)];
+        })();
+      </script>
+      <span class="label">process-label</span>
+    </div>
+
+    <!-- process-empty: same animation, no text -->
+    <div class="sample" style="min-height: 160px; align-items: flex-start;">
+      <div class="seq-thinking">
+        <div class="seq-pulse-wrap">
+          <svg class="seq-outline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" style="position: absolute; top: 0; left: 0;">
+            <path d="M61.7374 23.5C60.4878 23.5 59.4748 24.513 59.4748 25.7626C59.4748 44.3813 44.3813 59.4748 25.7626 59.4748C24.513 59.4748 23.5 60.4878 23.5 61.7374C23.5 62.987 24.513 64 25.7626 64C46.8805 64 64 46.8805 64 25.7626C64 24.513 62.987 23.5 61.7374 23.5Z"/>
+            <path d="M48.0814 38C50.2572 34.4505 52.3615 29.7178 51.9475 23.0921C51.0899 9.36725 38.6589 -1.04463 26.9206 0.0837327C22.3253 0.525465 17.6068 4.2712 18.026 10.9805C18.2082 13.8961 19.6352 15.6169 21.9544 16.9399C24.1618 18.1992 26.9978 18.9969 30.2128 19.9011C34.0962 20.9934 38.6009 22.2203 42.063 24.7717C46.2125 27.8295 49.0491 31.3743 48.0814 38Z"/>
+            <path d="M3.91861 14C1.74276 17.5495 -0.361506 22.2822 0.0524931 28.9079C0.910072 42.6327 13.3411 53.0446 25.0794 51.9163C29.6747 51.4745 34.3932 47.7288 33.974 41.0195C33.7918 38.1039 32.3647 36.3831 30.0456 35.0601C27.8382 33.8008 25.0022 33.0031 21.7872 32.0989C17.9038 31.0066 13.3991 29.7797 9.93694 27.2283C5.78746 24.1704 2.95092 20.6257 3.91861 14Z"/>
+          </svg>
+          <svg class="seq-fill" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" style="position: relative;">
+            <path d="M61.7374 23.5C60.4878 23.5 59.4748 24.513 59.4748 25.7626C59.4748 44.3813 44.3813 59.4748 25.7626 59.4748C24.513 59.4748 23.5 60.4878 23.5 61.7374C23.5 62.987 24.513 64 25.7626 64C46.8805 64 64 46.8805 64 25.7626C64 24.513 62.987 23.5 61.7374 23.5Z"/>
+            <path d="M48.0814 38C50.2572 34.4505 52.3615 29.7178 51.9475 23.0921C51.0899 9.36725 38.6589 -1.04463 26.9206 0.0837327C22.3253 0.525465 17.6068 4.2712 18.026 10.9805C18.2082 13.8961 19.6352 15.6169 21.9544 16.9399C24.1618 18.1992 26.9978 18.9969 30.2128 19.9011C34.0962 20.9934 38.6009 22.2203 42.063 24.7717C46.2125 27.8295 49.0491 31.3743 48.0814 38Z"/>
+            <path d="M3.91861 14C1.74276 17.5495 -0.361506 22.2822 0.0524931 28.9079C0.910072 42.6327 13.3411 53.0446 25.0794 51.9163C29.6747 51.4745 34.3932 47.7288 33.974 41.0195C33.7918 38.1039 32.3647 36.3831 30.0456 35.0601C27.8382 33.8008 25.0022 33.0031 21.7872 32.0989C17.9038 31.0066 13.3991 29.7797 9.93694 27.2283C5.78746 24.1704 2.95092 20.6257 3.91861 14Z"/>
+          </svg>
+        </div>
+      </div>
+      <span class="label">process-empty</span>
+    </div>
+
+    <div class="sample" style="min-height: 160px;">
+      <style>
+        .seq-olly {
+          position: relative;
+          display: inline-block;
+          cursor: pointer;
+        }
+        .seq-olly svg {
+          width: 28px; height: 28px;
+          transition: filter 0.3s ease;
+        }
+        .seq-olly svg path {
+          transition: stroke 0.3s ease, stroke-width 0.3s ease;
+          stroke: transparent;
+          stroke-width: 0;
+        }
+        /* Hover: outline glare */
+        .seq-olly:hover svg path {
+          stroke: #4fc3f7;
+          stroke-width: 1.5;
+          stroke-dasharray: 60 140;
+          animation: ollyGlare 2s linear infinite;
+        }
+        .seq-olly:hover svg path:nth-child(2) { animation-delay: -0.7s; }
+        .seq-olly:hover svg path:nth-child(3) { animation-delay: -1.4s; }
+        .seq-olly:hover svg {
+          filter: drop-shadow(0 0 6px rgba(79, 195, 247, 0.5));
+        }
+        /* Tooltip */
+        .seq-olly .seq-tooltip {
+          position: absolute;
+          left: calc(100% + 10px);
+          top: 50%;
+          transform: translateY(-50%) translateX(-4px);
+          background: #222;
+          color: #fff;
+          font-size: 12px;
+          padding: 6px 10px;
+          border-radius: 6px;
+          white-space: nowrap;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .seq-olly:hover .seq-tooltip {
+          opacity: 1;
+          transform: translateY(-50%) translateX(0);
+        }
+        /* Click bounce */
+        .seq-olly.bouncing svg {
+          animation: ollyBounce 0.6s ease;
+        }
+        @keyframes ollyGlare {
+          to { stroke-dashoffset: -200; }
+        }
+        @keyframes ollyBounce {
+          0% { transform: scale(1); }
+          20% { transform: scale(0.85); }
+          50% { transform: scale(1.2); }
+          70% { transform: scale(0.95); }
+          100% { transform: scale(1); }
+        }
+      </style>
+      <div class="seq-olly" onclick="this.classList.remove('bouncing'); void this.offsetWidth; this.classList.add('bouncing');">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+          <path d="M61.7374 23.5C60.4878 23.5 59.4748 24.513 59.4748 25.7626C59.4748 44.3813 44.3813 59.4748 25.7626 59.4748C24.513 59.4748 23.5 60.4878 23.5 61.7374C23.5 62.987 24.513 64 25.7626 64C46.8805 64 64 46.8805 64 25.7626C64 24.513 62.987 23.5 61.7374 23.5Z" fill="#1A6FA3"/>
+          <path d="M48.0814 38C50.2572 34.4505 52.3615 29.7178 51.9475 23.0921C51.0899 9.36725 38.6589 -1.04463 26.9206 0.0837327C22.3253 0.525465 17.6068 4.2712 18.026 10.9805C18.2082 13.8961 19.6352 15.6169 21.9544 16.9399C24.1618 18.1992 26.9978 18.9969 30.2128 19.9011C34.0962 20.9934 38.6009 22.2203 42.063 24.7717C46.2125 27.8295 49.0491 31.3743 48.0814 38Z" fill="#0F3D5C"/>
+          <path d="M3.91861 14C1.74276 17.5495 -0.361506 22.2822 0.0524931 28.9079C0.910072 42.6327 13.3411 53.0446 25.0794 51.9163C29.6747 51.4745 34.3932 47.7288 33.974 41.0195C33.7918 38.1039 32.3647 36.3831 30.0456 35.0601C27.8382 33.8008 25.0022 33.0031 21.7872 32.0989C17.9038 31.0066 13.3991 29.7797 9.93694 27.2283C5.78746 24.1704 2.95092 20.6257 3.91861 14Z" fill="#1A6FA3"/>
+        </svg>
+        <div class="seq-tooltip">Olly is here to help you</div>
+      </div>
+      <span class="label">idle</span>
+    </div>
+
+  </div>
+
+  <h2 style="margin-top: 32px;">Dark mode</h2>
+  <div class="grid" style="margin-top: 16px; background: #111; border-radius: 12px; padding: 32px;">
+
+    <!-- dm-process-label -->
+    <div class="sample" style="min-height: 160px; align-items: flex-start;">
+      <style>
+        .seq-thinking-dm {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .seq-thinking-dm svg {
+          width: 28px; height: 28px;
+          flex-shrink: 0;
+        }
+        .seq-thinking-dm .seq-outline path {
+          fill: none;
+          stroke: #1A8FD1;
+          stroke-width: 2;
+          stroke-dasharray: 300;
+          stroke-dashoffset: 300;
+          animation: seqDraw 2s ease forwards;
+        }
+        .seq-thinking-dm .seq-outline path:nth-child(2) {
+          animation-delay: 0.4s;
+          stroke: #A8DEFF;
+        }
+        .seq-thinking-dm .seq-outline path:nth-child(3) {
+          animation-delay: 0.8s;
+        }
+        .seq-thinking-dm .seq-fill {
+          opacity: 0;
+          animation: seqFillIn 0.8s ease forwards;
+          animation-delay: 2.2s;
+        }
+        .seq-thinking-dm .seq-fill path:nth-child(1) { fill: #1A8FD1; }
+        .seq-thinking-dm .seq-fill path:nth-child(2) { fill: #A8DEFF; }
+        .seq-thinking-dm .seq-fill path:nth-child(3) { fill: #1A8FD1; }
+        .seq-thinking-dm .seq-pulse-wrap {
+          animation: seqBreathe 3s ease-in-out infinite;
+          animation-delay: 3s;
+          position: relative;
+          width: 28px;
+          height: 28px;
+          flex-shrink: 0;
+        }
+        .seq-thinking-dm .seq-text {
+          opacity: 0;
+          font-size: 13px;
+          font-style: italic;
+          color: #aaa;
+          animation: seqTextIn 0.5s ease forwards, seqShimmerDm 2.5s ease-in-out infinite;
+          animation-delay: 3.2s, 3.7s;
+          background: linear-gradient(90deg, #aaa 0%, #fff 50%, #aaa 100%);
+          background-size: 200% 100%;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+        @keyframes seqShimmerDm {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
+      </style>
+      <div class="seq-thinking-dm">
+        <div class="seq-pulse-wrap">
+          <svg class="seq-outline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" style="position: absolute; top: 0; left: 0;">
+            <path d="M61.7374 23.5C60.4878 23.5 59.4748 24.513 59.4748 25.7626C59.4748 44.3813 44.3813 59.4748 25.7626 59.4748C24.513 59.4748 23.5 60.4878 23.5 61.7374C23.5 62.987 24.513 64 25.7626 64C46.8805 64 64 46.8805 64 25.7626C64 24.513 62.987 23.5 61.7374 23.5Z"/>
+            <path d="M48.0814 38C50.2572 34.4505 52.3615 29.7178 51.9475 23.0921C51.0899 9.36725 38.6589 -1.04463 26.9206 0.0837327C22.3253 0.525465 17.6068 4.2712 18.026 10.9805C18.2082 13.8961 19.6352 15.6169 21.9544 16.9399C24.1618 18.1992 26.9978 18.9969 30.2128 19.9011C34.0962 20.9934 38.6009 22.2203 42.063 24.7717C46.2125 27.8295 49.0491 31.3743 48.0814 38Z"/>
+            <path d="M3.91861 14C1.74276 17.5495 -0.361506 22.2822 0.0524931 28.9079C0.910072 42.6327 13.3411 53.0446 25.0794 51.9163C29.6747 51.4745 34.3932 47.7288 33.974 41.0195C33.7918 38.1039 32.3647 36.3831 30.0456 35.0601C27.8382 33.8008 25.0022 33.0031 21.7872 32.0989C17.9038 31.0066 13.3991 29.7797 9.93694 27.2283C5.78746 24.1704 2.95092 20.6257 3.91861 14Z"/>
+          </svg>
+          <svg class="seq-fill" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" style="position: relative;">
+            <path d="M61.7374 23.5C60.4878 23.5 59.4748 24.513 59.4748 25.7626C59.4748 44.3813 44.3813 59.4748 25.7626 59.4748C24.513 59.4748 23.5 60.4878 23.5 61.7374C23.5 62.987 24.513 64 25.7626 64C46.8805 64 64 46.8805 64 25.7626C64 24.513 62.987 23.5 61.7374 23.5Z"/>
+            <path d="M48.0814 38C50.2572 34.4505 52.3615 29.7178 51.9475 23.0921C51.0899 9.36725 38.6589 -1.04463 26.9206 0.0837327C22.3253 0.525465 17.6068 4.2712 18.026 10.9805C18.2082 13.8961 19.6352 15.6169 21.9544 16.9399C24.1618 18.1992 26.9978 18.9969 30.2128 19.9011C34.0962 20.9934 38.6009 22.2203 42.063 24.7717C46.2125 27.8295 49.0491 31.3743 48.0814 38Z"/>
+            <path d="M3.91861 14C1.74276 17.5495 -0.361506 22.2822 0.0524931 28.9079C0.910072 42.6327 13.3411 53.0446 25.0794 51.9163C29.6747 51.4745 34.3932 47.7288 33.974 41.0195C33.7918 38.1039 32.3647 36.3831 30.0456 35.0601C27.8382 33.8008 25.0022 33.0031 21.7872 32.0989C17.9038 31.0066 13.3991 29.7797 9.93694 27.2283C5.78746 24.1704 2.95092 20.6257 3.91861 14Z"/>
+          </svg>
+        </div>
+        <div class="seq-text" id="processLabelDm">Thinking...</div>
+      </div>
+      <script>
+        (function() {
+          const labels = ['Thinking...', 'Processing...', 'Gathering...', 'Sifting through...', 'Mining...', 'Uncovering...', 'Searching...'];
+          const el = document.getElementById('processLabelDm');
+          el.textContent = labels[Math.floor(Math.random() * labels.length)];
+        })();
+      </script>
+      <span class="label" style="color: #666;">dm-process-label</span>
+    </div>
+
+    <!-- dm-process-empty -->
+    <div class="sample" style="min-height: 160px; align-items: flex-start;">
+      <div class="seq-thinking-dm">
+        <div class="seq-pulse-wrap">
+          <svg class="seq-outline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" style="position: absolute; top: 0; left: 0;">
+            <path d="M61.7374 23.5C60.4878 23.5 59.4748 24.513 59.4748 25.7626C59.4748 44.3813 44.3813 59.4748 25.7626 59.4748C24.513 59.4748 23.5 60.4878 23.5 61.7374C23.5 62.987 24.513 64 25.7626 64C46.8805 64 64 46.8805 64 25.7626C64 24.513 62.987 23.5 61.7374 23.5Z"/>
+            <path d="M48.0814 38C50.2572 34.4505 52.3615 29.7178 51.9475 23.0921C51.0899 9.36725 38.6589 -1.04463 26.9206 0.0837327C22.3253 0.525465 17.6068 4.2712 18.026 10.9805C18.2082 13.8961 19.6352 15.6169 21.9544 16.9399C24.1618 18.1992 26.9978 18.9969 30.2128 19.9011C34.0962 20.9934 38.6009 22.2203 42.063 24.7717C46.2125 27.8295 49.0491 31.3743 48.0814 38Z"/>
+            <path d="M3.91861 14C1.74276 17.5495 -0.361506 22.2822 0.0524931 28.9079C0.910072 42.6327 13.3411 53.0446 25.0794 51.9163C29.6747 51.4745 34.3932 47.7288 33.974 41.0195C33.7918 38.1039 32.3647 36.3831 30.0456 35.0601C27.8382 33.8008 25.0022 33.0031 21.7872 32.0989C17.9038 31.0066 13.3991 29.7797 9.93694 27.2283C5.78746 24.1704 2.95092 20.6257 3.91861 14Z"/>
+          </svg>
+          <svg class="seq-fill" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" style="position: relative;">
+            <path d="M61.7374 23.5C60.4878 23.5 59.4748 24.513 59.4748 25.7626C59.4748 44.3813 44.3813 59.4748 25.7626 59.4748C24.513 59.4748 23.5 60.4878 23.5 61.7374C23.5 62.987 24.513 64 25.7626 64C46.8805 64 64 46.8805 64 25.7626C64 24.513 62.987 23.5 61.7374 23.5Z"/>
+            <path d="M48.0814 38C50.2572 34.4505 52.3615 29.7178 51.9475 23.0921C51.0899 9.36725 38.6589 -1.04463 26.9206 0.0837327C22.3253 0.525465 17.6068 4.2712 18.026 10.9805C18.2082 13.8961 19.6352 15.6169 21.9544 16.9399C24.1618 18.1992 26.9978 18.9969 30.2128 19.9011C34.0962 20.9934 38.6009 22.2203 42.063 24.7717C46.2125 27.8295 49.0491 31.3743 48.0814 38Z"/>
+            <path d="M3.91861 14C1.74276 17.5495 -0.361506 22.2822 0.0524931 28.9079C0.910072 42.6327 13.3411 53.0446 25.0794 51.9163C29.6747 51.4745 34.3932 47.7288 33.974 41.0195C33.7918 38.1039 32.3647 36.3831 30.0456 35.0601C27.8382 33.8008 25.0022 33.0031 21.7872 32.0989C17.9038 31.0066 13.3991 29.7797 9.93694 27.2283C5.78746 24.1704 2.95092 20.6257 3.91861 14Z"/>
+          </svg>
+        </div>
+      </div>
+      <span class="label" style="color: #666;">dm-process-empty</span>
+    </div>
+
+    <!-- dm-idle -->
+    <div class="sample" style="min-height: 160px;">
+      <style>
+        .seq-olly-dm {
+          position: relative;
+          display: inline-block;
+          cursor: pointer;
+        }
+        .seq-olly-dm svg {
+          width: 28px; height: 28px;
+          transition: filter 0.3s ease;
+        }
+        .seq-olly-dm svg path {
+          transition: stroke 0.3s ease, stroke-width 0.3s ease;
+          stroke: transparent;
+          stroke-width: 0;
+        }
+        .seq-olly-dm svg path:nth-child(1) { fill: #1A8FD1; }
+        .seq-olly-dm svg path:nth-child(2) { fill: #A8DEFF; }
+        .seq-olly-dm svg path:nth-child(3) { fill: #1A8FD1; }
+        .seq-olly-dm:hover svg path {
+          stroke: #7dd3fc;
+          stroke-width: 1.5;
+          stroke-dasharray: 60 140;
+          animation: ollyGlare 2s linear infinite;
+        }
+        .seq-olly-dm:hover svg path:nth-child(2) { animation-delay: -0.7s; }
+        .seq-olly-dm:hover svg path:nth-child(3) { animation-delay: -1.4s; }
+        .seq-olly-dm:hover svg {
+          filter: drop-shadow(0 0 8px rgba(125, 211, 252, 0.6));
+        }
+        .seq-olly-dm .seq-tooltip {
+          position: absolute;
+          left: calc(100% + 10px);
+          top: 50%;
+          transform: translateY(-50%) translateX(-4px);
+          background: #333;
+          color: #eee;
+          font-size: 12px;
+          padding: 6px 10px;
+          border-radius: 6px;
+          white-space: nowrap;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        .seq-olly-dm:hover .seq-tooltip {
+          opacity: 1;
+          transform: translateY(-50%) translateX(0);
+        }
+        .seq-olly-dm.bouncing svg {
+          animation: ollyBounce 0.6s ease;
+        }
+      </style>
+      <div class="seq-olly-dm" onclick="this.classList.remove('bouncing'); void this.offsetWidth; this.classList.add('bouncing');">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+          <path d="M61.7374 23.5C60.4878 23.5 59.4748 24.513 59.4748 25.7626C59.4748 44.3813 44.3813 59.4748 25.7626 59.4748C24.513 59.4748 23.5 60.4878 23.5 61.7374C23.5 62.987 24.513 64 25.7626 64C46.8805 64 64 46.8805 64 25.7626C64 24.513 62.987 23.5 61.7374 23.5Z"/>
+          <path d="M48.0814 38C50.2572 34.4505 52.3615 29.7178 51.9475 23.0921C51.0899 9.36725 38.6589 -1.04463 26.9206 0.0837327C22.3253 0.525465 17.6068 4.2712 18.026 10.9805C18.2082 13.8961 19.6352 15.6169 21.9544 16.9399C24.1618 18.1992 26.9978 18.9969 30.2128 19.9011C34.0962 20.9934 38.6009 22.2203 42.063 24.7717C46.2125 27.8295 49.0491 31.3743 48.0814 38Z"/>
+          <path d="M3.91861 14C1.74276 17.5495 -0.361506 22.2822 0.0524931 28.9079C0.910072 42.6327 13.3411 53.0446 25.0794 51.9163C29.6747 51.4745 34.3932 47.7288 33.974 41.0195C33.7918 38.1039 32.3647 36.3831 30.0456 35.0601C27.8382 33.8008 25.0022 33.0031 21.7872 32.0989C17.9038 31.0066 13.3991 29.7797 9.93694 27.2283C5.78746 24.1704 2.95092 20.6257 3.91861 14Z"/>
+        </svg>
+        <div class="seq-tooltip">Olly is here to help you</div>
+      </div>
+      <span class="label" style="color: #666;">dm-idle</span>
+    </div>
+
+  </div>
 </body>
 </html>

@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 
 import {
   OuiAvatar,
@@ -28,6 +28,9 @@ import {
   OuiSpacer,
   OuiBadge,
 } from '../../../../src/components';
+
+import { OllyIndicator } from './olly_indicator';
+import { ThemeContext } from '../../components/with_theme';
 
 const THREADS = {
   'latency-spike': {
@@ -533,6 +536,9 @@ export const ThreadPage = ({ selectedItem }) => {
   const [investigationViz, setInvestigationViz] = useState(null);
   const [panelExpanded, setPanelExpanded] = useState(false);
   const [threadTitle, setThreadTitle] = useState(thread.title);
+  const [ollyState, setOllyState] = useState('idle');
+  const themeContext = useContext(ThemeContext);
+  const isDark = themeContext.theme === 'v9-dark';
   const feedRef = useRef(null);
   const responseIndex = useRef(0);
   const enhancedIndex = useRef(0);
@@ -572,6 +578,7 @@ export const ThreadPage = ({ selectedItem }) => {
           setMessages((prev) => [...prev, userMsg]);
           setMessage('');
           setIsTyping(true);
+          setOllyState('process-label');
 
           const idx = enhancedIndex.current % ENHANCED_RESPONSES.length;
           const mockResponse = ENHANCED_RESPONSES[idx];
@@ -586,17 +593,17 @@ export const ThreadPage = ({ selectedItem }) => {
 
           const t1 = setTimeout(() => {
             setMessages((prev) => { const u=[...prev]; const ti=u.findLastIndex(m=>m.role==='tasks'); if(ti>=0) u[ti]={...u[ti],statuses:['done','running']}; return u; });
-          }, 1500);
+          }, 2500);
           streamTimers.current.push(t1);
 
           const t2 = setTimeout(() => {
             setMessages((prev) => { const u=[...prev]; const ti=u.findLastIndex(m=>m.role==='tasks'); if(ti>=0) u[ti]={...u[ti],statuses:['done','done']}; return u; });
-          }, 3000);
+          }, 5000);
           streamTimers.current.push(t2);
 
           const t3 = setTimeout(() => {
             setMessages((prev) => { const u=[...prev]; const ti=u.findLastIndex(m=>m.role==='tasks'); if(ti>=0) u[ti]={...u[ti],collapsed:true}; return u; });
-            setIsTyping(false);
+            setIsTyping(false); setOllyState('process-empty');
             const tokens = fullContent.split(/(\s+)/);
             setMessages((prev) => [...prev, { role: 'assistant', content: '', streaming: true, visualizations: vizs }]);
             let built = '';
@@ -607,7 +614,9 @@ export const ThreadPage = ({ selectedItem }) => {
               }, i * 30);
               streamTimers.current.push(timer);
             });
-          }, 3500);
+            const idleTimer = setTimeout(() => setOllyState('idle'), tokens.length * 30 + 100);
+            streamTimers.current.push(idleTimer);
+          }, 6000);
           streamTimers.current.push(t3);
         }, 100);
       }, 200);
@@ -639,6 +648,7 @@ export const ThreadPage = ({ selectedItem }) => {
     setMessages((prev) => [...prev, userMsg]);
     setMessage('');
     setIsTyping(true);
+    setOllyState('process-label');
 
     const idx = enhancedIndex.current % ENHANCED_RESPONSES.length;
     const mockResponse = ENHANCED_RESPONSES[idx];
@@ -665,7 +675,7 @@ export const ThreadPage = ({ selectedItem }) => {
           updated[ti] = { ...updated[ti], statuses: ['done', 'running'] };
         return updated;
       });
-    }, 1500);
+    }, 2500);
     streamTimers.current.push(t1);
 
     const t2 = setTimeout(() => {
@@ -676,7 +686,7 @@ export const ThreadPage = ({ selectedItem }) => {
           updated[ti] = { ...updated[ti], statuses: ['done', 'done'] };
         return updated;
       });
-    }, 3000);
+    }, 5000);
     streamTimers.current.push(t2);
 
     const t3 = setTimeout(() => {
@@ -687,7 +697,7 @@ export const ThreadPage = ({ selectedItem }) => {
         return updated;
       });
 
-      setIsTyping(false);
+      setIsTyping(false); setOllyState('process-empty');
 
       const tokens = fullContent.split(/(\s+)/);
 
@@ -713,7 +723,13 @@ export const ThreadPage = ({ selectedItem }) => {
         }, i * 30);
         streamTimers.current.push(timer);
       });
-    }, 3500);
+
+      // When streaming finishes, go to idle
+      const idleTimer = setTimeout(() => {
+        setOllyState('idle');
+      }, tokens.length * 30 + 100);
+      streamTimers.current.push(idleTimer);
+    }, 6000);
     streamTimers.current.push(t3);
   };
 
@@ -812,6 +828,7 @@ export const ThreadPage = ({ selectedItem }) => {
                         if (msg.role === 'tasks') return <TaskListMessage key={i} tasks={msg.tasks} statuses={msg.statuses} collapsed={msg.collapsed} />;
                         return <AssistantMessage key={i} content={msg.content} streaming={msg.streaming} attachment={msg.attachment} visualizations={msg.visualizations} onVizClick={(viz) => { setInvestigationViz(viz); setPanelExpanded(true); }} />;
                       })}
+                      <OllyIndicator state={ollyState} isDark={isDark} />
                     </div>
                     <div className="threadPage__inputArea">
                       <OuiThreadInput value={message} onChange={setMessage} onSubmit={handleSend} isDisabled={isTyping || messages.some((m) => m.streaming)}
@@ -861,6 +878,7 @@ export const ThreadPage = ({ selectedItem }) => {
                 if (msg.role === 'tasks') return <TaskListMessage key={i} tasks={msg.tasks} statuses={msg.statuses} collapsed={msg.collapsed} />;
                 return <AssistantMessage key={i} content={msg.content} streaming={msg.streaming} attachment={msg.attachment} visualizations={msg.visualizations} onVizClick={(viz) => { setInvestigationViz(viz); setPanelExpanded(true); }} />;
               })}
+              <OllyIndicator state={ollyState} isDark={isDark} />
             </div>
             <div className="threadPage__inputArea">
               <OuiThreadInput value={message} onChange={setMessage} onSubmit={handleSend} isDisabled={isTyping || messages.some((m) => m.streaming)}
