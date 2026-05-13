@@ -16,6 +16,7 @@ import { ServicePage } from './service_page';
 import { DiscoverPage } from './discover_page';
 import { ThreadPage } from './thread_page';
 import { ThreadsPage } from './threads_page';
+import { RecentsPage } from './recents_page';
 import { LoginPage } from './login_page';
 import { OverviewPage } from './overview_page';
 import { OuiErrorBoundary } from '../../../../src/components';
@@ -38,7 +39,13 @@ const renderPage = (activePage, selectedItem, handlePageChange) => {
     case 'threads':
       return (
         <OuiErrorBoundary>
-          <ThreadsPage />
+          <ThreadsPage onPageChange={handlePageChange} />
+        </OuiErrorBoundary>
+      );
+    case 'recents':
+      return (
+        <OuiErrorBoundary>
+          <RecentsPage onPageChange={handlePageChange} />
         </OuiErrorBoundary>
       );
     case 'discover':
@@ -71,7 +78,7 @@ const renderPage = (activePage, selectedItem, handlePageChange) => {
 };
 
 export const SamplePagesView = () => {
-  const [activePage, setActivePage] = useState('service');
+  const [activePage, setActivePage] = useState('threads');
   const [selectedItem, setSelectedItem] = useState(null);
   const [padding, setPadding] = useState(8);
   const [gap, setGap] = useState(8);
@@ -82,9 +89,9 @@ export const SamplePagesView = () => {
   const isDark = themeContext.theme === 'v9-dark';
 
   const gradientBackground = isDark
-    ? `radial-gradient(ellipse at 15% 25%, rgba(217, 216, 220, 0.06) 0%, transparent 50%),
-       radial-gradient(ellipse at 75% 65%, rgba(217, 216, 220, 0.04) 0%, transparent 50%),
-       radial-gradient(ellipse at 50% 50%, rgba(217, 216, 220, 0.02) 0%, transparent 70%),
+    ? `radial-gradient(ellipse at 15% 25%, rgba(245, 248, 250, 0.06) 0%, transparent 50%),
+       radial-gradient(ellipse at 75% 65%, rgba(245, 248, 250, 0.04) 0%, transparent 50%),
+       radial-gradient(ellipse at 50% 50%, rgba(245, 248, 250, 0.02) 0%, transparent 70%),
        #111`
     : `radial-gradient(ellipse at 15% 25%, rgba(0, 146, 184, 0.20) 0%, transparent 50%),
        radial-gradient(ellipse at 75% 65%, rgba(217, 216, 220, 0.40) 0%, transparent 50%),
@@ -185,12 +192,20 @@ export const SamplePagesView = () => {
       />
       <div
         className="samplePagesContent"
+        key={activePage}
         style={{
           flex: 1,
           overflowY: 'auto',
           padding,
           paddingLeft: padding + 8,
+          animation: 'pageFadeIn 300ms ease-out forwards',
         }}>
+        <style>{`
+          @keyframes pageFadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
         {renderPage(activePage, selectedItem, handlePageChange)}
       </div>
     </div>

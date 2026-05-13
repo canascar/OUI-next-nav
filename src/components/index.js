@@ -139,6 +139,8 @@ export {
   OuiFlyoutHeader,
 } from './flyout';
 
+export { OuiSheet } from './sheet';
+
 export { OuiFocusTrap } from './focus_trap';
 
 export {

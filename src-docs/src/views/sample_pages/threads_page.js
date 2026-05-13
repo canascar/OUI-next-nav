@@ -20,11 +20,10 @@ import {
   OuiText,
   OuiIcon,
   OuiButtonIcon,
+  OuiButtonEmpty,
   OuiBadge,
   OuiThreadInput,
   OuiHorizontalRule,
-  OuiTabs,
-  OuiTab,
 } from '../../../../src/components';
 
 // --- Quick action pills ---
@@ -82,44 +81,85 @@ const START_CARDS = [
   },
 ];
 
-export const ThreadsPage = () => {
+const GREETINGS = [
+  'Welcome to OpenSearch.',
+  'What are you working on?',
+  'Ready when you are.',
+  "Let's go!",
+  'Explore your insights.',
+  'What are we observing today?',
+  'Looking for data? I got you.',
+  'Analyze This.',
+  'Analyze That.',
+  'Your data, I just help you go through it.',
+  '¯\\_(ツ)_/¯',
+  'Search on!',
+];
+
+let lastGreetingIndex = -1;
+const getRandomGreeting = () => {
+  let index;
+  do {
+    index = Math.floor(Math.random() * GREETINGS.length);
+  } while (index === lastGreetingIndex && GREETINGS.length > 1);
+  lastGreetingIndex = index;
+  return GREETINGS[index];
+};
+
+export const ThreadsPage = ({ onPageChange }) => {
   const [inputValue, setInputValue] = useState('');
+  const [greeting, setGreeting] = useState(getRandomGreeting);
+
+  // Pick a new greeting each time the component mounts
+  React.useEffect(() => {
+    setGreeting(getRandomGreeting());
+  }, []);
 
   const handleSubmit = (value) => {
-    // In a real app, this would create a new thread
-    console.log('New thread:', value);
+    if (value && value.trim() && onPageChange) {
+      // Store the initial message and navigate to a fresh thread
+      window.__threadInitialMessage = value.trim();
+      window.__threadFresh = true;
+      onPageChange('thread');
+    }
     setInputValue('');
   };
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: '24px 16px' }}>
-      {/* Tab bar */}
-      <OuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
-        <OuiFlexItem grow={false}>
-          <OuiTabs size="s" style={{ marginBottom: 0 }}>
-            <OuiTab isSelected>New Thread</OuiTab>
-          </OuiTabs>
-        </OuiFlexItem>
-        <OuiFlexItem grow={false}>
-          <OuiButtonIcon
-            iconType="plus"
-            aria-label="New thread"
-            size="s"
-            color="text"
-          />
-        </OuiFlexItem>
-      </OuiFlexGroup>
-
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100%' }}>
+      <style>{`
+        @keyframes breatheIn {
+          0% { opacity: 0; transform: scale(0.96) translateY(6px); }
+          100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .threadsGreeting {
+          animation: breatheIn 600ms cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+        }
+        .recentThreadRow {
+          cursor: pointer;
+          border-radius: 12px;
+          transition: background-color 150ms ease, transform 150ms ease;
+        }
+        .recentThreadRow:hover {
+          background-color: rgba(128, 128, 128, 0.08);
+          transform: translateY(-1px);
+        }
+        .recentThreadRow:active {
+          background-color: rgba(128, 128, 128, 0.14);
+          transform: translateY(-1px);
+        }
+      `}</style>
+      <div style={{ maxWidth: 900, width: '100%', padding: '24px 16px' }}>
       <OuiSpacer size="xl" />
 
       {/* Hero heading */}
-      <div style={{ textAlign: 'center' }}>
+      <div style={{ textAlign: 'center' }} className="threadsGreeting">
         <OuiTitle size="l">
-          <h1>What are you working on?</h1>
+          <h1>{greeting}</h1>
         </OuiTitle>
       </div>
 
-      <OuiSpacer size="l" />
+      <OuiSpacer size="xl" />
 
       {/* Thread input */}
       <OuiThreadInput
@@ -149,22 +189,23 @@ export const ThreadsPage = () => {
       />
 
       <OuiSpacer size="l" />
+      <OuiSpacer size="s" />
 
       {/* Quick action pills */}
       <OuiFlexGroup
-        gutterSize="s"
+        gutterSize="m"
         wrap
         responsive={false}
         justifyContent="center">
         {QUICK_ACTIONS.map((action, i) => (
           <OuiFlexItem key={i} grow={false}>
-            <OuiBadge iconType={action.icon} color="hollow">
+            <OuiBadge iconType={action.icon} color="primary" onClick={() => {}} onClickAriaLabel={action.label}>
               {action.label}
             </OuiBadge>
           </OuiFlexItem>
         ))}
         <OuiFlexItem grow={false}>
-          <OuiBadge iconType="plus" color="hollow">
+          <OuiBadge iconType="plus" color="primary" onClick={() => {}} onClickAriaLabel="More">
             More
           </OuiBadge>
         </OuiFlexItem>
@@ -178,15 +219,15 @@ export const ThreadsPage = () => {
           Pick up where you left off
         </strong>
       </OuiText>
-      <OuiSpacer size="m" />
+      <OuiSpacer size="l" />
 
       {RECENT_THREADS.map((thread, i) => (
-        <div key={i}>
+        <div key={i} className="recentThreadRow" style={{ marginBottom: 2 }}>
           <OuiFlexGroup
             alignItems="center"
             gutterSize="m"
             responsive={false}
-            style={{ padding: '12px 0' }}>
+            style={{ padding: '16px 8px' }}>
             <OuiFlexItem grow={false}>
               <OuiIcon type={thread.icon} size="m" color="subdued" />
             </OuiFlexItem>
@@ -213,9 +254,15 @@ export const ThreadsPage = () => {
               </OuiText>
             </OuiFlexItem>
           </OuiFlexGroup>
-          {i < RECENT_THREADS.length - 1 && <OuiHorizontalRule margin="none" />}
         </div>
       ))}
+
+      <OuiSpacer size="m" />
+      <div style={{ textAlign: 'center' }}>
+        <OuiButtonEmpty size="s" onClick={() => onPageChange && onPageChange('recents')}>
+          View all threads
+        </OuiButtonEmpty>
+      </div>
 
       <OuiSpacer size="xl" />
 
@@ -225,12 +272,12 @@ export const ThreadsPage = () => {
           Start something afresh
         </strong>
       </OuiText>
-      <OuiSpacer size="m" />
+      <OuiSpacer size="l" />
 
       <OuiFlexGroup gutterSize="m" wrap>
         {START_CARDS.map((card, i) => (
-          <OuiFlexItem key={i} grow={false} style={{ minWidth: 200 }}>
-            <OuiPanel paddingSize="m" hasBorder>
+          <OuiFlexItem key={i} grow={false} style={{ minWidth: 'calc(33.33% - 12px)', maxWidth: 'calc(33.33% - 12px)' }}>
+            <OuiPanel paddingSize="m" hasBorder className="startCard">
               <OuiFlexGroup
                 gutterSize="m"
                 alignItems="center"
@@ -251,6 +298,7 @@ export const ThreadsPage = () => {
           </OuiFlexItem>
         ))}
       </OuiFlexGroup>
+      </div>
     </div>
   );
 };

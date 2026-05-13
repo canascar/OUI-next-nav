@@ -15,6 +15,7 @@ import {
   OuiAvatar,
   OuiButton,
   OuiButtonIcon,
+  OuiButtonEmpty,
   OuiIcon,
   OuiLoadingSpinner,
   OuiTitle,
@@ -22,6 +23,10 @@ import {
   OuiFlexGroup,
   OuiFlexItem,
   OuiThreadInput,
+  OuiResizableContainer,
+  OuiPanel,
+  OuiSpacer,
+  OuiBadge,
 } from '../../../../src/components';
 
 const THREADS = {
@@ -109,7 +114,7 @@ const THREADS = {
 const UserMessage = ({ author: _author, content }) => (
   <div className="threadPage__message threadPage__message--user">
     <div className="threadPage__bubble threadPage__bubble--user">
-      <OuiText size="s">
+      <OuiText size="m">
         <p>{content}</p>
       </OuiText>
     </div>
@@ -191,10 +196,17 @@ const QueryAttachment = ({ query }) => (
 );
 
 // Renders a single assistant response (left-aligned, plain text + feedback)
-const AssistantMessage = ({ content, streaming, attachment }) => (
+const AssistantMessage = ({ content, streaming, attachment, visualizations, onVizClick }) => (
   <div className="threadPage__message threadPage__message--assistant">
     <div className="threadPage__bubble threadPage__bubble--assistant">
-      <OuiText size="s">{parseContent(content)}</OuiText>
+      <OuiText size="m">{parseContent(content)}</OuiText>
+      {!streaming && visualizations && visualizations.length > 0 && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 8, marginTop: 12 }}>
+          {visualizations.map((viz, idx) => (
+            <VisualizationCard key={viz.id} viz={viz} onClick={onVizClick} index={idx} />
+          ))}
+        </div>
+      )}
       {!streaming && attachment && attachment.type === 'page' && (
         <PageAttachment title={attachment.title} url={attachment.url} />
       )}
@@ -238,7 +250,7 @@ const TaskListMessage = ({ tasks, statuses, collapsed }) => {
           <div className="threadPage__taskIconWrap">
             <OuiIcon type="check" size="m" color="success" />
           </div>
-          <OuiText size="s">
+          <OuiText size="m">
             <span>{tasks.length} tasks finished</span>
           </OuiText>
         </div>
@@ -260,7 +272,7 @@ const TaskListMessage = ({ tasks, statuses, collapsed }) => {
                   <OuiIcon type="check" size="m" color="success" />
                 )}
               </div>
-              <OuiText size="s">
+              <OuiText size="m">
                 <span>{task}</span>
               </OuiText>
             </div>
@@ -311,24 +323,295 @@ const MOCK_RESPONSES = [
   },
 ];
 
+// Visualization cards that can appear in responses
+const VISUALIZATIONS = [
+  {
+    id: 'error-rate-timeline',
+    title: 'Error Rate Over Time',
+    type: 'line',
+    description: 'Error rate across all services in the last 24h',
+    color: '#FF6467',
+    related: [
+      { title: 'Error Rate by Service', type: 'bar', color: '#FF6467' },
+      { title: 'Top Error Messages', type: 'table', color: '#FBBF24' },
+      { title: 'Error Distribution by Region', type: 'pie', color: '#10B981' },
+    ],
+  },
+  {
+    id: 'latency-p99',
+    title: 'P99 Latency by Service',
+    type: 'bar',
+    description: 'Tail latency distribution across services',
+    color: '#7dd3fc',
+    related: [
+      { title: 'Latency Percentiles (P50/P90/P99)', type: 'line', color: '#7dd3fc' },
+      { title: 'Slow Requests Log', type: 'table', color: '#FBBF24' },
+      { title: 'Latency Heatmap', type: 'heatmap', color: '#FB64B6' },
+    ],
+  },
+  {
+    id: 'throughput-overview',
+    title: 'Throughput Overview',
+    type: 'area',
+    description: 'Requests per second across the stack',
+    color: '#10B981',
+    related: [
+      { title: 'Throughput by Endpoint', type: 'bar', color: '#10B981' },
+      { title: 'Traffic Sources', type: 'pie', color: '#7dd3fc' },
+      { title: 'Request Size Distribution', type: 'histogram', color: '#FBBF24' },
+    ],
+  },
+  {
+    id: 'connection-pool',
+    title: 'Connection Pool Utilization',
+    type: 'gauge',
+    description: 'Active connections vs. pool capacity',
+    color: '#FBBF24',
+    related: [
+      { title: 'Pool Saturation Timeline', type: 'line', color: '#FBBF24' },
+      { title: 'Connection Wait Times', type: 'bar', color: '#FF6467' },
+      { title: 'Pool Config Comparison', type: 'table', color: '#7dd3fc' },
+    ],
+  },
+];
+
+// Enhanced mock responses with visualization references
+const ENHANCED_RESPONSES = [
+  {
+    content: 'I analyzed the service metrics and found some interesting patterns.\n\n**Key Findings**\n\n- Error rates spiked 3x in the last 2 hours, concentrated on the checkout service.\n- P99 latency crossed 800ms threshold on 3 services.\n- Throughput remains stable, suggesting the issue is downstream.\n\nHere are the relevant visualizations:',
+    visualizations: ['error-rate-timeline', 'latency-p99'],
+    tasks: ['Querying service metrics', 'Correlating error patterns'],
+  },
+  {
+    content: 'Based on the connection data, the bottleneck is clear.\n\n**Analysis**\n\n1. Connection pool is at 92% capacity — dangerously close to exhaustion.\n2. The throughput pattern shows a gradual ramp that started 4 hours ago.\n3. No recent deployments correlate with this change.\n\nI recommend reviewing these dashboards:',
+    visualizations: ['connection-pool', 'throughput-overview'],
+    tasks: ['Checking connection metrics', 'Analyzing capacity trends'],
+  },
+  {
+    content: 'The latency investigation reveals a cascading pattern.\n\n**Root Cause**\n\n- A cache invalidation event at 14:32 UTC triggered a thundering herd.\n- Backend services saw 7x normal load as cache misses propagated.\n- The system is self-healing but recovery will take ~20 minutes.\n\nThese visualizations show the full picture:',
+    visualizations: ['latency-p99', 'throughput-overview', 'error-rate-timeline'],
+    tasks: ['Running correlation analysis', 'Checking cache metrics'],
+  },
+  {
+    content: 'Here is the current health assessment.\n\n**Service Status**\n\n- cart: Healthy, 4ms latency\n- checkout: Degraded, 380ms latency, 12% errors\n- payment-service: Critical, 67% timeout rate\n- frontend: Healthy, passthrough\n\nDrill into these for more detail:',
+    visualizations: ['error-rate-timeline', 'connection-pool'],
+    tasks: ['Fetching service health', 'Comparing baselines'],
+  },
+];
+
+// Mini chart SVG placeholder
+const MiniChart = ({ type, color, width = '100%', height = 60 }) => {
+  const charts = {
+    line: (
+      <svg width={width} height={height} viewBox="0 0 200 60" fill="none">
+        <path d="M0 45 Q25 42 50 38 T100 25 T150 30 T200 15" stroke={color} strokeWidth="2" fill="none"/>
+        <path d="M0 45 Q25 42 50 38 T100 25 T150 30 T200 15 V60 H0 Z" fill={color} fillOpacity="0.1"/>
+      </svg>
+    ),
+    bar: (
+      <svg width={width} height={height} viewBox="0 0 200 60" fill="none">
+        {[15,25,40,35,50,30,45,20,38,42].map((h,i) => (
+          <rect key={i} x={i*20+2} y={60-h} width="16" height={h} fill={color} fillOpacity="0.7" rx="2"/>
+        ))}
+      </svg>
+    ),
+    area: (
+      <svg width={width} height={height} viewBox="0 0 200 60" fill="none">
+        <path d="M0 50 Q30 35 60 40 T120 20 T180 30 L200 25 V60 H0 Z" fill={color} fillOpacity="0.2"/>
+        <path d="M0 50 Q30 35 60 40 T120 20 T180 30 L200 25" stroke={color} strokeWidth="2" fill="none"/>
+      </svg>
+    ),
+    gauge: (
+      <svg width={width} height={height} viewBox="0 0 200 60" fill="none">
+        <rect x="10" y="25" width="180" height="10" rx="5" fill={color} fillOpacity="0.15"/>
+        <rect x="10" y="25" width="165" height="10" rx="5" fill={color} fillOpacity="0.7"/>
+        <text x="100" y="55" textAnchor="middle" fontSize="11" fill={color} fontWeight="600">92%</text>
+      </svg>
+    ),
+    pie: (
+      <svg width={width} height={height} viewBox="0 0 60 60" fill="none">
+        <circle cx="30" cy="30" r="25" fill={color} fillOpacity="0.15"/>
+        <path d="M30 5 A25 25 0 0 1 55 30 L30 30 Z" fill={color} fillOpacity="0.7"/>
+        <path d="M55 30 A25 25 0 0 1 30 55 L30 30 Z" fill={color} fillOpacity="0.4"/>
+      </svg>
+    ),
+    table: (
+      <svg width={width} height={height} viewBox="0 0 200 60" fill="none">
+        {[0,1,2,3].map(i => (
+          <g key={i}>
+            <rect x="5" y={i*15+2} width="190" height="12" rx="2" fill={color} fillOpacity={i===0?0.15:0.06}/>
+            <line x1="70" y1={i*15+2} x2="70" y2={i*15+14} stroke={color} strokeOpacity="0.2"/>
+            <line x1="140" y1={i*15+2} x2="140" y2={i*15+14} stroke={color} strokeOpacity="0.2"/>
+          </g>
+        ))}
+      </svg>
+    ),
+    heatmap: (
+      <svg width={width} height={height} viewBox="0 0 200 60" fill="none">
+        {Array.from({length: 40}).map((_,i) => (
+          <rect key={i} x={(i%10)*20+2} y={Math.floor(i/10)*15+2} width="16" height="12" rx="2" fill={color} fillOpacity={Math.random()*0.7+0.1}/>
+        ))}
+      </svg>
+    ),
+    histogram: (
+      <svg width={width} height={height} viewBox="0 0 200 60" fill="none">
+        {[8,15,28,45,38,25,18,10,5,3].map((h,i) => (
+          <rect key={i} x={i*20} y={60-h} width="19" height={h} fill={color} fillOpacity="0.6"/>
+        ))}
+      </svg>
+    ),
+  };
+  return charts[type] || charts.line;
+};
+
+// Visualization card component
+const VisualizationCard = ({ viz, onClick, index = 0 }) => (
+  <div
+    className="threadPage__vizCard"
+    onClick={() => onClick(viz)}
+    style={{
+      border: '1px solid rgba(128,128,128,0.2)',
+      borderRadius: 8,
+      padding: 12,
+      cursor: 'pointer',
+      transition: 'border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease',
+      marginBottom: 8,
+      animationDelay: `${index * 150}ms`,
+    }}>
+    <OuiText size="xs"><strong>{viz.title}</strong></OuiText>
+    <div style={{ margin: '8px 0' }}>
+      <MiniChart type={viz.type} color={viz.color} />
+    </div>
+    <OuiText size="xs" color="subdued">{viz.description}</OuiText>
+  </div>
+);
+
+// Investigation panel content
+const InvestigationPanel = ({ viz, onClose }) => (
+  <div style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: 16, overflowY: 'auto' }}>
+    <OuiFlexGroup alignItems="center" justifyContent="spaceBetween" responsive={false}>
+      <OuiFlexItem grow={false}>
+        <OuiTitle size="xs"><h3>{viz.title}</h3></OuiTitle>
+      </OuiFlexItem>
+      <OuiFlexItem grow={false}>
+        <OuiButtonIcon iconType="cross" aria-label="Close" onClick={onClose} color="text" />
+      </OuiFlexItem>
+    </OuiFlexGroup>
+    <OuiSpacer size="s" />
+    <OuiText size="xs" color="subdued">{viz.description}</OuiText>
+    <OuiSpacer size="m" />
+    <OuiPanel hasBorder paddingSize="m">
+      <MiniChart type={viz.type} color={viz.color} height={120} />
+    </OuiPanel>
+    <OuiSpacer size="l" />
+    <OuiText size="xs"><strong>Related visualizations</strong></OuiText>
+    <OuiSpacer size="s" />
+    {viz.related && viz.related.map((rel, i) => (
+      <OuiPanel key={i} hasBorder paddingSize="s" style={{ marginBottom: 8 }}>
+        <OuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
+          <OuiFlexItem grow={false}>
+            <OuiBadge color="hollow">{rel.type}</OuiBadge>
+          </OuiFlexItem>
+          <OuiFlexItem>
+            <OuiText size="xs"><strong>{rel.title}</strong></OuiText>
+          </OuiFlexItem>
+        </OuiFlexGroup>
+        <div style={{ marginTop: 8 }}>
+          <MiniChart type={rel.type} color={rel.color} height={50} />
+        </div>
+      </OuiPanel>
+    ))}
+  </div>
+);
+
 export const ThreadPage = ({ selectedItem }) => {
   const threadKey = selectedItem || 'latency-spike';
   const thread = THREADS[threadKey];
   const [messages, setMessages] = useState(thread.messages);
   const [message, setMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [investigationViz, setInvestigationViz] = useState(null);
+  const [panelExpanded, setPanelExpanded] = useState(false);
+  const [threadTitle, setThreadTitle] = useState(thread.title);
   const feedRef = useRef(null);
   const responseIndex = useRef(0);
+  const enhancedIndex = useRef(0);
 
   const streamTimers = useRef([]);
 
   // Reset messages when switching threads
   useEffect(() => {
-    setMessages(thread.messages);
+    // Check if this is a fresh thread from the home page
+    if (window.__threadFresh) {
+      window.__threadFresh = false;
+      setMessages([]);
+      setThreadTitle('New thread');
+    } else {
+      setMessages(thread.messages);
+      setThreadTitle(thread.title);
+    }
     setMessage('');
     setIsTyping(false);
+    setInvestigationViz(null);
     streamTimers.current.forEach(clearTimeout);
     streamTimers.current = [];
+
+    // Check if there's an initial message from ThreadsPage
+    if (window.__threadInitialMessage) {
+      const initialMsg = window.__threadInitialMessage;
+      window.__threadInitialMessage = null;
+      // Delay slightly to let the component mount
+      setTimeout(() => {
+        setMessage(initialMsg);
+        setTimeout(() => {
+          // Set thread title from the user's first message
+          const titleText = initialMsg.length > 50 ? initialMsg.slice(0, 50) + '…' : initialMsg;
+          setThreadTitle(titleText);
+
+          const userMsg = { role: 'user', author: 'You', content: initialMsg };
+          setMessages((prev) => [...prev, userMsg]);
+          setMessage('');
+          setIsTyping(true);
+
+          const idx = enhancedIndex.current % ENHANCED_RESPONSES.length;
+          const mockResponse = ENHANCED_RESPONSES[idx];
+          const tasks = mockResponse.tasks;
+          enhancedIndex.current += 1;
+          const fullContent = mockResponse.content;
+          const vizIds = mockResponse.visualizations;
+          const vizs = vizIds.map(id => VISUALIZATIONS.find(v => v.id === id)).filter(Boolean);
+
+          const taskMsg = { role: 'tasks', tasks, statuses: ['running'], collapsed: false };
+          setMessages((prev) => [...prev, taskMsg]);
+
+          const t1 = setTimeout(() => {
+            setMessages((prev) => { const u=[...prev]; const ti=u.findLastIndex(m=>m.role==='tasks'); if(ti>=0) u[ti]={...u[ti],statuses:['done','running']}; return u; });
+          }, 1500);
+          streamTimers.current.push(t1);
+
+          const t2 = setTimeout(() => {
+            setMessages((prev) => { const u=[...prev]; const ti=u.findLastIndex(m=>m.role==='tasks'); if(ti>=0) u[ti]={...u[ti],statuses:['done','done']}; return u; });
+          }, 3000);
+          streamTimers.current.push(t2);
+
+          const t3 = setTimeout(() => {
+            setMessages((prev) => { const u=[...prev]; const ti=u.findLastIndex(m=>m.role==='tasks'); if(ti>=0) u[ti]={...u[ti],collapsed:true}; return u; });
+            setIsTyping(false);
+            const tokens = fullContent.split(/(\s+)/);
+            setMessages((prev) => [...prev, { role: 'assistant', content: '', streaming: true, visualizations: vizs }]);
+            let built = '';
+            tokens.forEach((token, i) => {
+              const timer = setTimeout(() => {
+                built += token;
+                setMessages((prev) => { const u=[...prev]; u[u.length-1]={role:'assistant',content:built,streaming:i<tokens.length-1,visualizations:vizs}; return u; });
+              }, i * 30);
+              streamTimers.current.push(timer);
+            });
+          }, 3500);
+          streamTimers.current.push(t3);
+        }, 100);
+      }, 200);
+    }
   }, [threadKey, thread.messages]);
 
   // Clean up timers on unmount
@@ -347,20 +630,25 @@ export const ThreadPage = ({ selectedItem }) => {
     const text = message.trim();
     if (!text) return;
 
-    // Add user message
+    // Update title from first user message if still default
+    if (threadTitle === 'New thread') {
+      setThreadTitle(text.length > 50 ? text.slice(0, 50) + '…' : text);
+    }
+
     const userMsg = { role: 'user', author: 'You', content: text };
     setMessages((prev) => [...prev, userMsg]);
     setMessage('');
     setIsTyping(true);
 
-    const idx = responseIndex.current % MOCK_RESPONSES.length;
-    const mockResponse = MOCK_RESPONSES[idx];
-    const tasks = MOCK_TASKS[idx % MOCK_TASKS.length];
-    responseIndex.current += 1;
+    const idx = enhancedIndex.current % ENHANCED_RESPONSES.length;
+    const mockResponse = ENHANCED_RESPONSES[idx];
+    const tasks = mockResponse.tasks;
+    enhancedIndex.current += 1;
     const fullContent = mockResponse.content;
-    const attachment = mockResponse.attachment;
+    const vizIds = mockResponse.visualizations;
+    const vizs = vizIds.map(id => VISUALIZATIONS.find(v => v.id === id)).filter(Boolean);
 
-    // Phase 1: Show task list with first task running
+    // Phase 1: Show task list
     const taskMsg = {
       role: 'tasks',
       tasks,
@@ -369,7 +657,6 @@ export const ThreadPage = ({ selectedItem }) => {
     };
     setMessages((prev) => [...prev, taskMsg]);
 
-    // After 1.5s, first task finishes, second task appears running
     const t1 = setTimeout(() => {
       setMessages((prev) => {
         const updated = [...prev];
@@ -381,7 +668,6 @@ export const ThreadPage = ({ selectedItem }) => {
     }, 1500);
     streamTimers.current.push(t1);
 
-    // After 3s, second task finishes
     const t2 = setTimeout(() => {
       setMessages((prev) => {
         const updated = [...prev];
@@ -393,7 +679,6 @@ export const ThreadPage = ({ selectedItem }) => {
     }, 3000);
     streamTimers.current.push(t2);
 
-    // After 3.5s, collapse tasks and start streaming response
     const t3 = setTimeout(() => {
       setMessages((prev) => {
         const updated = [...prev];
@@ -404,12 +689,11 @@ export const ThreadPage = ({ selectedItem }) => {
 
       setIsTyping(false);
 
-      // Split into words, preserving newlines as separate tokens
       const tokens = fullContent.split(/(\s+)/);
 
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: '', streaming: true, attachment },
+        { role: 'assistant', content: '', streaming: true, visualizations: vizs },
       ]);
 
       let built = '';
@@ -422,7 +706,7 @@ export const ThreadPage = ({ selectedItem }) => {
               role: 'assistant',
               content: built,
               streaming: i < tokens.length - 1,
-              attachment,
+              visualizations: vizs,
             };
             return updated;
           });
@@ -453,7 +737,31 @@ export const ThreadPage = ({ selectedItem }) => {
         flexDirection: 'column',
         overflow: 'hidden',
       }}>
-      {/* Header — same pattern as service page */}
+      <style>{`
+        .threadPage__vizCard:hover {
+          border-color: var(--ouiColorPrimary, #0092B8) !important;
+          box-shadow: 0 0 0 1px var(--ouiColorPrimary, #0092B8), 0 2px 8px rgba(0, 146, 184, 0.1);
+          transform: translateY(-1px);
+        }
+        @keyframes slideInRight {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes panelSlideIn {
+          from { width: 0; min-width: 0; opacity: 0; }
+          to { width: 380px; min-width: 380px; opacity: 1; }
+        }
+        @keyframes vizFadeIn {
+          from { opacity: 0; transform: translateY(8px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .threadPage__vizCard {
+          opacity: 0;
+          animation: vizFadeIn 400ms ease forwards;
+        }
+      `}</style>
+
+      {/* Header */}
       <div
         className="threadPage__header"
         style={{
@@ -461,11 +769,12 @@ export const ThreadPage = ({ selectedItem }) => {
           justifyContent: 'space-between',
           alignItems: 'center',
           padding: 20,
+          flexShrink: 0,
         }}>
         <OuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
           <OuiFlexItem grow={false}>
             <OuiTitle size="s">
-              <h1 style={{ margin: 0 }}>{thread.title}</h1>
+              <h1 style={{ margin: 0 }}>{threadTitle}</h1>
             </OuiTitle>
           </OuiFlexItem>
           <OuiFlexItem grow={false}>
@@ -489,65 +798,78 @@ export const ThreadPage = ({ selectedItem }) => {
         </div>
       </div>
 
-      {/* Conversation feed — scrollable */}
-      <div className="threadPage__feed" ref={feedRef}>
-        {messages.map((msg, i) => {
-          if (msg.role === 'user') {
-            return (
-              <UserMessage key={i} author={msg.author} content={msg.content} />
-            );
-          }
-          if (msg.role === 'tasks') {
-            return (
-              <TaskListMessage
-                key={i}
-                tasks={msg.tasks}
-                statuses={msg.statuses}
-                collapsed={msg.collapsed}
+      {/* Main content area: chat + investigation panel */}
+      <div style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+        {investigationViz && panelExpanded ? (
+          <OuiResizableContainer style={{ height: '100%' }}>
+            {(ResizablePanel, ResizableButton) => (
+              <>
+                <ResizablePanel initialSize={60} minSize="30%" paddingSize="none" style={{ background: 'transparent' }}>
+                  <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                    <div className="threadPage__feed" ref={feedRef} style={{ flex: 1, minHeight: 0 }}>
+                      {messages.map((msg, i) => {
+                        if (msg.role === 'user') return <UserMessage key={i} author={msg.author} content={msg.content} />;
+                        if (msg.role === 'tasks') return <TaskListMessage key={i} tasks={msg.tasks} statuses={msg.statuses} collapsed={msg.collapsed} />;
+                        return <AssistantMessage key={i} content={msg.content} streaming={msg.streaming} attachment={msg.attachment} visualizations={msg.visualizations} onVizClick={(viz) => { setInvestigationViz(viz); setPanelExpanded(true); }} />;
+                      })}
+                    </div>
+                    <div className="threadPage__inputArea">
+                      <OuiThreadInput value={message} onChange={setMessage} onSubmit={handleSend} isDisabled={isTyping || messages.some((m) => m.streaming)}
+                        actionsLeft={<OuiButtonIcon iconType="plus" aria-label="Add attachment" size="s" color="text" />}
+                        actionsRight={<OuiButtonIcon iconType="sortUp" aria-label="Send" display="fill" size="s" color="primary" isDisabled={!message.trim() || isTyping || messages.some((m) => m.streaming)} onClick={() => handleSend(message)} />}
+                      />
+                    </div>
+                  </div>
+                </ResizablePanel>
+                <ResizableButton />
+                <ResizablePanel initialSize={40} minSize="20%" paddingSize="none" style={{ background: 'transparent' }}>
+                  <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: '1px solid rgba(128,128,128,0.1)', flexShrink: 0 }}>
+                      <OuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
+                        <OuiFlexItem grow={false}><OuiIcon type="visArea" size="m" color="primary" /></OuiFlexItem>
+                        <OuiFlexItem grow={false}><OuiText size="s"><strong>{investigationViz.title}</strong></OuiText></OuiFlexItem>
+                      </OuiFlexGroup>
+                      <OuiButtonIcon iconType="cross" aria-label="Close panel" onClick={() => { setInvestigationViz(null); setPanelExpanded(false); }} size="s" color="text" />
+                    </div>
+                    <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
+                      <OuiText size="xs" color="subdued">{investigationViz.description}</OuiText>
+                      <OuiSpacer size="m" />
+                      <OuiPanel hasBorder paddingSize="m"><MiniChart type={investigationViz.type} color={investigationViz.color} height={120} /></OuiPanel>
+                      <OuiSpacer size="l" />
+                      <OuiText size="xs"><strong>Related visualizations</strong></OuiText>
+                      <OuiSpacer size="s" />
+                      {investigationViz.related && investigationViz.related.map((rel, i) => (
+                        <OuiPanel key={i} hasBorder paddingSize="s" style={{ marginBottom: 8, cursor: 'pointer' }}>
+                          <OuiFlexGroup alignItems="center" gutterSize="s" responsive={false}>
+                            <OuiFlexItem grow={false}><OuiBadge color="hollow">{rel.type}</OuiBadge></OuiFlexItem>
+                            <OuiFlexItem><OuiText size="xs"><strong>{rel.title}</strong></OuiText></OuiFlexItem>
+                          </OuiFlexGroup>
+                          <div style={{ marginTop: 8 }}><MiniChart type={rel.type} color={rel.color} height={50} /></div>
+                        </OuiPanel>
+                      ))}
+                    </div>
+                  </div>
+                </ResizablePanel>
+              </>
+            )}
+          </OuiResizableContainer>
+        ) : (
+          <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <div className="threadPage__feed" ref={feedRef} style={{ flex: 1, minHeight: 0 }}>
+              {messages.map((msg, i) => {
+                if (msg.role === 'user') return <UserMessage key={i} author={msg.author} content={msg.content} />;
+                if (msg.role === 'tasks') return <TaskListMessage key={i} tasks={msg.tasks} statuses={msg.statuses} collapsed={msg.collapsed} />;
+                return <AssistantMessage key={i} content={msg.content} streaming={msg.streaming} attachment={msg.attachment} visualizations={msg.visualizations} onVizClick={(viz) => { setInvestigationViz(viz); setPanelExpanded(true); }} />;
+              })}
+            </div>
+            <div className="threadPage__inputArea">
+              <OuiThreadInput value={message} onChange={setMessage} onSubmit={handleSend} isDisabled={isTyping || messages.some((m) => m.streaming)}
+                actionsLeft={<OuiButtonIcon iconType="plus" aria-label="Add attachment" size="s" color="text" />}
+                actionsRight={<OuiButtonIcon iconType="sortUp" aria-label="Send" display="fill" size="s" color="primary" isDisabled={!message.trim() || isTyping || messages.some((m) => m.streaming)} onClick={() => handleSend(message)} />}
               />
-            );
-          }
-          return (
-            <AssistantMessage
-              key={i}
-              content={msg.content}
-              streaming={msg.streaming}
-              attachment={msg.attachment}
-            />
-          );
-        })}
-        {isTyping && null}
-      </div>
-
-      {/* Input area */}
-      <div className="threadPage__inputArea">
-        <OuiThreadInput
-          value={message}
-          onChange={setMessage}
-          onSubmit={handleSend}
-          isDisabled={isTyping || messages.some((m) => m.streaming)}
-          actionsLeft={
-            <OuiButtonIcon
-              iconType="plus"
-              aria-label="Add attachment"
-              size="s"
-              color="text"
-            />
-          }
-          actionsRight={
-            <OuiButtonIcon
-              iconType="sortUp"
-              aria-label="Send message"
-              display="fill"
-              size="s"
-              color="primary"
-              isDisabled={
-                !message.trim() || isTyping || messages.some((m) => m.streaming)
-              }
-              onClick={() => handleSend(message)}
-            />
-          }
-        />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
