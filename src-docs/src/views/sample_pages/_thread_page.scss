@@ -57,7 +57,8 @@
   display: flex;
 
   &--user {
-    justify-content: flex-end;
+    flex-direction: column;
+    align-items: flex-end;
   }
 
   &--assistant {
@@ -79,6 +80,8 @@
   &--assistant {
     background: none;
     padding-left: 0;
+    max-width: 100%;
+    width: 100%;
 
     ul,
     ol {
@@ -103,9 +106,11 @@
 .threadPage__attachment {
   border: 1px solid $ouiBorderColor;
   border-radius: $ouiBorderRadius;
-  padding: 8px 12px;
+  padding: 12px;
   margin-top: 8px;
-  display: inline-block;
+  display: block;
+  width: 100%;
+  max-width: 600px;
 
   a {
     color: $ouiLinkColor;
@@ -121,12 +126,25 @@
 // Attachment hover wrapper with floating "Add to canvas" button
 .threadPage__attachmentWrap {
   position: relative;
-  display: inline-block;
+  display: block;
+  max-width: 600px;
   margin-top: 8px;
+  animation: attachmentSlideIn 300ms ease-out;
 
   &:hover .threadPage__addToCanvas {
     opacity: 1;
     pointer-events: auto;
+  }
+}
+
+@keyframes attachmentSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -152,45 +170,11 @@
   &:hover {
     background-color: $ouiColorLightestShade;
   }
-
-  &--added {
-    color: $ouiColorSuccess;
-    border-color: $ouiColorSuccess;
-    cursor: default;
-  }
-
-  &--added:hover {
-    background-color: $ouiColorEmptyShade;
-  }
-}
-
-// Clickable attachment card (page type)
-.threadPage__attachment--clickable {
-  cursor: pointer;
-  transition: background-color 150ms ease-in-out, border-color 150ms ease-in-out;
-
-  &:hover {
-    background-color: rgba($ouiColorPrimary, 0.05);
-    border-color: $ouiColorPrimary;
-  }
-
-  &:focus-visible {
-    outline: 2px solid $ouiColorPrimary;
-    outline-offset: 1px;
-  }
 }
 
 // Move margin from attachment to wrapper when wrapped
 .threadPage__attachmentWrap .threadPage__attachment {
   margin-top: 0;
-}
-
-.threadPage__attachmentQuery {
-  font-family: $ouiCodeFontFamily;
-  font-size: $ouiFontSizeS;
-  line-height: 18px;
-  color: $ouiColorAccent;
-  word-break: break-all;
 }
 
 // Link preview attachment (Tool UI style)
@@ -199,7 +183,7 @@
   flex-direction: column;
   overflow: hidden;
   text-decoration: none;
-  max-width: 320px;
+  max-width: 600px;
   transition: background-color 150ms ease-in-out, border-color 150ms ease-in-out;
 
   &:hover {
@@ -225,7 +209,7 @@
 .threadPage__linkPreviewBody {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 12px;
 }
 
 .threadPage__linkPreviewUrl {
@@ -239,17 +223,16 @@
 
 // Stats display attachment (Tool UI style)
 .threadPage__attachment--statsDisplay {
-  max-width: 480px;
+  max-width: 600px;
 }
 
 .threadPage__statsGrid {
-  margin-top: 8px;
+  margin-top: 12px;
 }
 
 // Data table attachment (Tool UI style)
 .threadPage__attachment--dataTable {
-  max-width: 520px;
-  padding: 8px 0 8px 12px;
+  max-width: 600px;
 }
 
 .threadPage__dataTableScroll {
@@ -287,8 +270,7 @@
 
 // Code block attachment (Tool UI style)
 .threadPage__attachment--codeBlock {
-  max-width: 520px;
-  padding: 8px 12px 4px;
+  max-width: 600px;
 
   .ouiCodeBlock {
     margin-top: 4px;
@@ -297,7 +279,7 @@
 
 // Chart attachment (Tool UI style)
 .threadPage__attachment--chart {
-  max-width: 400px;
+  max-width: 600px;
 }
 
 .threadPage__chartBars {
@@ -341,32 +323,22 @@
   text-align: center;
 }
 
-// Task list
-.threadPage__taskList {
+// Suggested prompts
+.threadPage__suggestedPrompts {
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
   gap: 8px;
+  margin-bottom: 8px;
 }
 
-.threadPage__taskItem {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+.threadPage__suggestedPrompt {
+  color: $ouiTextSubduedColor;
 
-.threadPage__taskIconWrap {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.threadPage__taskCollapsed {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  &:hover,
+  &:focus {
+    color: $ouiColorPrimary;
+  }
 }
 
 // Input area at bottom
@@ -391,6 +363,12 @@
   flex: 1;
   min-width: 0;
   overflow: hidden;
+  transition: opacity 200ms ease-in-out;
+
+  .threadPage__body:has(.threadPage__canvasFlyout--expanding) & {
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 // Canvas flyout push panel
@@ -407,6 +385,13 @@
 
   &--dragging {
     transition: none;
+  }
+
+  &--expanding {
+    width: 100% !important;
+    transition: width 300ms ease-in-out;
+    border-left: none;
+    z-index: 10;
   }
 }
 
@@ -604,13 +589,16 @@
 // Canvas tabs
 .threadPage__canvasTabs {
   margin-top: 0;
-  display: inline-flex;
-  width: auto;
+  display: flex;
+  width: 100%;
+
+  > * {
+    flex: 1;
+    min-width: 0;
+  }
 
   .ouiTab {
-    width: 160px;
-    max-width: 160px;
-    min-width: 160px;
+    width: 100%;
 
     .ouiTab__content {
       overflow: hidden;
@@ -625,6 +613,20 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.threadPage__canvasPageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid $ouiBorderColor;
+}
+
+.threadPage__canvasPageHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .threadPage__canvasDetailImage {
@@ -662,4 +664,38 @@
   .ouiListGroupItem__label {
     white-space: normal;
   }
+}
+
+// Mock canvas pages
+.mockCanvasPage {
+  h4 {
+    font-size: $ouiFontSizeS;
+    font-weight: 600;
+    margin-top: 12px;
+    margin-bottom: 4px;
+  }
+
+  ul {
+    padding-left: 20px;
+    margin: 4px 0;
+  }
+
+  li {
+    list-style: disc;
+    margin-bottom: 2px;
+  }
+
+  &--fullBody {
+    margin: -12px;
+    height: calc(100% + 24px);
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+// Force border on panels in dashboard and canvas
+.threadPage__canvasTabContent .ouiPanel,
+.dashboardPage__content .ouiPanel,
+.mockCanvasPage--fullBody .ouiPanel {
+  border: 1px solid $ouiBorderColor !important;
 }

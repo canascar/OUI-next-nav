@@ -24,6 +24,7 @@ export const DetailPageHeader = ({
   onTogglePanel,
   firstActionIcon = 'controlsHorizontal',
   firstActionLabel = 'Settings',
+  firstActionActive,
   onFirstAction,
   hideAskAi = false,
   extraActions = [],
@@ -33,7 +34,6 @@ export const DetailPageHeader = ({
 }) => {
   // Detached popover state (only used when user clicks "detach" from the panel)
   const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
-  const [isHighlightMode, setIsHighlightMode] = React.useState(false);
   const [highlightPrompt, setHighlightPrompt] = React.useState(null);
   const [highlightPosition, setHighlightPosition] = React.useState(null);
 
@@ -58,37 +58,7 @@ export const DetailPageHeader = ({
     setIsPopoverOpen(false);
   };
 
-  const handleHighlightToggle = () => {
-    setIsHighlightMode((prev) => !prev);
-  };
 
-  // Listen for text selection when highlight mode is active
-  React.useEffect(() => {
-    if (!isHighlightMode) return;
-
-    const handleMouseUp = () => {
-      const selection = window.getSelection();
-      const text = selection ? selection.toString().trim() : '';
-      if (text && selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-        const rect = range.getBoundingClientRect();
-
-        selection.removeAllRanges();
-
-        // Position popover near the highlight
-        setHighlightPosition({
-          top: rect.bottom + 8,
-          left: rect.left + rect.width / 2,
-        });
-        setHighlightPrompt(text);
-        setIsPopoverOpen(true);
-        setIsHighlightMode(false);
-      }
-    };
-
-    document.addEventListener('mouseup', handleMouseUp);
-    return () => document.removeEventListener('mouseup', handleMouseUp);
-  }, [isHighlightMode]);
 
   return (
     <div className="detailPageHeader">
@@ -128,8 +98,8 @@ export const DetailPageHeader = ({
             iconType={firstActionIcon}
             aria-label={firstActionLabel}
             size="s"
-            color="text"
-            display="empty"
+            color={firstActionActive ? 'primary' : 'text'}
+            display={firstActionActive ? 'fill' : 'empty'}
             onClick={onFirstAction}
           />
         </OuiToolTip>
@@ -163,35 +133,20 @@ export const DetailPageHeader = ({
       </div>
       {!hideAskAi && (
         <div className="askAiFloating">
-          <OuiToolTip content="Highlight to Ask AI" position="top">
-            <OuiButtonIcon
-              className={`askAiFloating__button${isHighlightMode ? ' askAiFloating__button--active' : ''}`}
-              iconType="visText"
-              aria-label="Highlight to Ask AI"
-              size="m"
-              color={isHighlightMode ? 'ghost' : 'text'}
-              display="fill"
-              onClick={handleHighlightToggle}
-            />
-          </OuiToolTip>
           {!isPopoverOpen && (
-            <OuiToolTip content="Ask AI" position="top">
-              <OuiButtonIcon
-                className={`askAiFloating__button${isAskAiActive ? ' askAiFloating__button--active' : ''}`}
-                iconType="generate"
-                aria-label="Ask AI"
-                size="m"
-                color={isAskAiActive ? 'ghost' : 'text'}
-                display="fill"
-                onClick={handleAskAiToggle}
-              />
-            </OuiToolTip>
+            <button
+              className="askAiFloating__button"
+              onClick={handleAskAiToggle}
+              aria-label="Ask AI"
+            >
+              Ask AI
+            </button>
           )}
           {isPopoverOpen && (
             <AskAiInline
               isOpen={isPopoverOpen}
               onClose={handlePopoverClose}
-              onContinueAsThread={onContinueAsThread}
+              onContinueAsThread={onContinueAsThread ? (prompt, response) => onContinueAsThread(prompt, response, null, title) : undefined}
               initialPrompt={highlightPrompt}
             />
           )}

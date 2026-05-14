@@ -87,56 +87,59 @@ const UserMessage = ({ content }) => (
   </div>
 );
 
-// Page attachment card
-const PageAttachment = ({ title, description, onAddToCanvas, canvasItems }) => {
-  const added = canvasItems.some((c) => c.type === 'page' && c.title === title);
+// Link preview attachment card (Tool UI style)
+const LinkPreviewAttachment = ({ href, title, description, onAddToCanvas, canvasItems }) => {
+  const added = canvasItems.some((c) => c.type === 'link-preview' && c.title === title);
   return (
     <div className="threadPage__attachmentWrap">
       <button
         type="button"
         className={`threadPage__addToCanvas${added ? ' threadPage__addToCanvas--added' : ''}`}
-        onClick={added ? undefined : () => onAddToCanvas({ type: 'page', title, description })}>
+        onClick={added ? undefined : () => onAddToCanvas({ type: 'link-preview', href, title, description })}>
         {added ? 'Added as related asset' : 'Add as related asset'}
       </button>
-      <div className="threadPage__attachment" role="presentation">
-        <OuiText size="xs">
-          <strong>{title}</strong>
-        </OuiText>
-        {description && (
-          <OuiText size="xs" color="subdued">
-            <p style={{ margin: 0 }}>{description}</p>
-          </OuiText>
-        )}
-      </div>
-    </div>
-  );
-};
-
-// Query attachment card
-const QueryAttachment = ({ query, onAddToCanvas, canvasItems }) => {
-  const added = canvasItems.some((c) => c.type === 'query' && c.query === query);
-  return (
-    <div className="threadPage__attachmentWrap">
-      <button
-        type="button"
-        className={`threadPage__addToCanvas${added ? ' threadPage__addToCanvas--added' : ''}`}
-        onClick={added ? undefined : () => onAddToCanvas({ type: 'query', query })}>
-        {added ? 'Added as related asset' : 'Add as related asset'}
-      </button>
-      <div className="threadPage__attachment">
-        <code className="threadPage__attachmentQuery">{query}</code>
-      </div>
+      {href ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="threadPage__attachment threadPage__attachment--linkPreview">
+          <div className="threadPage__linkPreviewBody">
+            <OuiText size="xs">
+              <strong>{title}</strong>
+            </OuiText>
+            {description && (
+              <OuiText size="xs" color="subdued">
+                <p style={{ margin: 0 }}>{description}</p>
+              </OuiText>
+            )}
+            <OuiText size="xs" color="subdued">
+              <span className="threadPage__linkPreviewUrl">{href}</span>
+            </OuiText>
+          </div>
+        </a>
+      ) : (
+        <div className="threadPage__attachment threadPage__attachment--linkPreview">
+          <div className="threadPage__linkPreviewBody">
+            <OuiText size="xs">
+              <strong>{title}</strong>
+            </OuiText>
+            {description && (
+              <OuiText size="xs" color="subdued">
+                <p style={{ margin: 0 }}>{description}</p>
+              </OuiText>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
 // Renders a single attachment by type
 const renderAttachment = (att, idx, onAddToCanvas, canvasItems) => {
-  if (att.type === 'page') {
-    return <PageAttachment key={idx} title={att.title} description={att.description} onAddToCanvas={onAddToCanvas} canvasItems={canvasItems} />;
-  }
-  if (att.type === 'query') {
-    return <QueryAttachment key={idx} query={att.query} onAddToCanvas={onAddToCanvas} canvasItems={canvasItems} />;
+  if (att.type === 'link-preview') {
+    return <LinkPreviewAttachment key={idx} href={att.href} title={att.title} description={att.description} onAddToCanvas={onAddToCanvas} canvasItems={canvasItems} />;
   }
   if (att.type === 'code-block') {
     return (
@@ -327,7 +330,7 @@ spec:
           'I also mapped your service dependencies based on the trace data:',
         tasksBefore: ['Mapping service topology', 'Analyzing trace spans'],
         attachment: {
-          type: 'page',
+          type: 'link-preview',
           title: 'Application service map',
           description:
             'Auto-discovered service topology showing frontend → checkout → payment-service → inventory, with health indicators and latency between nodes.',
@@ -339,17 +342,17 @@ spec:
         tasksBefore: ['Building dashboards', 'Configuring visualizations'],
         attachments: [
           {
-            type: 'page',
+            type: 'link-preview',
             title: 'Kubernetes Cluster Overview',
             description: 'Node health, pod status, resource requests vs limits, and namespace utilization across your cluster.',
           },
           {
-            type: 'page',
+            type: 'link-preview',
             title: 'Service Latency & Error Rates',
             description: 'P50/P95/P99 latency and error rate trends for each service, with breakdown by endpoint.',
           },
           {
-            type: 'page',
+            type: 'link-preview',
             title: 'Log Volume by Namespace',
             description: 'Log ingestion rates per namespace with severity distribution and top error patterns.',
           },

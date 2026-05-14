@@ -23,65 +23,114 @@ import {
   OuiIcon,
   OuiLoadingSpinner,
   OuiPopover,
+  OuiSmallButtonEmpty,
   OuiStat,
   OuiTab,
   OuiTabs,
-  OuiTitle,
   OuiText,
   OuiToolTip,
   OuiCompressedTextArea,
 } from '../../../../src/components';
 
 import { DetailPageHeader } from './detail_page_header';
+import { ProgressTracker } from './progress_tracker';
+import {
+  AlertPageMock,
+  InventoryAnalysisPageMock,
+  ConnectionPoolPageMock,
+  LogsPageMock,
+  DashboardPageMock,
+} from './mock_canvas_pages';
+
+// Map source page keys to existing canvas mock components
+const SOURCE_PAGE_MOCK = {
+  logs: { component: LogsPageMock, title: 'Logs' },
+  alerts: { component: AlertPageMock, title: 'Alerts' },
+  'alerts-detail': { component: AlertPageMock, title: 'Alerts Detail' },
+  dashboards: { component: DashboardPageMock, title: 'Dashboards' },
+  notebooks: { component: InventoryAnalysisPageMock, title: 'Notebooks' },
+  metrics: { component: ConnectionPoolPageMock, title: 'Metrics' },
+  discover: { component: LogsPageMock, title: 'Discover' },
+};
 
 const THREADS = {
   'latency-spike': {
     title: 'Latency spike investigation',
     messages: [
       {
-        role: 'user',
-        author: 'Sarah Lee',
+        role: 'assistant',
         content:
-          'Start investigation for the payment process error in the logs',
+          'An alert has been triggered: P99 latency on the payment service exceeded 2,000ms for the past 15 minutes. I am starting an investigation.\n\nI pulled the service metrics and correlated them with recent deployment events. Here is what I am seeing:',
+        attachments: [
+          {
+            type: 'link-preview',
+            title: 'Payment service alert — P99 latency breach',
+            description:
+              'Triggered at 14:32 UTC. P99 latency crossed the 2,000ms threshold on 3 of 4 pods. No recent deploys in the last 6 hours.',
+            image:
+              'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=200&fit=crop',
+          },
+          {
+            type: 'chart',
+            title: 'P99 Latency (last 2h)',
+            data: [
+              { label: '12:30', value: 120 },
+              { label: '13:00', value: 135 },
+              { label: '13:30', value: 180 },
+              { label: '14:00', value: 420 },
+              { label: '14:15', value: 1100 },
+              { label: '14:30', value: 2050 },
+              { label: '14:45', value: 2340 },
+            ],
+          },
+        ],
       },
       {
         role: 'assistant',
         content:
-          'During the investigation, the primary cause of the service outage was identified as a misconfigured deployment that triggered a cascading failure across dependent services.\n\n**Key Findings**\n\n- Configuration Drift: A recent infrastructure change introduced an incorrect timeout value in the API gateway.\n- Autoscaling Feedback Loop: Increased retries caused aggressive scaling, which overwhelmed downstream services.\n- Insufficient Guardrails: Circuit breakers were not triggered due to misaligned thresholds.\n\n**Contributing Factors**\n\n1. Limited pre-deployment validation for environment-specific configurations.\n2. Monitoring alerts focused on symptoms (latency) rather than root signals (retry rates).\n3. Manual rollback required due to partial automation gaps.',
-        attachment: {
-          type: 'page',
-          title: 'Payment service latency dashboard',
-          description:
-            'P99 latency, error rate, and throughput for the payment service over the last 24 hours.',
-        },
-      },
-      {
-        role: 'user',
-        author: 'Sarah Lee',
-        content:
-          'Can you check the current retry rates on the checkout service?',
-      },
-      {
-        role: 'assistant',
-        content:
-          'The checkout service is currently seeing elevated retry rates at approximately 340 retries/min, compared to the baseline of 45 retries/min. This is a 7.5x increase and correlates with the timeout misconfiguration identified earlier. The retry storm is propagating to downstream payment and inventory services.',
-        attachment: {
-          type: 'query',
-          query:
-            'source=opensearch_dashboards_sample_data_logs | where service="checkout" | stats count() as retries by span(timestamp, 1m)',
-        },
-      },
-      {
-        role: 'assistant',
-        content:
-          'Here is a relevant runbook that covers retry storm mitigation for this service:',
+          'Based on the timing and pattern, I have two hypotheses:\n\n**Hypothesis 1: Downstream dependency bottleneck**\n\nThe latency spike correlates with elevated connection wait times to the inventory service, which started returning slower responses around 14:20 UTC.',
         attachment: {
           type: 'link-preview',
-          href: 'https://runbooks.internal.io/checkout/retry-storm-mitigation',
-          title: 'Retry Storm Mitigation Runbook',
+          title: 'Inventory service dependency analysis',
           description:
-            'Step-by-step guide for identifying and resolving retry storms in the checkout service, including circuit breaker configuration and connection pool tuning.',
-          image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=200&fit=crop',
+            'Connection pool saturation, response time degradation, and queue depth trends for the inventory service over the last 4 hours.',
+          image:
+            'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=200&fit=crop',
+        },
+      },
+      {
+        role: 'assistant',
+        content:
+          '**Hypothesis 2: Connection pool exhaustion**\n\nThe payment service\'s outbound connection pool is at 98% utilization. Requests are queuing rather than failing fast, which inflates P99 without raising error rates. This would explain why error rates look normal while latency is spiking.',
+        attachment: {
+          type: 'link-preview',
+          title: 'Payment service connection pool metrics',
+          description:
+            'Pool utilization, acquire wait time, and active connection count for the payment service over the last 4 hours.',
+          image:
+            'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=200&fit=crop',
+        },
+      },
+      {
+        role: 'assistant',
+        content:
+          'Here are the recommended next steps to confirm and mitigate:\n\n1. Check the inventory service connection pool configuration.\n2. Increase the pool max from 50 to 150 to relieve backpressure.\n3. Enable circuit breaker on the payment→inventory call path.\n\nI have prepared a script to apply the connection pool fix:',
+        attachment: {
+          type: 'code-block',
+          title: 'apply-fix.sh',
+          language: 'bash',
+          code: `#!/bin/bash
+# Patch payment-service connection pool and restart
+
+kubectl patch configmap payment-service-config \\
+  -n production \\
+  --type merge \\
+  -p '{"data":{"POOL_MAX_CONNECTIONS":"150","POOL_ACQUIRE_TIMEOUT":"5s"}}'
+
+kubectl rollout restart deployment/payment-service -n production
+kubectl rollout status deployment/payment-service -n production --timeout=120s
+
+echo "Done. Monitoring P99 latency for recovery..."`,
         },
       },
     ],
@@ -99,16 +148,6 @@ const THREADS = {
         role: 'assistant',
         content:
           'The checkout service error rate is at 58.8%, primarily driven by 503 responses from the payment-service dependency. The upstream connection pool appears exhausted — active connections are at the configured maximum of 100 with a queue depth of 2,400 pending requests.\n\n**Recommended Actions**\n\n1. Increase the connection pool max from 100 to 250.\n2. Enable circuit breaker with a 50% error threshold and 30s recovery window.\n3. Add retry budget limiting to cap retries at 10% of total requests.',
-        attachment: {
-          type: 'stats-display',
-          title: 'Checkout Service Health',
-          stats: [
-            { label: 'Error Rate', value: '58.8%', color: 'danger' },
-            { label: 'Active Connections', value: '100/100', color: 'accent' },
-            { label: 'Queue Depth', value: '2,400', color: 'danger' },
-            { label: 'P99 Latency', value: '4.2s', color: 'accent' },
-          ],
-        },
       },
       {
         role: 'user',
@@ -118,18 +157,7 @@ const THREADS = {
       {
         role: 'assistant',
         content:
-          'Here is the error breakdown for the checkout service over the last hour:',
-        attachment: {
-          type: 'data-table',
-          title: 'Error Code Breakdown (last 1h)',
-          columns: ['Status Code', 'Count', 'Percentage', 'Service'],
-          rows: [
-            ['503', '1,842', '62.3%', 'payment-service'],
-            ['504', '689', '23.3%', 'payment-service'],
-            ['500', '312', '10.6%', 'checkout-api'],
-            ['429', '114', '3.8%', 'rate-limiter'],
-          ],
-        },
+          'Here is the error breakdown for the checkout service over the last hour:\n\n- 503: 1,842 (62.3%) from payment-service\n- 504: 689 (23.3%) from payment-service\n- 500: 312 (10.6%) from checkout-api\n- 429: 114 (3.8%) from rate-limiter',
       },
     ],
   },
@@ -144,19 +172,7 @@ const THREADS = {
       {
         role: 'assistant',
         content:
-          'Weekly summary: overall uptime 99.92%. Two incidents this week — payment-service latency spike (resolved) and a brief DNS issue on the recommendation service. Here is the request volume by service:',
-        attachment: {
-          type: 'chart',
-          title: 'Requests per Service (this week)',
-          data: [
-            { label: 'frontend', value: 48200 },
-            { label: 'checkout', value: 31500 },
-            { label: 'cart', value: 27800 },
-            { label: 'payment', value: 22100 },
-            { label: 'recommend', value: 15600 },
-            { label: 'search', value: 12400 },
-          ],
-        },
+          'Weekly summary: overall uptime 99.92%. Two incidents this week — payment-service latency spike (resolved) and a brief DNS issue on the recommendation service.\n\n**Request Volume by Service**\n\n- frontend: 48,200 req/s\n- checkout: 31,500 req/s\n- cart: 27,800 req/s\n- payment: 22,100 req/s\n- recommend: 15,600 req/s\n- search: 12,400 req/s',
       },
       {
         role: 'user',
@@ -166,28 +182,7 @@ const THREADS = {
       {
         role: 'assistant',
         content:
-          'Here is the recommended configuration change for the payment-service connection pool:',
-        attachment: {
-          type: 'code-block',
-          title: 'payment-service/config.yaml',
-          language: 'yaml',
-          code: `connection_pool:
-  max_connections: 250
-  min_idle: 20
-  max_idle_time: 30s
-  acquire_timeout: 5s
-
-circuit_breaker:
-  enabled: true
-  error_threshold: 50
-  recovery_window: 30s
-  half_open_requests: 5
-
-retry_budget:
-  enabled: true
-  max_retry_ratio: 0.10
-  ttl: 60s`,
-        },
+          'The recommended configuration change for the payment-service connection pool is to increase max_connections to 250, set min_idle to 20, max_idle_time to 30s, and acquire_timeout to 5s. Also enable the circuit breaker with a 50% error threshold and 30s recovery window, and add a retry budget capped at 10% of total requests with a 60s TTL.',
       },
     ],
   },
@@ -204,12 +199,6 @@ retry_budget:
         role: 'assistant',
         content:
           'I analyzed the heap dumps and memory allocation patterns for the catalog service.\n\n**Findings**\n\n- Heap usage grows linearly at ~12 MB/min after each restart, reaching the 2 GB limit in roughly 4 hours.\n- The leak originates from an unbounded in-memory cache in the product-search module. Entries are added on every search request but never evicted.\n- GC full-pause frequency increased from 2/hr to 18/hr in the last 24 hours.\n\n**Recommendation**\n\n1. Add a TTL-based eviction policy (e.g., 10 min) to the product-search cache.\n2. Set a max entry cap of 50,000 items.\n3. Switch to an LRU cache implementation to bound memory growth.',
-        attachment: {
-          type: 'page',
-          title: 'Catalog service memory dashboard',
-          description:
-            'Heap usage, GC pause duration, and object allocation rates for the catalog service.',
-        },
       },
     ],
   },
@@ -226,11 +215,6 @@ retry_budget:
         role: 'assistant',
         content:
           'I checked the DNS resolver metrics and correlated them with the service error logs.\n\n**Root Cause**\n\n- The internal DNS resolver (CoreDNS) is running at 96% CPU on 2 of 3 pods.\n- Query volume spiked 3x after the new service mesh sidecar rollout, which issues a DNS lookup per request instead of caching.\n- Timeout rate is at 8.4%, concentrated on the two overloaded pods.\n\n**Recommended Actions**\n\n1. Scale CoreDNS from 3 to 6 pods to handle the increased query volume.\n2. Enable DNS caching in the service mesh sidecar configuration (ndots: 2, TTL: 30s).\n3. Add a node-local DNS cache DaemonSet to reduce cross-node DNS traffic.',
-        attachment: {
-          type: 'query',
-          query:
-            'source=opensearch_dashboards_sample_data_logs | where component="coredns" | stats avg(cpu_percent) as avg_cpu, count() as queries by pod_name | sort -avg_cpu',
-        },
       },
       {
         role: 'user',
@@ -257,12 +241,6 @@ retry_budget:
         role: 'assistant',
         content:
           'I reviewed the deployment pipeline logs and the rollback controller configuration.\n\n**Analysis**\n\n- The v2.14 deployment passed the readiness probe but failed the liveness probe 3 minutes after going live.\n- The rollback controller requires 3 consecutive liveness failures within a 60s window, but the failures were spaced 90s apart due to a misconfigured probe interval.\n- As a result, the failure count never reached the threshold and the rollback was not triggered.\n\n**Fix**\n\n1. Reduce the liveness probe period from 90s to 20s for the order service.\n2. Lower the rollback failure threshold from 3 to 2 consecutive failures.\n3. Add a deployment health alert that fires if error rate exceeds 5% within 2 minutes of a deploy.',
-        attachment: {
-          type: 'page',
-          title: 'Order service deployment history',
-          description:
-            'Deployment timeline, rollback events, and probe status for the order service over the last 7 days.',
-        },
       },
     ],
   },
@@ -279,11 +257,6 @@ retry_budget:
         role: 'assistant',
         content:
           'I scanned the certificate inventory across all namespaces.\n\n**Expiring Certificates**\n\n- api-gateway.prod: expires in 36 hours\n- auth-service.prod: expires in 42 hours\n- webhook-receiver.prod: expires in 47 hours\n\nAll three are managed by cert-manager but the ClusterIssuer has a stale ACME account key. Renewal requests have been failing silently for the past 5 days.\n\n**Immediate Actions**\n\n1. Rotate the ACME account key in the ClusterIssuer resource.\n2. Manually trigger certificate renewal for the three affected services.\n3. Add a monitoring rule to alert when cert-manager renewal failures exceed 0 over a 24h window.',
-        attachment: {
-          type: 'query',
-          query:
-            'source=opensearch_dashboards_sample_data_logs | where event_type="cert_renewal" | stats count() as attempts, sum(case(status="failed", 1)) as failures by certificate_name | sort -failures',
-        },
       },
       {
         role: 'user',
@@ -310,11 +283,342 @@ retry_budget:
         role: 'assistant',
         content:
           'I checked the disk usage breakdown on the affected nodes.\n\n**Disk Usage Analysis**\n\n- node-prod-07: 91% used, 68 GB consumed by container logs from the analytics-pipeline service\n- node-prod-12: 88% used, 54 GB of orphaned container images from failed garbage collection\n- node-prod-19: 93% used, 72 GB of emptyDir volumes from the batch-processor service that were never cleaned up\n\n**Recommended Actions**\n\n1. Enable log rotation on the analytics-pipeline with a 500 MB max size and 3 file retention.\n2. Restart the kubelet image GC on node-prod-12 and lower the image GC high threshold from 90% to 80%.\n3. Add resource limits for emptyDir volumes on the batch-processor pods (sizeLimit: 2Gi).',
+      },
+    ],
+  },
+  'tool-demo-1': {
+    title: 'Thread tool demo 1',
+    messages: [
+      {
+        role: 'user',
+        author: 'Emily Zhang',
+        content: 'Can you show me the current state of our API gateway?',
+      },
+      {
+        role: 'assistant',
+        content:
+          'Here is the current health snapshot for the API gateway cluster:',
         attachment: {
-          type: 'page',
-          title: 'Cluster node disk usage dashboard',
+          type: 'stats-display',
+          title: 'API Gateway Health',
+          stats: [
+            { label: 'Uptime', value: '99.97%', color: 'default' },
+            { label: 'Requests/sec', value: '12,480', color: 'default' },
+            { label: 'Avg Latency', value: '23ms', color: 'success' },
+            { label: 'Error Rate', value: '0.3%', color: 'success' },
+          ],
+        },
+      },
+      {
+        role: 'user',
+        author: 'Emily Zhang',
+        content: 'What about the route configuration? Show me the current setup.',
+      },
+      {
+        role: 'assistant',
+        content:
+          'Here is the active route configuration for the API gateway:',
+        attachment: {
+          type: 'code-block',
+          title: 'gateway-routes.yaml',
+          language: 'yaml',
+          code: `routes:
+  - path: /api/v1/users
+    service: user-service
+    timeout: 5s
+    rate_limit: 1000/min
+  - path: /api/v1/orders
+    service: order-service
+    timeout: 10s
+    rate_limit: 500/min
+  - path: /api/v1/payments
+    service: payment-service
+    timeout: 15s
+    rate_limit: 200/min`,
+        },
+      },
+      {
+        role: 'user',
+        author: 'Emily Zhang',
+        content: 'Show me the traffic distribution across routes.',
+      },
+      {
+        role: 'assistant',
+        content:
+          'Here is the traffic breakdown by route over the last hour:',
+        attachment: {
+          type: 'chart',
+          title: 'Traffic by Route (last 1h)',
+          data: [
+            { label: '/users', value: 34200 },
+            { label: '/orders', value: 22800 },
+            { label: '/payments', value: 15400 },
+            { label: '/search', value: 11200 },
+            { label: '/auth', value: 8900 },
+          ],
+        },
+      },
+      {
+        role: 'user',
+        author: 'Emily Zhang',
+        content: 'Any rate limiting events recently?',
+      },
+      {
+        role: 'assistant',
+        content:
+          'I found several rate limiting events in the last 24 hours:',
+        attachment: {
+          type: 'data-table',
+          title: 'Rate Limit Events (last 24h)',
+          columns: ['Route', 'Client', 'Events', 'Last Triggered'],
+          rows: [
+            ['/api/v1/orders', 'mobile-app-ios', '847', '12 min ago'],
+            ['/api/v1/payments', 'checkout-web', '312', '45 min ago'],
+            ['/api/v1/users', 'admin-dashboard', '156', '2 hours ago'],
+            ['/api/v1/search', 'recommendation-svc', '89', '6 hours ago'],
+          ],
+        },
+      },
+      {
+        role: 'user',
+        author: 'Emily Zhang',
+        content: 'Is there a dashboard I can monitor this on?',
+      },
+      {
+        role: 'assistant',
+        content:
+          'Yes, here is the gateway monitoring dashboard with real-time metrics:',
+        attachment: {
+          type: 'link-preview',
+          title: 'API Gateway monitoring dashboard',
           description:
-            'Per-node disk utilization, top consumers, and garbage collection status across the production cluster.',
+            'Real-time request rates, latency percentiles, rate limiting events, and upstream health for all gateway routes.',
+        },
+      },
+    ],
+  },
+  'tool-demo-2': {
+    title: 'Thread tool demo 2',
+    messages: [
+      {
+        role: 'user',
+        author: 'Carlos Rivera',
+        content: 'We need to investigate the database replication lag. What do you see?',
+      },
+      {
+        role: 'assistant',
+        content:
+          'I pulled the replication metrics across all read replicas. The lag is significant on two nodes:',
+        attachment: {
+          type: 'stats-display',
+          title: 'Replication Status',
+          stats: [
+            { label: 'Primary WAL', value: '2.4 GB/hr', color: 'default' },
+            { label: 'Replica-1 Lag', value: '340ms', color: 'success' },
+            { label: 'Replica-2 Lag', value: '8.2s', color: 'danger' },
+            { label: 'Replica-3 Lag', value: '12.1s', color: 'danger' },
+          ],
+        },
+      },
+      {
+        role: 'user',
+        author: 'Carlos Rivera',
+        content: 'Show me the lag trend over time.',
+      },
+      {
+        role: 'assistant',
+        content:
+          'Here is the replication lag trend for the past 6 hours. The spike started around 14:00 UTC:',
+        attachment: {
+          type: 'chart',
+          title: 'Replication Lag (6h)',
+          data: [
+            { label: '09:00', value: 200 },
+            { label: '10:00', value: 180 },
+            { label: '11:00', value: 220 },
+            { label: '12:00', value: 350 },
+            { label: '13:00', value: 900 },
+            { label: '14:00', value: 8200 },
+            { label: '15:00', value: 12100 },
+          ],
+        },
+      },
+      {
+        role: 'user',
+        author: 'Carlos Rivera',
+        content: 'What queries are causing the most write pressure?',
+      },
+      {
+        role: 'assistant',
+        content:
+          'These are the top write-heavy queries on the primary in the last hour:',
+        attachment: {
+          type: 'data-table',
+          title: 'Top Write Queries (last 1h)',
+          columns: ['Query Pattern', 'Calls/min', 'Avg Duration', 'Rows Affected'],
+          rows: [
+            ['INSERT INTO order_events', '2,340', '4.2ms', '2,340'],
+            ['UPDATE inventory SET stock=', '1,890', '12.8ms', '3,780'],
+            ['INSERT INTO audit_log', '1,560', '1.1ms', '1,560'],
+            ['DELETE FROM expired_sessions', '890', '45ms', '12,400'],
+          ],
+        },
+      },
+      {
+        role: 'user',
+        author: 'Carlos Rivera',
+        content: 'Can you show me the replication config?',
+      },
+      {
+        role: 'assistant',
+        content:
+          'Here is the current replication configuration. The `wal_keep_size` looks undersized for the current write volume:',
+        attachment: {
+          type: 'code-block',
+          title: 'postgresql.conf (replication)',
+          language: 'ini',
+          code: `# Replication settings
+wal_level = replica
+max_wal_senders = 10
+wal_keep_size = 1GB
+max_replication_slots = 10
+hot_standby = on
+hot_standby_feedback = on
+
+# Recovery target (replicas)
+recovery_min_apply_delay = 0
+primary_conninfo = 'host=primary port=5432 user=replicator'`,
+        },
+      },
+      {
+        role: 'user',
+        author: 'Carlos Rivera',
+        content: 'Where can I see the full replication dashboard?',
+      },
+      {
+        role: 'assistant',
+        content:
+          'Here is the replication monitoring dashboard with WAL throughput and replica status:',
+        attachment: {
+          type: 'link-preview',
+          title: 'Database replication dashboard',
+          description:
+            'WAL generation rate, replica lag per node, replication slot status, and connection pool metrics for the PostgreSQL cluster.',
+        },
+      },
+    ],
+  },
+  'tool-demo-3': {
+    title: 'Thread tool demo 3',
+    messages: [
+      {
+        role: 'user',
+        author: 'Aisha Patel',
+        content: 'The CI/CD pipeline has been failing intermittently. What is going on?',
+      },
+      {
+        role: 'assistant',
+        content:
+          'I analyzed the pipeline runs from the last 48 hours. Here is the failure breakdown:',
+        attachment: {
+          type: 'stats-display',
+          title: 'Pipeline Health (48h)',
+          stats: [
+            { label: 'Total Runs', value: '284', color: 'default' },
+            { label: 'Success Rate', value: '71.8%', color: 'accent' },
+            { label: 'Flaky Tests', value: '23', color: 'danger' },
+            { label: 'Infra Failures', value: '14', color: 'danger' },
+          ],
+        },
+      },
+      {
+        role: 'user',
+        author: 'Aisha Patel',
+        content: 'Which stages are failing the most?',
+      },
+      {
+        role: 'assistant',
+        content:
+          'Here is the failure count by pipeline stage:',
+        attachment: {
+          type: 'chart',
+          title: 'Failures by Stage (48h)',
+          data: [
+            { label: 'unit-test', value: 31 },
+            { label: 'integration', value: 24 },
+            { label: 'build', value: 14 },
+            { label: 'deploy-staging', value: 8 },
+            { label: 'e2e', value: 3 },
+          ],
+        },
+      },
+      {
+        role: 'user',
+        author: 'Aisha Patel',
+        content: 'Show me the specific test failures.',
+      },
+      {
+        role: 'assistant',
+        content:
+          'These are the most frequently failing tests across all runs:',
+        attachment: {
+          type: 'data-table',
+          title: 'Flaky Test Report',
+          columns: ['Test Name', 'Failures', 'Pass Rate', 'Avg Duration'],
+          rows: [
+            ['OrderService.processPayment', '18', '42%', '3.2s'],
+            ['CartAPI.concurrentUpdate', '12', '61%', '8.4s'],
+            ['AuthFlow.tokenRefresh', '9', '71%', '2.1s'],
+            ['InventorySync.batchUpdate', '7', '78%', '12.6s'],
+          ],
+        },
+      },
+      {
+        role: 'user',
+        author: 'Aisha Patel',
+        content: 'What does the pipeline config look like for the integration stage?',
+      },
+      {
+        role: 'assistant',
+        content:
+          'Here is the integration stage configuration. The timeout and retry settings may need adjustment:',
+        attachment: {
+          type: 'code-block',
+          title: '.github/workflows/ci.yml (integration)',
+          language: 'yaml',
+          code: `integration-tests:
+  runs-on: ubuntu-latest
+  timeout-minutes: 15
+  services:
+    postgres:
+      image: postgres:15
+      ports: ['5432:5432']
+    redis:
+      image: redis:7
+      ports: ['6379:6379']
+  steps:
+    - uses: actions/checkout@v4
+    - run: npm ci
+    - run: npm run test:integration
+      env:
+        DATABASE_URL: postgres://localhost:5432/test
+        REDIS_URL: redis://localhost:6379`,
+        },
+      },
+      {
+        role: 'user',
+        author: 'Aisha Patel',
+        content: 'Is there a dashboard for pipeline analytics?',
+      },
+      {
+        role: 'assistant',
+        content:
+          'Yes, here is the CI/CD analytics dashboard with historical trends and flaky test tracking:',
+        attachment: {
+          type: 'link-preview',
+          title: 'CI/CD pipeline analytics dashboard',
+          description:
+            'Pipeline success rates, stage duration trends, flaky test detection, and infrastructure failure correlation over the last 30 days.',
         },
       },
     ],
@@ -322,13 +626,27 @@ retry_budget:
 };
 
 // Renders a single user prompt bubble (right-aligned, light background)
-const UserMessage = ({ author: _author, content }) => (
+const UserMessage = ({ author: _author, content, attachment }) => (
   <div className="threadPage__message threadPage__message--user">
     <div className="threadPage__bubble threadPage__bubble--user">
       <OuiText size="s">
         <p>{content}</p>
       </OuiText>
     </div>
+    {attachment && attachment.type === 'link-preview' && (
+      <div className="threadPage__attachment threadPage__attachment--linkPreview">
+        <div className="threadPage__linkPreviewBody">
+          <OuiText size="xs">
+            <strong>{attachment.title}</strong>
+          </OuiText>
+          {attachment.description && (
+            <OuiText size="xs" color="subdued">
+              <p style={{ margin: 0 }}>{attachment.description}</p>
+            </OuiText>
+          )}
+        </div>
+      </div>
+    )}
   </div>
 );
 
@@ -385,96 +703,78 @@ const parseContent = (content) => {
   return elements;
 };
 
-// Floating "Add to related assets" button shown on attachment hover
-const AddToCanvasButton = ({ onClick, added }) => (
+// Floating "View as page" button for link-preview attachments
+const ViewAsPageButton = ({ onClick }) => (
   <button
     type="button"
-    className={`threadPage__addToCanvas${
-      added ? ' threadPage__addToCanvas--added' : ''
-    }`}
-    onClick={added ? undefined : onClick}>
-    {added ? 'Added as related asset' : 'Add as related asset'}
+    className="threadPage__addToCanvas"
+    onClick={onClick}>
+    View as page
   </button>
 );
 
-// Attachment card: page reference (title + description, clickable)
-const PageAttachment = ({ title, description, onAddToCanvas, canvasItems }) => {
-  const added = canvasItems.some((c) => c.type === 'page' && c.title === title);
-  return (
-    <div className="threadPage__attachmentWrap">
-      <AddToCanvasButton
-        added={added}
-        onClick={() => onAddToCanvas({ type: 'page', title, description })}
-      />
-      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-      <div
-        className="threadPage__attachment"
-        role="presentation">
-        <OuiText size="xs">
-          <strong>{title}</strong>
-        </OuiText>
-        {description && (
-          <OuiText size="xs" color="subdued">
-            <p style={{ margin: 0 }}>{description}</p>
-          </OuiText>
-        )}
-      </div>
-    </div>
-  );
-};
+// Floating "Save as object" button for non-link-preview attachments
+const SaveAsObjectButton = () => (
+  <button
+    type="button"
+    className="threadPage__addToCanvas">
+    Save as object
+  </button>
+);
 
 // Attachment card: link preview (Tool UI style — image + title + description + URL)
-const LinkPreviewAttachment = ({ href, title, description, image, onAddToCanvas, canvasItems }) => {
-  const added = canvasItems.some(
-    (c) => c.type === 'link-preview' && c.href === href
-  );
+const LinkPreviewAttachment = ({ href, title, description, image, onViewAsPage }) => {
   return (
     <div className="threadPage__attachmentWrap">
-      <AddToCanvasButton
-        added={added}
-        onClick={() =>
-          onAddToCanvas({ type: 'link-preview', href, title, description, image })
-        }
-      />
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="threadPage__attachment threadPage__attachment--linkPreview">
-        {image && (
-          <div className="threadPage__linkPreviewImage">
-            <img src={image} alt="" />
-          </div>
-        )}
-        <div className="threadPage__linkPreviewBody">
-          <OuiText size="xs">
-            <strong>{title}</strong>
-          </OuiText>
-          {description && (
-            <OuiText size="xs" color="subdued">
-              <p style={{ margin: 0 }}>{description}</p>
-            </OuiText>
+      <ViewAsPageButton onClick={onViewAsPage} />
+      {href ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="threadPage__attachment threadPage__attachment--linkPreview">
+          {image && (
+            <div className="threadPage__linkPreviewImage">
+              <img src={image} alt="" />
+            </div>
           )}
-          <OuiText size="xs" color="subdued">
-            <span className="threadPage__linkPreviewUrl">{href}</span>
-          </OuiText>
+          <div className="threadPage__linkPreviewBody">
+            <OuiText size="xs">
+              <strong>{title}</strong>
+            </OuiText>
+            {description && (
+              <OuiText size="xs" color="subdued">
+                <p style={{ margin: 0 }}>{description}</p>
+              </OuiText>
+            )}
+            <OuiText size="xs" color="subdued">
+              <span className="threadPage__linkPreviewUrl">{href}</span>
+            </OuiText>
+          </div>
+        </a>
+      ) : (
+        <div className="threadPage__attachment threadPage__attachment--linkPreview">
+          <div className="threadPage__linkPreviewBody">
+            <OuiText size="xs">
+              <strong>{title}</strong>
+            </OuiText>
+            {description && (
+              <OuiText size="xs" color="subdued">
+                <p style={{ margin: 0 }}>{description}</p>
+              </OuiText>
+            )}
+          </div>
         </div>
-      </a>
+      )}
     </div>
   );
 };
 
 // Attachment card: stats display (Tool UI style — grid of key metrics)
-const StatsDisplayAttachment = ({ title, stats, onAddToCanvas, canvasItems }) => {
-  const added = canvasItems.some(
-    (c) => c.type === 'stats-display' && c.title === title
-  );
+const StatsDisplayAttachment = ({ title, stats }) => {
   return (
     <div className="threadPage__attachmentWrap">
-      <AddToCanvasButton
-        added={added}
-        onClick={() => onAddToCanvas({ type: 'stats-display', title, stats })}
-      />
+      <SaveAsObjectButton />
       <div className="threadPage__attachment threadPage__attachment--statsDisplay">
         {title && (
           <OuiText size="xs">
@@ -500,19 +800,13 @@ const StatsDisplayAttachment = ({ title, stats, onAddToCanvas, canvasItems }) =>
 };
 
 // Attachment card: data table (Tool UI style — tabular data)
-const DataTableAttachment = ({ title, columns, rows, onAddToCanvas, canvasItems }) => {
-  const added = canvasItems.some(
-    (c) => c.type === 'data-table' && c.title === title
-  );
+const DataTableAttachment = ({ title, columns, rows }) => {
   return (
     <div className="threadPage__attachmentWrap">
-      <AddToCanvasButton
-        added={added}
-        onClick={() => onAddToCanvas({ type: 'data-table', title, columns, rows })}
-      />
+      <SaveAsObjectButton />
       <div className="threadPage__attachment threadPage__attachment--dataTable">
         {title && (
-          <OuiText size="xs" style={{ marginBottom: 8 }}>
+          <OuiText size="xs" style={{ marginBottom: 12 }}>
             <strong>{title}</strong>
           </OuiText>
         )}
@@ -542,19 +836,13 @@ const DataTableAttachment = ({ title, columns, rows, onAddToCanvas, canvasItems 
 };
 
 // Attachment card: code block (Tool UI style — syntax-highlighted code)
-const CodeBlockAttachment = ({ title, language, code, onAddToCanvas, canvasItems }) => {
-  const added = canvasItems.some(
-    (c) => c.type === 'code-block' && c.code === code
-  );
+const CodeBlockAttachment = ({ title, language, code }) => {
   return (
     <div className="threadPage__attachmentWrap">
-      <AddToCanvasButton
-        added={added}
-        onClick={() => onAddToCanvas({ type: 'code-block', title, language, code })}
-      />
+      <SaveAsObjectButton />
       <div className="threadPage__attachment threadPage__attachment--codeBlock">
         {title && (
-          <OuiText size="xs" style={{ marginBottom: 4 }}>
+          <OuiText size="xs" style={{ marginBottom: 12 }}>
             <strong>{title}</strong>
           </OuiText>
         )}
@@ -567,20 +855,14 @@ const CodeBlockAttachment = ({ title, language, code, onAddToCanvas, canvasItems
 };
 
 // Attachment card: chart (Tool UI style — simple inline bar/sparkline chart)
-const ChartAttachment = ({ title, data, onAddToCanvas, canvasItems }) => {
-  const added = canvasItems.some(
-    (c) => c.type === 'chart' && c.title === title
-  );
+const ChartAttachment = ({ title, data }) => {
   const maxVal = Math.max(...data.map((d) => d.value));
   return (
     <div className="threadPage__attachmentWrap">
-      <AddToCanvasButton
-        added={added}
-        onClick={() => onAddToCanvas({ type: 'chart', title, data })}
-      />
+      <SaveAsObjectButton />
       <div className="threadPage__attachment threadPage__attachment--chart">
         {title && (
-          <OuiText size="xs" style={{ marginBottom: 8 }}>
+          <OuiText size="xs" style={{ marginBottom: 12 }}>
             <strong>{title}</strong>
           </OuiText>
         )}
@@ -601,22 +883,59 @@ const ChartAttachment = ({ title, data, onAddToCanvas, canvasItems }) => {
   );
 };
 
-// Attachment card: query (monospace code)
-const QueryAttachment = ({ query, onAddToCanvas, canvasItems }) => {
-  const added = canvasItems.some(
-    (c) => c.type === 'query' && c.query === query
-  );
-  return (
-    <div className="threadPage__attachmentWrap">
-      <AddToCanvasButton
-        added={added}
-        onClick={() => onAddToCanvas({ type: 'query', query })}
+// Helper to render a single attachment by type
+const renderSingleAttachment = (att, idx, onViewAsPage) => {
+  if (att.type === 'link-preview') {
+    return (
+      <LinkPreviewAttachment
+        key={idx}
+        href={att.href}
+        title={att.title}
+        description={att.description}
+        image={att.image}
+        onViewAsPage={() => onViewAsPage(att)}
       />
-      <div className="threadPage__attachment">
-        <code className="threadPage__attachmentQuery">{query}</code>
-      </div>
-    </div>
-  );
+    );
+  }
+  if (att.type === 'code-block') {
+    return (
+      <CodeBlockAttachment
+        key={idx}
+        title={att.title}
+        language={att.language}
+        code={att.code}
+      />
+    );
+  }
+  if (att.type === 'chart') {
+    return (
+      <ChartAttachment
+        key={idx}
+        title={att.title}
+        data={att.data}
+      />
+    );
+  }
+  if (att.type === 'data-table') {
+    return (
+      <DataTableAttachment
+        key={idx}
+        title={att.title}
+        columns={att.columns}
+        rows={att.rows}
+      />
+    );
+  }
+  if (att.type === 'stats-display') {
+    return (
+      <StatsDisplayAttachment
+        key={idx}
+        title={att.title}
+        stats={att.stats}
+      />
+    );
+  }
+  return null;
 };
 
 // Renders a single assistant response (left-aligned, plain text + feedback)
@@ -624,136 +943,104 @@ const AssistantMessage = ({
   content,
   streaming,
   attachment,
-  onAddToCanvas,
-  canvasItems,
-}) => (
-  <div className="threadPage__message threadPage__message--assistant">
-    <div className="threadPage__bubble threadPage__bubble--assistant">
-      <OuiText size="s">{parseContent(content)}</OuiText>
-      {!streaming && attachment && attachment.type === 'page' && (
-        <PageAttachment
-          title={attachment.title}
-          description={attachment.description}
-          onAddToCanvas={onAddToCanvas}
-          canvasItems={canvasItems}
-        />
-      )}
-      {!streaming && attachment && attachment.type === 'query' && (
-        <QueryAttachment
-          query={attachment.query}
-          onAddToCanvas={onAddToCanvas}
-          canvasItems={canvasItems}
-        />
-      )}
-      {!streaming && attachment && attachment.type === 'link-preview' && (
-        <LinkPreviewAttachment
-          href={attachment.href}
-          title={attachment.title}
-          description={attachment.description}
-          image={attachment.image}
-          onAddToCanvas={onAddToCanvas}
-          canvasItems={canvasItems}
-        />
-      )}
-      {!streaming && attachment && attachment.type === 'stats-display' && (
-        <StatsDisplayAttachment
-          title={attachment.title}
-          stats={attachment.stats}
-          onAddToCanvas={onAddToCanvas}
-          canvasItems={canvasItems}
-        />
-      )}
-      {!streaming && attachment && attachment.type === 'data-table' && (
-        <DataTableAttachment
-          title={attachment.title}
-          columns={attachment.columns}
-          rows={attachment.rows}
-          onAddToCanvas={onAddToCanvas}
-          canvasItems={canvasItems}
-        />
-      )}
-      {!streaming && attachment && attachment.type === 'code-block' && (
-        <CodeBlockAttachment
-          title={attachment.title}
-          language={attachment.language}
-          code={attachment.code}
-          onAddToCanvas={onAddToCanvas}
-          canvasItems={canvasItems}
-        />
-      )}
-      {!streaming && attachment && attachment.type === 'chart' && (
-        <ChartAttachment
-          title={attachment.title}
-          data={attachment.data}
-          onAddToCanvas={onAddToCanvas}
-          canvasItems={canvasItems}
-        />
-      )}
-      {!streaming && (
-        <div className="threadPage__feedback">
-          <OuiButtonIcon
-            iconType="thumbsUp"
-            aria-label="Helpful"
-            size="xs"
-            color="text"
-          />
-          <OuiButtonIcon
-            iconType="thumbsDown"
-            aria-label="Not helpful"
-            size="xs"
-            color="text"
-          />
-        </div>
-      )}
+  attachments,
+  onViewAsPage,
+}) => {
+  const allAttachments = attachments || (attachment ? [attachment] : []);
+  return (
+    <div className="threadPage__message threadPage__message--assistant">
+      <div className="threadPage__bubble threadPage__bubble--assistant">
+        {content && <OuiText size="s">{parseContent(content)}</OuiText>}
+        {!streaming && allAttachments.map((att, idx) => renderSingleAttachment(att, idx, onViewAsPage))}
+        {!streaming && (
+          <div className="threadPage__feedback">
+            <OuiButtonIcon
+              iconType="thumbsUp"
+              aria-label="Helpful"
+              size="xs"
+              color="text"
+            />
+            <OuiButtonIcon
+              iconType="thumbsDown"
+              aria-label="Not helpful"
+              size="xs"
+              color="text"
+            />
+          </div>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // Mock task pairs for each response
 const MOCK_TASKS = [
-  ['Searching service logs', 'Analyzing error patterns'],
-  ['Querying connection metrics', 'Evaluating pool utilization'],
-  ['Correlating traffic data', 'Checking cache performance'],
-  ['Fetching service health', 'Comparing baseline metrics'],
+  [
+    { label: 'Searching service logs', description: 'Querying last 30 minutes of structured logs' },
+    { label: 'Analyzing error patterns', description: 'Correlating error codes with service dependencies' },
+  ],
+  [
+    { label: 'Querying connection metrics', description: 'Fetching pool utilization and acquire wait times' },
+    { label: 'Evaluating pool utilization', description: 'Comparing current usage against configured limits' },
+  ],
+  [
+    { label: 'Correlating traffic data', description: 'Matching latency spikes with request volume changes' },
+    { label: 'Checking cache performance', description: 'Analyzing hit ratios and eviction rates' },
+  ],
+  [
+    { label: 'Fetching service health', description: 'Polling health endpoints across all instances' },
+    { label: 'Comparing baseline metrics', description: 'Diffing current values against 7-day averages' },
+  ],
 ];
 
-// Task list that runs before AI response
-const TaskListMessage = ({ tasks, statuses, collapsed }) => {
-  if (collapsed) {
+// Progress Tracker (Tool UI style — shows task steps with status indicators)
+const TaskListMessage = ({ tasks, statuses, collapsed, onToggleCollapse }) => {
+  const allDone = statuses.length >= tasks.length && statuses.every((s) => s === 'done');
+  const steps = tasks.map((task, i) => ({
+    id: `step-${i}`,
+    label: typeof task === 'string' ? task : task.label,
+    description: typeof task === 'string' ? undefined : task.description,
+    status:
+      i >= statuses.length
+        ? 'pending'
+        : statuses[i] === 'running'
+        ? 'in-progress'
+        : statuses[i] === 'done'
+        ? 'completed'
+        : 'pending',
+  }));
+
+  if (!allDone) {
     return (
       <div className="threadPage__message threadPage__message--assistant">
-        <div className="threadPage__taskCollapsed">
-          <div className="threadPage__taskIconWrap">
-            <OuiIcon type="checkInCircleEmpty" size="m" color="success" />
-          </div>
-          <OuiText size="s">
-            <span>{tasks.length} tasks finished</span>
-          </OuiText>
-        </div>
+        <ProgressTracker id="task-progress" steps={steps} />
       </div>
     );
   }
 
   return (
     <div className="threadPage__message threadPage__message--assistant">
-      <div className="threadPage__taskList">
-        {tasks.map((task, i) => {
-          if (i >= statuses.length) return null;
-          return (
-            <div key={i} className="threadPage__taskItem">
-              <div className="threadPage__taskIconWrap">
-                {statuses[i] === 'running' ? (
-                  <OuiLoadingSpinner size="m" />
-                ) : (
-                  <OuiIcon type="checkInCircleEmpty" size="m" color="success" />
-                )}
-              </div>
-              <OuiText size="s">
-                <span>{task}</span>
-              </OuiText>
-            </div>
-          );
-        })}
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+      <div
+        className="progressTracker__toggle"
+        onClick={onToggleCollapse}
+        role="button"
+        tabIndex={0}>
+        <div className="progressTracker__toggleHeader">
+          <span className="progressTracker__toggleIcon">
+            <OuiIcon type="checkInCircleEmpty" size="m" color="success" className="progressTracker__toggleCheck" />
+            <OuiIcon type="arrowDown" size="s" color="subdued" className="progressTracker__toggleArrowDown" />
+            <OuiIcon type="arrowUp" size="s" color="subdued" className="progressTracker__toggleArrowUp" />
+          </span>
+          <OuiText size="xs" color="subdued">
+            <span>{steps.length} steps completed</span>
+          </OuiText>
+        </div>
+        {!collapsed && (
+          <div className="progressTracker__toggleBody">
+            <ProgressTracker id="task-progress" steps={steps} />
+          </div>
+        )}
       </div>
     </div>
   );
@@ -765,7 +1052,7 @@ const MOCK_RESPONSES = [
     content:
       'I looked into this and found a few things worth noting.\n\n**Summary**\n\n- The service metrics show a gradual increase in P99 latency over the past 6 hours.\n- Error rates remain within acceptable thresholds but are trending upward.\n- No recent deployments correlate with the change.\n\nI recommend checking the downstream dependency health and reviewing recent config changes in the environment.',
     attachment: {
-      type: 'page',
+      type: 'link-preview',
       title: 'Service health overview dashboard',
       description:
         'Aggregated health metrics across all services including uptime, latency percentiles, and error trends.',
@@ -775,16 +1062,17 @@ const MOCK_RESPONSES = [
     content:
       'Based on the available data, here is what I found.\n\n**Analysis**\n\n1. The connection pool utilization is at 87%, which is approaching the configured limit.\n2. Garbage collection pauses have increased by 40% compared to last week.\n3. The thread count on the primary nodes is elevated.\n\nConsider scaling horizontally or increasing the connection pool ceiling to provide headroom.',
     attachment: {
-      type: 'query',
-      query:
-        'source=opensearch_dashboards_sample_data_logs | where pool_utilization > 80 | stats max(pool_utilization) by service',
+      type: 'code-block',
+      title: 'Pool utilization query',
+      language: 'sql',
+      code: 'source=opensearch_dashboards_sample_data_logs | where pool_utilization > 80 | stats max(pool_utilization) by service',
     },
   },
   {
     content:
       'I ran a correlation analysis across the affected services.\n\n**Key Observations**\n\n- The spike aligns with a traffic surge from the EU region starting at 14:32 UTC.\n- Cache hit ratio dropped from 94% to 61% during the same window.\n- The CDN origin pull rate tripled, putting pressure on the backend.\n\nThis looks like a cache invalidation event combined with organic traffic growth. The system should stabilize once the cache warms back up.',
     attachment: {
-      type: 'page',
+      type: 'link-preview',
       title: 'EU region traffic dashboard',
       description:
         'Traffic volume, cache hit ratios, and CDN origin pull rates for the EU region.',
@@ -794,12 +1082,154 @@ const MOCK_RESPONSES = [
     content:
       'Here is a quick health check of the relevant services.\n\n**Service Status**\n\n- cart: Healthy, latency 4ms, throughput 52 req/s\n- checkout: Degraded, latency 380ms, error rate 12.3%\n- payment-service: Unhealthy, connection timeouts at 67%\n- frontend-proxy: Healthy, acting as passthrough\n\nThe payment-service is the bottleneck. I suggest checking its resource allocation and recent deployment history.',
     attachment: {
-      type: 'query',
-      query:
-        'source=opensearch_dashboards_sample_data_logs | stats avg(latency) as avg_latency, avg(error_rate) as avg_errors by service | sort -avg_errors',
+      type: 'code-block',
+      title: 'Service latency query',
+      language: 'sql',
+      code: 'source=opensearch_dashboards_sample_data_logs | stats avg(latency) as avg_latency, avg(error_rate) as avg_errors by service | sort -avg_errors',
     },
   },
 ];
+
+// Thread-specific scripted responses (matched by prompt content)
+// For latency-spike: logs and traces can be asked in any order.
+// The conclusion appears after both have been shown.
+const SCRIPTED_RESPONSES = {
+  'latency-spike': {
+    logs: {
+      id: 'logs',
+      match: /log/i,
+      tasks: [
+        { label: 'Querying payment service logs', description: 'Filtering last 30 minutes by service=payment' },
+        { label: 'Analyzing slow-log entries', description: 'Grouping entries by message pattern and severity' },
+      ],
+      content:
+        'I analyzed the last 30 minutes of payment service logs. I created a query to filter for timeout events:\n\n- No 5xx errors from the payment service itself — error rates are clean.\n- 847 slow-log entries (>1s) all show "connection acquire timeout" as the bottleneck.\n- No upstream dependency errors from inventory service.\n\nThe logs point toward connection pool starvation rather than a downstream failure.',
+      attachments: [
+        {
+          type: 'code-block',
+          title: 'Payment service timeout query',
+          language: 'sql',
+          code: 'source=opensearch_metrics_payment_service | where level="WARN" OR message LIKE "%timeout%" | sort -timestamp | head 25',
+        },
+        {
+          type: 'link-preview',
+          title: 'Payment service logs — last 30 minutes',
+          description:
+            'Filtered log results showing slow-log entries, error distribution, and connection timeout events for the payment service.',
+          image:
+            'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=600&h=200&fit=crop',
+        },
+        {
+          type: 'data-table',
+          title: 'Log Summary (last 30m)',
+          columns: ['Level', 'Count', 'Top Message'],
+          rows: [
+            ['WARN', '847', 'connection acquire timeout exceeded 1000ms'],
+            ['INFO', '12,340', 'request completed successfully'],
+            ['ERROR', '0', '—'],
+            ['DEBUG', '3,210', 'pool checkout attempt'],
+          ],
+        },
+      ],
+    },
+    traces: {
+      id: 'traces',
+      match: /trace|span/i,
+      tasks: [
+        { label: 'Sampling recent traces', description: 'Collecting 200 traces from the last 15 minutes' },
+        { label: 'Analyzing span durations', description: 'Breaking down latency by span across the call chain' },
+      ],
+      content:
+        'I sampled 200 traces from the last 15 minutes. Here is the span breakdown:\n\n- Average span duration for payment→inventory calls is 45ms (normal).\n- However, the acquire_connection span preceding it averages 1,840ms — this is where the latency is hiding.',
+      attachments: [
+        {
+          type: 'link-preview',
+          title: 'Payment service traces — sampled spans',
+          description:
+            'Trace waterfall view showing acquire_connection bottleneck across sampled requests for the payment service.',
+          image:
+            'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=600&h=200&fit=crop',
+        },
+        {
+          type: 'data-table',
+          title: 'Trace Span Breakdown',
+          columns: ['Span Name', 'Avg Duration', 'P99'],
+          rows: [
+            ['acquire_connection', '1,840ms', '2,320ms'],
+            ['payment→inventory', '45ms', '82ms'],
+            ['serialize_response', '3ms', '8ms'],
+            ['total_request', '1,920ms', '2,410ms'],
+          ],
+        },
+      ],
+    },
+    fix: {
+      id: 'fix',
+      match: /fix|suggest/i,
+      tasks: [
+        { label: 'Generating fix script', description: 'Building kubectl patch commands for connection pool' },
+        { label: 'Validating configuration', description: 'Checking values against cluster resource limits' },
+      ],
+      content:
+        'I have updated the fix to target the confirmed root cause. The script increases the connection pool ceiling, adds acquire timeout protection, and enables a circuit breaker to prevent future queue buildup:',
+      attachment: {
+        type: 'code-block',
+        title: 'apply-fix.sh',
+        language: 'bash',
+        code: `#!/bin/bash
+# Fix: increase connection pool + enable circuit breaker
+
+# 1. Patch connection pool settings
+kubectl patch configmap payment-service-config \\
+  -n production \\
+  --type merge \\
+  -p '{"data":{
+    "POOL_MAX_CONNECTIONS":"150",
+    "POOL_MIN_IDLE":"20",
+    "POOL_ACQUIRE_TIMEOUT":"3s",
+    "CIRCUIT_BREAKER_ENABLED":"true",
+    "CIRCUIT_BREAKER_THRESHOLD":"50",
+    "CIRCUIT_BREAKER_RECOVERY":"30s"
+  }}'
+
+# 2. Rolling restart
+kubectl rollout restart deployment/payment-service -n production
+kubectl rollout status deployment/payment-service -n production --timeout=120s
+
+# 3. Verify recovery
+sleep 30
+echo "Checking P99 latency post-fix..."
+kubectl exec -n production deploy/payment-service -- \\
+  curl -s localhost:9090/metrics | grep 'http_request_duration_p99'`,
+      },
+    },
+    dashboard: {
+      id: 'dashboard',
+      match: /dashboard/i,
+      tasks: [
+        { label: 'Creating dashboard', description: 'Generating panels for connection pool and latency metrics' },
+        { label: 'Configuring data sources', description: 'Linking payment service metrics and alert thresholds' },
+      ],
+      content:
+        'I have created a monitoring dashboard for the payment service connection pool. It includes panels for pool utilization, acquire wait time, active connections, and P99 latency with alert thresholds configured:',
+      attachment: {
+        type: 'link-preview',
+        title: 'Payment service — connection pool dashboard',
+        description:
+          'Live dashboard with pool utilization, acquire wait time, active connections, circuit breaker status, and P99 latency for the payment service.',
+        image:
+          'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=200&fit=crop',
+      },
+    },
+  },
+};
+
+// Conclusion message shown after both logs and traces responses
+const CONCLUSION_MESSAGE = {
+  role: 'assistant',
+  content:
+    '**Conclusion**\n\nHypothesis 2 is confirmed. The connection pool is exhausted. Inventory service is healthy — the delay is entirely in waiting for a free connection from the pool.',
+};
 
 const NEW_THREAD = { title: 'New thread', messages: [] };
 
@@ -807,9 +1237,12 @@ export const ThreadPage = ({
   selectedItem,
   _onItemSelect,
   pendingMessages,
+  sourcePage,
+  sourcePageTitle,
   isPanelOpen,
   onTogglePanel,
   onPageChange,
+  onNavigate,
 }) => {
   const threadKey = selectedItem || 'latency-spike';
   const thread = THREADS[threadKey] || NEW_THREAD;
@@ -822,10 +1255,12 @@ export const ThreadPage = ({
   const [activeCanvasTab, setActiveCanvasTab] = useState(0);
   const [canvasWidth, setCanvasWidth] = useState(600);
   const [isCanvasDragging, setIsCanvasDragging] = useState(false);
+  const [isCanvasExpanding, setIsCanvasExpanding] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const isDragging = useRef(false);
   const feedRef = useRef(null);
   const responseIndex = useRef(0);
+  const [completedScriptedIds, setCompletedScriptedIds] = useState(new Set());
 
   const streamTimers = useRef([]);
 
@@ -860,27 +1295,26 @@ export const ThreadPage = ({
     };
   }, []);
 
-  const handleAddToCanvas = useCallback((item) => {
-    setCanvasItems((prev) => {
-      // Deduplicate by matching type + title/query/href/code
-      const exists = prev.some(
-        (existing) =>
-          existing.type === item.type &&
-          (item.type === 'page'
-            ? existing.title === item.title
-            : item.type === 'link-preview'
-            ? existing.href === item.href
-            : item.type === 'code-block'
-            ? existing.code === item.code
-            : item.type === 'stats-display' || item.type === 'data-table' || item.type === 'chart'
-            ? existing.title === item.title
-            : existing.query === item.query)
-      );
-      if (exists) return prev;
-      return [...prev, item];
-    });
+  const handleViewAsPage = useCallback((item) => {
+    // Find the tab index for this attachment, or re-add it if it was closed
+    const idx = canvasItems.findIndex(
+      (existing) =>
+        existing.type === item.type &&
+        (item.type === 'code-block'
+          ? existing.code === item.code
+          : existing.title === item.title)
+    );
+    if (idx >= 0) {
+      setActiveCanvasTab(idx);
+    } else {
+      setCanvasItems((prev) => {
+        const newItems = [...prev, item];
+        setActiveCanvasTab(newItems.length - 1);
+        return newItems;
+      });
+    }
     setIsCanvasOpen(true);
-  }, []);
+  }, [canvasItems]);
 
   // Reset messages and canvas when switching threads
   useEffect(() => {
@@ -893,29 +1327,46 @@ export const ThreadPage = ({
     setMessage('');
     setIsTyping(false);
 
-    // Pre-populate canvas with all attachments from messages
+    // Pre-populate canvas with link-preview attachments only
     const items = [];
     msgs.forEach((msg) => {
-      if (msg.attachment) {
-        const a = msg.attachment;
-        items.push(a);
+      if (msg.attachments) {
+        msg.attachments.filter((a) => a.type === 'link-preview').forEach((a) => items.push(a));
+      } else if (msg.attachment && msg.attachment.type === 'link-preview') {
+        items.push(msg.attachment);
       }
     });
     setCanvasItems(items);
     setActiveCanvasTab(0);
-    setIsCanvasOpen(items.length > 0);
+    setIsCanvasOpen(false);
     streamTimers.current.forEach(clearTimeout);
     streamTimers.current = [];
-  }, [threadKey, thread.messages, pendingMessages]);
+    responseIndex.current = 0;
+    setCompletedScriptedIds(new Set());
+    hasInteracted.current = false;
+    if (feedRef.current) {
+      feedRef.current.scrollTop = 0;
+    }
+
+    // If coming from "Continue as thread", open the canvas with the source page
+    if (sourcePage && pendingMessages) {
+      const mock = SOURCE_PAGE_MOCK[sourcePage];
+      const title = sourcePageTitle || (mock ? mock.title : sourcePage);
+      setCanvasItems([{ type: 'source-page', title, page: sourcePage }]);
+      setActiveCanvasTab(0);
+      setIsCanvasOpen(true);
+    }
+  }, [threadKey, thread.messages, pendingMessages, sourcePage, sourcePageTitle]);
 
   // Clean up timers on unmount
   useEffect(() => {
     return () => streamTimers.current.forEach(clearTimeout);
   }, []);
 
-  // Auto-scroll to bottom when messages change
+  // Auto-scroll to bottom only after user sends a message
+  const hasInteracted = useRef(false);
   useEffect(() => {
-    if (feedRef.current) {
+    if (feedRef.current && hasInteracted.current) {
       feedRef.current.scrollTop = feedRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
@@ -923,6 +1374,7 @@ export const ThreadPage = ({
   const handleSend = () => {
     const text = message.trim();
     if (!text) return;
+    hasInteracted.current = true;
 
     // Add user message
     const userMsg = { role: 'user', author: 'You', content: text };
@@ -930,12 +1382,34 @@ export const ThreadPage = ({
     setMessage('');
     setIsTyping(true);
 
-    const idx = responseIndex.current % MOCK_RESPONSES.length;
-    const mockResponse = MOCK_RESPONSES[idx];
-    const tasks = MOCK_TASKS[idx % MOCK_TASKS.length];
+    // Use scripted responses for specific threads, otherwise fall back to generic
+    const scripted = SCRIPTED_RESPONSES[threadKey];
+    let mockResponse;
+    let tasks;
+
+    if (scripted) {
+      // Match prompt to a scripted response by regex
+      const matched = Object.values(scripted).find(
+        (item) => item.match && item.match.test(text)
+      );
+      if (matched) {
+        mockResponse = matched;
+        tasks = matched.tasks || MOCK_TASKS[responseIndex.current % MOCK_TASKS.length];
+      } else {
+        const idx = responseIndex.current % MOCK_RESPONSES.length;
+        mockResponse = MOCK_RESPONSES[idx];
+        tasks = MOCK_TASKS[idx % MOCK_TASKS.length];
+      }
+    } else {
+      const idx = responseIndex.current % MOCK_RESPONSES.length;
+      mockResponse = MOCK_RESPONSES[idx];
+      tasks = MOCK_TASKS[idx % MOCK_TASKS.length];
+    }
     responseIndex.current += 1;
+
     const fullContent = mockResponse.content;
     const attachment = mockResponse.attachment;
+    const attachments = mockResponse.attachments;
 
     // Phase 1: Show task list with first task running
     const taskMsg = {
@@ -946,7 +1420,7 @@ export const ThreadPage = ({
     };
     setMessages((prev) => [...prev, taskMsg]);
 
-    // After 1.5s, first task finishes, second task appears running
+    // After 3s, first task finishes, second task appears running
     const t1 = setTimeout(() => {
       setMessages((prev) => {
         const updated = [...prev];
@@ -955,10 +1429,10 @@ export const ThreadPage = ({
           updated[ti] = { ...updated[ti], statuses: ['done', 'running'] };
         return updated;
       });
-    }, 1500);
+    }, 3000);
     streamTimers.current.push(t1);
 
-    // After 3s, second task finishes
+    // After 6s, second task finishes
     const t2 = setTimeout(() => {
       setMessages((prev) => {
         const updated = [...prev];
@@ -967,10 +1441,10 @@ export const ThreadPage = ({
           updated[ti] = { ...updated[ti], statuses: ['done', 'done'] };
         return updated;
       });
-    }, 3000);
+    }, 6000);
     streamTimers.current.push(t2);
 
-    // After 3.5s, collapse tasks and start streaming response
+    // After 6.5s, collapse tasks and start streaming response
     const t3 = setTimeout(() => {
       setMessages((prev) => {
         const updated = [...prev];
@@ -986,7 +1460,7 @@ export const ThreadPage = ({
 
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: '', streaming: true, attachment },
+        { role: 'assistant', content: '', streaming: true, attachment, attachments },
       ]);
 
       let built = '';
@@ -1000,13 +1474,58 @@ export const ThreadPage = ({
               content: built,
               streaming: i < tokens.length - 1,
               attachment,
+              attachments,
             };
             return updated;
           });
+          // After last token, add follow-up if both logs and traces are done
+          if (i === tokens.length - 1) {
+            // Add link-preview attachments to canvas
+            const newAtts = (attachments || (attachment ? [attachment] : [])).filter((a) => a.type === 'link-preview');
+            if (newAtts.length > 0) {
+              setCanvasItems((prev) => [...prev, ...newAtts]);
+            }
+            if (mockResponse.id) {
+              setCompletedScriptedIds((prev) => new Set([...prev, mockResponse.id]));
+            }
+            setCompletedScriptedIds((prev) => {
+              const next = new Set([...prev]);
+              if (mockResponse.id) next.add(mockResponse.id);
+              if (next.has('logs') && next.has('traces') && !next.has('conclusion')) {
+                next.add('conclusion');
+                const conclusionContent = CONCLUSION_MESSAGE.content;
+                const conclusionTokens = conclusionContent.split(/(\s+)/);
+                const conclusionTimer = setTimeout(() => {
+                  setMessages((prev2) => [
+                    ...prev2,
+                    { role: 'assistant', content: '', streaming: true },
+                  ]);
+                  let conclusionBuilt = '';
+                  conclusionTokens.forEach((token, ci) => {
+                    const cTimer = setTimeout(() => {
+                      conclusionBuilt += token;
+                      setMessages((prev2) => {
+                        const updated = [...prev2];
+                        updated[updated.length - 1] = {
+                          role: 'assistant',
+                          content: conclusionBuilt,
+                          streaming: ci < conclusionTokens.length - 1,
+                        };
+                        return updated;
+                      });
+                    }, ci * 30);
+                    streamTimers.current.push(cTimer);
+                  });
+                }, 300);
+                streamTimers.current.push(conclusionTimer);
+              }
+              return next;
+            });
+          }
         }, i * 30);
         streamTimers.current.push(timer);
       });
-    }, 3500);
+    }, 6500);
     streamTimers.current.push(t3);
   };
 
@@ -1032,6 +1551,7 @@ export const ThreadPage = ({
         onTogglePanel={onTogglePanel}
         firstActionIcon="dockedRight"
         firstActionLabel="Related Assets"
+        firstActionActive={isCanvasOpen}
         onFirstAction={() => setIsCanvasOpen((open) => !open)}
         extraActions={[
           {
@@ -1093,6 +1613,7 @@ export const ThreadPage = ({
                     key={i}
                     author={msg.author}
                     content={msg.content}
+                    attachment={msg.attachment}
                   />
                 );
               }
@@ -1103,6 +1624,13 @@ export const ThreadPage = ({
                     tasks={msg.tasks}
                     statuses={msg.statuses}
                     collapsed={msg.collapsed}
+                    onToggleCollapse={() => {
+                      setMessages((prev) => {
+                        const updated = [...prev];
+                        updated[i] = { ...updated[i], collapsed: !updated[i].collapsed };
+                        return updated;
+                      });
+                    }}
                   />
                 );
               }
@@ -1112,8 +1640,8 @@ export const ThreadPage = ({
                   content={msg.content}
                   streaming={msg.streaming}
                   attachment={msg.attachment}
-                  onAddToCanvas={handleAddToCanvas}
-                  canvasItems={canvasItems}
+                  attachments={msg.attachments}
+                  onViewAsPage={handleViewAsPage}
                 />
               );
             })}
@@ -1122,6 +1650,154 @@ export const ThreadPage = ({
 
           {/* Input area — textarea with buttons inside at bottom */}
           <div className="threadPage__inputArea">
+            {(() => {
+              if (message.trim() || isTyping || messages.some((m) => m.streaming)) return null;
+              if (threadKey !== 'latency-spike') return null;
+              const done = completedScriptedIds;
+              let prompts = [];
+              if (done.has('dashboard')) {
+                prompts = [];
+              } else if (done.has('fix')) {
+                prompts = ['Set up a monitoring dashboard for this service'];
+              } else if (done.has('conclusion')) {
+                prompts = ['Suggest a fix for this issue'];
+              } else if (done.has('logs') && !done.has('traces')) {
+                prompts = ['Analyze the trace spans for the payment service', 'Suggest a fix for this issue'];
+              } else if (done.has('traces') && !done.has('logs')) {
+                prompts = ['Show me the recent logs for the payment service', 'Suggest a fix for this issue'];
+              } else if (!done.has('logs') && !done.has('traces')) {
+                prompts = ['Show me the recent logs for the payment service', 'Analyze the trace spans for the payment service'];
+              }
+              if (prompts.length === 0) return null;
+              return (
+                <div className="threadPage__suggestedPrompts">
+                  {prompts.map((prompt) => (
+                    <OuiSmallButtonEmpty
+                      key={prompt}
+                      color="text"
+                      iconType="returnKey"
+                      iconSide="right"
+                      className="threadPage__suggestedPrompt"
+                      onClick={() => {
+                        setMessage(prompt);
+                        hasInteracted.current = true;
+                        setTimeout(() => {
+                          setMessage('');
+                          const userMsg = { role: 'user', author: 'You', content: prompt };
+                          setMessages((prev) => [...prev, userMsg]);
+                          setIsTyping(true);
+                          const scripted = SCRIPTED_RESPONSES[threadKey];
+                          let mockResponse;
+                          let tasks;
+                          if (scripted) {
+                            const matched = Object.values(scripted).find(
+                              (item) => item.match && item.match.test(prompt)
+                            );
+                            if (matched) {
+                              mockResponse = matched;
+                              tasks = matched.tasks || MOCK_TASKS[responseIndex.current % MOCK_TASKS.length];
+                            } else {
+                              const idx = responseIndex.current % MOCK_RESPONSES.length;
+                              mockResponse = MOCK_RESPONSES[idx];
+                              tasks = MOCK_TASKS[idx % MOCK_TASKS.length];
+                            }
+                          } else {
+                            const idx = responseIndex.current % MOCK_RESPONSES.length;
+                            mockResponse = MOCK_RESPONSES[idx];
+                            tasks = MOCK_TASKS[idx % MOCK_TASKS.length];
+                          }
+                          responseIndex.current += 1;
+                          const fullContent = mockResponse.content;
+                          const attachment = mockResponse.attachment;
+                          const attachments = mockResponse.attachments;
+                          const taskMsg = { role: 'tasks', tasks, statuses: ['running'], collapsed: false };
+                          setMessages((prev) => [...prev, taskMsg]);
+                          const t1 = setTimeout(() => {
+                            setMessages((prev) => {
+                              const updated = [...prev];
+                              const ti = updated.findLastIndex((m) => m.role === 'tasks');
+                              if (ti >= 0) updated[ti] = { ...updated[ti], statuses: ['done', 'running'] };
+                              return updated;
+                            });
+                          }, 3000);
+                          streamTimers.current.push(t1);
+                          const t2 = setTimeout(() => {
+                            setMessages((prev) => {
+                              const updated = [...prev];
+                              const ti = updated.findLastIndex((m) => m.role === 'tasks');
+                              if (ti >= 0) updated[ti] = { ...updated[ti], statuses: ['done', 'done'] };
+                              return updated;
+                            });
+                          }, 6000);
+                          streamTimers.current.push(t2);
+                          const t3 = setTimeout(() => {
+                            setMessages((prev) => {
+                              const updated = [...prev];
+                              const ti = updated.findLastIndex((m) => m.role === 'tasks');
+                              if (ti >= 0) updated[ti] = { ...updated[ti], collapsed: true };
+                              return updated;
+                            });
+                            setIsTyping(false);
+                            const tokens = fullContent.split(/(\s+)/);
+                            setMessages((prev) => [...prev, { role: 'assistant', content: '', streaming: true, attachment, attachments }]);
+                            let built = '';
+                            tokens.forEach((token, i) => {
+                              const timer = setTimeout(() => {
+                                built += token;
+                                setMessages((prev) => {
+                                  const updated = [...prev];
+                                  updated[updated.length - 1] = { role: 'assistant', content: built, streaming: i < tokens.length - 1, attachment, attachments };
+                                  return updated;
+                                });
+                                if (i === tokens.length - 1) {
+                                  // Add link-preview attachments to canvas
+                                  const newAtts = (attachments || (attachment ? [attachment] : [])).filter((a) => a.type === 'link-preview');
+                                  if (newAtts.length > 0) {
+                                    setCanvasItems((prev) => [...prev, ...newAtts]);
+                                  }
+                                  if (mockResponse.id) {
+                                    setCompletedScriptedIds((prev) => new Set([...prev, mockResponse.id]));
+                                  }
+                                  setCompletedScriptedIds((prev) => {
+                                    const next = new Set([...prev]);
+                                    if (mockResponse.id) next.add(mockResponse.id);
+                                    if (next.has('logs') && next.has('traces') && !next.has('conclusion')) {
+                                      next.add('conclusion');
+                                      const conclusionContent = CONCLUSION_MESSAGE.content;
+                                      const conclusionTokens = conclusionContent.split(/(\s+)/);
+                                      const conclusionTimer = setTimeout(() => {
+                                        setMessages((prev2) => [...prev2, { role: 'assistant', content: '', streaming: true }]);
+                                        let conclusionBuilt = '';
+                                        conclusionTokens.forEach((token2, ci) => {
+                                          const cTimer = setTimeout(() => {
+                                            conclusionBuilt += token2;
+                                            setMessages((prev2) => {
+                                              const updated2 = [...prev2];
+                                              updated2[updated2.length - 1] = { role: 'assistant', content: conclusionBuilt, streaming: ci < conclusionTokens.length - 1 };
+                                              return updated2;
+                                            });
+                                          }, ci * 30);
+                                          streamTimers.current.push(cTimer);
+                                        });
+                                      }, 300);
+                                      streamTimers.current.push(conclusionTimer);
+                                    }
+                                    return next;
+                                  });
+                                }
+                              }, i * 30);
+                              streamTimers.current.push(timer);
+                            });
+                          }, 6500);
+                          streamTimers.current.push(t3);
+                        }, 0);
+                      }}>
+                      {prompt}
+                    </OuiSmallButtonEmpty>
+                  ))}
+                </div>
+              );
+            })()}
             <div className="threadPage__inputWrapper">
               <OuiCompressedTextArea
                 placeholder="Ask anything. Type / for actions."
@@ -1161,7 +1837,7 @@ export const ThreadPage = ({
         <div
           className={`threadPage__canvasFlyout${
             isCanvasOpen ? ' threadPage__canvasFlyout--open' : ''
-          }${isCanvasDragging ? ' threadPage__canvasFlyout--dragging' : ''}`}
+          }${isCanvasDragging ? ' threadPage__canvasFlyout--dragging' : ''}${isCanvasExpanding ? ' threadPage__canvasFlyout--expanding' : ''}`}
           style={isCanvasOpen ? { width: canvasWidth } : undefined}>
           <div className="threadPage__canvasFlyoutInner">
             {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
@@ -1180,12 +1856,13 @@ export const ThreadPage = ({
               {canvasItems.length > 0 && (
                 <OuiTabs size="s" className="threadPage__canvasTabs">
                   {canvasItems.map((item, i) => (
-                    <OuiTab
-                      key={i}
-                      isSelected={activeCanvasTab === i}
-                      onClick={() => setActiveCanvasTab(i)}>
-                      {item.title || (item.type === 'query' ? 'Query' : `Asset ${i + 1}`)}
-                    </OuiTab>
+                    <OuiToolTip key={i} content={item.title || `Asset ${i + 1}`} position="bottom">
+                      <OuiTab
+                        isSelected={activeCanvasTab === i}
+                        onClick={() => setActiveCanvasTab(i)}>
+                        {item.title || `Asset ${i + 1}`}
+                      </OuiTab>
+                    </OuiToolTip>
                   ))}
                 </OuiTabs>
               )}
@@ -1201,93 +1878,117 @@ export const ThreadPage = ({
                 </OuiText>
               ) : (
                 <div className="threadPage__canvasTabContent">
+                  <div className="threadPage__canvasPageHeader">
+                    <OuiText size="s">
+                      <strong>{canvasItems[activeCanvasTab]?.title || `Asset ${activeCanvasTab + 1}`}</strong>
+                    </OuiText>
+                    <div className="threadPage__canvasPageHeaderActions">
+                      <OuiToolTip content="View full page" position="bottom">
+                        <OuiButtonIcon
+                          iconType="symlink"
+                          aria-label="View full page"
+                          size="s"
+                          color="text"
+                          onClick={() => {
+                            const item = canvasItems[activeCanvasTab];
+                            if (!item || !onNavigate) return;
+                            setIsCanvasExpanding(true);
+                            setTimeout(() => {
+                              const title = item.title || '';
+                              if (title.includes('alert') || title.includes('Alert')) {
+                                onNavigate('alerts-detail', 'alert-payment-p99');
+                              } else if (title.includes('logs') || title.includes('Logs')) {
+                                onNavigate('logs', 'payment-timeout-logs');
+                              } else if (title.includes('dashboard') || title.includes('Dashboard')) {
+                                onNavigate('dashboards', 'payment-pool-dashboard');
+                              } else if (title.includes('Inventory')) {
+                                onNavigate('notebooks', 'notebook-inventory-analysis');
+                              } else if (title.includes('connection pool') || title.includes('Connection pool')) {
+                                onNavigate('notebooks', 'notebook-connection-pool');
+                              } else {
+                                onNavigate('notebooks', 'notebook-runbook');
+                              }
+                              setIsCanvasExpanding(false);
+                            }, 350);
+                          }}
+                        />
+                      </OuiToolTip>
+                      <OuiToolTip content="Close" position="bottom">
+                        <OuiButtonIcon
+                          iconType="cross"
+                          aria-label="Close tab"
+                          size="s"
+                          color="text"
+                          onClick={() => {
+                            setCanvasItems((prev) => {
+                              const next = prev.filter((_, idx) => idx !== activeCanvasTab);
+                              if (next.length === 0) {
+                                setIsCanvasOpen(false);
+                              } else if (activeCanvasTab >= next.length) {
+                                setActiveCanvasTab(next.length - 1);
+                              }
+                              return next;
+                            });
+                          }}
+                        />
+                      </OuiToolTip>
+                    </div>
+                  </div>
                   {(() => {
                     const item = canvasItems[activeCanvasTab];
                     if (!item) return null;
+
+                    // Render source page for "Continue as thread" flow using existing mocks
+                    if (item.type === 'source-page') {
+                      const mock = SOURCE_PAGE_MOCK[item.page];
+                      if (mock) {
+                        const MockComponent = mock.component;
+                        return <MockComponent />;
+                      }
+                      return (
+                        <div style={{ padding: 16 }}>
+                          <OuiText size="s" color="subdued">
+                            <p>Continued from <strong>{item.title}</strong></p>
+                          </OuiText>
+                        </div>
+                      );
+                    }
+
+                    // Render custom mock pages for known attachments
+                    if (item.title === 'Payment service alert — P99 latency breach') {
+                      return <AlertPageMock />;
+                    }
+                    if (item.title === 'Inventory service dependency analysis') {
+                      return <InventoryAnalysisPageMock />;
+                    }
+                    if (item.title === 'Payment service connection pool metrics') {
+                      return <ConnectionPoolPageMock />;
+                    }
+                    if (item.title === 'Payment service logs — last 30 minutes') {
+                      return <LogsPageMock />;
+                    }
+                    if (item.title === 'Payment service — connection pool dashboard') {
+                      return <DashboardPageMock />;
+                    }
+
+                    // Default: generic link-preview rendering
                     return (
                       <>
-                        {item.type === 'page' && (
-                          <OuiText size="s" color="subdued">
-                            <p>{item.description || 'Dashboard view placeholder'}</p>
-                          </OuiText>
-                        )}
-                        {item.type === 'link-preview' && (
-                          <>
-                            {item.image && (
-                              <div className="threadPage__canvasDetailImage">
-                                <img src={item.image} alt="" />
-                              </div>
-                            )}
-                            <OuiText size="s">
-                              {item.description && <p>{item.description}</p>}
-                              <p>
-                                <a href={item.href} target="_blank" rel="noopener noreferrer">
-                                  {item.href}
-                                </a>
-                              </p>
-                            </OuiText>
-                          </>
-                        )}
-                        {item.type === 'stats-display' && (
-                          <OuiFlexGroup gutterSize="l" wrap responsive={false}>
-                            {item.stats.map((stat, i) => (
-                              <OuiFlexItem key={i} grow={false}>
-                                <OuiStat
-                                  title={stat.value}
-                                  description={stat.label}
-                                  titleSize="s"
-                                  titleColor={stat.color || 'default'}
-                                />
-                              </OuiFlexItem>
-                            ))}
-                          </OuiFlexGroup>
-                        )}
-                        {item.type === 'data-table' && (
-                          <div className="threadPage__dataTableScroll">
-                            <table className="threadPage__dataTable">
-                              <thead>
-                                <tr>
-                                  {item.columns.map((col, ci) => (
-                                    <th key={ci}>{col}</th>
-                                  ))}
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {item.rows.map((row, ri) => (
-                                  <tr key={ri}>
-                                    {row.map((cell, ci) => (
-                                      <td key={ci}>{cell}</td>
-                                    ))}
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
+                        {item.image && (
+                          <div className="threadPage__canvasDetailImage">
+                            <img src={item.image} alt="" />
                           </div>
                         )}
-                        {item.type === 'code-block' && (
-                          <OuiCodeBlock language={item.language} fontSize="s" paddingSize="m" isCopyable>
-                            {item.code}
-                          </OuiCodeBlock>
-                        )}
-                        {item.type === 'chart' && (
-                          <div className="threadPage__chartBars threadPage__chartBars--detail">
-                            {item.data.map((d, di) => (
-                              <div key={di} className="threadPage__chartBarCol">
-                                <div
-                                  className="threadPage__chartBar"
-                                  style={{ height: `${(d.value / Math.max(...item.data.map((x) => x.value))) * 100}%` }}
-                                  title={`${d.label}: ${d.value}`}
-                                />
-                                <span className="threadPage__chartBarLabel">{d.label}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        {item.type === 'query' && (
-                          <OuiCodeBlock fontSize="s" paddingSize="m" isCopyable>
-                            {item.query}
-                          </OuiCodeBlock>
-                        )}
+                        <OuiText size="s">
+                          {item.description && <p>{item.description}</p>}
+                          {item.href && (
+                            <p>
+                              <a href={item.href} target="_blank" rel="noopener noreferrer">
+                                {item.href}
+                              </a>
+                            </p>
+                          )}
+                        </OuiText>
                       </>
                     );
                   })()}

@@ -112,9 +112,20 @@ const renderPage = (
                 ? pendingThread.messages
                 : null
             }
+            sourcePage={
+              pendingThread && pendingThread.key === selectedItem
+                ? pendingThread.sourcePage
+                : null
+            }
+            sourcePageTitle={
+              pendingThread && pendingThread.key === selectedItem
+                ? pendingThread.pageTitle
+                : null
+            }
             isPanelOpen={isPanelOpen}
             onTogglePanel={onTogglePanel}
             onPageChange={onPageChange}
+            onNavigate={onNavigate}
           />
         </OuiErrorBoundary>
       );
@@ -458,42 +469,57 @@ export const SamplePagesView = () => {
         {
           key: 'latency-spike',
           title: 'Latency spike investigation',
-          subtitle: 'Sarah Lee · 2 hours ago',
+          subtitle: 'Use for investigation demo · 2 hours ago',
         },
         {
           key: 'checkout-error',
           title: 'Checkout error rate alert',
-          subtitle: 'Alex Chen · 5 hours ago',
+          subtitle: 'Placeholder only · 5 hours ago',
         },
         {
           key: 'weekly-review',
           title: 'Weekly service review',
-          subtitle: 'Team Ops · 1 day ago',
+          subtitle: 'Placeholder only · 1 day ago',
         },
         {
           key: 'memory-leak',
           title: 'Memory leak in catalog service',
-          subtitle: 'Jordan Park · 3 hours ago',
+          subtitle: 'Placeholder only · 3 hours ago',
         },
         {
           key: 'dns-timeout',
           title: 'DNS resolution timeouts',
-          subtitle: 'Priya Sharma · 6 hours ago',
+          subtitle: 'Placeholder only · 6 hours ago',
         },
         {
           key: 'deployment-rollback',
           title: 'Failed deployment rollback',
-          subtitle: 'Marcus Webb · 8 hours ago',
+          subtitle: 'Placeholder only · 8 hours ago',
         },
         {
           key: 'cert-expiry',
           title: 'TLS certificate expiry warning',
-          subtitle: 'Dana Kim · 12 hours ago',
+          subtitle: 'Placeholder only · 12 hours ago',
         },
         {
           key: 'disk-pressure',
           title: 'Node disk pressure alerts',
-          subtitle: 'Riley Tanaka · 1 day ago',
+          subtitle: 'Placeholder only · 1 day ago',
+        },
+        {
+          key: 'tool-demo-1',
+          title: 'Thread tool demo 1',
+          subtitle: 'Emily Zhang · 30 min ago',
+        },
+        {
+          key: 'tool-demo-2',
+          title: 'Thread tool demo 2',
+          subtitle: 'Carlos Rivera · 1 hour ago',
+        },
+        {
+          key: 'tool-demo-3',
+          title: 'Thread tool demo 3',
+          subtitle: 'Aisha Patel · 2 hours ago',
         },
       ],
     },
@@ -514,6 +540,11 @@ export const SamplePagesView = () => {
           key: 'api-performance',
           title: 'API performance',
           subtitle: 'Updated 30 min ago',
+        },
+        {
+          key: 'payment-pool-dashboard',
+          title: 'Payment service — connection pool',
+          subtitle: 'Created from thread · just now',
         },
       ],
     },
@@ -539,6 +570,11 @@ export const SamplePagesView = () => {
             key: 'slow-queries',
             title: 'Slow query log',
             subtitle: 'source=logs | where duration > 5000',
+          },
+          {
+            key: 'payment-timeout-logs',
+            title: 'Payment service timeout logs',
+            subtitle: 'source=payment | where level="WARN"',
           },
         ],
         'saved-results': [
@@ -655,6 +691,16 @@ export const SamplePagesView = () => {
           title: 'Capacity planning',
           subtitle: 'Last edited 3 days ago',
         },
+        {
+          key: 'notebook-inventory-analysis',
+          title: 'Inventory service dependency analysis',
+          subtitle: 'Created from thread · just now',
+        },
+        {
+          key: 'notebook-connection-pool',
+          title: 'Payment service connection pool metrics',
+          subtitle: 'Created from thread · just now',
+        },
       ],
     },
     detectors: {
@@ -694,6 +740,11 @@ export const SamplePagesView = () => {
           key: 'alert-error-spike',
           title: 'Error rate spike',
           subtitle: 'Critical · 3 hours ago',
+        },
+        {
+          key: 'alert-payment-p99',
+          title: 'Payment service P99 latency breach',
+          subtitle: 'Critical · 15 min ago',
         },
       ],
     },
@@ -1041,15 +1092,43 @@ export const SamplePagesView = () => {
   }, []);
 
   const handleContinueAsThread = useCallback(
-    (prompt, response, popoverRect) => {
+    (prompt, response, popoverRect, pageTitle) => {
+      const PAGE_META = {
+        logs: { description: 'Filtered log results showing recent entries, error distribution, and event patterns.' },
+        metrics: { description: 'Metrics visualization with time-series data and service performance indicators.' },
+        discover: { description: 'Query results from data exploration with field breakdowns and event timeline.' },
+        alerts: { description: 'Active alerts overview with severity levels, trigger conditions, and acknowledgment status.' },
+        'alerts-detail': { description: 'Alert investigation view with trigger history, correlated metrics, and notification timeline.' },
+        dashboards: { description: 'Dashboard panels showing aggregated metrics, visualizations, and saved queries.' },
+        notebooks: { description: 'Notebook with analysis steps, inline visualizations, and query results.' },
+        'topology-map': { description: 'Service topology showing dependencies, traffic flow, and health indicators.' },
+        'application-map': { description: 'Application dependency map with latency paths and error propagation.' },
+        'app-perf-traces': { description: 'Distributed traces with span breakdown, latency waterfall, and service hops.' },
+        'agent-monitoring-traces': { description: 'Agent execution traces showing tool calls, reasoning steps, and response times.' },
+        'agent-monitoring-spans': { description: 'Agent span details with duration, token usage, and execution context.' },
+        assets: { description: 'Asset inventory with resource metadata, ownership, and related configurations.' },
+        skills: { description: 'AI skill definitions with trigger conditions, actions, and execution history.' },
+      };
+
+      const sourcePage = activePage;
+      const meta = PAGE_META[sourcePage];
+      // Use the actual page title passed from DetailPageHeader, fall back to sourcePage
+      const displayTitle = pageTitle || sourcePage;
+      const userAttachment = {
+        type: 'link-preview',
+        title: displayTitle,
+        description: meta ? meta.description : null,
+      };
+
       const messages = [
-        { role: 'user', author: 'You', content: prompt },
+        { role: 'user', author: 'You', content: prompt, attachment: userAttachment },
         { role: 'assistant', content: response, streaming: false },
       ];
 
       if (popoverRect && contentRef.current) {
-        // Start expand animation
-        setExpandAnim({ fromRect: popoverRect, prompt, response });
+        const contentRect = contentRef.current.getBoundingClientRect();
+        // Start expand animation with both popover and page
+        setExpandAnim({ fromRect: popoverRect, contentRect, prompt, response });
 
         // After animation completes, navigate
         animTimerRef.current = setTimeout(() => {
@@ -1058,53 +1137,75 @@ export const SamplePagesView = () => {
           setActivePage('thread');
           if (createThreadRef.current) {
             const newKey = createThreadRef.current();
-            setPendingThread({ key: newKey, messages });
+            setPendingThread({ key: newKey, messages, sourcePage, pageTitle: displayTitle });
           }
-        }, 350);
+        }, 400);
       } else {
         // Fallback: no animation
         skipPanelOpenRef.current = true;
         setActivePage('thread');
         if (createThreadRef.current) {
           const newKey = createThreadRef.current();
-          setPendingThread({ key: newKey, messages });
+          setPendingThread({ key: newKey, messages, sourcePage, pageTitle: displayTitle });
         }
       }
     },
-    []
+    [activePage]
   );
 
   // Compute the animation overlay style
   const renderExpandOverlay = () => {
     if (!expandAnim || !contentRef.current) return null;
 
-    const targetRect = contentRef.current.getBoundingClientRect();
-    const { fromRect, prompt, response } = expandAnim;
+    const { fromRect, contentRect, prompt, response } = expandAnim;
+
+    // Conversation column target: left 60% of content area
+    const convWidth = contentRect.width * 0.6;
+    // Canvas target: right 40% of content area
+    const canvasLeft = contentRect.left + convWidth;
+    const canvasWidth = contentRect.width - convWidth;
 
     return (
-      <div
-        className="askAiExpandOverlay"
-        style={{
-          '--from-left': `${fromRect.left}px`,
-          '--from-top': `${fromRect.top}px`,
-          '--from-width': `${fromRect.width}px`,
-          '--from-height': `${fromRect.height}px`,
-          '--to-left': `${targetRect.left}px`,
-          '--to-top': `${targetRect.top}px`,
-          '--to-width': `${targetRect.width}px`,
-          '--to-height': `${targetRect.height}px`,
-        }}>
-        <div className="askAiExpandOverlay__content">
-          <div className="askAiExpandOverlay__messages">
-            <div className="askAiPopover__msg askAiPopover__msg--user">
-              <p style={{ margin: 0, fontSize: 14 }}>{prompt}</p>
-            </div>
-            <div className="askAiPopover__msg askAiPopover__msg--assistant">
-              <p style={{ margin: 0, fontSize: 14 }}>{response}</p>
+      <>
+        {/* Popover expanding to conversation column */}
+        <div
+          className="askAiExpandOverlay askAiExpandOverlay--popover"
+          style={{
+            '--from-left': `${fromRect.left}px`,
+            '--from-top': `${fromRect.top}px`,
+            '--from-width': `${fromRect.width}px`,
+            '--from-height': `${fromRect.height}px`,
+            '--to-left': `${contentRect.left}px`,
+            '--to-top': `${contentRect.top}px`,
+            '--to-width': `${convWidth}px`,
+            '--to-height': `${contentRect.height}px`,
+          }}>
+          <div className="askAiExpandOverlay__content">
+            <div className="askAiExpandOverlay__messages">
+              <div className="askAiPopover__msg askAiPopover__msg--user">
+                <p style={{ margin: 0, fontSize: 14 }}>{prompt}</p>
+              </div>
+              <div className="askAiPopover__msg askAiPopover__msg--assistant">
+                <p style={{ margin: 0, fontSize: 14 }}>{response}</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+        {/* Page collapsing to canvas panel */}
+        <div
+          className="askAiExpandOverlay askAiExpandOverlay--page"
+          style={{
+            '--from-left': `${contentRect.left}px`,
+            '--from-top': `${contentRect.top}px`,
+            '--from-width': `${contentRect.width}px`,
+            '--from-height': `${contentRect.height}px`,
+            '--to-left': `${canvasLeft}px`,
+            '--to-top': `${contentRect.top}px`,
+            '--to-width': `${canvasWidth}px`,
+            '--to-height': `${contentRect.height}px`,
+          }}
+        />
+      </>
     );
   };
 

@@ -27,6 +27,7 @@ import {
 } from '../../../../src/components';
 
 import { DetailPageHeader } from './detail_page_header';
+import { DashboardPageMock } from './mock_canvas_pages';
 
 // ============================================================
 // SYSTEM OVERVIEW DASHBOARD
@@ -487,6 +488,7 @@ const DASHBOARD_TITLES = {
   'system-overview': 'System overview',
   'web-traffic': 'Web traffic analytics',
   'api-performance': 'API performance',
+  'payment-pool-dashboard': 'Payment service — connection pool',
 };
 
 export const DashboardsPage = ({
@@ -508,6 +510,8 @@ export const DashboardsPage = ({
         return <WebTrafficDashboard />;
       case 'api-performance':
         return <ApiPerformanceDashboard />;
+      case 'payment-pool-dashboard':
+        return <DashboardPageMock />;
       default:
         return <SystemOverviewDashboard />;
     }

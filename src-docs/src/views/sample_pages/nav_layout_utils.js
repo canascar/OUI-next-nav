@@ -1,5 +1,5 @@
 export const STORAGE_KEY = 'samplePagesNavLayout';
-export const FIXED_KEYS = ['search', 'thread'];
+export const FIXED_KEYS = ['thread'];
 
 export const ALL_DRAGGABLE_ITEMS = [
   { key: 'dashboards', label: 'Dashboards', icon: 'navDashboards' },

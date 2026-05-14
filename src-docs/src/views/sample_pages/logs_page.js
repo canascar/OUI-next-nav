@@ -83,6 +83,12 @@ const QUERY_DEFS = {
       'source=opensearch_dashboards_sample_data_logs | stats count() as requests by user | sort -requests | head 50',
     queryOnly: true,
   },
+  'payment-timeout-logs': {
+    title: 'Payment service timeout logs',
+    language: 'PPL',
+    query:
+      'source=opensearch_metrics_payment_service | where level="WARN" OR message LIKE "%timeout%" | sort -timestamp | head 25',
+  },
 };
 
 const DEFAULT_QUERY_DEF = QUERY_DEFS['error-rate'];
@@ -162,6 +168,23 @@ const QUERY_DATA = {
     { id: '18', FlightNum: 'PQ42WDH', Origin: 'Kuala Lumpur International Airport', Dest: 'Leonardo da Vinci-Fiumicino Airport', FlightDelayMin: 225 },
     { id: '19', FlightNum: 'YL30AXC', Origin: 'Sheremetyevo International Airport', Dest: 'Tocumen International Airport', FlightDelayMin: 170 },
     { id: '20', FlightNum: 'JH59NTQ', Origin: 'Haneda Airport', Dest: 'Suvarnabhumi Airport', FlightDelayMin: 290 },
+  ],
+  'payment-timeout-logs': [
+    { id: '1', FlightNum: 'WARN', Origin: 'connection acquire timeout exceeded 1000ms', Dest: 'payment-7f8b9-xk2lp', FlightDelayMin: 1842 },
+    { id: '2', FlightNum: 'WARN', Origin: 'connection acquire timeout exceeded 1000ms', Dest: 'payment-7f8b9-mn4qr', FlightDelayMin: 2103 },
+    { id: '3', FlightNum: 'WARN', Origin: 'connection acquire timeout exceeded 1000ms', Dest: 'payment-7f8b9-xk2lp', FlightDelayMin: 1654 },
+    { id: '4', FlightNum: 'WARN', Origin: 'connection acquire timeout exceeded 1000ms', Dest: 'payment-7f8b9-ab8st', FlightDelayMin: 1920 },
+    { id: '5', FlightNum: 'WARN', Origin: 'connection acquire timeout exceeded 1000ms', Dest: 'payment-7f8b9-mn4qr', FlightDelayMin: 2340 },
+    { id: '6', FlightNum: 'WARN', Origin: 'connection acquire timeout exceeded 1000ms', Dest: 'payment-7f8b9-xk2lp', FlightDelayMin: 1780 },
+    { id: '7', FlightNum: 'WARN', Origin: 'connection acquire timeout exceeded 1000ms', Dest: 'payment-7f8b9-ab8st', FlightDelayMin: 1560 },
+    { id: '8', FlightNum: 'WARN', Origin: 'connection acquire timeout exceeded 1000ms', Dest: 'payment-7f8b9-mn4qr', FlightDelayMin: 2210 },
+    { id: '9', FlightNum: 'INFO', Origin: 'request completed successfully', Dest: 'payment-7f8b9-xk2lp', FlightDelayMin: 45 },
+    { id: '10', FlightNum: 'WARN', Origin: 'connection acquire timeout exceeded 1000ms', Dest: 'payment-7f8b9-xk2lp', FlightDelayMin: 1890 },
+    { id: '11', FlightNum: 'WARN', Origin: 'connection acquire timeout exceeded 1000ms', Dest: 'payment-7f8b9-ab8st', FlightDelayMin: 1720 },
+    { id: '12', FlightNum: 'DEBUG', Origin: 'pool checkout attempt', Dest: 'payment-7f8b9-mn4qr', FlightDelayMin: 3 },
+    { id: '13', FlightNum: 'WARN', Origin: 'connection acquire timeout exceeded 1000ms', Dest: 'payment-7f8b9-xk2lp', FlightDelayMin: 2050 },
+    { id: '14', FlightNum: 'WARN', Origin: 'connection acquire timeout exceeded 1000ms', Dest: 'payment-7f8b9-mn4qr', FlightDelayMin: 1680 },
+    { id: '15', FlightNum: 'INFO', Origin: 'request completed successfully', Dest: 'payment-7f8b9-ab8st', FlightDelayMin: 38 },
   ],
 };
 
@@ -331,6 +354,119 @@ const getColumns = (expandedRows, toggleRowExpansion) => [
   { field: 'FlightNum', name: '_source', render: (val, item) => <SourceCell item={item} /> },
 ];
 
+// --- Standalone body component for embedding (e.g. in canvas panel) ---
+
+export const LogsPageBody = ({ queryText: customQuery, results: customResults, compact }) => {
+  const results = customResults || QUERY_DATA['error-rate'];
+  const queryText = customQuery || DEFAULT_QUERY_DEF.query;
+  const [activeTab, setActiveTab] = useState('logs');
+  const [expandedRows, setExpandedRows] = useState({});
+  const [fieldsPanelOpen, setFieldsPanelOpen] = useState(!compact);
+
+  const toggleRowExpansion = (item) => {
+    setExpandedRows((prev) => {
+      const next = { ...prev };
+      if (next[item.id]) {
+        delete next[item.id];
+      } else {
+        next[item.id] = <ExpandedRow item={item} />;
+      }
+      return next;
+    });
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <div className="discoverPage__queryArea">
+        <OuiCompressedTextArea
+          placeholder="Search with PPL"
+          value={queryText}
+          rows={2}
+          resize="none"
+          fullWidth
+          readOnly
+          className="discoverPage__queryTextarea"
+        />
+      </div>
+
+      <div className="discoverPage__tabBar">
+        <div className="discoverPage__tabBarLeft">
+          <OuiButtonIcon
+            iconType={fieldsPanelOpen ? 'menuLeft' : 'menuRight'}
+            aria-label={fieldsPanelOpen ? 'Collapse fields panel' : 'Expand fields panel'}
+            onClick={() => setFieldsPanelOpen(!fieldsPanelOpen)}
+            size="s"
+            color="text"
+            className="discoverPage__fieldsPanelToggle"
+          />
+          <OuiTabs size="s" display="condensed">
+            <OuiTab
+              isSelected={activeTab === 'logs'}
+              onClick={() => setActiveTab('logs')}>
+              Logs
+            </OuiTab>
+            <OuiTab
+              isSelected={activeTab === 'visualization'}
+              onClick={() => setActiveTab('visualization')}>
+              Visualization
+            </OuiTab>
+          </OuiTabs>
+          <OuiText size="s" className="discoverPage__hitsInfo">
+            <strong>{results.length.toLocaleString()} hits</strong>
+            <span className="discoverPage__hitsDot">&middot;</span>
+            <strong>323 ms</strong>
+          </OuiText>
+        </div>
+        <div className="discoverPage__tabActions">
+          {!compact && (
+            <>
+              <OuiButtonEmpty size="s" iconType="exportAction" iconSide="left">
+                Export
+              </OuiButtonEmpty>
+              <OuiButtonEmpty size="s" iconType="dashboardApp" iconSide="left">
+                Add to dashboard
+              </OuiButtonEmpty>
+            </>
+          )}
+        </div>
+      </div>
+
+      <div className="discoverPage__body">
+        {fieldsPanelOpen && (
+          <div style={{ width: 200, flexShrink: 0 }}>
+            <FieldsPanel />
+          </div>
+        )}
+        {fieldsPanelOpen && (
+          <div
+            className="discoverPage__resizeHandle"
+            role="separator"
+            aria-orientation="vertical"
+            aria-label="Resize fields panel"
+            tabIndex={0}
+          />
+        )}
+        <div className="discoverPage__contentCol">
+          <div style={{ padding: '0', overflow: 'auto', flex: 1 }}>
+            <OuiPanel paddingSize="none" hasShadow={false} hasBorder>
+              <OuiBasicTable
+                items={results}
+                itemId="id"
+                columns={getColumns(expandedRows, toggleRowExpansion)}
+                rowHeader="FlightNum"
+                tableLayout="auto"
+                compressed
+                isExpandable
+                itemIdToExpandedRowMap={expandedRows}
+              />
+            </OuiPanel>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // --- Main LogsPage Component ---
 
 export const LogsPage = ({
@@ -392,6 +528,7 @@ export const LogsPage = ({
     });
   };
   const [fieldsPanelWidth, setFieldsPanelWidth] = useState(240);
+  const [isFieldsPanelCollapsed, setIsFieldsPanelCollapsed] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const dragging = useRef(false);
   const bodyRef = useRef(null);
@@ -504,6 +641,18 @@ export const LogsPage = ({
 
       <div className="discoverPage__tabBar">
         <div className="discoverPage__tabBarLeft">
+          <OuiButtonIcon
+            iconType={isFieldsPanelCollapsed ? 'menuRight' : 'menuLeft'}
+            aria-label={
+              isFieldsPanelCollapsed
+                ? 'Expand fields panel'
+                : 'Collapse fields panel'
+            }
+            onClick={() => setIsFieldsPanelCollapsed(!isFieldsPanelCollapsed)}
+            size="s"
+            color="text"
+            className="discoverPage__fieldsPanelToggle"
+          />
           <OuiTabs size="s" display="condensed">
             <OuiTab
               isSelected={activeTab === 'logs'}
@@ -533,20 +682,24 @@ export const LogsPage = ({
       </div>
 
       <div className="discoverPage__body" ref={bodyRef}>
-        <div style={{ width: fieldsPanelWidth, flexShrink: 0 }}>
-          <FieldsPanel />
-        </div>
-        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
-        <div
-          className={`discoverPage__resizeHandle${
-            isDragging ? ' discoverPage__resizeHandle--active' : ''
-          }`}
-          onMouseDown={handleResizeStart}
-          role="separator"
-          aria-orientation="vertical"
-          aria-label="Resize fields panel"
-          tabIndex={0}
-        />
+        {!isFieldsPanelCollapsed && (
+          <>
+            <div style={{ width: fieldsPanelWidth, flexShrink: 0 }}>
+              <FieldsPanel />
+            </div>
+            {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+            <div
+              className={`discoverPage__resizeHandle${
+                isDragging ? ' discoverPage__resizeHandle--active' : ''
+              }`}
+              onMouseDown={handleResizeStart}
+              role="separator"
+              aria-orientation="vertical"
+              aria-label="Resize fields panel"
+              tabIndex={0}
+            />
+          </>
+        )}
         <div className="discoverPage__contentCol">
           <div style={{ padding: '0', overflow: 'auto', flex: 1 }}>
             <OuiPanel paddingSize="none" hasShadow={false} hasBorder>

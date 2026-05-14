@@ -17,59 +17,39 @@
   display: inline-flex;
 }
 
-// Floating Ask AI button — positioned relative to the content panel bottom-right
+// Floating Ask AI button — positioned relative to the content panel bottom-left
 .askAiFloating {
   position: absolute;
-  bottom: 24px;
-  right: 24px;
+  bottom: 8px;
+  left: 8px;
   z-index: 9999;
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 12px;
 
   .askAiFloating__button {
-    position: relative;
-    border-radius: 50%;
-    transition: box-shadow 200ms ease-in-out, background 200ms ease-in-out;
+    appearance: none;
+    border: 1px solid $ouiBorderColor;
+    border-radius: $ouiBorderRadius;
+    background-color: $ouiFormBackgroundColor;
+    padding: 0 12px;
+    height: 32px;
+    line-height: 32px;
+    font-size: $ouiFontSizeS;
+    color: $ouiColorMediumShade;
+    cursor: pointer;
+    white-space: nowrap;
+    width: auto;
+    transition: border-color 150ms ease-in-out, box-shadow 150ms ease-in-out;
 
-    &::before {
-      content: '';
-      position: absolute;
-      inset: -3px;
-      border-radius: 50%;
-      padding: 2px;
-      background: conic-gradient(
-        $ouiColorPrimary,
-        $ouiColorAccent,
-        $ouiColorPrimary
-      );
-      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      mask-composite: exclude;
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      opacity: 0;
-      transition: opacity 200ms ease-in-out;
-      animation: askAiNeonSpin 1.5s linear infinite paused;
+    &:hover {
+      border-color: $ouiColorPrimary;
     }
 
-    &:hover::before {
-      opacity: 1;
-      animation-play-state: running;
-    }
-
-    &--active {
-      background: linear-gradient(135deg, $ouiColorPrimary, $ouiColorAccent);
-      background-size: 200% 200%;
-      animation: askAiGradientShift 2s ease infinite;
-      color: #fff;
-
-      &:hover,
-      &:focus {
-        background: linear-gradient(135deg, $ouiColorPrimary, $ouiColorAccent);
-        background-size: 200% 200%;
-        animation: askAiGradientShift 2s ease infinite;
-      }
+    &:focus {
+      border-color: $ouiColorPrimary;
+      box-shadow: 0 0 0 1px $ouiColorPrimary;
+      outline: none;
     }
   }
 }
@@ -265,6 +245,24 @@
   }
 }
 
+@keyframes askAiCollapsePage {
+  0% {
+    left: var(--from-left);
+    top: var(--from-top);
+    width: var(--from-width);
+    height: var(--from-height);
+    opacity: 1;
+  }
+
+  100% {
+    left: var(--to-left);
+    top: var(--to-top);
+    width: var(--to-width);
+    height: var(--to-height);
+    opacity: 1;
+  }
+}
+
 @keyframes askAiExpandFadeIn {
   0% {
     opacity: .6;
@@ -282,8 +280,14 @@
   border: 1px solid $ouiBorderColor;
   box-shadow: 0 8px 32px rgba(0, 0, 0, .15);
   overflow: hidden;
-  animation: askAiExpand 320ms cubic-bezier(.2, .9, .3, 1) forwards;
+  animation: askAiExpand 380ms cubic-bezier(.2, .9, .3, 1) forwards;
   pointer-events: none;
+
+  &--page {
+    animation: askAiCollapsePage 380ms cubic-bezier(.2, .9, .3, 1) forwards;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .1);
+    border-left: 1px solid $ouiBorderColor;
+  }
 }
 
 .askAiExpandOverlay__content {
@@ -401,12 +405,12 @@
 // Inline Ask AI — immersive, no border, blur background
 .askAiInline {
   position: absolute;
-  bottom: -4px;
-  right: 0;
+  bottom: -8px;
+  left: -8px;
   width: 480px;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   z-index: 9999;
 }
 
@@ -459,6 +463,8 @@
     padding: 6px 10px;
     border-radius: 8px 8px 2px;
     background: rgba($ouiColorDarkShade, .08);
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   &--assistant {
@@ -476,23 +482,35 @@
 
 .askAiInline__input {
   width: 480px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px;
+  padding: 8px;
   border-radius: 8px;
   background: rgba($ouiColorEmptyShade, .7);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, .08);
+  box-shadow: 0 0 24px rgba(0, 0, 0, .06);
   animation: askAiInlineFadeIn 150ms ease-out;
+}
 
-  .ouiFormControlLayout {
-    flex: 1;
-  }
+.askAiInline__inputWrapper {
+  position: relative;
+}
 
-  .ouiButtonIcon {
-    flex-shrink: 0;
+.askAiInline__textarea textarea {
+  padding-bottom: 36px;
+}
+
+.askAiInline__inputActions {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
   }
 }
 

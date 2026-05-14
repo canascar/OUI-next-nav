@@ -36,12 +36,10 @@ import {
 
 import { ThemeContext } from '../../components/with_theme';
 import { ALL_DRAGGABLE_ITEMS } from './nav_layout_utils';
-import { SearchPopover } from './search_popover';
 
 const NAV_ITEMS = [
-  { key: 'home', label: 'Overview', icon: 'home', hoverOnly: false },
-  { key: 'search', label: 'Search', icon: 'search', isAction: true },
-  { key: 'thread', label: 'Threads', icon: 'navTicketing', rulerAfter: true },
+  { key: 'home', label: 'New thread', icon: 'plusInCircle', hoverOnly: false },
+  { key: 'thread', label: 'All threads', icon: 'navTicketing', rulerAfter: true },
   // Essentials
   {
     key: 'dashboards',
@@ -456,42 +454,57 @@ export const DEFAULT_THREADS = [
   {
     key: 'latency-spike',
     title: 'Latency spike investigation',
-    subtitle: 'Sarah Lee · 2 hours ago',
+    subtitle: 'Use for investigation demo · 2 hours ago',
   },
   {
     key: 'checkout-error',
     title: 'Checkout error rate alert',
-    subtitle: 'Alex Chen · 5 hours ago',
+    subtitle: 'Placeholder only · 5 hours ago',
   },
   {
     key: 'weekly-review',
     title: 'Weekly service review',
-    subtitle: 'Team Ops · 1 day ago',
+    subtitle: 'Placeholder only · 1 day ago',
   },
   {
     key: 'memory-leak',
     title: 'Memory leak in catalog service',
-    subtitle: 'Jordan Park · 3 hours ago',
+    subtitle: 'Placeholder only · 3 hours ago',
   },
   {
     key: 'dns-timeout',
     title: 'DNS resolution timeouts',
-    subtitle: 'Priya Sharma · 6 hours ago',
+    subtitle: 'Placeholder only · 6 hours ago',
   },
   {
     key: 'deployment-rollback',
     title: 'Failed deployment rollback',
-    subtitle: 'Marcus Webb · 8 hours ago',
+    subtitle: 'Placeholder only · 8 hours ago',
   },
   {
     key: 'cert-expiry',
     title: 'TLS certificate expiry warning',
-    subtitle: 'Dana Kim · 12 hours ago',
+    subtitle: 'Placeholder only · 12 hours ago',
   },
   {
     key: 'disk-pressure',
     title: 'Node disk pressure alerts',
-    subtitle: 'Riley Tanaka · 1 day ago',
+    subtitle: 'Placeholder only · 1 day ago',
+  },
+  {
+    key: 'tool-demo-1',
+    title: 'Thread tool demo 1',
+    subtitle: 'Emily Zhang · 30 min ago',
+  },
+  {
+    key: 'tool-demo-2',
+    title: 'Thread tool demo 2',
+    subtitle: 'Carlos Rivera · 1 hour ago',
+  },
+  {
+    key: 'tool-demo-3',
+    title: 'Thread tool demo 3',
+    subtitle: 'Aisha Patel · 2 hours ago',
   },
 ];
 
@@ -1012,42 +1025,42 @@ const ThreadPopoverContent = ({ onNavigate, onViewAll }) => {
     {
       key: 'latency-spike',
       title: 'Latency spike investigation',
-      subtitle: 'Sarah Lee · 2 hours ago',
+      subtitle: 'Use for investigation demo · 2 hours ago',
     },
     {
       key: 'checkout-error',
       title: 'Checkout error rate alert',
-      subtitle: 'Alex Chen · 5 hours ago',
+      subtitle: 'Placeholder only · 5 hours ago',
     },
     {
       key: 'weekly-review',
       title: 'Weekly service review',
-      subtitle: 'Team Ops · 1 day ago',
+      subtitle: 'Placeholder only · 1 day ago',
     },
     {
       key: 'memory-leak',
       title: 'Memory leak in catalog service',
-      subtitle: 'Jordan Park · 3 hours ago',
+      subtitle: 'Placeholder only · 3 hours ago',
     },
     {
       key: 'dns-timeout',
       title: 'DNS resolution timeouts',
-      subtitle: 'Priya Sharma · 6 hours ago',
+      subtitle: 'Placeholder only · 6 hours ago',
     },
     {
       key: 'deployment-rollback',
       title: 'Failed deployment rollback',
-      subtitle: 'Marcus Webb · 8 hours ago',
+      subtitle: 'Placeholder only · 8 hours ago',
     },
     {
       key: 'cert-expiry',
       title: 'TLS certificate expiry warning',
-      subtitle: 'Dana Kim · 12 hours ago',
+      subtitle: 'Placeholder only · 12 hours ago',
     },
     {
       key: 'disk-pressure',
       title: 'Node disk pressure alerts',
-      subtitle: 'Riley Tanaka · 1 day ago',
+      subtitle: 'Placeholder only · 1 day ago',
     },
   ];
   return (
@@ -2142,7 +2155,6 @@ export const SamplePagesLeftNav = ({
   const [expandedTab, setExpandedTab] = useState(null);
   const [isCollapsing, setIsCollapsing] = useState(false);
   const [appsPopoverOpen, setAppsPopoverOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [navPopover, setNavPopover] = useState(null);
   const navItemRefs = useRef({});
   const navPopoverTimer = useRef(null);
@@ -2272,12 +2284,6 @@ export const SamplePagesLeftNav = ({
 
   const handleNavClick = (item) => {
     if (item.hoverOnly) return;
-    if (item.isAction) {
-      if (item.key === 'search') {
-        setIsSearchOpen((open) => !open);
-      }
-      return;
-    }
 
     // In expanded mode, tools and workspace are handled by NavGroup, not click
     if (
@@ -2393,7 +2399,7 @@ export const SamplePagesLeftNav = ({
 
         {/* Scrollable items */}
         <div className="samplePagesLeftNav__itemsExpanded">
-          {/* Overview — navigates to home page */}
+          {/* New thread — navigates to home page */}
           <button
             type="button"
             className={`samplePagesLeftNav__navItemExpanded${
@@ -2405,27 +2411,14 @@ export const SamplePagesLeftNav = ({
               onPageChange('home');
             }}>
             <div className="samplePagesLeftNav__navItemIconWrap">
-              <OuiIcon type="home" size="m" />
+              <OuiIcon type="plusInCircle" size="m" />
             </div>
             <span className="samplePagesLeftNav__navItemExpandedLabel">
-              Overview
+              New thread
             </span>
           </button>
 
-          {/* Search — opens search popover */}
-          <button
-            type="button"
-            className="samplePagesLeftNav__navItemExpanded"
-            onClick={() => setIsSearchOpen((open) => !open)}>
-            <div className="samplePagesLeftNav__navItemIconWrap">
-              <OuiIcon type="search" size="m" />
-            </div>
-            <span className="samplePagesLeftNav__navItemExpandedLabel">
-              Search
-            </span>
-          </button>
-
-          {/* Threads — with popover on hover */}
+          {/* All threads — with popover on hover */}
           {(() => {
             const threadItem = renderedNavItems.find((i) => i.key === 'thread');
             if (!threadItem) return null;
@@ -2928,7 +2921,7 @@ export const SamplePagesLeftNav = ({
       {/* Nav items */}
       <div className="samplePagesLeftNav__items">
         {renderedNavItems.map((item) => {
-          const isActive = !item.isAction && isNavItemActive(item.key);
+          const isActive = isNavItemActive(item.key);
           const buttonEl = (
             <button
               ref={(el) => {
@@ -3172,17 +3165,6 @@ export const SamplePagesLeftNav = ({
         }`}>
         {isNavExpanded ? renderExpandedNav() : renderCollapsedNav()}
       </div>
-
-      {/* Search popover */}
-      <SearchPopover
-        isOpen={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
-        onNavigate={(page, itemKey) => {
-          collapsePanel();
-          onPopoverNavigate(page, itemKey);
-        }}
-        onAskAi={onAskAi}
-      />
     </div>
   );
 };

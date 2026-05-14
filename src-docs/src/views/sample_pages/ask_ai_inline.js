@@ -14,7 +14,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
   OuiButtonEmpty,
   OuiButtonIcon,
-  OuiCompressedFieldText,
+  OuiCompressedTextArea,
   OuiIcon,
   OuiText,
 } from '../../../../src/components';
@@ -269,22 +269,35 @@ export const AskAiInline = ({
 
       {/* Input field */}
       <div className="askAiInline__input">
-        <OuiCompressedFieldText
-          inputRef={inputRef}
-          placeholder="Ask anything..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={handleKeyDown}
-          fullWidth
-        />
-        <OuiButtonIcon
-          iconType="sortUp"
-          aria-label="Send message"
-          display="fill"
-          size="s"
-          isDisabled={!message.trim() || isStreaming}
-          onClick={handleSend}
-        />
+        <div className="askAiInline__inputWrapper">
+          <OuiCompressedTextArea
+            inputRef={inputRef}
+            placeholder="Ask anything. Type / for actions."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
+            rows={3}
+            resize="none"
+            fullWidth
+            className="askAiInline__textarea"
+          />
+          <div className="askAiInline__inputActions">
+            <OuiButtonIcon
+              iconType="plus"
+              aria-label="Add attachment"
+              size="s"
+              color="text"
+            />
+            <OuiButtonIcon
+              iconType="sortUp"
+              aria-label="Send message"
+              display="fill"
+              size="s"
+              isDisabled={!message.trim() || isStreaming}
+              onClick={handleSend}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
