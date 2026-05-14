@@ -360,7 +360,7 @@ export { OuiText, OuiTextColor, OuiTextAlign } from './text';
 
 export { useOuiTextDiff } from './text_diff';
 
-export { OuiThreadInput } from './thread_input';
+export { OuiThreadInput, OuiThreadScrollButton } from './thread_input';
 
 export { OuiTitle } from './title';
 

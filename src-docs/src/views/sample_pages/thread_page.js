@@ -23,6 +23,7 @@ import {
   OuiFlexGroup,
   OuiFlexItem,
   OuiThreadInput,
+  OuiThreadScrollButton,
   OuiResizableContainer,
   OuiPanel,
   OuiSpacer,
@@ -536,7 +537,8 @@ export const ThreadPage = ({ selectedItem }) => {
   const [investigationViz, setInvestigationViz] = useState(null);
   const [panelExpanded, setPanelExpanded] = useState(false);
   const [threadTitle, setThreadTitle] = useState(thread.title);
-  const [ollyState, setOllyState] = useState('idle');
+  const [ollyState, setOllyState] = useState(window.__threadInitialMessage ? 'process-label' : 'idle');
+  const [showScrollButton, setShowScrollButton] = useState(false);
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
   const feedRef = useRef(null);
@@ -544,6 +546,31 @@ export const ThreadPage = ({ selectedItem }) => {
   const enhancedIndex = useRef(0);
 
   const streamTimers = useRef([]);
+
+  // Track scroll position to show/hide scroll-to-bottom button
+  useEffect(() => {
+    const feed = feedRef.current;
+    if (!feed) return;
+
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = feed;
+      const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+      // Show button if scrolled up more than 100px from bottom
+      setShowScrollButton(distanceFromBottom > 100);
+    };
+
+    feed.addEventListener('scroll', handleScroll);
+    return () => feed.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToBottom = () => {
+    if (feedRef.current) {
+      feedRef.current.scrollTo({
+        top: feedRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   // Reset messages when switching threads
   useEffect(() => {
@@ -588,22 +615,9 @@ export const ThreadPage = ({ selectedItem }) => {
           const vizIds = mockResponse.visualizations;
           const vizs = vizIds.map(id => VISUALIZATIONS.find(v => v.id === id)).filter(Boolean);
 
-          const taskMsg = { role: 'tasks', tasks, statuses: ['running'], collapsed: false };
-          setMessages((prev) => [...prev, taskMsg]);
-
-          const t1 = setTimeout(() => {
-            setMessages((prev) => { const u=[...prev]; const ti=u.findLastIndex(m=>m.role==='tasks'); if(ti>=0) u[ti]={...u[ti],statuses:['done','running']}; return u; });
-          }, 2500);
-          streamTimers.current.push(t1);
-
-          const t2 = setTimeout(() => {
-            setMessages((prev) => { const u=[...prev]; const ti=u.findLastIndex(m=>m.role==='tasks'); if(ti>=0) u[ti]={...u[ti],statuses:['done','done']}; return u; });
-          }, 5000);
-          streamTimers.current.push(t2);
-
+          // Show olly process-label for 6s, then stream content
           const t3 = setTimeout(() => {
-            setMessages((prev) => { const u=[...prev]; const ti=u.findLastIndex(m=>m.role==='tasks'); if(ti>=0) u[ti]={...u[ti],collapsed:true}; return u; });
-            setIsTyping(false); setOllyState('process-empty');
+            setIsTyping(false); setOllyState('process-breath');
             const tokens = fullContent.split(/(\s+)/);
             setMessages((prev) => [...prev, { role: 'assistant', content: '', streaming: true, visualizations: vizs }]);
             let built = '';
@@ -648,7 +662,7 @@ export const ThreadPage = ({ selectedItem }) => {
     setMessages((prev) => [...prev, userMsg]);
     setMessage('');
     setIsTyping(true);
-    setOllyState('process-label');
+    setOllyState('process-empty');
 
     const idx = enhancedIndex.current % ENHANCED_RESPONSES.length;
     const mockResponse = ENHANCED_RESPONSES[idx];
@@ -658,46 +672,9 @@ export const ThreadPage = ({ selectedItem }) => {
     const vizIds = mockResponse.visualizations;
     const vizs = vizIds.map(id => VISUALIZATIONS.find(v => v.id === id)).filter(Boolean);
 
-    // Phase 1: Show task list
-    const taskMsg = {
-      role: 'tasks',
-      tasks,
-      statuses: ['running'],
-      collapsed: false,
-    };
-    setMessages((prev) => [...prev, taskMsg]);
-
-    const t1 = setTimeout(() => {
-      setMessages((prev) => {
-        const updated = [...prev];
-        const ti = updated.findLastIndex((m) => m.role === 'tasks');
-        if (ti >= 0)
-          updated[ti] = { ...updated[ti], statuses: ['done', 'running'] };
-        return updated;
-      });
-    }, 2500);
-    streamTimers.current.push(t1);
-
-    const t2 = setTimeout(() => {
-      setMessages((prev) => {
-        const updated = [...prev];
-        const ti = updated.findLastIndex((m) => m.role === 'tasks');
-        if (ti >= 0)
-          updated[ti] = { ...updated[ti], statuses: ['done', 'done'] };
-        return updated;
-      });
-    }, 5000);
-    streamTimers.current.push(t2);
-
+    // Show olly process-empty for 3s, then stream content with process-breath
     const t3 = setTimeout(() => {
-      setMessages((prev) => {
-        const updated = [...prev];
-        const ti = updated.findLastIndex((m) => m.role === 'tasks');
-        if (ti >= 0) updated[ti] = { ...updated[ti], collapsed: true };
-        return updated;
-      });
-
-      setIsTyping(false); setOllyState('process-empty');
+      setIsTyping(false); setOllyState('process-breath');
 
       const tokens = fullContent.split(/(\s+)/);
 
@@ -729,7 +706,7 @@ export const ThreadPage = ({ selectedItem }) => {
         setOllyState('idle');
       }, tokens.length * 30 + 100);
       streamTimers.current.push(idleTimer);
-    }, 6000);
+    }, 3000);
     streamTimers.current.push(t3);
   };
 
@@ -774,6 +751,13 @@ export const ThreadPage = ({ selectedItem }) => {
         .threadPage__vizCard {
           opacity: 0;
           animation: vizFadeIn 400ms ease forwards;
+        }
+        .threadPage__scrollButtonWrap {
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          top: -40px;
+          z-index: 10;
         }
       `}</style>
 
@@ -830,11 +814,19 @@ export const ThreadPage = ({ selectedItem }) => {
                       })}
                       <OllyIndicator state={ollyState} isDark={isDark} />
                     </div>
-                    <div className="threadPage__inputArea">
-                      <OuiThreadInput value={message} onChange={setMessage} onSubmit={handleSend} isDisabled={isTyping || messages.some((m) => m.streaming)}
-                        actionsLeft={<OuiButtonIcon iconType="plus" aria-label="Add attachment" size="s" color="text" />}
-                        actionsRight={<OuiButtonIcon iconType="sortUp" aria-label="Send" display="fill" size="s" color="primary" isDisabled={!message.trim() || isTyping || messages.some((m) => m.streaming)} onClick={() => handleSend(message)} />}
-                      />
+                    <div style={{ position: 'relative' }}>
+                      <div className="threadPage__scrollButtonWrap">
+                        <OuiThreadScrollButton
+                          isVisible={showScrollButton}
+                          onClick={scrollToBottom}
+                        />
+                      </div>
+                      <div className="threadPage__inputArea">
+                        <OuiThreadInput value={message} onChange={setMessage} onSubmit={handleSend} isDisabled={isTyping || messages.some((m) => m.streaming)}
+                          actionsLeft={<OuiButtonIcon iconType="plus" aria-label="Add attachment" size="s" color="text" />}
+                          actionsRight={<OuiButtonIcon iconType="sortUp" aria-label="Send" display="fill" size="s" color="primary" isDisabled={!message.trim() || isTyping || messages.some((m) => m.streaming)} onClick={() => handleSend(message)} />}
+                        />
+                      </div>
                     </div>
                   </div>
                 </ResizablePanel>
@@ -880,11 +872,19 @@ export const ThreadPage = ({ selectedItem }) => {
               })}
               <OllyIndicator state={ollyState} isDark={isDark} />
             </div>
-            <div className="threadPage__inputArea">
-              <OuiThreadInput value={message} onChange={setMessage} onSubmit={handleSend} isDisabled={isTyping || messages.some((m) => m.streaming)}
-                actionsLeft={<OuiButtonIcon iconType="plus" aria-label="Add attachment" size="s" color="text" />}
-                actionsRight={<OuiButtonIcon iconType="sortUp" aria-label="Send" display="fill" size="s" color="primary" isDisabled={!message.trim() || isTyping || messages.some((m) => m.streaming)} onClick={() => handleSend(message)} />}
-              />
+            <div style={{ position: 'relative' }}>
+              <div className="threadPage__scrollButtonWrap">
+                <OuiThreadScrollButton
+                  isVisible={showScrollButton}
+                  onClick={scrollToBottom}
+                />
+              </div>
+              <div className="threadPage__inputArea">
+                <OuiThreadInput value={message} onChange={setMessage} onSubmit={handleSend} isDisabled={isTyping || messages.some((m) => m.streaming)}
+                  actionsLeft={<OuiButtonIcon iconType="plus" aria-label="Add attachment" size="s" color="text" />}
+                  actionsRight={<OuiButtonIcon iconType="sortUp" aria-label="Send" display="fill" size="s" color="primary" isDisabled={!message.trim() || isTyping || messages.some((m) => m.streaming)} onClick={() => handleSend(message)} />}
+                />
+              </div>
             </div>
           </div>
         )}

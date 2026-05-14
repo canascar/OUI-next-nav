@@ -13,10 +13,11 @@ const getRandomLabel = () => LABELS[Math.floor(Math.random() * LABELS.length)];
  * OllyIndicator - Animated logo that transitions through states:
  * - process-label: outline draw → fill → breathe + shimmer text (shown if loading > 2s)
  * - process-empty: outline draw → fill → breathe (no text)
+ * - process-breath: just the breathe animation (no outline draw)
  * - idle: static logo with hover glare + tooltip
  *
  * Props:
- * - state: 'idle' | 'processing'
+ * - state: 'idle' | 'processing' | 'process-label' | 'process-empty' | 'process-breath'
  */
 export const OllyIndicator = ({ state = 'idle' }) => {
   const themeContext = useContext(ThemeContext);
@@ -27,11 +28,13 @@ export const OllyIndicator = ({ state = 'idle' }) => {
 
   // Show label only if processing lasts > 2s
   useEffect(() => {
-    if (state === 'processing') {
+    if (state === 'processing' || state === 'process-label' || state === 'process-empty') {
       setShowLabel(false);
       setAnimKey((k) => k + 1);
-      const timer = setTimeout(() => setShowLabel(true), 2000);
-      return () => clearTimeout(timer);
+      if (state === 'process-label') {
+        setShowLabel(true);
+      }
+      return;
     } else {
       setShowLabel(false);
     }
@@ -113,6 +116,41 @@ export const OllyIndicator = ({ state = 'idle' }) => {
             <path d="M3.91861 14C1.74276 17.5495 -0.361506 22.2822 0.0524931 28.9079C0.910072 42.6327 13.3411 53.0446 25.0794 51.9163C29.6747 51.4745 34.3932 47.7288 33.974 41.0195C33.7918 38.1039 32.3647 36.3831 30.0456 35.0601C27.8382 33.8008 25.0022 33.0031 21.7872 32.0989C17.9038 31.0066 13.3991 29.7797 9.93694 27.2283C5.78746 24.1704 2.95092 20.6257 3.91861 14Z" fill={primary}/>
           </svg>
           <div className="olly-tooltip">Olly is here to help you</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Process-breath state: just the breathe animation, no outline draw
+  if (state === 'process-breath') {
+    return (
+      <div key={animKey} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <style>{`
+          .olly-breath svg {
+            width: 28px; height: 28px;
+          }
+          .olly-breath .olly-breath-wrap {
+            position: relative;
+            width: 28px; height: 28px;
+            flex-shrink: 0;
+            animation: ollyBreathe 3s ease-in-out infinite;
+          }
+          .olly-breath .olly-breath-wrap path:nth-child(1) { fill: ${primary}; }
+          .olly-breath .olly-breath-wrap path:nth-child(2) { fill: ${secondary}; }
+          .olly-breath .olly-breath-wrap path:nth-child(3) { fill: ${primary}; }
+          @keyframes ollyBreathe {
+            0%, 100% { transform: scale(0.92); opacity: 0.6; }
+            50% { transform: scale(1); opacity: 1; }
+          }
+        `}</style>
+        <div className="olly-breath">
+          <div className="olly-breath-wrap">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+              <path d="M61.7374 23.5C60.4878 23.5 59.4748 24.513 59.4748 25.7626C59.4748 44.3813 44.3813 59.4748 25.7626 59.4748C24.513 59.4748 23.5 60.4878 23.5 61.7374C23.5 62.987 24.513 64 25.7626 64C46.8805 64 64 46.8805 64 25.7626C64 24.513 62.987 23.5 61.7374 23.5Z"/>
+              <path d="M48.0814 38C50.2572 34.4505 52.3615 29.7178 51.9475 23.0921C51.0899 9.36725 38.6589 -1.04463 26.9206 0.0837327C22.3253 0.525465 17.6068 4.2712 18.026 10.9805C18.2082 13.8961 19.6352 15.6169 21.9544 16.9399C24.1618 18.1992 26.9978 18.9969 30.2128 19.9011C34.0962 20.9934 38.6009 22.2203 42.063 24.7717C46.2125 27.8295 49.0491 31.3743 48.0814 38Z"/>
+              <path d="M3.91861 14C1.74276 17.5495 -0.361506 22.2822 0.0524931 28.9079C0.910072 42.6327 13.3411 53.0446 25.0794 51.9163C29.6747 51.4745 34.3932 47.7288 33.974 41.0195C33.7918 38.1039 32.3647 36.3831 30.0456 35.0601C27.8382 33.8008 25.0022 33.0031 21.7872 32.0989C17.9038 31.0066 13.3991 29.7797 9.93694 27.2283C5.78746 24.1704 2.95092 20.6257 3.91861 14Z"/>
+            </svg>
+          </div>
         </div>
       </div>
     );

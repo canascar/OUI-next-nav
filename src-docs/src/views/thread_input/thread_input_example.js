@@ -16,6 +16,9 @@ import { GuideSectionTypes } from '../../components';
 import ThreadInputDemo from './thread_input_demo';
 const threadInputDemoSource = require('!!raw-loader!./thread_input_demo');
 
+import ThreadScrollDemo from './thread_scroll_demo';
+const threadScrollDemoSource = require('!!raw-loader!./thread_scroll_demo');
+
 export const ThreadInputExample = {
   title: 'Thread input',
   sections: [
@@ -37,6 +40,25 @@ export const ThreadInputExample = {
         },
       ],
       demo: <ThreadInputDemo />,
+    },
+    {
+      title: 'Thread scroll',
+      text: (
+        <p>
+          <strong>OuiThreadScrollButton</strong> is a pill-shaped button that
+          appears when the user scrolls up in a thread conversation. It provides
+          a quick way to scroll back to the latest messages. The button fades in
+          when there is overflow content below the visible area and fades out
+          when clicked or when the user scrolls to the bottom.
+        </p>
+      ),
+      source: [
+        {
+          type: GuideSectionTypes.JS,
+          code: threadScrollDemoSource,
+        },
+      ],
+      demo: <ThreadScrollDemo />,
     },
   ],
 };

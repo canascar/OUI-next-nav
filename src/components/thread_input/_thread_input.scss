@@ -95,3 +95,42 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+
+// Thread scroll button
+.ouiThreadScrollButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid $ouiFormBorderColor;
+  border-radius: 9999px;
+  background-color: $ouiFormBackgroundColor;
+  color: $ouiTextColor;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease, background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background-color: $ouiColorLightestShade;
+    border-color: $ouiColorPrimary;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px $ouiFocusRingColor;
+  }
+
+  &:active {
+    background-color: $ouiColorLightShade;
+  }
+}
+
+.ouiThreadScrollButton--visible {
+  opacity: 1;
+  pointer-events: auto;
+}

@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" data-mode="marketing">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic OSD Design System Proposal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* === DESIGN TOKENS === */
+:root {
+  --obsidian: #14141C;
+  --black: #01011b;
+  --eggplant: #31263B;
+  --minsk: #473982;
+  --violet-topaz: #5F509D;
+  --amethyst: #A477B2;
+  --rose-quartz: #F5C0C0;
+  --jade: #5CB198;
+  --cement: #717A94;
+  --citrine: #CDA849;
+  --opal: #FBF9F9;
+  --white: #ffffff;
+  --success: #5CB198;
+  --warning: #CDA849;
+  --danger: #ed6f73;
+  --info: #473982;
+  --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --radius-pill: 9999px;
+  --radius-lg: 16px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+  --radius-xs: 4px;
+  --noise-opacity: 0.04;
+}
+
+/* === DARK THEME === */
+[data-theme="dark"] {
+  --font-default: #e8e4e6;
+  --font-loud: #ffffff;
+  --font-muted: #80727a;
+  --highlight: #F5C0C0;
+  --page-bg: #01011b;
+  --card-bg: #14141C;
+  --surface: #1a1820;
+  --surface-elevated: #201d25;
+  --border: #2a2530;
+  --border-subtle: #1f1b24;
+  --shadow-card: 0 0 0 1px rgba(49,38,59,0.32), 0 24px 48px rgba(0,0,0,0.4);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-glow: 0 0 40px rgba(71,57,130,0.3);
+  --gradient-hero: radial-gradient(ellipse at 20% 30%, rgba(71,57,130,0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(245,192,192,0.08) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 50%, rgba(92,177,152,0.04) 0%, transparent 60%);
+  --gradient-brand: linear-gradient(135deg, #473982, #5F509D, #A477B2);
+  --gradient-warm: linear-gradient(135deg, #cda0a5, #31263B);
+  --glass-bg: rgba(255,255,255,0.04);
+  --glass-border: rgba(255,255,255,0.08);
+}
+
+/* === LIGHT THEME === */
+[data-theme="light"] {
+  --font-default: #31263B;
+  --font-loud: #14141C;
+  --font-muted: #717A94;
+  --highlight: #473982;
+  --page-bg: #FFFCFC;
+  --card-bg: #ffffff;
+  --surface: #f8f6f7;
+  --surface-elevated: #ffffff;
+  --border: #e4e1e6;
+  --border-subtle: #ece8ea;
+  --shadow-card: 0 0 0 1px rgba(49,38,59,0.06), 0 8px 32px rgba(49,38,59,0.08);
+  --shadow-sm: 0 2px 8px rgba(49,38,59,0.06);
+  --shadow-glow: 0 0 40px rgba(71,57,130,0.12);
+  --gradient-hero: radial-gradient(ellipse at 20% 30%, rgba(71,57,130,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(245,192,192,0.15) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 80%, rgba(92,177,152,0.06) 0%, transparent 50%);
+  --gradient-brand: linear-gradient(135deg, #473982, #5F509D, #A477B2);
+  --gradient-warm: linear-gradient(135deg, #F5C0C0, #A477B2);
+  --glass-bg: rgba(255,255,255,0.7);
+  --glass-border: rgba(255,255,255,0.9);
+}
+
+/* === BASE === */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--font-default);
+  background: var(--page-bg);
+  min-height: 100vh;
+  transition: background 0.5s ease, color 0.3s ease;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  opacity: var(--noise-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  color: var(--font-loud);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+h1 { font-size: clamp(48px, 6vw + 1rem, 80px); font-weight: 700; letter-spacing: -0.04em; }
+h2 { font-size: clamp(32px, 4vw + 0.5rem, 56px); font-weight: 600; }
+h3 { font-size: clamp(24px, 2.5vw, 36px); font-weight: 600; }
+h4 { font-size: 20px; font-weight: 600; }
+p { margin-bottom: 12px; }
+code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-subtle);
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+}
+
+/* === LAYOUT === */
+.page-wrap { max-width: 1280px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 1; }
+section { margin-bottom: 140px; }
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--font-muted);
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; border-top: 1px dashed var(--border); }
+
+/* === TOOLBAR === */
+.toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 32px;
+  background: color-mix(in srgb, var(--page-bg) 80%, transparent);
+  backdrop-filter: blur(16px) saturate(1.2);
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background 0.4s ease;
+}
+.toolbar-logo {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--font-loud);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.toolbar-logo svg { width: 22px; height: 22px; }
+.toolbar-controls { display: flex; gap: 6px; align-items: center; }
+.toolbar-group {
+  display: flex;
+  gap: 2px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 3px;
+}
+.toolbar-btn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: transparent;
+  color: var(--font-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.toolbar-btn:hover { color: var(--font-loud); }
+.toolbar-btn.active {
+  background: var(--minsk);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(71,57,130,0.3);
+}
+.toolbar-divider { width: 1px; height: 24px; background: var(--border); margin: 0 8px; }
+
+/* === HERO === */
+.hero {
+  text-align: center;
+  padding: 180px 24px 120px;
+  position: relative;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gradient-hero);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--minsk) 8%, transparent) 0%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+  animation: heroGlow 8s ease-in-out infinite alternate;
+}
+@keyframes heroGlow {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+  100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--font-muted);
+  margin-bottom: 32px;
+  padding: 8px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  position: relative;
+  animation: fadeUp 0.8s ease both;
+}
+.hero-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--jade);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+.hero h1 {
+  position: relative;
+  animation: fadeUp 0.8s ease 0.1s both;
+}
+.hero h1 .gradient-text {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero .subtitle {
+  font-size: 20px;
+  color: var(--font-muted);
+  max-width: 640px;
+  margin: 20px auto 0;
+  line-height: 1.5;
+  position: relative;
+  animation: fadeUp 0.8s ease 0.2s both;
+}
+.hero-cta {
+  margin-top: 40px;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+  animation: fadeUp 0.8s ease 0.3s both;
+}
+
+/* === BUTTONS === */
+.btn {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 14px 32px;
+  border-radius: var(--radius-pill);
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.22, 0.61, 0.36, 1);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+}
+.btn--primary {
+  background: var(--gradient-brand);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(71,57,130,0.35), 0 0 0 0 rgba(71,57,130,0);
+}
+.btn--primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.btn--primary:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 32px rgba(71,57,130,0.45), 0 0 0 4px rgba(71,57,130,0.1);
+}
+.btn--primary:hover::before { opacity: 1; }
+.btn--primary:active { transform: translateY(-1px) scale(0.98); }
+
+.btn--ghost {
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  color: var(--font-default);
+  border: 1px solid var(--border);
+  box-shadow: 0 0 0 0 rgba(71,57,130,0);
+}
+.btn--ghost:hover {
+  border-color: var(--minsk);
+  color: var(--font-loud);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(71,57,130,0.15);
+}
+.btn--ghost:active { transform: translateY(0) scale(0.98); }
+
+.btn--accent {
+  background: var(--rose-quartz);
+  color: var(--eggplant);
+  box-shadow: 0 4px 16px rgba(245,192,192,0.3);
+}
+.btn--accent:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(245,192,192,0.4);
+  background: #f7cdcd;
+}
+[data-theme="light"] .btn--accent {
+  background: var(--minsk);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(71,57,130,0.25);
+}
+[data-theme="light"] .btn--accent:hover {
+  box-shadow: 0 8px 24px rgba(71,57,130,0.35);
+  background: var(--violet-topaz);
+}
+
+/* === CARDS === */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-card);
+  transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 0.3s ease, border-color 0.3s ease;
+  position: relative;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: var(--radius-lg);
+  background: var(--gradient-brand);
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-glow);
+  border-color: color-mix(in srgb, var(--minsk) 40%, var(--border));
+}
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; }
+.card-grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px; }
+
+/* === FEATURE SHOWCASE === */
+.feature-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+  margin-bottom: 120px;
+}
+.feature-row:nth-child(even) { direction: rtl; }
+.feature-row:nth-child(even) > * { direction: ltr; }
+.feature-visual {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+  position: relative;
+}
+.feature-visual::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 50%, color-mix(in srgb, var(--page-bg) 40%, transparent) 100%);
+  pointer-events: none;
+}
+.feature-content h3 { margin-bottom: 16px; }
+.feature-content p { color: var(--font-muted); font-size: 16px; line-height: 1.6; }
+.feature-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--amethyst);
+  margin-bottom: 12px;
+}
+[data-theme="light"] .feature-tag { color: var(--minsk); }
+
+/* === BENTO GRID === */
+.bento {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: auto;
+  gap: 16px;
+}
+.bento-item {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  transition: all 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+  position: relative;
+  overflow: hidden;
+}
+.bento-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+  border-color: color-mix(in srgb, var(--minsk) 30%, var(--border));
+}
+.bento-item--wide { grid-column: span 2; }
+.bento-item--tall { grid-row: span 2; }
+.bento-item--full { grid-column: span 4; }
+.bento-item--accent {
+  background: var(--gradient-brand);
+  border-color: transparent;
+  color: #fff;
+}
+.bento-item--accent h4, .bento-item--accent p { color: #fff; }
+.bento-item--accent p { opacity: 0.8; }
+.bento-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--font-muted);
+  margin-bottom: 12px;
+}
+.bento-item--accent .bento-label { color: rgba(255,255,255,0.6); }
+
+/* === ANIMATED ELEMENTS === */
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+@keyframes breathe { 0%,100% { transform: scale(0.95); opacity: 0.7; } 50% { transform: scale(1); opacity: 1; } }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@keyframes borderChase {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.float { animation: float 4s ease-in-out infinite; }
+.shimmer-text {
+  background: linear-gradient(90deg, var(--font-muted) 0%, var(--font-loud) 40%, var(--font-loud) 60%, var(--font-muted) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s ease-in-out infinite;
+}
+.breathe { animation: breathe 3s ease-in-out infinite; }
+.gradient-border {
+  position: relative;
+  border: none !important;
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--minsk), var(--rose-quartz), var(--jade), var(--minsk));
+  background-size: 300% 300%;
+  animation: borderChase 6s ease infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* === STAT COUNTER === */
+.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.stat-card {
+  text-align: center;
+  padding: 40px 24px;
+  border-radius: var(--radius-lg);
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+.stat-card:hover { transform: scale(1.03); box-shadow: var(--shadow-glow); }
+.stat-number {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--font-muted);
+}
+
+/* === TESTIMONIAL === */
+.testimonial {
+  text-align: center;
+  padding: 60px 40px;
+  border-radius: var(--radius-lg);
+  background: var(--glass-bg);
+  border: 1px solid var(--border);
+  position: relative;
+}
+.testimonial::before {
+  content: '\201C';
+  position: absolute;
+  top: 24px;
+  left: 40px;
+  font-size: 80px;
+  font-family: var(--font-display);
+  color: var(--minsk);
+  opacity: 0.2;
+  line-height: 1;
+}
+.testimonial-text {
+  font-size: 22px;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--font-loud);
+  max-width: 700px;
+  margin: 0 auto 24px;
+  font-family: var(--font-display);
+}
+.testimonial-author {
+  font-size: 13px;
+  color: var(--font-muted);
+}
+
+/* === INTERACTIVE DEMO === */
+.demo-browser {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+  background: var(--card-bg);
+}
+.demo-browser-chrome {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.demo-dot { width: 10px; height: 10px; border-radius: 50%; }
+.demo-dot--red { background: #ed6f73; }
+.demo-dot--yellow { background: #CDA849; }
+.demo-dot--green { background: #5CB198; }
+.demo-url-bar {
+  flex: 1;
+  margin-left: 12px;
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--page-bg);
+  border: 1px solid var(--border-subtle);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--font-muted);
+}
+.demo-content { padding: 32px; min-height: 300px; }
+
+/* === COLOR SWATCHES === */
+.swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+.swatch {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.swatch:hover { transform: scale(1.03); box-shadow: var(--shadow-sm); }
+.swatch-block { height: 80px; }
+.swatch-info { padding: 12px; }
+.swatch-name { font-family: var(--font-display); font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.swatch-hex { font-family: var(--font-mono); font-size: 11px; color: var(--font-muted); }
+
+/* === NAV DEMO === */
+.nav-demo-marketing {
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  background: color-mix(in srgb, var(--page-bg) 80%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--font-loud);
+  margin-right: 40px;
+}
+.nav-links { display: flex; gap: 28px; flex: 1; }
+.nav-links a {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--font-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+  position: relative;
+}
+.nav-links a:hover { color: var(--font-loud); }
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--gradient-brand);
+  border-radius: 1px;
+  transition: width 0.3s ease;
+}
+.nav-links a:hover::after { width: 100%; }
+
+/* === GLASS CARD === */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px) saturate(1.2);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  transition: all 0.3s ease;
+}
+.glass-card:hover {
+  border-color: color-mix(in srgb, var(--minsk) 30%, var(--glass-border));
+  box-shadow: var(--shadow-glow);
+}
+
+/* === ANIMATED ORBS === */
+.orb-container { position: relative; width: 200px; height: 200px; margin: 0 auto; }
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(1px);
+}
+.orb--1 { width: 80px; height: 80px; background: var(--minsk); top: 20%; left: 10%; animation: float 4s ease-in-out infinite; opacity: 0.8; }
+.orb--2 { width: 60px; height: 60px; background: var(--rose-quartz); top: 40%; right: 15%; animation: float 5s ease-in-out infinite 1s; opacity: 0.7; }
+.orb--3 { width: 40px; height: 40px; background: var(--jade); bottom: 20%; left: 30%; animation: float 3.5s ease-in-out infinite 0.5s; opacity: 0.6; }
+
+/* === TYPOGRAPHY SHOWCASE === */
+.type-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.type-row {
+  display: flex;
+  align-items: baseline;
+  gap: 32px;
+  padding: 24px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.type-row:last-child { border-bottom: none; }
+.type-meta { min-width: 140px; flex-shrink: 0; }
+.type-meta .size { font-family: var(--font-mono); font-size: 11px; color: var(--font-muted); }
+.type-meta .weight { font-size: 11px; color: var(--font-muted); margin-top: 2px; }
+
+/* === MARQUEE === */
+.marquee-wrap {
+  overflow: hidden;
+  padding: 24px 0;
+  border-top: 1px dashed var(--border);
+  border-bottom: 1px dashed var(--border);
+  margin: 60px 0;
+}
+.marquee {
+  display: flex;
+  gap: 48px;
+  animation: marquee 30s linear infinite;
+  width: max-content;
+}
+.marquee span {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 300;
+  color: var(--font-muted);
+  white-space: nowrap;
+  opacity: 0.5;
+}
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* === FOOTER === */
+.footer {
+  text-align: center;
+  padding: 80px 0 48px;
+  border-top: 1px dashed var(--border);
+  position: relative;
+}
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 200px;
+  background: radial-gradient(ellipse, color-mix(in srgb, var(--minsk) 10%, transparent), transparent);
+  pointer-events: none;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 1024px) {
+  .bento { grid-template-columns: repeat(2, 1fr); }
+  .bento-item--wide { grid-column: span 2; }
+  .bento-item--full { grid-column: span 2; }
+  .feature-row { grid-template-columns: 1fr; gap: 32px; }
+  .feature-row:nth-child(even) { direction: ltr; }
+}
+@media (max-width: 768px) {
+  .bento { grid-template-columns: 1fr; }
+  .bento-item--wide, .bento-item--full { grid-column: span 1; }
+  .card-grid { grid-template-columns: 1fr; }
+  .stat-grid { grid-template-columns: 1fr; }
+  .hero { padding: 140px 16px 80px; }
+  .toolbar { padding: 10px 16px; }
+  section { margin-bottom: 80px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="toolbar-logo">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Agentic OSD
+  </div>
+  <div class="toolbar-controls">
+    <div class="toolbar-group">
+      <button class="toolbar-btn active" id="btnMarketing" onclick="setMode('marketing')">Marketing</button>
+      <button class="toolbar-btn" id="btnUtility" onclick="setMode('utility')">Utility</button>
+    </div>
+    <div class="toolbar-divider"></div>
+    <div class="toolbar-group">
+      <button class="toolbar-btn active" id="btnDark" onclick="setTheme('dark')">Dark</button>
+      <button class="toolbar-btn" id="btnLight" onclick="setTheme('light')">Light</button>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">Design System &middot; Marketing Expression</div>
+  <h1>The future is<br><span class="gradient-text">agentic.</span></h1>
+  <p class="subtitle">Where AI meets operational excellence. A design system built for products that think, act, and adapt autonomously.</p>
+  <div class="hero-cta">
+    <button class="btn btn--primary">Start building</button>
+    <button class="btn btn--ghost">See it in action</button>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee">
+    <span>Autonomous</span><span>&middot;</span>
+    <span>Transparent</span><span>&middot;</span>
+    <span>Proactive</span><span>&middot;</span>
+    <span>Trustworthy</span><span>&middot;</span>
+    <span>Open</span><span>&middot;</span>
+    <span>Impactful</span><span>&middot;</span>
+    <span>Autonomous</span><span>&middot;</span>
+    <span>Transparent</span><span>&middot;</span>
+    <span>Proactive</span><span>&middot;</span>
+    <span>Trustworthy</span><span>&middot;</span>
+    <span>Open</span><span>&middot;</span>
+    <span>Impactful</span><span>&middot;</span>
+  </div>
+</div>
+
+<!-- STATS -->
+<section>
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-number">99.9%</div>
+      <div class="stat-label">Uptime SLA</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">4.2M</div>
+      <div class="stat-label">Queries Processed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">&lt;50ms</div>
+      <div class="stat-label">P95 Latency</div>
+    </div>
+  </div>
+</section>
+
+<!-- BENTO GRID -->
+<section>
+  <div class="section-label">01 &mdash; Capabilities</div>
+  <div class="bento">
+    <div class="bento-item bento-item--wide bento-item--accent">
+      <div class="bento-label">Core Platform</div>
+      <h4 style="font-size:24px;margin-bottom:12px">Intelligent Investigation</h4>
+      <p>Automatically correlate signals across metrics, logs, and traces. Surface root cause before you even ask.</p>
+    </div>
+    <div class="bento-item">
+      <div class="bento-label">Visualization</div>
+      <h4 style="margin-bottom:8px">Adaptive Charts</h4>
+      <p style="font-size:13px;color:var(--font-muted)">Charts that respond to context, highlighting anomalies and suggesting relevant comparisons.</p>
+      <div style="margin-top:16px;height:60px;background:linear-gradient(90deg, color-mix(in srgb, var(--jade) 20%, transparent), color-mix(in srgb, var(--minsk) 20%, transparent));border-radius:var(--radius-sm)"></div>
+    </div>
+    <div class="bento-item">
+      <div class="bento-label">Workflow</div>
+      <h4 style="margin-bottom:8px">Task Automation</h4>
+      <p style="font-size:13px;color:var(--font-muted)">Define runbooks once. Let agents execute them with full audit trails.</p>
+      <div style="margin-top:16px;display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;align-items:center;gap:8px"><div style="width:16px;height:16px;border-radius:50%;background:var(--jade)"></div><span style="font-size:12px;color:var(--font-muted)">Detect anomaly</span></div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="width:16px;height:16px;border-radius:50%;background:var(--minsk)"></div><span style="font-size:12px;color:var(--font-muted)">Correlate signals</span></div>
+        <div style="display:flex;align-items:center;gap:8px"><div style="width:16px;height:16px;border-radius:50%;border:2px dashed var(--border)"></div><span style="font-size:12px;color:var(--font-muted)">Recommend fix</span></div>
+      </div>
+    </div>
+    <div class="bento-item bento-item--wide">
+      <div class="bento-label">Natural Language</div>
+      <h4 style="margin-bottom:12px">Ask anything about your infrastructure</h4>
+      <div style="border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 18px;background:var(--surface);display:flex;align-items:center;gap:12px">
+        <span class="shimmer-text" style="font-size:14px">Why did error rate spike at 14:32 UTC?</span>
+      </div>
+    </div>
+    <div class="bento-item">
+      <div class="bento-label">Brand Moment</div>
+      <div class="orb-container">
+        <div class="orb orb--1"></div>
+        <div class="orb orb--2"></div>
+        <div class="orb orb--3"></div>
+      </div>
+    </div>
+    <div class="bento-item">
+      <div class="bento-label">Processing</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:8px">
+        <div class="breathe" style="width:40px;height:40px;border-radius:50%;background:var(--gradient-brand);flex-shrink:0"></div>
+        <div>
+          <div style="font-size:13px;font-weight:600;color:var(--font-loud)">Agent working...</div>
+          <div style="font-size:12px;color:var(--font-muted)">Analyzing 3 data sources</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE ROWS -->
+<section>
+  <div class="section-label">02 &mdash; Design Highlights</div>
+
+  <div class="feature-row">
+    <div class="feature-content">
+      <div class="feature-tag">Component &middot; Navigation</div>
+      <h3>Fluid navigation with<br>brand personality</h3>
+      <p>Backdrop-blur headers, animated underline hovers, pill-shaped CTAs. Navigation that feels alive without sacrificing clarity.</p>
+    </div>
+    <div class="feature-visual" style="padding:24px;background:var(--surface)">
+      <div class="nav-demo-marketing">
+        <div class="nav-logo">OSD</div>
+        <div class="nav-links">
+          <a href="#">Product</a>
+          <a href="#">Solutions</a>
+          <a href="#">Pricing</a>
+          <a href="#">Docs</a>
+        </div>
+        <button class="btn btn--primary" style="font-size:12px;padding:8px 18px">Get started</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="feature-row">
+    <div class="feature-content">
+      <div class="feature-tag">Component &middot; Cards</div>
+      <h3>Gradient-border hover<br>with depth</h3>
+      <p>Cards lift on hover with animated gradient borders and glow shadows. Creates a sense of interactivity and responsiveness.</p>
+    </div>
+    <div class="feature-visual" style="padding:32px;background:var(--surface);display:flex;gap:16px">
+      <div class="glass-card gradient-border" style="flex:1;padding:20px">
+        <div style="font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--font-muted);margin-bottom:8px">Revenue</div>
+        <div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--font-loud)">$4.2M</div>
+        <div style="font-size:12px;color:var(--jade);margin-top:4px">+12.3%</div>
+      </div>
+      <div class="glass-card" style="flex:1;padding:20px">
+        <div style="font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--font-muted);margin-bottom:8px">Users</div>
+        <div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--font-loud)">18.4K</div>
+        <div style="font-size:12px;color:var(--danger);margin-top:4px">-2.1%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feature-row">
+    <div class="feature-content">
+      <div class="feature-tag">Component &middot; Buttons</div>
+      <h3>Expressive interactions<br>with physics</h3>
+      <p>Buttons lift, scale, and glow on interaction. Primary CTAs use gradient backgrounds with light overlay on hover. Active press uses spring physics.</p>
+    </div>
+    <div class="feature-visual" style="padding:40px;background:var(--surface);display:flex;flex-direction:column;align-items:center;gap:16px">
+      <button class="btn btn--primary" style="font-size:16px;padding:16px 36px">Primary Action</button>
+      <button class="btn btn--accent">Brand Accent</button>
+      <button class="btn btn--ghost">Ghost Variant</button>
+    </div>
+  </div>
+</section>
+
+<!-- TYPOGRAPHY -->
+<section>
+  <div class="section-label">03 &mdash; Typography</div>
+  <div class="card" style="padding:32px">
+    <div class="type-showcase">
+      <div class="type-row">
+        <div class="type-meta"><div class="size">80px</div><div class="weight">Bold (700)</div></div>
+        <div style="font-family:var(--font-display);font-size:clamp(40px,6vw,80px);font-weight:700;letter-spacing:-0.04em;line-height:0.9"><span class="gradient-text">Impact.</span></div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><div class="size">56px</div><div class="weight">SemiBold (600)</div></div>
+        <div style="font-family:var(--font-display);font-size:clamp(32px,4vw,56px);font-weight:600;letter-spacing:-0.03em;line-height:1">Build faster together</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><div class="size">36px</div><div class="weight">Light (300)</div></div>
+        <div style="font-family:var(--font-display);font-size:clamp(24px,3vw,36px);font-weight:300;letter-spacing:-0.02em;line-height:1.2;color:var(--font-muted)">Subtitle with elegance</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><div class="size">16px</div><div class="weight">Regular (400)</div></div>
+        <div style="font-family:var(--font-body);font-size:16px;font-weight:400;line-height:1.6">Body text that prioritizes readability across long-form content, documentation, and product interfaces alike.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><div class="size">13px mono</div><div class="weight">Regular (400)</div></div>
+        <div style="font-family:var(--font-mono);font-size:13px;line-height:1.5"><code style="border:none;background:transparent;padding:0">SELECT * FROM signals WHERE severity = 'critical'</code></div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><div class="size">11px mono</div><div class="weight">Bold (700)</div></div>
+        <div style="font-family:var(--font-mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:var(--font-muted)">SECTION LABEL &middot; CATEGORY</div>
+      </div>
+    </div>
+  </div>
+  <p style="font-size:13px;color:var(--font-muted);margin-top:16px">Space Grotesk (display) &middot; IBM Plex Sans (body) &middot; IBM Plex Mono (code/labels)</p>
+</section>
+
+<!-- COLOR PALETTE -->
+<section>
+  <div class="section-label">04 &mdash; Color System</div>
+  <h3 style="margin-bottom:24px">Brand Palette</h3>
+  <div class="swatch-grid" style="margin-bottom:48px">
+    <div class="swatch"><div class="swatch-block" style="background:linear-gradient(135deg,#473982,#5F509D)"></div><div class="swatch-info"><div class="swatch-name">Minsk</div><div class="swatch-hex">#473982</div></div></div>
+    <div class="swatch"><div class="swatch-block" style="background:linear-gradient(135deg,#5F509D,#A477B2)"></div><div class="swatch-info"><div class="swatch-name">Violet Topaz</div><div class="swatch-hex">#5F509D</div></div></div>
+    <div class="swatch"><div class="swatch-block" style="background:linear-gradient(135deg,#A477B2,#d4b0d9)"></div><div class="swatch-info"><div class="swatch-name">Amethyst</div><div class="swatch-hex">#A477B2</div></div></div>
+    <div class="swatch"><div class="swatch-block" style="background:linear-gradient(135deg,#F5C0C0,#f7d5d5)"></div><div class="swatch-info"><div class="swatch-name">Rose Quartz</div><div class="swatch-hex">#F5C0C0</div></div></div>
+    <div class="swatch"><div class="swatch-block" style="background:linear-gradient(135deg,#5CB198,#7ecdb5)"></div><div class="swatch-info"><div class="swatch-name">Jade</div><div class="swatch-hex">#5CB198</div></div></div>
+    <div class="swatch"><div class="swatch-block" style="background:linear-gradient(135deg,#CDA849,#dfc06e)"></div><div class="swatch-info"><div class="swatch-name">Citrine</div><div class="swatch-hex">#CDA849</div></div></div>
+    <div class="swatch"><div class="swatch-block" style="background:linear-gradient(135deg,#ed6f73,#f49497)"></div><div class="swatch-info"><div class="swatch-name">Coral</div><div class="swatch-hex">#ED6F73</div></div></div>
+  </div>
+
+  <h3 style="margin-bottom:24px">Gradients</h3>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
+    <div style="height:120px;border-radius:var(--radius-lg);background:linear-gradient(135deg,#473982,#5F509D,#A477B2);display:flex;align-items:flex-end;padding:16px">
+      <span style="font-family:var(--font-mono);font-size:11px;color:#fff;opacity:0.8">Brand gradient</span>
+    </div>
+    <div style="height:120px;border-radius:var(--radius-lg);background:linear-gradient(135deg,#cda0a5,#31263B);display:flex;align-items:flex-end;padding:16px">
+      <span style="font-family:var(--font-mono);font-size:11px;color:#fff;opacity:0.8">Warm accent</span>
+    </div>
+    <div style="height:120px;border-radius:var(--radius-lg);background:linear-gradient(135deg,#14141C,#31263B,#473982);display:flex;align-items:flex-end;padding:16px">
+      <span style="font-family:var(--font-mono);font-size:11px;color:#fff;opacity:0.8">Dark depth</span>
+    </div>
+  </div>
+</section>
+
+<!-- ANIMATIONS -->
+<section>
+  <div class="section-label">05 &mdash; Motion Language</div>
+  <div class="card-grid-3">
+    <div class="card" style="text-align:center">
+      <div style="height:100px;display:flex;align-items:center;justify-content:center">
+        <div class="float" style="width:48px;height:48px;border-radius:12px;background:var(--gradient-brand)"></div>
+      </div>
+      <h4 style="font-size:14px;margin-top:12px">Float</h4>
+      <p style="font-family:var(--font-mono);font-size:11px;color:var(--font-muted);margin:4px 0 0">4s ease-in-out infinite</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="height:100px;display:flex;align-items:center;justify-content:center">
+        <div class="breathe" style="width:48px;height:48px;border-radius:50%;background:var(--gradient-brand)"></div>
+      </div>
+      <h4 style="font-size:14px;margin-top:12px">Breathe</h4>
+      <p style="font-family:var(--font-mono);font-size:11px;color:var(--font-muted);margin:4px 0 0">3s ease-in-out infinite</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="height:100px;display:flex;align-items:center;justify-content:center">
+        <span class="shimmer-text" style="font-size:18px;font-weight:600">Thinking...</span>
+      </div>
+      <h4 style="font-size:14px;margin-top:12px">Shimmer</h4>
+      <p style="font-family:var(--font-mono);font-size:11px;color:var(--font-muted);margin:4px 0 0">3s ease-in-out infinite</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="height:100px;display:flex;align-items:center;justify-content:center">
+        <div class="gradient-border" style="width:80px;height:80px;border-radius:var(--radius-md);background:var(--card-bg)"></div>
+      </div>
+      <h4 style="font-size:14px;margin-top:12px">Border Chase</h4>
+      <p style="font-family:var(--font-mono);font-size:11px;color:var(--font-muted);margin:4px 0 0">6s ease infinite</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="height:100px;display:flex;align-items:center;justify-content:center">
+        <div style="width:48px;height:48px;border-radius:50%;border:3px solid transparent;border-top-color:var(--minsk);border-right-color:var(--amethyst);animation:spin 1.5s linear infinite"></div>
+      </div>
+      <h4 style="font-size:14px;margin-top:12px">Spinner</h4>
+      <p style="font-family:var(--font-mono);font-size:11px;color:var(--font-muted);margin:4px 0 0">1.5s linear infinite</p>
+    </div>
+    <div class="card" style="text-align:center">
+      <div style="height:100px;display:flex;align-items:center;justify-content:center">
+        <div style="width:100px;height:4px;border-radius:2px;background:var(--surface);overflow:hidden"><div style="width:60%;height:100%;background:var(--gradient-brand);background-size:200% 100%;animation:gradientShift 3s ease infinite;border-radius:2px"></div></div>
+      </div>
+      <h4 style="font-size:14px;margin-top:12px">Progress</h4>
+      <p style="font-family:var(--font-mono);font-size:11px;color:var(--font-muted);margin:4px 0 0">3s ease infinite</p>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIAL -->
+<section>
+  <div class="testimonial">
+    <div class="testimonial-text">The marketing expression brings personality without compromising the precision that operational tools demand.</div>
+    <div class="testimonial-author">Design Philosophy &middot; Agentic OSD</div>
+  </div>
+</section>
+
+<!-- BROWSER DEMO -->
+<section>
+  <div class="section-label">06 &mdash; In Context</div>
+  <div class="demo-browser">
+    <div class="demo-browser-chrome">
+      <div class="demo-dot demo-dot--red"></div>
+      <div class="demo-dot demo-dot--yellow"></div>
+      <div class="demo-dot demo-dot--green"></div>
+      <div class="demo-url-bar">app.agentic-osd.dev/dashboard</div>
+    </div>
+    <div class="demo-content" style="background:var(--page-bg);display:flex;flex-direction:column;gap:24px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-family:var(--font-display);font-size:24px;font-weight:600;color:var(--font-loud)">Dashboard</div>
+          <div style="font-size:13px;color:var(--font-muted);margin-top:4px">Last updated 2 min ago</div>
+        </div>
+        <button class="btn btn--primary" style="font-size:13px;padding:10px 20px">New Investigation</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+        <div class="glass-card" style="padding:20px">
+          <div style="font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--font-muted);margin-bottom:6px">Error Rate</div>
+          <div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--danger)">2.4%</div>
+          <div style="margin-top:12px;height:32px;background:linear-gradient(90deg, color-mix(in srgb, var(--danger) 10%, transparent), color-mix(in srgb, var(--danger) 30%, transparent));border-radius:4px"></div>
+        </div>
+        <div class="glass-card" style="padding:20px">
+          <div style="font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--font-muted);margin-bottom:6px">Throughput</div>
+          <div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--font-loud)">14.2K</div>
+          <div style="margin-top:12px;height:32px;background:linear-gradient(90deg, color-mix(in srgb, var(--jade) 10%, transparent), color-mix(in srgb, var(--jade) 30%, transparent));border-radius:4px"></div>
+        </div>
+        <div class="glass-card" style="padding:20px">
+          <div style="font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--font-muted);margin-bottom:6px">P99 Latency</div>
+          <div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--font-loud)">48ms</div>
+          <div style="margin-top:12px;height:32px;background:linear-gradient(90deg, color-mix(in srgb, var(--minsk) 10%, transparent), color-mix(in srgb, var(--minsk) 30%, transparent));border-radius:4px"></div>
+        </div>
+      </div>
+      <div class="glass-card" style="padding:16px;display:flex;align-items:center;gap:12px">
+        <div class="breathe" style="width:32px;height:32px;border-radius:50%;background:var(--gradient-brand);flex-shrink:0"></div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600;color:var(--font-loud)">Agent investigating error rate spike</div>
+          <div style="font-size:12px;color:var(--font-muted)">Correlating with recent deployment at 14:28 UTC...</div>
+        </div>
+        <div style="font-family:var(--font-mono);font-size:11px;color:var(--citrine)">IN PROGRESS</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div style="position:relative">
+    <div style="font-family:var(--font-display);font-size:24px;font-weight:600;color:var(--font-loud);margin-bottom:12px">Agentic OSD</div>
+    <p style="font-size:14px;color:var(--font-muted);margin:0">Design System Proposal &middot; Marketing Expression &middot; Light + Dark</p>
+  </div>
+</footer>
+
+</div>
+
+<script>
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  document.getElementById('btnDark').classList.toggle('active', theme === 'dark');
+  document.getElementById('btnLight').classList.toggle('active', theme === 'light');
+  localStorage.setItem('osd-theme', theme);
+}
+function setMode(mode) {
+  document.documentElement.setAttribute('data-mode', mode);
+  document.getElementById('btnMarketing').classList.toggle('active', mode === 'marketing');
+  document.getElementById('btnUtility').classList.toggle('active', mode === 'utility');
+  localStorage.setItem('osd-mode', mode);
+  if (mode === 'utility') {
+    window.location.href = 'index.html';
+  }
+}
+const savedTheme = localStorage.getItem('osd-theme');
+if (savedTheme) setTheme(savedTheme);
+</script>
+</body>
+</html>
