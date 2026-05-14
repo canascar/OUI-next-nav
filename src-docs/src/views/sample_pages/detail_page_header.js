@@ -12,6 +12,7 @@
 import React from 'react';
 import {
   OuiButtonIcon,
+  OuiIcon,
   OuiToolTip,
 } from '../../../../src/components';
 import { AskAiInline } from './ask_ai_inline';
@@ -34,6 +35,7 @@ export const DetailPageHeader = ({
 }) => {
   // Detached popover state (only used when user clicks "detach" from the panel)
   const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
+  const [isPopoverClosing, setIsPopoverClosing] = React.useState(false);
   const [highlightPrompt, setHighlightPrompt] = React.useState(null);
   const [highlightPosition, setHighlightPosition] = React.useState(null);
 
@@ -41,17 +43,24 @@ export const DetailPageHeader = ({
 
   const handleAskAiToggle = () => {
     if (isPopoverOpen) {
-      setIsPopoverOpen(false);
+      setIsPopoverClosing(true);
+      setTimeout(() => {
+        setIsPopoverOpen(false);
+        setIsPopoverClosing(false);
+      }, 250);
     } else {
-      // Open inline Ask AI
       setIsPopoverOpen(true);
     }
   };
 
   const handlePopoverClose = () => {
-    setIsPopoverOpen(false);
-    setHighlightPrompt(null);
-    setHighlightPosition(null);
+    setIsPopoverClosing(true);
+    setTimeout(() => {
+      setIsPopoverOpen(false);
+      setIsPopoverClosing(false);
+      setHighlightPrompt(null);
+      setHighlightPosition(null);
+    }, 250);
   };
 
   const handlePopoverMinimize = () => {
@@ -134,17 +143,20 @@ export const DetailPageHeader = ({
       {!hideAskAi && (
         <div className="askAiFloating">
           {!isPopoverOpen && (
-            <button
-              className="askAiFloating__button"
-              onClick={handleAskAiToggle}
-              aria-label="Ask AI"
-            >
-              Ask AI
-            </button>
+            <div className="askAiFloating__buttonWrap">
+              <button
+                className="askAiFloating__button"
+                onClick={handleAskAiToggle}
+                aria-label="Ask AI"
+              >
+                Ask anything...
+              </button>
+            </div>
           )}
           {isPopoverOpen && (
             <AskAiInline
               isOpen={isPopoverOpen}
+              isClosing={isPopoverClosing}
               onClose={handlePopoverClose}
               onContinueAsThread={onContinueAsThread ? (prompt, response) => onContinueAsThread(prompt, response, null, title) : undefined}
               initialPrompt={highlightPrompt}

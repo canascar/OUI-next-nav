@@ -14,10 +14,18 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
   OuiButtonEmpty,
   OuiButtonIcon,
-  OuiCompressedTextArea,
+  OuiCompressedFieldText,
   OuiIcon,
+  OuiPopover,
   OuiText,
 } from '../../../../src/components';
+
+// Related threads shown per page context (randomly picked 1-3)
+const RELATED_THREADS = [
+  { key: 'latency-spike', title: 'Latency spike investigation', subtitle: 'Use for investigation demo · 2 hours ago' },
+  { key: 'checkout-error', title: 'Checkout error rate alert', subtitle: 'Placeholder only · 5 hours ago' },
+  { key: 'memory-leak', title: 'Memory leak in catalog service', subtitle: 'Placeholder only · 3 hours ago' },
+];
 
 // Mock AI responses cycled through on each prompt
 const MOCK_AI_RESPONSES = [
@@ -29,11 +37,13 @@ const MOCK_AI_RESPONSES = [
 
 export const AskAiInline = ({
   isOpen,
+  isClosing,
   onClose,
   onContinueAsThread,
   initialPrompt,
 }) => {
   const [message, setMessage] = useState('');
+  const [isListOpen, setIsListOpen] = useState(false);
   const [conversation, setConversation] = useState(null);
   const [isStreaming, setIsStreaming] = useState(false);
   const [hasBeenDragged, setHasBeenDragged] = useState(false);
@@ -195,7 +205,7 @@ export const AskAiInline = ({
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === 'Enter') {
       e.preventDefault();
       handleSend();
     }
@@ -218,13 +228,6 @@ export const AskAiInline = ({
       {/* Conversation area above the input */}
       {conversation && (
         <div className="askAiInline__conversation">
-          {/* Drag handle */}
-          {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-          <div
-            className="askAiInline__dragHandle"
-            onMouseDown={handleDragStart}>
-            <OuiIcon type="grab" size="s" color="subdued" />
-          </div>
           <div className="askAiInline__msg askAiInline__msg--user">
             <OuiText size="s">
               <p>{conversation.prompt}</p>
@@ -268,35 +271,67 @@ export const AskAiInline = ({
       )}
 
       {/* Input field */}
-      <div className="askAiInline__input">
+      <div className={`askAiInline__input${isClosing ? ' askAiInline__input--closing' : ''}`}>
         <div className="askAiInline__inputWrapper">
-          <OuiCompressedTextArea
+          <OuiPopover
+            button={
+              <OuiButtonIcon
+                iconType="list"
+                aria-label="Related threads"
+                size="s"
+                color="text"
+                onClick={() => setIsListOpen(!isListOpen)}
+              />
+            }
+            isOpen={isListOpen}
+            closePopover={() => setIsListOpen(false)}
+            panelPaddingSize="none"
+            anchorPosition="upLeft"
+            ownFocus={false}>
+            <div className="samplePagesLeftNav__threadPopover">
+              <div className="samplePagesLeftNav__threadPopoverHeader">
+                <span>Related threads</span>
+              </div>
+              <div className="samplePagesLeftNav__threadPopoverContent">
+                {RELATED_THREADS.map((item) => (
+                  <button
+                    key={item.key}
+                    type="button"
+                    className="samplePagesLeftNav__threadPopoverItem"
+                    onClick={() => {
+                      setIsListOpen(false);
+                      if (onContinueAsThread) {
+                        onContinueAsThread(item.title, '');
+                      }
+                    }}>
+                    <span className="samplePagesLeftNav__threadPopoverTitle">
+                      {item.title}
+                    </span>
+                    <span className="samplePagesLeftNav__threadPopoverSubtitle">
+                      {item.subtitle}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </OuiPopover>
+          <OuiCompressedFieldText
             inputRef={inputRef}
-            placeholder="Ask anything. Type / for actions."
+            placeholder="Ask anything..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            rows={3}
-            resize="none"
             fullWidth
-            className="askAiInline__textarea"
+            className="askAiInline__textfield"
           />
-          <div className="askAiInline__inputActions">
-            <OuiButtonIcon
-              iconType="plus"
-              aria-label="Add attachment"
-              size="s"
-              color="text"
-            />
-            <OuiButtonIcon
-              iconType="sortUp"
-              aria-label="Send message"
-              display="fill"
-              size="s"
-              isDisabled={!message.trim() || isStreaming}
-              onClick={handleSend}
-            />
-          </div>
+          <OuiButtonIcon
+            iconType="sortUp"
+            aria-label="Send message"
+            display="fill"
+            size="s"
+            isDisabled={!message.trim() || isStreaming}
+            onClick={handleSend}
+          />
         </div>
       </div>
     </div>

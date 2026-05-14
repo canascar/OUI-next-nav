@@ -131,7 +131,8 @@
   margin-top: 8px;
   animation: attachmentSlideIn 300ms ease-out;
 
-  &:hover .threadPage__addToCanvas {
+  &:hover .threadPage__addToCanvas,
+  &:hover .threadPage__saveAsObject {
     opacity: 1;
     pointer-events: auto;
   }
@@ -149,6 +150,44 @@
 }
 
 .threadPage__addToCanvas {
+  position: absolute;
+  top: -8px;
+  right: 8px;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease-in-out;
+  display: flex;
+  align-items: center;
+  background-color: $ouiColorEmptyShade;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  overflow: hidden;
+}
+
+.threadPage__addToCanvasBtn {
+  padding: 2px 8px;
+  font-size: $ouiFontSizeXS;
+  line-height: 20px;
+  font-family: inherit;
+  color: $ouiTextColor;
+  background: none;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: $ouiColorLightestShade;
+  }
+}
+
+.threadPage__addToCanvasDivider {
+  width: 1px;
+  height: 16px;
+  background-color: $ouiBorderColor;
+}
+
+.threadPage__saveAsObject {
   position: absolute;
   top: -8px;
   right: 8px;
@@ -186,10 +225,13 @@
   max-width: 600px;
   transition: background-color 150ms ease-in-out, border-color 150ms ease-in-out;
 
-  &:hover {
-    background-color: rgba($ouiColorPrimary, 0.05);
-    border-color: $ouiColorPrimary;
-    text-decoration: none;
+  &.threadPage__attachment--clickable {
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba($ouiColorPrimary, 0.05);
+      border-color: $ouiColorPrimary;
+    }
   }
 }
 

@@ -67,8 +67,6 @@ const THREADS = {
             title: 'Payment service alert — P99 latency breach',
             description:
               'Triggered at 14:32 UTC. P99 latency crossed the 2,000ms threshold on 3 of 4 pods. No recent deploys in the last 6 hours.',
-            image:
-              'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=200&fit=crop',
           },
           {
             type: 'chart',
@@ -94,8 +92,6 @@ const THREADS = {
           title: 'Inventory service dependency analysis',
           description:
             'Connection pool saturation, response time degradation, and queue depth trends for the inventory service over the last 4 hours.',
-          image:
-            'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&h=200&fit=crop',
         },
       },
       {
@@ -107,8 +103,6 @@ const THREADS = {
           title: 'Payment service connection pool metrics',
           description:
             'Pool utilization, acquire wait time, and active connection count for the payment service over the last 4 hours.',
-          image:
-            'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=200&fit=crop',
         },
       },
       {
@@ -703,21 +697,29 @@ const parseContent = (content) => {
   return elements;
 };
 
-// Floating "View as page" button for link-preview attachments
+// Floating button group for link-preview attachments
 const ViewAsPageButton = ({ onClick }) => (
-  <button
-    type="button"
-    className="threadPage__addToCanvas"
-    onClick={onClick}>
-    View as page
-  </button>
+  <div className="threadPage__addToCanvas">
+    <button
+      type="button"
+      className="threadPage__addToCanvasBtn"
+      onClick={onClick}>
+      View
+    </button>
+    <span className="threadPage__addToCanvasDivider" />
+    <button
+      type="button"
+      className="threadPage__addToCanvasBtn">
+      Add as context
+    </button>
+  </div>
 );
 
 // Floating "Save as object" button for non-link-preview attachments
 const SaveAsObjectButton = () => (
   <button
     type="button"
-    className="threadPage__addToCanvas">
+    className="threadPage__saveAsObject">
     Save as object
   </button>
 );
@@ -727,45 +729,28 @@ const LinkPreviewAttachment = ({ href, title, description, image, onViewAsPage }
   return (
     <div className="threadPage__attachmentWrap">
       <ViewAsPageButton onClick={onViewAsPage} />
-      {href ? (
-        <a
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="threadPage__attachment threadPage__attachment--linkPreview">
-          {image && (
-            <div className="threadPage__linkPreviewImage">
-              <img src={image} alt="" />
-            </div>
-          )}
-          <div className="threadPage__linkPreviewBody">
-            <OuiText size="xs">
-              <strong>{title}</strong>
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+      <div
+        className="threadPage__attachment threadPage__attachment--linkPreview threadPage__attachment--clickable"
+        onClick={onViewAsPage}
+        role="button"
+        tabIndex={0}>
+        <div className="threadPage__linkPreviewBody">
+          <OuiText size="xs">
+            <strong>{title}</strong>
+          </OuiText>
+          {description && (
+            <OuiText size="xs" color="subdued">
+              <p style={{ margin: 0 }}>{description}</p>
             </OuiText>
-            {description && (
-              <OuiText size="xs" color="subdued">
-                <p style={{ margin: 0 }}>{description}</p>
-              </OuiText>
-            )}
+          )}
+          {href && (
             <OuiText size="xs" color="subdued">
               <span className="threadPage__linkPreviewUrl">{href}</span>
             </OuiText>
-          </div>
-        </a>
-      ) : (
-        <div className="threadPage__attachment threadPage__attachment--linkPreview">
-          <div className="threadPage__linkPreviewBody">
-            <OuiText size="xs">
-              <strong>{title}</strong>
-            </OuiText>
-            {description && (
-              <OuiText size="xs" color="subdued">
-                <p style={{ margin: 0 }}>{description}</p>
-              </OuiText>
-            )}
-          </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
@@ -1116,8 +1101,6 @@ const SCRIPTED_RESPONSES = {
           title: 'Payment service logs — last 30 minutes',
           description:
             'Filtered log results showing slow-log entries, error distribution, and connection timeout events for the payment service.',
-          image:
-            'https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=600&h=200&fit=crop',
         },
         {
           type: 'data-table',
@@ -1147,8 +1130,6 @@ const SCRIPTED_RESPONSES = {
           title: 'Payment service traces — sampled spans',
           description:
             'Trace waterfall view showing acquire_connection bottleneck across sampled requests for the payment service.',
-          image:
-            'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=600&h=200&fit=crop',
         },
         {
           type: 'data-table',
@@ -1217,8 +1198,6 @@ kubectl exec -n production deploy/payment-service -- \\
         title: 'Payment service — connection pool dashboard',
         description:
           'Live dashboard with pool utilization, acquire wait time, active connections, circuit breaker status, and P99 latency for the payment service.',
-        image:
-          'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=200&fit=crop',
       },
     },
   },
@@ -1883,10 +1862,10 @@ export const ThreadPage = ({
                       <strong>{canvasItems[activeCanvasTab]?.title || `Asset ${activeCanvasTab + 1}`}</strong>
                     </OuiText>
                     <div className="threadPage__canvasPageHeaderActions">
-                      <OuiToolTip content="View full page" position="bottom">
+                      <OuiToolTip content="Open page" position="bottom">
                         <OuiButtonIcon
                           iconType="symlink"
-                          aria-label="View full page"
+                          aria-label="Open page"
                           size="s"
                           color="text"
                           onClick={() => {
