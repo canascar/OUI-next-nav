@@ -60,6 +60,12 @@ export const LoginPage = ({ onLogin }) => {
     linear-gradient(to bottom, ${gridColorSmall} 1px, transparent 1px)
   `;
 
+  // Vignette effect - fades edges and corners
+  const vignetteColor = isDark
+    ? 'rgba(6, 13, 26, 0.85)'
+    : 'rgba(244, 246, 251, 0.9)';
+  const vignette = `radial-gradient(ellipse at center, transparent 40%, ${vignetteColor} 100%)`;
+
   return (
     <div
       className="loginPage"
@@ -73,6 +79,16 @@ export const LoginPage = ({ onLogin }) => {
         backgroundImage: gridBackground,
         backgroundSize: '24px 24px, 24px 24px, 6px 6px, 6px 6px',
       }}>
+      {/* Vignette overlay */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: vignette,
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      />
 
       {/* Back arrow */}
       <OuiButtonIcon
@@ -82,7 +98,7 @@ export const LoginPage = ({ onLogin }) => {
         display="empty"
         size="m"
         href="#/"
-        style={{ position: 'absolute', top: 16, left: 16 }}
+        style={{ position: 'absolute', top: 16, left: 16, zIndex: 1 }}
       />
 
       {/* Theme toggle */}
@@ -93,10 +109,10 @@ export const LoginPage = ({ onLogin }) => {
         display="empty"
         size="m"
         onClick={toggleTheme}
-        style={{ position: 'absolute', top: 16, right: 16 }}
+        style={{ position: 'absolute', top: 16, right: 16, zIndex: 1 }}
       />
 
-      <div style={{ width: 480, maxWidth: '90vw' }}>
+      <div style={{ width: 480, maxWidth: '90vw', position: 'relative', zIndex: 1 }}>
         <div
           style={{
             borderRadius: 12,

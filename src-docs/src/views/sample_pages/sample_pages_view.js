@@ -107,6 +107,12 @@ export const SamplePagesView = () => {
     linear-gradient(to bottom, ${gridColorSmall} 1px, transparent 1px)
   `;
 
+  // Vignette effect - fades edges and corners
+  const vignetteColor = isDark
+    ? 'rgba(6, 13, 26, 0.85)'   // Obsidian with opacity
+    : 'rgba(244, 246, 251, 0.9)'; // Opal with opacity
+  const vignette = `radial-gradient(ellipse at center, transparent 40%, ${vignetteColor} 100%)`;
+
   const DEFAULT_ITEMS = {
     service: 'services',
     discover: 'error-rate',
@@ -153,6 +159,16 @@ export const SamplePagesView = () => {
         backgroundImage: gridBackground,
         backgroundSize: '24px 24px, 24px 24px, 6px 6px, 6px 6px',
       }}>
+      {/* Vignette overlay */}
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          background: vignette,
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      />
       <style>{`
         .samplePagesContent .ouiPanel {
           padding: ${cardPadding}px !important;
@@ -200,6 +216,7 @@ export const SamplePagesView = () => {
         onGutterChange={setGutter}
         showLabels={showLabels}
         onShowLabelsChange={setShowLabels}
+        style={{ position: 'relative', zIndex: 1 }}
       />
       <div
         className="samplePagesContent"
@@ -210,6 +227,8 @@ export const SamplePagesView = () => {
           padding,
           paddingLeft: padding + 8,
           animation: 'pageFadeIn 300ms ease-out forwards',
+          position: 'relative',
+          zIndex: 1,
         }}>
         <style>{`
           @keyframes pageFadeIn {
