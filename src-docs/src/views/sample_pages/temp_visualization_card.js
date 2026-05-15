@@ -117,7 +117,7 @@ export const TempVisualizationCard = ({
     borderRadius: 8,
     padding: 12,
     cursor: onClick ? 'pointer' : 'default',
-    transition: 'border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease',
+    // Note: transform transitions are handled by CSS class for hover/active states
     marginBottom: 8,
     animationDelay: `${index * 150}ms`,
     ...style,
@@ -141,6 +141,25 @@ export const TempVisualizationCard = ({
       onClick={onClick}
       style={cardStyle}
     >
+      <style>{`
+        .tempVisualizationCard {
+          transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease !important;
+        }
+        .tempVisualizationCard:hover {
+          border-color: rgba(65, 104, 184, 0.4) !important;
+          box-shadow: 0 4px 20px rgba(46, 74, 143, 0.15);
+          transform: scale(1.03) !important;
+        }
+        .tempVisualizationCard:active {
+          transform: scale(0.97) !important;
+          transition: border-color 150ms ease, box-shadow 150ms ease, transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        }
+        [data-theme="v9-dark"] .tempVisualizationCard:hover,
+        .ouiTheme-v9-dark .tempVisualizationCard:hover {
+          border-color: rgba(122, 159, 212, 0.4) !important;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+      `}</style>
       {title && (
         <OuiText size="xs"><strong>{title}</strong></OuiText>
       )}

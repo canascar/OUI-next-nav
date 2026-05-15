@@ -653,30 +653,6 @@ export const ThreadPage = ({ selectedItem }) => {
         overflow: 'hidden',
       }}>
       <style>{`
-        .tempVisualizationCard {
-          opacity: 0;
-          animation: vizFadeIn 400ms ease forwards;
-          transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
-        }
-        .tempVisualizationCard:hover {
-          border-color: rgba(65, 104, 184, 0.4) !important;
-          box-shadow: 0 4px 20px rgba(46, 74, 143, 0.15);
-          transform: scale(1.03);
-        }
-        .tempVisualizationCard:active {
-          transform: scale(0.97);
-          transition: transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        @media (prefers-color-scheme: dark) {
-          .tempVisualizationCard:hover {
-            border-color: rgba(122, 159, 212, 0.4) !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-          }
-        }
-        [data-theme="v9-dark"] .tempVisualizationCard:hover {
-          border-color: rgba(122, 159, 212, 0.4) !important;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
         @keyframes slideInRight {
           from { transform: translateX(100%); opacity: 0; }
           to { transform: translateX(0); opacity: 1; }
@@ -688,6 +664,10 @@ export const ThreadPage = ({ selectedItem }) => {
         @keyframes vizFadeIn {
           from { opacity: 0; transform: translateY(8px) scale(0.95); }
           to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .tempVisualizationCard {
+          opacity: 0;
+          animation: vizFadeIn 400ms ease forwards;
         }
         .threadPage__scrollButtonWrap {
           position: absolute;
