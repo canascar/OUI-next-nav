@@ -11,50 +11,63 @@
 $grid-size: 24px;
 $grid-size-small: 6px;
 
+// Mixin for graph paper grid background
+@mixin graph-paper-grid-light {
+  background-image:
+    // Large grid lines
+    linear-gradient(to right, rgba(46, 74, 143, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(46, 74, 143, 0.04) 1px, transparent 1px),
+    // Small grid lines
+    linear-gradient(to right, rgba(46, 74, 143, 0.015) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(46, 74, 143, 0.015) 1px, transparent 1px);
+  background-size:
+    $grid-size $grid-size,
+    $grid-size $grid-size,
+    $grid-size-small $grid-size-small,
+    $grid-size-small $grid-size-small;
+  background-position: 0 0;
+}
+
+@mixin graph-paper-grid-dark {
+  background-image:
+    // Large grid lines
+    linear-gradient(to right, rgba(122, 159, 212, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(122, 159, 212, 0.06) 1px, transparent 1px),
+    // Small grid lines
+    linear-gradient(to right, rgba(122, 159, 212, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(122, 159, 212, 0.025) 1px, transparent 1px);
+  background-size:
+    $grid-size $grid-size,
+    $grid-size $grid-size,
+    $grid-size-small $grid-size-small,
+    $grid-size-small $grid-size-small;
+  background-position: 0 0;
+}
+
 @if (lightness($ouiPageBackgroundColor) < 50) {
   // ============================================================
   // DARK MODE — Obsidian background with subtle blue grid
   // ============================================================
   html {
     background-color: $ouiPageBackgroundColor;
+    @include graph-paper-grid-dark;
     min-height: 100vh;
   }
 
   body {
     background: transparent;
     min-height: 100vh;
-    position: relative;
-
-    // Graph paper grid overlay
-    &::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      
-      // Large grid (24px) + small grid (6px) for graph paper effect
-      background-image:
-        // Large grid lines
-        linear-gradient(to right, rgba(122, 159, 212, 0.08) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(122, 159, 212, 0.08) 1px, transparent 1px),
-        // Small grid lines
-        linear-gradient(to right, rgba(122, 159, 212, 0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(122, 159, 212, 0.03) 1px, transparent 1px);
-      background-size:
-        $grid-size $grid-size,
-        $grid-size $grid-size,
-        $grid-size-small $grid-size-small,
-        $grid-size-small $grid-size-small;
-      background-position: 0 0;
-    }
   }
 
   .ouiPage,
   .ouiPageBody {
     background: transparent !important; // sass-lint:disable-line no-important
-    position: relative;
-    z-index: 1;
+  }
+
+  // Utility class for applying grid to fixed containers
+  .v9-grid-background {
+    background-color: $ouiPageBackgroundColor;
+    @include graph-paper-grid-dark;
   }
 
 } @else {
@@ -63,43 +76,23 @@ $grid-size-small: 6px;
   // ============================================================
   html {
     background-color: $ouiPageBackgroundColor;
+    @include graph-paper-grid-light;
     min-height: 100vh;
   }
 
   body {
     background: transparent;
     min-height: 100vh;
-    position: relative;
-
-    // Graph paper grid overlay
-    &::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      
-      // Large grid (24px) + small grid (6px) for graph paper effect
-      background-image:
-        // Large grid lines
-        linear-gradient(to right, rgba(46, 74, 143, 0.07) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(46, 74, 143, 0.07) 1px, transparent 1px),
-        // Small grid lines
-        linear-gradient(to right, rgba(46, 74, 143, 0.025) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(46, 74, 143, 0.025) 1px, transparent 1px);
-      background-size:
-        $grid-size $grid-size,
-        $grid-size $grid-size,
-        $grid-size-small $grid-size-small,
-        $grid-size-small $grid-size-small;
-      background-position: 0 0;
-    }
   }
 
   .ouiPage,
   .ouiPageBody {
     background: transparent !important; // sass-lint:disable-line no-important
-    position: relative;
-    z-index: 1;
+  }
+
+  // Utility class for applying grid to fixed containers
+  .v9-grid-background {
+    background-color: $ouiPageBackgroundColor;
+    @include graph-paper-grid-light;
   }
 }

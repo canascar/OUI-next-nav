@@ -88,10 +88,24 @@ export const SamplePagesView = () => {
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
 
-  // Agentic OSD Utility: Solid backgrounds without gradients
-  const solidBackground = isDark
+  // Agentic OSD Utility: Graph paper grid background
+  // Grid colors: Deep Blue for light mode, Sky for dark mode
+  const gridColor = isDark
+    ? 'rgba(122, 159, 212, 0.06)'  // Sky blue for dark
+    : 'rgba(46, 74, 143, 0.04)';   // Deep blue for light (scaled back)
+  const gridColorSmall = isDark
+    ? 'rgba(122, 159, 212, 0.025)'
+    : 'rgba(46, 74, 143, 0.015)';
+  const bgColor = isDark
     ? '#060D1A'  // Obsidian
     : '#F4F6FB'; // Opal
+
+  const gridBackground = `
+    linear-gradient(to right, ${gridColor} 1px, transparent 1px),
+    linear-gradient(to bottom, ${gridColor} 1px, transparent 1px),
+    linear-gradient(to right, ${gridColorSmall} 1px, transparent 1px),
+    linear-gradient(to bottom, ${gridColorSmall} 1px, transparent 1px)
+  `;
 
   const DEFAULT_ITEMS = {
     service: 'services',
@@ -135,7 +149,9 @@ export const SamplePagesView = () => {
         left: 0,
         right: 0,
         bottom: 0,
-        background: solidBackground,
+        backgroundColor: bgColor,
+        backgroundImage: gridBackground,
+        backgroundSize: '24px 24px, 24px 24px, 6px 6px, 6px 6px',
       }}>
       <style>{`
         .samplePagesContent .ouiPanel {
