@@ -32,6 +32,7 @@ import {
 
 import { OllyIndicator } from './olly_indicator';
 import { ThemeContext } from '../../components/with_theme';
+import { TempVisualizationCard, MiniChart } from './temp_visualization_card';
 
 const THREADS = {
   'latency-spike': {
@@ -207,7 +208,15 @@ const AssistantMessage = ({ content, streaming, attachment, visualizations, onVi
       {!streaming && visualizations && visualizations.length > 0 && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 8, marginTop: 12 }}>
           {visualizations.map((viz, idx) => (
-            <VisualizationCard key={viz.id} viz={viz} onClick={onVizClick} index={idx} />
+            <TempVisualizationCard 
+              key={viz.id} 
+              title={viz.title}
+              description={viz.description}
+              type={viz.type}
+              color={viz.color}
+              onClick={() => onVizClick(viz)} 
+              index={idx} 
+            />
           ))}
         </div>
       )}
@@ -402,93 +411,6 @@ const ENHANCED_RESPONSES = [
     tasks: ['Fetching service health', 'Comparing baselines'],
   },
 ];
-
-// Mini chart SVG placeholder
-const MiniChart = ({ type, color, width = '100%', height = 60 }) => {
-  const charts = {
-    line: (
-      <svg width={width} height={height} viewBox="0 0 200 60" fill="none">
-        <path d="M0 45 Q25 42 50 38 T100 25 T150 30 T200 15" stroke={color} strokeWidth="2" fill="none"/>
-        <path d="M0 45 Q25 42 50 38 T100 25 T150 30 T200 15 V60 H0 Z" fill={color} fillOpacity="0.1"/>
-      </svg>
-    ),
-    bar: (
-      <svg width={width} height={height} viewBox="0 0 200 60" fill="none">
-        {[15,25,40,35,50,30,45,20,38,42].map((h,i) => (
-          <rect key={i} x={i*20+2} y={60-h} width="16" height={h} fill={color} fillOpacity="0.7" rx="2"/>
-        ))}
-      </svg>
-    ),
-    area: (
-      <svg width={width} height={height} viewBox="0 0 200 60" fill="none">
-        <path d="M0 50 Q30 35 60 40 T120 20 T180 30 L200 25 V60 H0 Z" fill={color} fillOpacity="0.2"/>
-        <path d="M0 50 Q30 35 60 40 T120 20 T180 30 L200 25" stroke={color} strokeWidth="2" fill="none"/>
-      </svg>
-    ),
-    gauge: (
-      <svg width={width} height={height} viewBox="0 0 200 60" fill="none">
-        <rect x="10" y="25" width="180" height="10" rx="5" fill={color} fillOpacity="0.15"/>
-        <rect x="10" y="25" width="165" height="10" rx="5" fill={color} fillOpacity="0.7"/>
-        <text x="100" y="55" textAnchor="middle" fontSize="11" fill={color} fontWeight="600">92%</text>
-      </svg>
-    ),
-    pie: (
-      <svg width={width} height={height} viewBox="0 0 60 60" fill="none">
-        <circle cx="30" cy="30" r="25" fill={color} fillOpacity="0.15"/>
-        <path d="M30 5 A25 25 0 0 1 55 30 L30 30 Z" fill={color} fillOpacity="0.7"/>
-        <path d="M55 30 A25 25 0 0 1 30 55 L30 30 Z" fill={color} fillOpacity="0.4"/>
-      </svg>
-    ),
-    table: (
-      <svg width={width} height={height} viewBox="0 0 200 60" fill="none">
-        {[0,1,2,3].map(i => (
-          <g key={i}>
-            <rect x="5" y={i*15+2} width="190" height="12" rx="2" fill={color} fillOpacity={i===0?0.15:0.06}/>
-            <line x1="70" y1={i*15+2} x2="70" y2={i*15+14} stroke={color} strokeOpacity="0.2"/>
-            <line x1="140" y1={i*15+2} x2="140" y2={i*15+14} stroke={color} strokeOpacity="0.2"/>
-          </g>
-        ))}
-      </svg>
-    ),
-    heatmap: (
-      <svg width={width} height={height} viewBox="0 0 200 60" fill="none">
-        {Array.from({length: 40}).map((_,i) => (
-          <rect key={i} x={(i%10)*20+2} y={Math.floor(i/10)*15+2} width="16" height="12" rx="2" fill={color} fillOpacity={Math.random()*0.7+0.1}/>
-        ))}
-      </svg>
-    ),
-    histogram: (
-      <svg width={width} height={height} viewBox="0 0 200 60" fill="none">
-        {[8,15,28,45,38,25,18,10,5,3].map((h,i) => (
-          <rect key={i} x={i*20} y={60-h} width="19" height={h} fill={color} fillOpacity="0.6"/>
-        ))}
-      </svg>
-    ),
-  };
-  return charts[type] || charts.line;
-};
-
-// Visualization card component
-const VisualizationCard = ({ viz, onClick, index = 0 }) => (
-  <div
-    className="threadPage__vizCard"
-    onClick={() => onClick(viz)}
-    style={{
-      border: '1px solid rgba(128,128,128,0.2)',
-      borderRadius: 8,
-      padding: 12,
-      cursor: 'pointer',
-      transition: 'border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease',
-      marginBottom: 8,
-      animationDelay: `${index * 150}ms`,
-    }}>
-    <OuiText size="xs"><strong>{viz.title}</strong></OuiText>
-    <div style={{ margin: '8px 0' }}>
-      <MiniChart type={viz.type} color={viz.color} />
-    </div>
-    <OuiText size="xs" color="subdued">{viz.description}</OuiText>
-  </div>
-);
 
 // Investigation panel content
 const InvestigationPanel = ({ viz, onClose }) => (
@@ -731,10 +653,20 @@ export const ThreadPage = ({ selectedItem }) => {
         overflow: 'hidden',
       }}>
       <style>{`
-        .threadPage__vizCard:hover {
-          border-color: var(--ouiColorPrimary, #0092B8) !important;
-          box-shadow: 0 0 0 1px var(--ouiColorPrimary, #0092B8), 0 2px 8px rgba(0, 146, 184, 0.1);
-          transform: translateY(-1px);
+        .tempVisualizationCard:hover {
+          border-color: rgba(65, 104, 184, 0.4) !important;
+          box-shadow: 0 4px 20px rgba(46, 74, 143, 0.15);
+          transform: translateY(-2px);
+        }
+        @media (prefers-color-scheme: dark) {
+          .tempVisualizationCard:hover {
+            border-color: rgba(122, 159, 212, 0.4) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+          }
+        }
+        [data-theme="v9-dark"] .tempVisualizationCard:hover {
+          border-color: rgba(122, 159, 212, 0.4) !important;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
         @keyframes slideInRight {
           from { transform: translateX(100%); opacity: 0; }
@@ -748,7 +680,7 @@ export const ThreadPage = ({ selectedItem }) => {
           from { opacity: 0; transform: translateY(8px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        .threadPage__vizCard {
+        .tempVisualizationCard {
           opacity: 0;
           animation: vizFadeIn 400ms ease forwards;
         }
