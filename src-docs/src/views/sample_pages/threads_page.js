@@ -141,11 +141,11 @@ export const ThreadsPage = ({ onPageChange }) => {
           transition: background-color 150ms ease, transform 150ms ease;
         }
         .recentThreadRow:hover {
-          background-color: rgba(128, 128, 128, 0.08);
+          background-color: rgba(46, 74, 143, 0.08);
           transform: translateY(-1px);
         }
         .recentThreadRow:active {
-          background-color: rgba(128, 128, 128, 0.14);
+          background-color: rgba(46, 74, 143, 0.14);
           transform: translateY(-1px);
         }
       `}</style>

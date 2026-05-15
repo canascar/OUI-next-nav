@@ -5,83 +5,46 @@
 
 // sass-lint:disable no-color-literals, leading-zero, no-trailing-zero
 
-// V9 theme gradient backgrounds with frosted glass overlay
+// V9 theme — Agentic OSD Utility: Clean solid backgrounds without gradients
+// Brand gradient removed per design requirements
 
-$v9DarkGradient:
-  radial-gradient(ellipse at 15% 25%, rgba(217, 216, 220, 0.06) 0%, transparent 50%),
-  radial-gradient(ellipse at 75% 65%, rgba(217, 216, 220, 0.04) 0%, transparent 50%),
-  radial-gradient(ellipse at 50% 50%, rgba(217, 216, 220, 0.02) 0%, transparent 70%),
-  linear-gradient(180deg, #111 0%, #111 100%);
+// @if (lightness($ouiPageBackgroundColor) < 50) {
+//   // Dark mode — solid Obsidian background
+//   html {
+//     background-color: $ouiPageBackgroundColor;
+//     min-height: 100vh;
+//   }
 
-$v9LightGradient:
-  radial-gradient(ellipse at 15% 25%, rgba(0, 146, 184, 0.20) 0%, transparent 50%),
-  radial-gradient(ellipse at 75% 65%, rgba(217, 216, 220, 0.40) 0%, transparent 50%),
-  radial-gradient(ellipse at 50% 50%, rgba(0, 120, 160, 0.06) 0%, transparent 70%),
-  linear-gradient(180deg, #E5E5E5 0%, #f4f4f5 100%);
+//   body {
+//     background: transparent;
+//     min-height: 100vh;
+//     position: relative;
+//   }
 
-@if (lightness($ouiPageBackgroundColor) < 50) {
-  // Dark mode — vivid brand gradient
-  html {
-    background-color: $ouiPageBackgroundColor;
-    background-image: $v9DarkGradient;
-    background-attachment: fixed;
-    min-height: 100vh;
-  }
+//   .ouiPage,
+//   .ouiPageBody {
+//     background: transparent !important;
+//     position: relative;
+//     z-index: 1;
+//   }
 
-  body {
-    background: transparent;
-    min-height: 100vh;
-    position: relative;
+// } @else {
+//   // Light mode — solid Opal background
+//   html {
+//     background-color: $ouiPageBackgroundColor;
+//     min-height: 100vh;
+//   }
 
-    // Frosted overlay — dark tinted glass
-    &::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      backdrop-filter: blur(80px) saturate(1.4);
-      background: rgba(2, 6, 23, .55);
-      pointer-events: none;
-      z-index: 0;
-    }
-  }
+//   body {
+//     background: transparent;
+//     min-height: 100vh;
+//     position: relative;
+//   }
 
-  .ouiPage,
-  .ouiPageBody {
-    background: transparent !important; // sass-lint:disable-line no-important
-    position: relative;
-    z-index: 1;
-  }
-
-} @else {
-  // Light mode — vivid brand gradient
-  html {
-    background-color: $ouiPageBackgroundColor;
-    background-image: $v9LightGradient;
-    background-attachment: fixed;
-    min-height: 100vh;
-  }
-
-  body {
-    background: transparent;
-    min-height: 100vh;
-    position: relative;
-
-    // Frosted overlay — light milky glass
-    &::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      backdrop-filter: blur(60px) saturate(1.8);
-      background: rgba(248, 250, 252, .6);
-      pointer-events: none;
-      z-index: 0;
-    }
-  }
-
-  .ouiPage,
-  .ouiPageBody {
-    background: transparent !important; // sass-lint:disable-line no-important
-    position: relative;
-    z-index: 1;
-  }
-}
+//   .ouiPage,
+//   .ouiPageBody {
+//     background: transparent !important;
+//     position: relative;
+//     z-index: 1;
+//   }
+// }

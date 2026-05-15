@@ -125,6 +125,7 @@
 // sass-lint:enable no-important
 
 // Hover contrast for context menus, popovers, and dropdowns
+// Using Agentic OSD theme colors for consistent hover states
 .ouiContextMenuItem:enabled:hover,
 .ouiContextMenuItem:enabled:focus,
 .ouiFilterSelectItem:hover,
@@ -132,18 +133,18 @@
 .ouiComboBoxOption:hover,
 .ouiComboBoxOption:focus {
   // sass-lint:disable no-important
-  background-color: transparentize($ouiColorLightShade, .5) !important;
+  background-color: lightOrDarkTheme(rgba(46, 74, 143, .08), rgba(122, 159, 212, .12)) !important;
   // sass-lint:enable no-important
 }
 
 // Hover and selected contrast for list group items (nav panels, popovers)
 // — merged with popover/nav panel states below
 
-// Lighter table row hover in dark mode
+// Lighter table row hover using Agentic OSD theme colors
 // sass-lint:disable no-important
 .ouiTableRow:hover .ouiTableRowCell,
 .ouiTableRow-isClickable:hover .ouiTableRowCell {
-  background-color: transparentize($ouiColorLightShade, .25) !important;
+  background-color: lightOrDarkTheme(rgba(46, 74, 143, .06), rgba(122, 159, 212, .10)) !important;
 }
 // sass-lint:enable no-important
 
@@ -235,11 +236,12 @@
 // sass-lint:enable no-important, no-color-literals
 
 // Hover and active states in popovers and nav panels
+// Using Agentic OSD theme colors: light tint of primary for light mode, elevated surface for dark
 // sass-lint:disable no-important, no-color-literals
 .ouiListGroupItem-isClickable:hover,
 .ouiListGroupItem-isClickable:focus-within,
 .ouiListGroupItem-isActive {
-  background-color: lightOrDarkTheme(#C4CDD0, #383B3E) !important;
+  background-color: lightOrDarkTheme(#E8EDF8, #1E2E50) !important;
 }
 
 // Grayed out disabled/unclickable states in dropdowns and selectable lists

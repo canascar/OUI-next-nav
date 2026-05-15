@@ -191,7 +191,7 @@ export const RecentsPage = ({ onPageChange }) => {
           transition: background 150ms ease, transform 150ms ease;
         }
         .recentsRow:hover {
-          background: rgba(128, 128, 128, 0.06);
+          background: rgba(46, 74, 143, 0.06);
           transform: translateY(-1px);
         }
       `}</style>

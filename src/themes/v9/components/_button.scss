@@ -3,6 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+// Agentic OSD Utility Button Styles
+// Pill-shaped buttons with lift hover effect and premium shadows
+
 // Force light text/icons on filled buttons in light mode,
 // dark content in dark mode where primary is a lighter color
 // sass-lint:disable no-important
@@ -25,8 +28,8 @@
 
   &:hover,
   &:focus {
-    background-color: lighten($ouiColorPrimary, 4%) !important;
-    border-color: lighten($ouiColorPrimary, 4%) !important;
+    background-color: $ouiColorAccent !important;
+    border-color: $ouiColorAccent !important;
   }
 }
 
@@ -37,8 +40,8 @@
 
   &:hover,
   &:focus {
-    background-color: lighten($ouiColorPrimary, 4%) !important;
-    border-color: lighten($ouiColorPrimary, 4%) !important;
+    background-color: $ouiColorAccent !important;
+    border-color: $ouiColorAccent !important;
   }
 }
 
@@ -55,15 +58,44 @@
 }
 // sass-lint:enable no-important
 
-// Outline (non-fill) buttons — faint border with subtle background
-// sass-lint:disable no-important
+// Outline (non-fill) buttons — transparent background with subtle border
+// Agentic OSD: Pill CTAs with lift hover effect
+// sass-lint:disable no-important, no-color-literals
 .ouiButton:not(.ouiButton--fill):not(.ouiButton-isDisabled) {
-  background-color: lightOrDarkTheme(darken($ouiColorLightShade, 3%), lighten($ouiColorLightShade, 5%)) !important;
-  border-color: transparentize($ouiColorLightShade, .7) !important;
+  background-color: transparent !important;
+  border-color: lightOrDarkTheme($ouiColorLightShade, $ouiColorLightShade) !important;
+  transition: transform 250ms cubic-bezier(0.22, 0.61, 0.36, 1),
+              box-shadow 250ms cubic-bezier(0.22, 0.61, 0.36, 1),
+              background-color 150ms ease-in-out !important;
 
   &:hover,
   &:focus {
-    background-color: lightOrDarkTheme(darken($ouiColorLightestShade, 3%), lighten($ouiColorLightShade, 10%)) !important;
+    background-color: lightOrDarkTheme(rgba(46, 74, 143, 0.06), rgba(122, 159, 212, 0.1)) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 16px lightOrDarkTheme(rgba(46, 74, 143, 0.15), rgba(0, 0, 0, 0.3)) !important;
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98) !important;
+    box-shadow: none !important;
+  }
+}
+
+// Filled buttons — lift hover effect with premium shadows
+.ouiButton--fill:not(.ouiButton-isDisabled) {
+  transition: transform 250ms cubic-bezier(0.22, 0.61, 0.36, 1),
+              box-shadow 250ms cubic-bezier(0.22, 0.61, 0.36, 1),
+              background-color 150ms ease-in-out !important;
+
+  &:hover,
+  &:focus {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 32px lightOrDarkTheme(rgba(46, 74, 143, 0.25), rgba(0, 0, 0, 0.4)) !important;
+  }
+
+  &:active {
+    transform: translateY(-1px) scale(0.98) !important;
+    box-shadow: 0 2px 8px lightOrDarkTheme(rgba(46, 74, 143, 0.15), rgba(0, 0, 0, 0.2)) !important;
   }
 }
 
@@ -134,55 +166,58 @@
   color: $ouiColorMediumShade !important;
   box-shadow: none !important;
   opacity: .5 !important;
+  transform: none !important;
 
   .ouiButton__text,
   .ouiButton__icon {
     color: $ouiColorMediumShade !important;
   }
 }
-// sass-lint:enable no-important
+// sass-lint:enable no-important, no-color-literals
 
 // Icon buttons with base display — match outline button treatment
-// sass-lint:disable no-important
+// sass-lint:disable no-important, no-color-literals
 .ouiButtonIcon:not(.ouiButtonIcon--empty):not(.ouiButtonIcon--fill):not(.ouiButtonIcon-isDisabled) {
-  background-color: lightOrDarkTheme(darken($ouiColorLightShade, 3%), lighten($ouiColorLightShade, 5%)) !important;
-  border-color: transparentize($ouiColorLightShade, .7) !important;
+  background-color: transparent !important;
+  border-color: lightOrDarkTheme($ouiColorLightShade, $ouiColorLightShade) !important;
   box-shadow: none !important;
   transform: translateY(0) !important;
-  transition: box-shadow 150ms ease-in-out, background-color 150ms ease-in-out, transform 150ms ease-in-out, filter 150ms ease-in-out !important;
+  transition: transform 250ms cubic-bezier(0.22, 0.61, 0.36, 1),
+              box-shadow 250ms cubic-bezier(0.22, 0.61, 0.36, 1),
+              background-color 150ms ease-in-out !important;
 
   &:hover,
   &:focus,
   &:focus-within {
-    background-color: lightOrDarkTheme(darken($ouiColorLightestShade, 3%), lighten($ouiColorLightShade, 10%)) !important;
-    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25) !important;
-    transform: translateY(-1px) !important;
+    background-color: lightOrDarkTheme(rgba(46, 74, 143, 0.06), rgba(122, 159, 212, 0.1)) !important;
+    box-shadow: 0 4px 16px lightOrDarkTheme(rgba(46, 74, 143, 0.15), rgba(0, 0, 0, 0.3)) !important;
+    transform: translateY(-2px) !important;
   }
 
   &:active {
-    box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.4) !important;
-    transform: translateY(1px) !important;
-    filter: brightness(0.85) !important;
+    box-shadow: none !important;
+    transform: translateY(0) scale(0.98) !important;
   }
 }
 
 // Icon buttons with fill display — hover/active shadows
 .ouiButtonIcon--fill:not(.ouiButtonIcon-isDisabled) {
-  transition: box-shadow 150ms ease-in-out, background-color 150ms ease-in-out, transform 150ms ease-in-out, filter 150ms ease-in-out !important;
+  transition: transform 250ms cubic-bezier(0.22, 0.61, 0.36, 1),
+              box-shadow 250ms cubic-bezier(0.22, 0.61, 0.36, 1),
+              background-color 150ms ease-in-out !important;
   box-shadow: none !important;
   transform: translateY(0) !important;
 
   &:hover,
   &:focus,
   &:focus-within {
-    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25) !important;
-    transform: translateY(-1px) !important;
+    box-shadow: 0 8px 32px lightOrDarkTheme(rgba(46, 74, 143, 0.25), rgba(0, 0, 0, 0.4)) !important;
+    transform: translateY(-3px) !important;
   }
 
   &:active {
-    box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.4) !important;
-    transform: translateY(1px) !important;
-    filter: brightness(0.85) !important;
+    box-shadow: 0 2px 8px lightOrDarkTheme(rgba(46, 74, 143, 0.15), rgba(0, 0, 0, 0.2)) !important;
+    transform: translateY(-1px) scale(0.98) !important;
   }
 }
-// sass-lint:enable no-important
+// sass-lint:enable no-important, no-color-literals

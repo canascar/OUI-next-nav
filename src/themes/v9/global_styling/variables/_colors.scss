@@ -15,46 +15,46 @@
 
 // These colors stay the same no matter the theme
 $ouiColorGhost: #FFFFFF !default;
-$ouiColorInk: #111111 !default;
+$ouiColorInk: #060D1A !default;
 
-// Core
-$ouiColorPrimary: #0092B8 !default;      // oklch(0.609 0.126 221.723)
-$ouiColorSecondary: #059669;    // Emerald-600 (matches success)
-$ouiColorAccent: #F6339A;       // oklch(0.656 0.241 354.308)
+// Core – Blue-forward identity (Agentic OSD Utility)
+$ouiColorPrimary: #2E4A8F !default;      // Deep Blue – primary brand
+$ouiColorSecondary: #5CB198 !default;    // Jade – success / secondary
+$ouiColorAccent: #4168B8 !default;       // Azure – hover states
 
 // Status
-$ouiColorSuccess: #059669 !default;      // Emerald-600
-$ouiColorWarning: #F59E0B !default;      // Amber
-$ouiColorDanger: #FB2C36 !default;       // oklch(0.637 0.237 25.331)
+$ouiColorSuccess: #5CB198 !default;      // Jade
+$ouiColorWarning: #CDA849 !default;      // Citrine
+$ouiColorDanger: #ED6F73 !default;       // Coral
 
-// Grays - Cool blue-gray tones
-$ouiColorEmptyShade: #FAFAFA !default;   // Card (oklch(0.985 0 0))
-$ouiColorLightestShade: #E4E4E7 !default; // oklch(0.92 0.004 286.32)
-$ouiColorLightShade: #D4D4D8 !default;   // oklch(0.871 0.006 286.286)
-$ouiColorMediumShade: #7D8283 !default;  // Muted text
-$ouiColorDarkShade: #464E53 !default;    // Secondary text
-$ouiColorDarkestShade: #29323D !default; // Foreground
-$ouiColorFullShade: #131814 !default;    // Near black
+// Grays – Navy-tinted cool neutrals (Opal to Obsidian)
+$ouiColorEmptyShade: #FFFFFF !default;   // Card surfaces
+$ouiColorLightestShade: #E4EAF2 !default; // Subtle backgrounds
+$ouiColorLightShade: #D4DCE8 !default;   // Borders
+$ouiColorMediumShade: #5A6D8A !default;  // Muted text
+$ouiColorDarkShade: #1E2A4A !default;    // Secondary text (Eggplant)
+$ouiColorDarkestShade: #0E1525 !default; // Foreground (Obsidian)
+$ouiColorFullShade: #060D1A !default;    // Near black
 
 // Backgrounds
-$ouiPageBackgroundColor: #E5E5E5 !default; // Darker gray bg
-$ouiColorHighlight: #DCE3E9 !default;    // Highlight
+$ouiPageBackgroundColor: #F4F6FB !default; // Opal page bg
+$ouiColorHighlight: #EDF1F8 !default;    // Highlight / elevated surface
 
 // Every color below must be based mathematically on the set above and in a particular order.
 $ouiTextColor: $ouiColorDarkestShade !default;
 $ouiTitleColor: shade($ouiTextColor, 50%) !default;
-$ouiTextSubduedColor: #7D8283 !default;
+$ouiTextSubduedColor: $ouiColorMediumShade !default;
 $ouiColorDisabled: tint($ouiTextColor, 70%) !default;
 
 // Contrasty text variants
-$ouiColorPrimaryText: $ouiColorPrimary !default;
+$ouiColorPrimaryText: makeHighContrastColor($ouiColorPrimary) !default;
 $ouiColorSecondaryText: makeHighContrastColor($ouiColorSecondary) !default;
 $ouiColorAccentText: makeHighContrastColor($ouiColorAccent) !default;
 $ouiColorWarningText: makeHighContrastColor($ouiColorWarning) !default;
 $ouiColorDangerText: makeHighContrastColor($ouiColorDanger) !default;
 $ouiColorDisabledText: makeDisabledContrastColor($ouiColorDisabled) !default;
 $ouiColorSuccessText: $ouiColorSecondaryText !default;
-$ouiLinkColor: $ouiColorMediumShade !default;
+$ouiLinkColor: $ouiColorPrimary !default;
 
 // Visualization colors
 

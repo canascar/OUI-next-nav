@@ -88,15 +88,10 @@ export const SamplePagesView = () => {
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
 
-  const gradientBackground = isDark
-    ? `radial-gradient(ellipse at 15% 25%, rgba(245, 248, 250, 0.06) 0%, transparent 50%),
-       radial-gradient(ellipse at 75% 65%, rgba(245, 248, 250, 0.04) 0%, transparent 50%),
-       radial-gradient(ellipse at 50% 50%, rgba(245, 248, 250, 0.02) 0%, transparent 70%),
-       #111`
-    : `radial-gradient(ellipse at 15% 25%, rgba(0, 146, 184, 0.20) 0%, transparent 50%),
-       radial-gradient(ellipse at 75% 65%, rgba(217, 216, 220, 0.40) 0%, transparent 50%),
-       radial-gradient(ellipse at 50% 50%, rgba(0, 120, 160, 0.06) 0%, transparent 70%),
-       linear-gradient(180deg, #E5E5E5 0%, #f4f4f5 100%)`;
+  // Agentic OSD Utility: Solid backgrounds without gradients
+  const solidBackground = isDark
+    ? '#060D1A'  // Obsidian
+    : '#F4F6FB'; // Opal
 
   const DEFAULT_ITEMS = {
     service: 'services',
@@ -140,7 +135,7 @@ export const SamplePagesView = () => {
         left: 0,
         right: 0,
         bottom: 0,
-        background: gradientBackground,
+        background: solidBackground,
       }}>
       <style>{`
         .samplePagesContent .ouiPanel {
