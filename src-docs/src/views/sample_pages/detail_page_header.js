@@ -32,6 +32,9 @@ export const DetailPageHeader = ({
   headerControls,
   isAskAiPanelOpen,
   onAskAiToggle,
+  mockAiResponses,
+  highlightAskAi,
+  autoOpenAskAi,
 }) => {
   // Detached popover state (only used when user clicks "detach" from the panel)
   const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
@@ -145,8 +148,11 @@ export const DetailPageHeader = ({
           {!isPopoverOpen && (
             <div className="askAiFloating__buttonWrap">
               <button
-                className="askAiFloating__button"
-                onClick={handleAskAiToggle}
+                className={`askAiFloating__button${highlightAskAi === 'loading' ? ' askAiFloating__button--loading' : ''}${highlightAskAi === 'pulse' ? ' askAiFloating__button--pulse' : ''}`}
+                onClick={() => {
+                  setHighlightPrompt(null);
+                  handleAskAiToggle();
+                }}
                 aria-label="Ask AI"
               >
                 Ask anything...
@@ -160,6 +166,8 @@ export const DetailPageHeader = ({
               onClose={handlePopoverClose}
               onContinueAsThread={onContinueAsThread ? (prompt, response) => onContinueAsThread(prompt, response, null, title) : undefined}
               initialPrompt={highlightPrompt}
+              mockResponses={mockAiResponses}
+              autoRespond={autoOpenAskAi}
             />
           )}
         </div>

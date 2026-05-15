@@ -40,6 +40,7 @@ import {
   ConnectionPoolPageMock,
   LogsPageMock,
   DashboardPageMock,
+  TraceAnalysisPageMock,
 } from './mock_canvas_pages';
 
 // Map source page keys to existing canvas mock components
@@ -277,6 +278,22 @@ echo "Done. Monitoring P99 latency for recovery..."`,
         role: 'assistant',
         content:
           'I checked the disk usage breakdown on the affected nodes.\n\n**Disk Usage Analysis**\n\n- node-prod-07: 91% used, 68 GB consumed by container logs from the analytics-pipeline service\n- node-prod-12: 88% used, 54 GB of orphaned container images from failed garbage collection\n- node-prod-19: 93% used, 72 GB of emptyDir volumes from the batch-processor service that were never cleaned up\n\n**Recommended Actions**\n\n1. Enable log rotation on the analytics-pipeline with a 500 MB max size and 3 file retention.\n2. Restart the kubelet image GC on node-prod-12 and lower the image GC high threshold from 90% to 80%.\n3. Add resource limits for emptyDir volumes on the batch-processor pods (sizeLimit: 2Gi).',
+      },
+    ],
+  },
+  'connection-timeout': {
+    title: 'Connection timeout investigation',
+    messages: [
+      {
+        role: 'user',
+        author: 'You',
+        content:
+          'I see errors in the logs for payments-db. What\'s going on?',
+      },
+      {
+        role: 'assistant',
+        content:
+          'I see 847 connection timeout errors to payments-db starting at 14:30. Want me to check the trace data for this dependency?',
       },
     ],
   },
@@ -682,6 +699,7 @@ const parseContent = (content) => {
       elements.push(<ol key={key++}>{items}</ol>);
       // Blank line
     } else if (line.trim() === '') {
+      elements.push(<div key={key++} style={{ height: 12 }} />);
       i++;
       // Plain text
     } else {
@@ -1079,6 +1097,40 @@ const MOCK_RESPONSES = [
 // For latency-spike: logs and traces can be asked in any order.
 // The conclusion appears after both have been shown.
 const SCRIPTED_RESPONSES = {
+  'connection-timeout': {
+    traces: {
+      id: 'traces',
+      match: /yes|trace|check/i,
+      tasks: [
+        { label: 'Querying trace data', description: 'Sampling traces for payments-db dependency' },
+        { label: 'Analyzing latency patterns', description: 'Correlating with historical incidents' },
+      ],
+      content:
+        'The trace data shows payments-db latency spiked from 12ms to 8,400ms at 14:29:58, correlating with a connection pool exhaustion event. This matches a pattern from 3 previous incidents.\n\nWant me to create an alert so you catch this earlier next time?',
+      attachment: {
+        type: 'link-preview',
+        title: 'payments-db trace analysis',
+        description:
+          'Trace waterfall showing latency spike from 12ms to 8,400ms starting at 14:29:58, with connection pool exhaustion as root cause.',
+      },
+    },
+    alert: {
+      id: 'alert',
+      match: /create alert|alert/i,
+      tasks: [
+        { label: 'Creating alert rule', description: 'Configuring threshold: payments-db latency > 500ms for 30s' },
+        { label: 'Configuring notification channel', description: 'Setting up #platform-alerts notification' },
+      ],
+      content:
+        'Alert created — "payments-db latency spike" will notify #platform-alerts when payments-db latency exceeds 500ms for 30 seconds. I\'ve also added this pattern to memory so I can flag it proactively next time.',
+      attachment: {
+        type: 'link-preview',
+        title: 'Payment service alert — P99 latency breach',
+        description:
+          'Triggered at 14:32 UTC. P99 latency crossed the 2,000ms threshold on 3 of 4 pods. No recent deploys in the last 6 hours.',
+      },
+    },
+  },
   'latency-spike': {
     logs: {
       id: 'logs',
@@ -1226,6 +1278,19 @@ export const ThreadPage = ({
   const threadKey = selectedItem || 'latency-spike';
   const thread = THREADS[threadKey] || NEW_THREAD;
   const initialMessages = pendingMessages || thread.messages;
+
+  // Determine effective scripted response key — detect connection-timeout pattern from pending messages
+  const effectiveScriptedKey = (() => {
+    if (SCRIPTED_RESPONSES[threadKey]) return threadKey;
+    if (pendingMessages) {
+      const hasConnectionTimeout = pendingMessages.some(
+        (m) => m.content && /847 connection timeout|payments-db/i.test(m.content)
+      );
+      if (hasConnectionTimeout) return 'connection-timeout';
+    }
+    return threadKey;
+  })();
+
   const [messages, setMessages] = useState(initialMessages);
   const [message, setMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -1362,7 +1427,7 @@ export const ThreadPage = ({
     setIsTyping(true);
 
     // Use scripted responses for specific threads, otherwise fall back to generic
-    const scripted = SCRIPTED_RESPONSES[threadKey];
+    const scripted = SCRIPTED_RESPONSES[effectiveScriptedKey];
     let mockResponse;
     let tasks;
 
@@ -1631,10 +1696,18 @@ export const ThreadPage = ({
           <div className="threadPage__inputArea">
             {(() => {
               if (message.trim() || isTyping || messages.some((m) => m.streaming)) return null;
-              if (threadKey !== 'latency-spike') return null;
+              if (effectiveScriptedKey !== 'latency-spike' && effectiveScriptedKey !== 'connection-timeout') return null;
               const done = completedScriptedIds;
               let prompts = [];
-              if (done.has('dashboard')) {
+              if (effectiveScriptedKey === 'connection-timeout') {
+                if (done.has('alert')) {
+                  prompts = [];
+                } else if (done.has('traces')) {
+                  prompts = ['Create an alert for this'];
+                } else {
+                  prompts = ['Yes, check the trace data'];
+                }
+              } else if (done.has('dashboard')) {
                 prompts = [];
               } else if (done.has('fix')) {
                 prompts = ['Set up a monitoring dashboard for this service'];
@@ -1665,7 +1738,7 @@ export const ThreadPage = ({
                           const userMsg = { role: 'user', author: 'You', content: prompt };
                           setMessages((prev) => [...prev, userMsg]);
                           setIsTyping(true);
-                          const scripted = SCRIPTED_RESPONSES[threadKey];
+                          const scripted = SCRIPTED_RESPONSES[effectiveScriptedKey];
                           let mockResponse;
                           let tasks;
                           if (scripted) {
@@ -1948,6 +2021,9 @@ export const ThreadPage = ({
                     }
                     if (item.title === 'Payment service — connection pool dashboard') {
                       return <DashboardPageMock />;
+                    }
+                    if (item.title === 'payments-db trace analysis') {
+                      return <TraceAnalysisPageMock />;
                     }
 
                     // Default: generic link-preview rendering

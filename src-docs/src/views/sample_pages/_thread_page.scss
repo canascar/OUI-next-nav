@@ -735,9 +735,20 @@
   }
 }
 
+// Alert callout
+.mockAlertCallout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background-color: rgba($ouiColorWarning, 0.1);
+  border-radius: $ouiBorderRadius;
+}
+
 // Force border on panels in dashboard and canvas
 .threadPage__canvasTabContent .ouiPanel,
 .dashboardPage__content .ouiPanel,
-.mockCanvasPage--fullBody .ouiPanel {
+.mockCanvasPage--fullBody .ouiPanel,
+.mockCanvasPage .ouiPanel {
   border: 1px solid $ouiBorderColor !important;
 }

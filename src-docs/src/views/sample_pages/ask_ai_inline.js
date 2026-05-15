@@ -41,7 +41,10 @@ export const AskAiInline = ({
   onClose,
   onContinueAsThread,
   initialPrompt,
+  mockResponses,
+  autoRespond,
 }) => {
+  const responses = mockResponses || MOCK_AI_RESPONSES;
   const [message, setMessage] = useState('');
   const [isListOpen, setIsListOpen] = useState(false);
   const [conversation, setConversation] = useState(null);
@@ -129,9 +132,9 @@ export const AskAiInline = ({
       const text = initialPrompt.trim();
       if (!text) return;
 
-      const idx = responseIdx.current % MOCK_AI_RESPONSES.length;
+      const idx = responseIdx.current % responses.length;
       responseIdx.current += 1;
-      const fullResponse = MOCK_AI_RESPONSES[idx];
+      const fullResponse = responses[idx];
 
       setConversation({ prompt: text, response: '' });
       setMessage('');
@@ -151,6 +154,31 @@ export const AskAiInline = ({
       });
     }
   }, [isOpen, initialPrompt]);
+
+  // Auto-respond without user input (AI proactively speaks)
+  useEffect(() => {
+    if (isOpen && autoRespond && !initialPrompt && !conversation) {
+      const idx = responseIdx.current % responses.length;
+      responseIdx.current += 1;
+      const fullResponse = responses[idx];
+
+      setConversation({ prompt: '', response: '' });
+      setIsStreaming(true);
+
+      const words = fullResponse.split(/(\s+)/);
+      let built = '';
+      words.forEach((word, i) => {
+        const timer = setTimeout(() => {
+          built += word;
+          setConversation({ prompt: '', response: built });
+          if (i === words.length - 1) {
+            setIsStreaming(false);
+          }
+        }, i * 25);
+        streamTimers.current.push(timer);
+      });
+    }
+  }, [isOpen, autoRespond]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Click outside to dismiss
   const handleClickOutside = useCallback(
@@ -182,9 +210,9 @@ export const AskAiInline = ({
     const text = message.trim();
     if (!text || isStreaming) return;
 
-    const idx = responseIdx.current % MOCK_AI_RESPONSES.length;
+    const idx = responseIdx.current % responses.length;
     responseIdx.current += 1;
-    const fullResponse = MOCK_AI_RESPONSES[idx];
+    const fullResponse = responses[idx];
 
     setConversation({ prompt: text, response: '' });
     setMessage('');
@@ -228,11 +256,13 @@ export const AskAiInline = ({
       {/* Conversation area above the input */}
       {conversation && (
         <div className="askAiInline__conversation">
-          <div className="askAiInline__msg askAiInline__msg--user">
-            <OuiText size="s">
-              <p>{conversation.prompt}</p>
-            </OuiText>
-          </div>
+          {conversation.prompt && (
+            <div className="askAiInline__msg askAiInline__msg--user">
+              <OuiText size="s">
+                <p>{conversation.prompt}</p>
+              </OuiText>
+            </div>
+          )}
           <div className="askAiInline__msg askAiInline__msg--assistant">
             <OuiText size="s">
               <p>{conversation.response}</p>
@@ -256,7 +286,7 @@ export const AskAiInline = ({
                     size="xs"
                     onClick={() => {
                       onContinueAsThread(
-                        conversation.prompt,
+                        conversation.prompt || 'What\'s causing these errors?',
                         conversation.response
                       );
                       onClose();

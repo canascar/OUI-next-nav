@@ -33,7 +33,7 @@
     border: 1px solid $ouiFormBorderColor;
     border-radius: 6px;
     background-color: $ouiFormBackgroundColor;
-    padding: 6px 12px;
+    padding: 6px 8px;
     width: 200px;
     height: 32px;
     line-height: 20px;
@@ -71,12 +71,43 @@
         right: 0;
       }
     }
+
+    &--loading {
+      position: relative;
+      border-color: transparent;
+      overflow: visible;
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        border-radius: 7px;
+        padding: 1px;
+        background: conic-gradient(
+          from var(--angle),
+          $ouiColorPrimary 0%,
+          rgba($ouiColorPrimary, 0) 30%,
+          rgba($ouiColorPrimary, 0) 100%
+        );
+        -webkit-mask:
+          linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        animation: askAiBorderSnake 3s ease-in-out infinite;
+      }
+    }
+
+    &--pulse {
+      animation: askAiPulse 1.5s ease-in-out infinite;
+      box-shadow: 0 0 0 2px rgba($ouiColorPrimary, 0.2);
+    }
   }
 }
 
 .askAiFloating__buttonWrap {
   padding: 8px;
-  border-radius: 8px;
+  border-radius: 8px 8px 0 0;
   background: rgba($ouiColorEmptyShade, .7);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -511,7 +542,7 @@
 
 .askAiInline__input {
   padding: 8px;
-  border-radius: 8px;
+  border-radius: 8px 8px 0 0;
   background: rgba($ouiColorEmptyShade, .7);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -606,5 +637,29 @@
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes askAiPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 2px rgba($ouiColorPrimary, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba($ouiColorPrimary, 0.1);
+  }
+}
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes askAiBorderSnake {
+  0% {
+    --angle: 0deg;
+  }
+  100% {
+    --angle: 360deg;
   }
 }

@@ -507,6 +507,11 @@ export const SamplePagesView = () => {
           subtitle: 'Placeholder only · 1 day ago',
         },
         {
+          key: 'connection-timeout',
+          title: 'Connection timeout investigation',
+          subtitle: 'Demo flow · just now',
+        },
+        {
           key: 'tool-demo-1',
           title: 'Thread tool demo 1',
           subtitle: 'Emily Zhang · 30 min ago',
@@ -575,6 +580,11 @@ export const SamplePagesView = () => {
             key: 'payment-timeout-logs',
             title: 'Payment service timeout logs',
             subtitle: 'source=payment | where level="WARN"',
+          },
+          {
+            key: 'connection-timeout-errors',
+            title: 'Connection timeout errors',
+            subtitle: 'source=logs | where severity="ERROR" | stats count() by message',
           },
         ],
         'saved-results': [

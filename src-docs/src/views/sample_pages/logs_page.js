@@ -89,6 +89,12 @@ const QUERY_DEFS = {
     query:
       'source=opensearch_metrics_payment_service | where level="WARN" OR message LIKE "%timeout%" | sort -timestamp | head 25',
   },
+  'connection-timeout-errors': {
+    title: 'Connection timeout errors',
+    language: 'PPL',
+    query:
+      'source = logs | where severity = "ERROR" | stats count() by message',
+  },
 };
 
 const DEFAULT_QUERY_DEF = QUERY_DEFS['error-rate'];
@@ -185,6 +191,23 @@ const QUERY_DATA = {
     { id: '13', FlightNum: 'WARN', Origin: 'connection acquire timeout exceeded 1000ms', Dest: 'payment-7f8b9-xk2lp', FlightDelayMin: 2050 },
     { id: '14', FlightNum: 'WARN', Origin: 'connection acquire timeout exceeded 1000ms', Dest: 'payment-7f8b9-mn4qr', FlightDelayMin: 1680 },
     { id: '15', FlightNum: 'INFO', Origin: 'request completed successfully', Dest: 'payment-7f8b9-ab8st', FlightDelayMin: 38 },
+  ],
+  'connection-timeout-errors': [
+    { id: '1', FlightNum: 'ERROR', Origin: 'Connection timeout to payments-db (retry 1/3)', Dest: 'payment-service', FlightDelayMin: 1002 },
+    { id: '2', FlightNum: 'ERROR', Origin: 'Connection timeout to payments-db (retry 2/3)', Dest: 'payment-service', FlightDelayMin: 1005 },
+    { id: '3', FlightNum: 'ERROR', Origin: 'Connection timeout to payments-db (failed)', Dest: 'payment-service', FlightDelayMin: 1009 },
+    { id: '4', FlightNum: 'ERROR', Origin: 'Connection timeout to payments-db (retry 1/3)', Dest: 'payment-service', FlightDelayMin: 1012 },
+    { id: '5', FlightNum: 'ERROR', Origin: 'Connection timeout to payments-db (retry 2/3)', Dest: 'payment-service', FlightDelayMin: 1015 },
+    { id: '6', FlightNum: 'ERROR', Origin: 'Connection timeout to payments-db (failed)', Dest: 'payment-service', FlightDelayMin: 1018 },
+    { id: '7', FlightNum: 'ERROR', Origin: 'Connection timeout to payments-db (retry 1/3)', Dest: 'payment-service', FlightDelayMin: 1021 },
+    { id: '8', FlightNum: 'ERROR', Origin: 'Connection timeout to payments-db (retry 2/3)', Dest: 'payment-service', FlightDelayMin: 1024 },
+    { id: '9', FlightNum: 'ERROR', Origin: 'Connection timeout to payments-db (failed)', Dest: 'payment-service', FlightDelayMin: 1027 },
+    { id: '10', FlightNum: 'ERROR', Origin: 'Connection timeout to payments-db (retry 1/3)', Dest: 'payment-service', FlightDelayMin: 1030 },
+    { id: '11', FlightNum: 'ERROR', Origin: 'Connection timeout to payments-db (retry 2/3)', Dest: 'payment-service', FlightDelayMin: 1033 },
+    { id: '12', FlightNum: 'ERROR', Origin: 'Connection timeout to payments-db (failed)', Dest: 'payment-service', FlightDelayMin: 1036 },
+    { id: '13', FlightNum: 'ERROR', Origin: 'Connection timeout to payments-db (retry 1/3)', Dest: 'payment-service', FlightDelayMin: 1039 },
+    { id: '14', FlightNum: 'ERROR', Origin: 'Connection timeout to payments-db (retry 2/3)', Dest: 'payment-service', FlightDelayMin: 1042 },
+    { id: '15', FlightNum: 'ERROR', Origin: 'Connection timeout to payments-db (failed)', Dest: 'payment-service', FlightDelayMin: 1045 },
   ],
 };
 
@@ -478,12 +501,18 @@ export const LogsPage = ({
   onAskAiToggle,
 }) => {
   const queryDef = selectedItem && QUERY_DEFS[selectedItem];
-  const results = queryDef && !queryDef.queryOnly ? (QUERY_DATA[selectedItem] || []) : [];
+  const savedResults = queryDef && !queryDef.queryOnly ? (QUERY_DATA[selectedItem] || []) : [];
 
   const [activeTab, setActiveTab] = useState('logs');
   const [queryText, setQueryText] = useState(queryDef ? queryDef.query : '');
   const [isQueryEditable, setIsQueryEditable] = useState(!queryDef || !!queryDef.queryOnly);
+  const [queryExecuted, setQueryExecuted] = useState(!!queryDef && !queryDef.queryOnly);
+  const [highlightAskAi, setHighlightAskAi] = useState(null);
+  const highlightTimer = useRef(null);
   const queryRef = useRef(null);
+
+  // Results: show saved results if a query def is selected, or show executed results
+  const results = queryExecuted ? (savedResults.length > 0 ? savedResults : (QUERY_DATA['connection-timeout-errors'] || [])) : [];
 
   // Auto-focus textarea when landing on empty page or query-only page
   useEffect(() => {
@@ -491,6 +520,39 @@ export const LogsPage = ({
       setTimeout(() => queryRef.current.focus(), 0);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Handle Enter to run query
+  const handleQueryKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (queryText.trim()) {
+        setQueryExecuted(true);
+        // After 0.5s, start loading effect on Ask AI button
+        if (highlightTimer.current) clearTimeout(highlightTimer.current);
+        highlightTimer.current = setTimeout(() => {
+          setHighlightAskAi('loading');
+          // After 6s (2 loops × 3s), switch to pulse highlight
+          highlightTimer.current = setTimeout(() => {
+            setHighlightAskAi('pulse');
+          }, 6000);
+        }, 500);
+      }
+    }
+  };
+
+  // Clean up highlight timer
+  useEffect(() => {
+    return () => {
+      if (highlightTimer.current) clearTimeout(highlightTimer.current);
+    };
+  }, []);
+
+  // Reset highlight when Ask AI is opened
+  useEffect(() => {
+    if (isAskAiPanelOpen) {
+      setHighlightAskAi(null);
+    }
+  }, [isAskAiPanelOpen]);
   const [expandedRows, setExpandedRows] = useState({});
   const [dataSource, setDataSource] = useState('opensearch_sample_data');
   const [dateStart, setDateStart] = useState('now-30m');
@@ -536,6 +598,9 @@ export const LogsPage = ({
   useEffect(() => {
     setQueryText(queryDef ? queryDef.query : '');
     setIsQueryEditable(!queryDef || !!queryDef.queryOnly);
+    setQueryExecuted(!!queryDef && !queryDef.queryOnly);
+    setHighlightAskAi(null);
+    if (highlightTimer.current) clearTimeout(highlightTimer.current);
     if ((!queryDef || queryDef.queryOnly) && queryRef.current) {
       setTimeout(() => queryRef.current.focus(), 0);
     }
@@ -588,6 +653,11 @@ export const LogsPage = ({
         onAskAiToggle={onAskAiToggle}
         firstActionIcon={isQueryEditable ? 'save' : 'pencil'}
         firstActionLabel={isQueryEditable ? 'Save' : 'Edit'}
+        mockAiResponses={selectedItem === 'connection-timeout-errors' || queryText.includes('connection timeout') || queryText.includes('severity = "ERROR"') ? [
+          'I see 847 connection timeout errors to payments-db starting at 14:30. Want me to check the trace data for this dependency?',
+        ] : undefined}
+        highlightAskAi={highlightAskAi}
+        autoOpenAskAi={highlightAskAi === 'pulse'}
         onFirstAction={() => {
           if (isQueryEditable) {
             setIsSaveModalOpen(true);
@@ -629,6 +699,7 @@ export const LogsPage = ({
           placeholder="Search with PPL"
           value={queryText}
           onChange={(e) => setQueryText(e.target.value)}
+          onKeyDown={handleQueryKeyDown}
           rows={2}
           resize="none"
           fullWidth

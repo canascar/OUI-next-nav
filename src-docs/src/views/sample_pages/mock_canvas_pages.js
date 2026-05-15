@@ -11,6 +11,16 @@
 
 import React from 'react';
 import {
+  Chart,
+  Settings,
+  Axis,
+  LineSeries,
+  LineAnnotation,
+  AnnotationDomainType,
+  ScaleType,
+  RectAnnotation,
+} from '@elastic/charts';
+import {
   OuiBasicTable,
   OuiFlexGroup,
   OuiFlexItem,
@@ -41,41 +51,106 @@ const KVRow = ({ label, children }) => (
 // Alert detail page mock
 export const AlertPageMock = () => (
   <div className="mockCanvasPage">
-    <OuiFlexGroup wrap gutterSize="none">
-      <KVRow label="Trigger name">
-        <span>payment-p99-breach</span>
-      </KVRow>
-      <KVRow label="Severity">
-        <span>1 (Highest)</span>
-      </KVRow>
-      <KVRow label="Trigger start time">
-        <span>05/13/26 2:32 pm UTC</span>
-      </KVRow>
-      <KVRow label="Trigger last updated">
-        <span>05/13/26 2:47 pm UTC</span>
-      </KVRow>
-      <KVRow label="Monitor">
-        <OuiLink>payment-service-latency-monitor</OuiLink>
-      </KVRow>
-      <KVRow label="Monitor data sources">
-        <span>opensearch_metrics_payment_service</span>
-      </KVRow>
+    <OuiFlexGroup gutterSize="m" responsive={false}>
+      <OuiFlexItem>
+        <OuiPanel paddingSize="m" hasShadow={false} hasBorder>
+          <OuiText size="m" color="danger"><strong>2,340ms</strong></OuiText>
+          <OuiText size="xs" color="subdued">P99 latency</OuiText>
+        </OuiPanel>
+      </OuiFlexItem>
+      <OuiFlexItem>
+        <OuiPanel paddingSize="m" hasShadow={false} hasBorder>
+          <OuiText size="m"><strong>&gt; 2,000ms</strong></OuiText>
+          <OuiText size="xs" color="subdued">for 15 min</OuiText>
+        </OuiPanel>
+      </OuiFlexItem>
+      <OuiFlexItem>
+        <OuiPanel paddingSize="m" hasShadow={false} hasBorder>
+          <OuiText size="m"><strong>3 of 4 pods</strong></OuiText>
+          <OuiText size="xs" color="subdued">breaching</OuiText>
+        </OuiPanel>
+      </OuiFlexItem>
+      <OuiFlexItem>
+        <OuiPanel paddingSize="m" hasShadow={false} hasBorder>
+          <OuiText size="m"><strong>—</strong></OuiText>
+          <OuiText size="xs" color="subdued">notification target</OuiText>
+        </OuiPanel>
+      </OuiFlexItem>
     </OuiFlexGroup>
-    <OuiHorizontalRule margin="s" />
-    <OuiFlexGroup wrap gutterSize="none">
-      <KVRow label="Conditions">
-        <span>params.p99_latency &gt; 2000</span>
-      </KVRow>
-      <KVRow label="Time range for the last">
-        <span>15 minutes</span>
-      </KVRow>
-      <KVRow label="Filters">
-        <span>service = payment-service</span>
-      </KVRow>
-      <KVRow label="Group by">
-        <span>pod_name</span>
-      </KVRow>
-    </OuiFlexGroup>
+
+    <OuiSpacer size="m" />
+
+    <OuiPanel paddingSize="m" hasShadow={false} hasBorder>
+      <OuiText size="xs"><strong>Metric: payment-service P99 latency</strong></OuiText>
+      <OuiSpacer size="s" />
+      <div style={{ height: 160 }}>
+        <Chart>
+          <Settings showLegend={false} />
+          <Axis
+            id="bottom"
+            position="bottom"
+            showGridLines={false}
+          />
+          <Axis
+            id="left"
+            position="left"
+            showGridLines
+            tickFormat={(d) => `${d}ms`}
+          />
+          <LineSeries
+            id="p99"
+            xScaleType={ScaleType.Linear}
+            yScaleType={ScaleType.Linear}
+            xAccessor="x"
+            yAccessors={['y']}
+            data={[
+              { x: 0, y: 120 },
+              { x: 1, y: 135 },
+              { x: 2, y: 180 },
+              { x: 3, y: 420 },
+              { x: 4, y: 1100 },
+              { x: 5, y: 2050 },
+              { x: 6, y: 2340 },
+            ]}
+          />
+          <LineAnnotation
+            id="threshold"
+            domainType={AnnotationDomainType.YDomain}
+            dataValues={[{ dataValue: 2000 }]}
+            style={{ line: { stroke: '#FF6467', strokeWidth: 2, dash: [4, 4] } }}
+          />
+          <RectAnnotation
+            id="breach"
+            dataValues={[{ coordinates: { x0: 4, x1: 6, y0: 2000 } }]}
+            style={{ fill: '#FF6467', opacity: 0.05 }}
+          />
+        </Chart>
+      </div>
+    </OuiPanel>
+
+    <OuiSpacer size="m" />
+
+    <div className="mockAlertCallout">
+      <OuiIcon type="alert" color="warning" size="m" />
+      <OuiText size="s">
+        Alarm triggered at May 13, 02:32 PM UTC — payment-service P99 crossed 2,000ms threshold
+      </OuiText>
+    </div>
+
+    <OuiSpacer size="m" />
+
+    <OuiText size="s">
+      <h4>Summary</h4>
+      <p>payment-service P99 latency on production cluster</p>
+      <h4>Recommendation</h4>
+      <ul>
+        <li>Check recent deployments to the affected service for regressions.</li>
+        <li>Review upstream dependency health and connection pool metrics.</li>
+        <li>Inspect application logs for error patterns correlated with the latency increase.</li>
+        <li>Consider scaling the service if the issue is load-related.</li>
+        <li>If this is a known issue, acknowledge the alert and update the runbook.</li>
+      </ul>
+    </OuiText>
   </div>
 );
 
@@ -172,6 +247,117 @@ export const LogsPageMock = () => (
       results={PAYMENT_LOG_RESULTS}
       compact
     />
+  </div>
+);
+
+// Trace analysis page mock — payments-db trace waterfall
+export const TraceAnalysisPageMock = () => (
+  <div className="mockCanvasPage">
+    <OuiFlexGroup gutterSize="m" responsive={false}>
+      <OuiFlexItem>
+        <OuiPanel paddingSize="m" hasShadow={false} hasBorder>
+          <OuiText size="m" color="danger"><strong>8,400ms</strong></OuiText>
+          <OuiText size="xs" color="subdued">Peak latency</OuiText>
+        </OuiPanel>
+      </OuiFlexItem>
+      <OuiFlexItem>
+        <OuiPanel paddingSize="m" hasShadow={false} hasBorder>
+          <OuiText size="m"><strong>12ms → 8,400ms</strong></OuiText>
+          <OuiText size="xs" color="subdued">Latency spike</OuiText>
+        </OuiPanel>
+      </OuiFlexItem>
+      <OuiFlexItem>
+        <OuiPanel paddingSize="m" hasShadow={false} hasBorder>
+          <OuiText size="m"><strong>14:29:58</strong></OuiText>
+          <OuiText size="xs" color="subdued">Spike start</OuiText>
+        </OuiPanel>
+      </OuiFlexItem>
+      <OuiFlexItem>
+        <OuiPanel paddingSize="m" hasShadow={false} hasBorder>
+          <OuiText size="m" color="danger"><strong>3 prior</strong></OuiText>
+          <OuiText size="xs" color="subdued">Matching incidents</OuiText>
+        </OuiPanel>
+      </OuiFlexItem>
+    </OuiFlexGroup>
+
+    <OuiSpacer size="m" />
+
+    <OuiPanel paddingSize="m" hasShadow={false} hasBorder>
+      <OuiTitle size="xs"><h3>Trace waterfall — payments-db dependency</h3></OuiTitle>
+      <OuiSpacer size="s" />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <OuiText size="xs" style={{ width: 140, flexShrink: 0 }}>payment-service</OuiText>
+          <div style={{ flex: 1, height: 20, background: 'rgba(0,119,204,0.15)', borderRadius: 3, position: 'relative' }}>
+            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '100%', background: '#0077CC', borderRadius: 3, opacity: 0.8 }} />
+            <OuiText size="xs" style={{ position: 'absolute', right: 4, top: 2, color: '#fff' }}>8,400ms</OuiText>
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <OuiText size="xs" style={{ width: 140, flexShrink: 0, paddingLeft: 16 }}>→ acquire_conn</OuiText>
+          <div style={{ flex: 1, height: 20, background: 'rgba(255,100,103,0.15)', borderRadius: 3, position: 'relative' }}>
+            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '95%', background: '#FF6467', borderRadius: 3, opacity: 0.8 }} />
+            <OuiText size="xs" style={{ position: 'absolute', right: 4, top: 2, color: '#fff' }}>8,200ms</OuiText>
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <OuiText size="xs" style={{ width: 140, flexShrink: 0, paddingLeft: 16 }}>→ query payments-db</OuiText>
+          <div style={{ flex: 1, height: 20, background: 'rgba(0,191,179,0.15)', borderRadius: 3, position: 'relative' }}>
+            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '2%', background: '#00BFB3', borderRadius: 3, opacity: 0.8 }} />
+            <OuiText size="xs" style={{ position: 'absolute', left: '3%', top: 2 }}>12ms</OuiText>
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <OuiText size="xs" style={{ width: 140, flexShrink: 0, paddingLeft: 16 }}>→ serialize</OuiText>
+          <div style={{ flex: 1, height: 20, background: 'rgba(0,191,179,0.15)', borderRadius: 3, position: 'relative' }}>
+            <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '1%', background: '#00BFB3', borderRadius: 3, opacity: 0.8 }} />
+            <OuiText size="xs" style={{ position: 'absolute', left: '2%', top: 2 }}>3ms</OuiText>
+          </div>
+        </div>
+      </div>
+    </OuiPanel>
+
+    <OuiSpacer size="m" />
+
+    <OuiPanel paddingSize="m" hasShadow={false} hasBorder>
+      <OuiTitle size="xs"><h3>Connection pool exhaustion timeline</h3></OuiTitle>
+      <OuiSpacer size="s" />
+      <OuiBasicTable
+        items={[
+          { time: '14:29:00', latency: '12ms', pool: '45%', status: 'healthy' },
+          { time: '14:29:30', latency: '85ms', pool: '72%', status: 'healthy' },
+          { time: '14:29:58', latency: '1,200ms', pool: '94%', status: 'warning' },
+          { time: '14:30:15', latency: '4,800ms', pool: '100%', status: 'danger' },
+          { time: '14:30:30', latency: '8,400ms', pool: '100%', status: 'danger' },
+        ]}
+        columns={[
+          { field: 'time', name: 'Time (UTC)' },
+          { field: 'latency', name: 'Latency' },
+          { field: 'pool', name: 'Pool Util.' },
+          {
+            field: 'status',
+            name: 'Status',
+            render: (status) => (
+              <OuiHealth color={status === 'healthy' ? 'success' : status === 'warning' ? 'warning' : 'danger'}>
+                {status}
+              </OuiHealth>
+            ),
+          },
+        ]}
+        compressed
+      />
+    </OuiPanel>
+
+    <OuiSpacer size="m" />
+
+    <OuiText size="s">
+      <h4>Pattern match</h4>
+      <p>
+        This matches a pattern from 3 previous incidents where connection pool exhaustion
+        caused cascading timeouts. In each case, the pool reached 100% utilization before
+        latency spiked above 5,000ms.
+      </p>
+    </OuiText>
   </div>
 );
 
