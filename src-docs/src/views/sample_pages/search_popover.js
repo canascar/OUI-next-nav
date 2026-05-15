@@ -43,31 +43,7 @@ const SEARCH_SECTIONS = [
         label: 'Checkout error rate alert',
         subtitle: 'Alex Chen · 5 hours ago',
       },
-      {
-        key: 'weekly-review',
-        label: 'Weekly service review',
-        subtitle: 'Team Ops · 1 day ago',
-      },
-      {
-        key: 'memory-leak',
-        label: 'Memory leak in catalog service',
-        subtitle: 'Jordan Park · 3 hours ago',
-      },
-      {
-        key: 'dns-timeout',
-        label: 'DNS resolution timeouts',
-        subtitle: 'Priya Sharma · 6 hours ago',
-      },
-      {
-        key: 'deployment-rollback',
-        label: 'Failed deployment rollback',
-        subtitle: 'Marcus Webb · 8 hours ago',
-      },
-      {
-        key: 'cert-expiry',
-        label: 'TLS certificate expiry warning',
-        subtitle: 'Dana Kim · 12 hours ago',
-      },
+
       {
         key: 'disk-pressure',
         label: 'Node disk pressure alerts',

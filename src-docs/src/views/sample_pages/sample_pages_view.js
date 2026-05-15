@@ -476,31 +476,7 @@ export const SamplePagesView = () => {
           title: 'Checkout error rate alert',
           subtitle: 'Placeholder only · 5 hours ago',
         },
-        {
-          key: 'weekly-review',
-          title: 'Weekly service review',
-          subtitle: 'Placeholder only · 1 day ago',
-        },
-        {
-          key: 'memory-leak',
-          title: 'Memory leak in catalog service',
-          subtitle: 'Placeholder only · 3 hours ago',
-        },
-        {
-          key: 'dns-timeout',
-          title: 'DNS resolution timeouts',
-          subtitle: 'Placeholder only · 6 hours ago',
-        },
-        {
-          key: 'deployment-rollback',
-          title: 'Failed deployment rollback',
-          subtitle: 'Placeholder only · 8 hours ago',
-        },
-        {
-          key: 'cert-expiry',
-          title: 'TLS certificate expiry warning',
-          subtitle: 'Placeholder only · 12 hours ago',
-        },
+
         {
           key: 'disk-pressure',
           title: 'Node disk pressure alerts',

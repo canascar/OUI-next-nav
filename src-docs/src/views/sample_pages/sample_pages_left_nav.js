@@ -462,31 +462,6 @@ export const DEFAULT_THREADS = [
     subtitle: 'Placeholder only · 5 hours ago',
   },
   {
-    key: 'weekly-review',
-    title: 'Weekly service review',
-    subtitle: 'Placeholder only · 1 day ago',
-  },
-  {
-    key: 'memory-leak',
-    title: 'Memory leak in catalog service',
-    subtitle: 'Placeholder only · 3 hours ago',
-  },
-  {
-    key: 'dns-timeout',
-    title: 'DNS resolution timeouts',
-    subtitle: 'Placeholder only · 6 hours ago',
-  },
-  {
-    key: 'deployment-rollback',
-    title: 'Failed deployment rollback',
-    subtitle: 'Placeholder only · 8 hours ago',
-  },
-  {
-    key: 'cert-expiry',
-    title: 'TLS certificate expiry warning',
-    subtitle: 'Placeholder only · 12 hours ago',
-  },
-  {
     key: 'disk-pressure',
     title: 'Node disk pressure alerts',
     subtitle: 'Placeholder only · 1 day ago',
@@ -1033,34 +1008,24 @@ const ThreadPopoverContent = ({ onNavigate, onViewAll }) => {
       subtitle: 'Placeholder only · 5 hours ago',
     },
     {
-      key: 'weekly-review',
-      title: 'Weekly service review',
-      subtitle: 'Placeholder only · 1 day ago',
-    },
-    {
-      key: 'memory-leak',
-      title: 'Memory leak in catalog service',
-      subtitle: 'Placeholder only · 3 hours ago',
-    },
-    {
-      key: 'dns-timeout',
-      title: 'DNS resolution timeouts',
-      subtitle: 'Placeholder only · 6 hours ago',
-    },
-    {
-      key: 'deployment-rollback',
-      title: 'Failed deployment rollback',
-      subtitle: 'Placeholder only · 8 hours ago',
-    },
-    {
-      key: 'cert-expiry',
-      title: 'TLS certificate expiry warning',
-      subtitle: 'Placeholder only · 12 hours ago',
-    },
-    {
       key: 'disk-pressure',
       title: 'Node disk pressure alerts',
       subtitle: 'Placeholder only · 1 day ago',
+    },
+    {
+      key: 'tool-demo-1',
+      title: 'Thread tool demo 1',
+      subtitle: 'Emily Zhang · 30 min ago',
+    },
+    {
+      key: 'tool-demo-2',
+      title: 'Thread tool demo 2',
+      subtitle: 'Carlos Rivera · 1 hour ago',
+    },
+    {
+      key: 'tool-demo-3',
+      title: 'Thread tool demo 3',
+      subtitle: 'Aisha Patel · 2 hours ago',
     },
   ];
   return (

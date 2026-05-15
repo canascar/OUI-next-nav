@@ -24,7 +24,6 @@ import {
 const RELATED_THREADS = [
   { key: 'latency-spike', title: 'Latency spike investigation', subtitle: 'Use for investigation demo · 2 hours ago' },
   { key: 'checkout-error', title: 'Checkout error rate alert', subtitle: 'Placeholder only · 5 hours ago' },
-  { key: 'memory-leak', title: 'Memory leak in catalog service', subtitle: 'Placeholder only · 3 hours ago' },
 ];
 
 // Mock AI responses cycled through on each prompt
