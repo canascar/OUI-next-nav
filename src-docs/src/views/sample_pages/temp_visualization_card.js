@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { OuiText } from '../../../../src/components';
 import { ThemeContext } from '../../components/with_theme';
 
@@ -103,63 +103,62 @@ export const TempVisualizationCard = ({
 }) => {
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
+  const [isHovered, setIsHovered] = useState(false);
+  const [isActive, setIsActive] = useState(false);
 
-  // Frosted glass background styles
-  const cardStyle = {
+  // Base card styles - frosted glass with 70% background blur
+  const baseStyle = {
     backgroundColor: isDark 
-      ? 'rgba(14, 21, 37, 0.7)'  // Obsidian with 70% opacity
-      : 'rgba(255, 255, 255, 0.7)', // White with 70% opacity
-    backdropFilter: 'blur(12px)',
-    WebkitBackdropFilter: 'blur(12px)',
+      ? 'rgba(14, 21, 37, 0.3)'  // 30% opacity to let blur show through
+      : 'rgba(255, 255, 255, 0.3)', // 30% opacity to let blur show through
+    backdropFilter: 'blur(20px) saturate(180%)',
+    WebkitBackdropFilter: 'blur(20px) saturate(180%)',
     border: isDark
-      ? '1px solid rgba(122, 159, 212, 0.15)'  // Sky blue border for dark
-      : '1px solid rgba(46, 74, 143, 0.12)',   // Deep blue border for light
+      ? '1px solid rgba(122, 159, 212, 0.2)'
+      : '1px solid rgba(46, 74, 143, 0.15)',
     borderRadius: 8,
     padding: 12,
     cursor: onClick ? 'pointer' : 'default',
-    // Note: transform transitions are handled by CSS class for hover/active states
     marginBottom: 8,
-    animationDelay: `${index * 150}ms`,
-    ...style,
+    // Default transition for hover
+    transition: 'border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease',
+    transform: 'scale(1)',
   };
 
-  const hoverStyle = onClick ? {
-    ':hover': {
-      borderColor: isDark 
-        ? 'rgba(122, 159, 212, 0.4)' 
-        : 'rgba(46, 74, 143, 0.3)',
-      boxShadow: isDark
-        ? '0 4px 20px rgba(0, 0, 0, 0.3)'
-        : '0 4px 20px rgba(46, 74, 143, 0.15)',
-      transform: 'translateY(-2px)',
-    }
+  // Hover styles
+  const hoverStyle = isHovered && !isActive ? {
+    borderColor: isDark 
+      ? 'rgba(122, 159, 212, 0.4)' 
+      : 'rgba(65, 104, 184, 0.4)',
+    boxShadow: isDark
+      ? '0 4px 20px rgba(0, 0, 0, 0.3)'
+      : '0 4px 20px rgba(46, 74, 143, 0.15)',
+    transform: 'scale(1.03)',
   } : {};
+
+  // Active styles with bouncy transition
+  const activeStyle = isActive ? {
+    transform: 'scale(0.97)',
+    transition: 'border-color 150ms ease, box-shadow 150ms ease, transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+  } : {};
+
+  const cardStyle = {
+    ...baseStyle,
+    ...hoverStyle,
+    ...activeStyle,
+    ...style,
+  };
 
   return (
     <div
       className="tempVisualizationCard"
       onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => { setIsHovered(false); setIsActive(false); }}
+      onMouseDown={() => setIsActive(true)}
+      onMouseUp={() => setIsActive(false)}
       style={cardStyle}
     >
-      <style>{`
-        .tempVisualizationCard {
-          transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease !important;
-        }
-        .tempVisualizationCard:hover {
-          border-color: rgba(65, 104, 184, 0.4) !important;
-          box-shadow: 0 4px 20px rgba(46, 74, 143, 0.15);
-          transform: scale(1.03) !important;
-        }
-        .tempVisualizationCard:active {
-          transform: scale(0.97) !important;
-          transition: border-color 150ms ease, box-shadow 150ms ease, transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1) !important;
-        }
-        [data-theme="v9-dark"] .tempVisualizationCard:hover,
-        .ouiTheme-v9-dark .tempVisualizationCard:hover {
-          border-color: rgba(122, 159, 212, 0.4) !important;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-      `}</style>
       {title && (
         <OuiText size="xs"><strong>{title}</strong></OuiText>
       )}
