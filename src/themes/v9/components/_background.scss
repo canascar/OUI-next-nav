@@ -5,46 +5,101 @@
 
 // sass-lint:disable no-color-literals, leading-zero, no-trailing-zero
 
-// V9 theme — Agentic OSD Utility: Clean solid backgrounds without gradients
-// Brand gradient removed per design requirements
+// V9 theme — Agentic OSD Utility: Solid backgrounds with graph paper grid
 
-// @if (lightness($ouiPageBackgroundColor) < 50) {
-//   // Dark mode — solid Obsidian background
-//   html {
-//     background-color: $ouiPageBackgroundColor;
-//     min-height: 100vh;
-//   }
+// Graph paper grid variables
+$grid-size: 24px;
+$grid-size-small: 6px;
 
-//   body {
-//     background: transparent;
-//     min-height: 100vh;
-//     position: relative;
-//   }
+@if (lightness($ouiPageBackgroundColor) < 50) {
+  // ============================================================
+  // DARK MODE — Obsidian background with subtle blue grid
+  // ============================================================
+  html {
+    background-color: $ouiPageBackgroundColor;
+    min-height: 100vh;
+  }
 
-//   .ouiPage,
-//   .ouiPageBody {
-//     background: transparent !important;
-//     position: relative;
-//     z-index: 1;
-//   }
+  body {
+    background: transparent;
+    min-height: 100vh;
+    position: relative;
 
-// } @else {
-//   // Light mode — solid Opal background
-//   html {
-//     background-color: $ouiPageBackgroundColor;
-//     min-height: 100vh;
-//   }
+    // Graph paper grid overlay
+    &::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      
+      // Large grid (24px) + small grid (6px) for graph paper effect
+      background-image:
+        // Large grid lines
+        linear-gradient(to right, rgba(122, 159, 212, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(122, 159, 212, 0.08) 1px, transparent 1px),
+        // Small grid lines
+        linear-gradient(to right, rgba(122, 159, 212, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(122, 159, 212, 0.03) 1px, transparent 1px);
+      background-size:
+        $grid-size $grid-size,
+        $grid-size $grid-size,
+        $grid-size-small $grid-size-small,
+        $grid-size-small $grid-size-small;
+      background-position: 0 0;
+    }
+  }
 
-//   body {
-//     background: transparent;
-//     min-height: 100vh;
-//     position: relative;
-//   }
+  .ouiPage,
+  .ouiPageBody {
+    background: transparent !important; // sass-lint:disable-line no-important
+    position: relative;
+    z-index: 1;
+  }
 
-//   .ouiPage,
-//   .ouiPageBody {
-//     background: transparent !important;
-//     position: relative;
-//     z-index: 1;
-//   }
-// }
+} @else {
+  // ============================================================
+  // LIGHT MODE — Opal background with subtle blue grid
+  // ============================================================
+  html {
+    background-color: $ouiPageBackgroundColor;
+    min-height: 100vh;
+  }
+
+  body {
+    background: transparent;
+    min-height: 100vh;
+    position: relative;
+
+    // Graph paper grid overlay
+    &::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      
+      // Large grid (24px) + small grid (6px) for graph paper effect
+      background-image:
+        // Large grid lines
+        linear-gradient(to right, rgba(46, 74, 143, 0.07) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(46, 74, 143, 0.07) 1px, transparent 1px),
+        // Small grid lines
+        linear-gradient(to right, rgba(46, 74, 143, 0.025) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(46, 74, 143, 0.025) 1px, transparent 1px);
+      background-size:
+        $grid-size $grid-size,
+        $grid-size $grid-size,
+        $grid-size-small $grid-size-small,
+        $grid-size-small $grid-size-small;
+      background-position: 0 0;
+    }
+  }
+
+  .ouiPage,
+  .ouiPageBody {
+    background: transparent !important; // sass-lint:disable-line no-important
+    position: relative;
+    z-index: 1;
+  }
+}
