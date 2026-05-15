@@ -52,15 +52,11 @@ $grid-size-small: 6px;
     background-color: $ouiPageBackgroundColor;
     @include graph-paper-grid-dark;
     min-height: 100vh;
-  }
-
-  body {
-    background: transparent;
-    min-height: 100vh;
     position: relative;
 
-    // Vignette overlay - fades edges and corners
-    &::after {
+    // Vignette overlay - sits between grid background and content
+    // Fades the grid at edges but not the UI elements
+    &::before {
       content: '';
       position: fixed;
       inset: 0;
@@ -70,11 +66,16 @@ $grid-size-small: 6px;
     }
   }
 
+  body {
+    background: transparent;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
   .ouiPage,
   .ouiPageBody {
     background: transparent !important; // sass-lint:disable-line no-important
-    position: relative;
-    z-index: 1;
   }
 
   // Utility class for applying grid to fixed containers
@@ -91,15 +92,11 @@ $grid-size-small: 6px;
     background-color: $ouiPageBackgroundColor;
     @include graph-paper-grid-light;
     min-height: 100vh;
-  }
-
-  body {
-    background: transparent;
-    min-height: 100vh;
     position: relative;
 
-    // Vignette overlay - fades edges and corners
-    &::after {
+    // Vignette overlay - sits between grid background and content
+    // Fades the grid at edges but not the UI elements
+    &::before {
       content: '';
       position: fixed;
       inset: 0;
@@ -109,11 +106,16 @@ $grid-size-small: 6px;
     }
   }
 
+  body {
+    background: transparent;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
   .ouiPage,
   .ouiPageBody {
     background: transparent !important; // sass-lint:disable-line no-important
-    position: relative;
-    z-index: 1;
   }
 
   // Utility class for applying grid to fixed containers
