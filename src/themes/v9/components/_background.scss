@@ -5,7 +5,7 @@
 
 // sass-lint:disable no-color-literals, leading-zero, no-trailing-zero
 
-// V9 theme — Agentic OSD Utility: Solid backgrounds with graph paper grid
+// V9 theme — Agentic OSD Utility: Solid backgrounds with graph paper grid and vignette
 
 // Graph paper grid variables
 $grid-size: 24px;
@@ -57,11 +57,24 @@ $grid-size-small: 6px;
   body {
     background: transparent;
     min-height: 100vh;
+    position: relative;
+
+    // Vignette overlay - fades edges and corners
+    &::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(6, 13, 26, 0.85) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
   }
 
   .ouiPage,
   .ouiPageBody {
     background: transparent !important; // sass-lint:disable-line no-important
+    position: relative;
+    z-index: 1;
   }
 
   // Utility class for applying grid to fixed containers
@@ -83,11 +96,24 @@ $grid-size-small: 6px;
   body {
     background: transparent;
     min-height: 100vh;
+    position: relative;
+
+    // Vignette overlay - fades edges and corners
+    &::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(244, 246, 251, 0.9) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
   }
 
   .ouiPage,
   .ouiPageBody {
     background: transparent !important; // sass-lint:disable-line no-important
+    position: relative;
+    z-index: 1;
   }
 
   // Utility class for applying grid to fixed containers
