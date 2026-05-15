@@ -25,7 +25,6 @@ import {
   OuiPanel,
   OuiFlexGroup,
   OuiFlexItem,
-  OuiBrandGradient,
 } from '../../../../src/components';
 
 import { ThemeContext } from '../../components/with_theme';
@@ -45,10 +44,24 @@ export const LoginPage = ({ onLogin }) => {
     onLogin();
   };
 
+  // Agentic OSD Utility: Graph paper grid background (matching sample pages)
+  const gridColor = isDark
+    ? 'rgba(122, 159, 212, 0.06)'
+    : 'rgba(46, 74, 143, 0.04)';
+  const gridColorSmall = isDark
+    ? 'rgba(122, 159, 212, 0.025)'
+    : 'rgba(46, 74, 143, 0.015)';
+  const bgColor = isDark ? '#060D1A' : '#F4F6FB';
+
+  const gridBackground = `
+    linear-gradient(to right, ${gridColor} 1px, transparent 1px),
+    linear-gradient(to bottom, ${gridColor} 1px, transparent 1px),
+    linear-gradient(to right, ${gridColorSmall} 1px, transparent 1px),
+    linear-gradient(to bottom, ${gridColorSmall} 1px, transparent 1px)
+  `;
+
   return (
-    <OuiBrandGradient
-      variant="vivid"
-      isDark={isDark}
+    <div
       className="loginPage"
       style={{
         display: 'flex',
@@ -56,6 +69,9 @@ export const LoginPage = ({ onLogin }) => {
         alignItems: 'center',
         minHeight: '100vh',
         position: 'relative',
+        backgroundColor: bgColor,
+        backgroundImage: gridBackground,
+        backgroundSize: '24px 24px, 24px 24px, 6px 6px, 6px 6px',
       }}>
 
       {/* Back arrow */}
@@ -194,6 +210,6 @@ export const LoginPage = ({ onLogin }) => {
           </OuiPanel>
         </div>
       </div>
-    </OuiBrandGradient>
+    </div>
   );
 };
