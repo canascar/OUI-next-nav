@@ -229,6 +229,8 @@ import { ToolTipExample } from './views/tool_tip/tool_tip_example';
 
 import { TourExample } from './views/tour/tour_example';
 
+import { VisualizationCardExample } from './views/visualization_card/visualization_card_example';
+
 import { WindowEventExample } from './views/window_event/window_event_example';
 
 import { Changelog } from './views/package/changelog';
@@ -417,6 +419,7 @@ const navigation = [
       ToastExample,
       ToolTipExample,
       TourExample,
+      VisualizationCardExample,
     ].map((example) => createExample(example)),
   },
   {
