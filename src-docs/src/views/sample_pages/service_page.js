@@ -574,7 +574,11 @@ const catalogColumns = [
 
 // --- Main ServicePage Component ---
 
-export const ServicePage = ({ onContinueAsThread, isAskAiPanelOpen, onAskAiToggle }) => {
+export const ServicePage = ({
+  onContinueAsThread,
+  isAskAiPanelOpen,
+  onAskAiToggle,
+}) => {
   const [latencyTab, setLatencyTab] = useState('p99');
   const [filterWidth, setFilterWidth] = useState(240);
   const [isDragging, setIsDragging] = useState(false);

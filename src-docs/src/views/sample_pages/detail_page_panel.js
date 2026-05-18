@@ -33,7 +33,10 @@ export const DetailPagePanel = ({
     <div className="detailPagePanel">
       <div className="detailPagePanel__header">
         <span className="detailPagePanel__headerTitle">
-          All {title.toLowerCase().endsWith('s') ? title.toLowerCase() : `${title.toLowerCase()}s`}
+          All{' '}
+          {title.toLowerCase().endsWith('s')
+            ? title.toLowerCase()
+            : `${title.toLowerCase()}s`}
         </span>
         <div className="detailPagePanel__headerActions">
           <OuiButton size="s" iconType="plus" fill>

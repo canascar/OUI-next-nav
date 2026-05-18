@@ -54,6 +54,20 @@ import {
   saveLayout,
 } from './nav_layout_utils';
 
+// Session-based navigation imports
+import { SessionLeftNav } from './session_left_nav';
+import { SessionContainer } from './session_container';
+import { SessionList } from './session_list';
+import { EmptySessionPage } from './empty_session_page';
+import { SOURCE_PAGE_MOCK } from './session_models';
+import {
+  createSession,
+  updateSession,
+  setActiveSession,
+  openCanvasPage,
+} from './session_state_manager';
+import { LATENCY_SPIKE_SESSION } from './session_mock_data';
+
 const renderPage = (
   activePage,
   selectedItem,
@@ -72,7 +86,12 @@ const renderPage = (
     case 'home':
       return (
         <OuiErrorBoundary>
-          <HomePage onNavigate={onNavigate} onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
+          <HomePage
+            onNavigate={onNavigate}
+            onContinueAsThread={onContinueAsThread}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
+          />
         </OuiErrorBoundary>
       );
     case 'logs':
@@ -179,31 +198,51 @@ const renderPage = (
     case 'application-map':
       return (
         <OuiErrorBoundary>
-          <ApplicationMapPage onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
+          <ApplicationMapPage
+            onContinueAsThread={onContinueAsThread}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
+          />
         </OuiErrorBoundary>
       );
     case 'topology-map':
       return (
         <OuiErrorBoundary>
-          <TopologyMapPage onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
+          <TopologyMapPage
+            onContinueAsThread={onContinueAsThread}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
+          />
         </OuiErrorBoundary>
       );
     case 'agent-monitoring-traces':
       return (
         <OuiErrorBoundary>
-          <AgentMonitoringTracesPage onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
+          <AgentMonitoringTracesPage
+            onContinueAsThread={onContinueAsThread}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
+          />
         </OuiErrorBoundary>
       );
     case 'agent-monitoring-spans':
       return (
         <OuiErrorBoundary>
-          <AgentMonitoringSpansPage onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
+          <AgentMonitoringSpansPage
+            onContinueAsThread={onContinueAsThread}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
+          />
         </OuiErrorBoundary>
       );
     case 'app-perf-traces':
       return (
         <OuiErrorBoundary>
-          <AppPerfTracesPage onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
+          <AppPerfTracesPage
+            onContinueAsThread={onContinueAsThread}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
+          />
         </OuiErrorBoundary>
       );
     case 'notebooks':
@@ -223,7 +262,11 @@ const renderPage = (
     case 'anomaly-dashboard':
       return (
         <OuiErrorBoundary>
-          <AnomalyDashboardPage onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
+          <AnomalyDashboardPage
+            onContinueAsThread={onContinueAsThread}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
+          />
         </OuiErrorBoundary>
       );
     case 'detectors':
@@ -243,7 +286,11 @@ const renderPage = (
     case 'forecasters':
       return (
         <OuiErrorBoundary>
-          <ForecastersPage onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
+          <ForecastersPage
+            onContinueAsThread={onContinueAsThread}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
+          />
         </OuiErrorBoundary>
       );
     case 'alerts-detail':
@@ -277,7 +324,11 @@ const renderPage = (
     case 'destinations':
       return (
         <OuiErrorBoundary>
-          <DestinationsPage onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
+          <DestinationsPage
+            onContinueAsThread={onContinueAsThread}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
+          />
         </OuiErrorBoundary>
       );
     case 'data-sources':
@@ -353,7 +404,11 @@ const renderPage = (
     case 'manage-workspace':
       return (
         <OuiErrorBoundary>
-          <WorkspacePage onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
+          <WorkspacePage
+            onContinueAsThread={onContinueAsThread}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
+          />
         </OuiErrorBoundary>
       );
     case 'ai-skills':
@@ -423,7 +478,11 @@ const renderPage = (
     default:
       return (
         <OuiErrorBoundary>
-          <ServicePage onContinueAsThread={onContinueAsThread} isAskAiPanelOpen={isAskAiPanelOpen} onAskAiToggle={onAskAiToggle} />
+          <ServicePage
+            onContinueAsThread={onContinueAsThread}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
+          />
         </OuiErrorBoundary>
       );
   }
@@ -560,7 +619,8 @@ export const SamplePagesView = () => {
           {
             key: 'connection-timeout-errors',
             title: 'Connection timeout errors',
-            subtitle: 'source=logs | where severity="ERROR" | stats count() by message',
+            subtitle:
+              'source=logs | where severity="ERROR" | stats count() by message',
           },
         ],
         'saved-results': [
@@ -572,12 +632,14 @@ export const SamplePagesView = () => {
           {
             key: 'query-5xx-responses',
             title: '5xx responses',
-            subtitle: 'source=logs | where status >= 500 | stats count() by path',
+            subtitle:
+              'source=logs | where status >= 500 | stats count() by path',
           },
           {
             key: 'query-top-users',
             title: 'Top users by request count',
-            subtitle: 'source=logs | stats count() as requests by user | sort -requests | head 50',
+            subtitle:
+              'source=logs | stats count() as requests by user | sort -requests | head 50',
           },
         ],
       },
@@ -627,17 +689,20 @@ export const SamplePagesView = () => {
           {
             key: 'query-disk-io',
             title: 'Disk I/O by volume',
-            subtitle: 'source=metrics | stats avg(disk_io) by volume | sort -avg_disk_io',
+            subtitle:
+              'source=metrics | stats avg(disk_io) by volume | sort -avg_disk_io',
           },
           {
             key: 'query-network-errors',
             title: 'Network error rate',
-            subtitle: 'source=metrics | where net_errors > 0 | stats sum(net_errors) by interface',
+            subtitle:
+              'source=metrics | where net_errors > 0 | stats sum(net_errors) by interface',
           },
           {
             key: 'query-gc-pauses',
             title: 'GC pause duration',
-            subtitle: 'source=metrics | stats max(gc_pause_ms) by service | sort -max_gc_pause_ms',
+            subtitle:
+              'source=metrics | stats max(gc_pause_ms) by service | sort -max_gc_pause_ms',
           },
         ],
       },
@@ -1006,21 +1071,24 @@ export const SamplePagesView = () => {
     setSelectedItem(itemKey || null);
   }, []);
 
-  const handleViewAll = useCallback((page) => {
-    if (page === activePage) {
-      setIsPanelOpen(true);
-      setIsPanelCollapsing(false);
-    } else {
-      skipPanelOpenRef.current = true;
-      setActivePage(page);
-      setSelectedItem(DEFAULT_ITEMS[page] || null);
-      // Force panel open after the skipPanelOpenRef useEffect runs
-      setTimeout(() => {
+  const handleViewAll = useCallback(
+    (page) => {
+      if (page === activePage) {
         setIsPanelOpen(true);
         setIsPanelCollapsing(false);
-      }, 0);
-    }
-  }, [activePage]);
+      } else {
+        skipPanelOpenRef.current = true;
+        setActivePage(page);
+        setSelectedItem(DEFAULT_ITEMS[page] || null);
+        // Force panel open after the skipPanelOpenRef useEffect runs
+        setTimeout(() => {
+          setIsPanelOpen(true);
+          setIsPanelCollapsing(false);
+        }, 0);
+      }
+    },
+    [activePage]
+  );
 
   const handleNavAskAi = useCallback((text) => {
     setNavAskAiInitialPrompt(text || '');
@@ -1080,20 +1148,62 @@ export const SamplePagesView = () => {
   const handleContinueAsThread = useCallback(
     (prompt, response, popoverRect, pageTitle) => {
       const PAGE_META = {
-        logs: { description: 'Filtered log results showing recent entries, error distribution, and event patterns.' },
-        metrics: { description: 'Metrics visualization with time-series data and service performance indicators.' },
-        discover: { description: 'Query results from data exploration with field breakdowns and event timeline.' },
-        alerts: { description: 'Active alerts overview with severity levels, trigger conditions, and acknowledgment status.' },
-        'alerts-detail': { description: 'Alert investigation view with trigger history, correlated metrics, and notification timeline.' },
-        dashboards: { description: 'Dashboard panels showing aggregated metrics, visualizations, and saved queries.' },
-        notebooks: { description: 'Notebook with analysis steps, inline visualizations, and query results.' },
-        'topology-map': { description: 'Service topology showing dependencies, traffic flow, and health indicators.' },
-        'application-map': { description: 'Application dependency map with latency paths and error propagation.' },
-        'app-perf-traces': { description: 'Distributed traces with span breakdown, latency waterfall, and service hops.' },
-        'agent-monitoring-traces': { description: 'Agent execution traces showing tool calls, reasoning steps, and response times.' },
-        'agent-monitoring-spans': { description: 'Agent span details with duration, token usage, and execution context.' },
-        assets: { description: 'Asset inventory with resource metadata, ownership, and related configurations.' },
-        skills: { description: 'AI skill definitions with trigger conditions, actions, and execution history.' },
+        logs: {
+          description:
+            'Filtered log results showing recent entries, error distribution, and event patterns.',
+        },
+        metrics: {
+          description:
+            'Metrics visualization with time-series data and service performance indicators.',
+        },
+        discover: {
+          description:
+            'Query results from data exploration with field breakdowns and event timeline.',
+        },
+        alerts: {
+          description:
+            'Active alerts overview with severity levels, trigger conditions, and acknowledgment status.',
+        },
+        'alerts-detail': {
+          description:
+            'Alert investigation view with trigger history, correlated metrics, and notification timeline.',
+        },
+        dashboards: {
+          description:
+            'Dashboard panels showing aggregated metrics, visualizations, and saved queries.',
+        },
+        notebooks: {
+          description:
+            'Notebook with analysis steps, inline visualizations, and query results.',
+        },
+        'topology-map': {
+          description:
+            'Service topology showing dependencies, traffic flow, and health indicators.',
+        },
+        'application-map': {
+          description:
+            'Application dependency map with latency paths and error propagation.',
+        },
+        'app-perf-traces': {
+          description:
+            'Distributed traces with span breakdown, latency waterfall, and service hops.',
+        },
+        'agent-monitoring-traces': {
+          description:
+            'Agent execution traces showing tool calls, reasoning steps, and response times.',
+        },
+        'agent-monitoring-spans': {
+          description:
+            'Agent span details with duration, token usage, and execution context.',
+        },
+        assets: {
+          description:
+            'Asset inventory with resource metadata, ownership, and related configurations.',
+        },
+        skills: {
+          description:
+            'AI skill definitions with trigger conditions, actions, and execution history.',
+        },
       };
 
       const sourcePage = activePage;
@@ -1107,7 +1217,12 @@ export const SamplePagesView = () => {
       };
 
       const messages = [
-        { role: 'user', author: 'You', content: prompt, attachment: userAttachment },
+        {
+          role: 'user',
+          author: 'You',
+          content: prompt,
+          attachment: userAttachment,
+        },
         { role: 'assistant', content: response, streaming: false },
       ];
 
@@ -1123,7 +1238,12 @@ export const SamplePagesView = () => {
           setActivePage('thread');
           if (createThreadRef.current) {
             const newKey = createThreadRef.current();
-            setPendingThread({ key: newKey, messages, sourcePage, pageTitle: displayTitle });
+            setPendingThread({
+              key: newKey,
+              messages,
+              sourcePage,
+              pageTitle: displayTitle,
+            });
           }
         }, 400);
       } else {
@@ -1132,7 +1252,12 @@ export const SamplePagesView = () => {
         setActivePage('thread');
         if (createThreadRef.current) {
           const newKey = createThreadRef.current();
-          setPendingThread({ key: newKey, messages, sourcePage, pageTitle: displayTitle });
+          setPendingThread({
+            key: newKey,
+            messages,
+            sourcePage,
+            pageTitle: displayTitle,
+          });
         }
       }
     },
@@ -1256,34 +1381,37 @@ export const SamplePagesView = () => {
           )}
           {panelConfig && isPanelOpen && (
             <>
-            <div
-              className={`detailPageFlyout__cover${
-                isPanelCollapsing ? ' detailPageFlyout__cover--closing' : ''
-              }`}
-              onClick={handlePanelClose}
-            />
-            <div
-              className={`detailPageFlyout${
-                isPanelCollapsing ? ' detailPageFlyout--closing' : ''
-              }`}>
-              <DetailPagePanel
-                title={panelConfig.title}
-                items={panelConfig.items}
-                tabs={panelConfig.tabs}
-                tabItems={panelConfig.tabItems}
-                selectedItem={selectedItem}
-                onItemSelect={(key) => {
-                  setSelectedItem(key);
-                  handlePanelClose();
-                }}
-                onClose={handlePanelClose}
+              <div
+                className={`detailPageFlyout__cover${
+                  isPanelCollapsing ? ' detailPageFlyout__cover--closing' : ''
+                }`}
+                onClick={handlePanelClose}
               />
-            </div>
+              <div
+                className={`detailPageFlyout${
+                  isPanelCollapsing ? ' detailPageFlyout--closing' : ''
+                }`}>
+                <DetailPagePanel
+                  title={panelConfig.title}
+                  items={panelConfig.items}
+                  tabs={panelConfig.tabs}
+                  tabItems={panelConfig.tabItems}
+                  selectedItem={selectedItem}
+                  onItemSelect={(key) => {
+                    setSelectedItem(key);
+                    handlePanelClose();
+                  }}
+                  onClose={handlePanelClose}
+                />
+              </div>
             </>
           )}
         </div>
         {isAskAiPanelOpen && (
-          <div className={`askAiPanel${isAskAiPanelClosing ? ' askAiPanel--closing' : ''}`}>
+          <div
+            className={`askAiPanel${
+              isAskAiPanelClosing ? ' askAiPanel--closing' : ''
+            }`}>
             <AskAiPopover
               isOpen={isAskAiPanelOpen}
               mode="panel"
@@ -1324,6 +1452,211 @@ export const SamplePagesView = () => {
           />
         </div>
       )}
+    </div>
+  );
+};
+
+// ---------------------------------------------------------------------------
+// Session-Based Navigation View
+// ---------------------------------------------------------------------------
+
+/**
+ * Initializes session state with mock data when no persisted state exists.
+ * On first load, creates default sessions including the latency-spike mock
+ * and page-first mock so both flows are accessible from SessionList.
+ *
+ * @returns {import('./session_models').PersistedSessionState}
+ */
+function initializeSessionState() {
+  // Always start fresh — no persistence
+  // Include the Latency Spike Investigation demo session in the list
+  // but land on a new empty session
+  const emptySession = {
+    id: `session-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+    threadKey: null,
+    pendingThread: null,
+    title: 'New Session',
+    threadPanelState: 'side-by-side',
+    threadPanelWidth: 30,
+    tabs: [],
+    activeTabId: null,
+    createdAt: Date.now(),
+  };
+
+  return {
+    sessions: [emptySession, LATENCY_SPIKE_SESSION],
+    activeSessionId: emptySession.id,
+    version: 1,
+  };
+}
+
+/**
+ * SessionPagesView — Session-based navigation version of SamplePagesView.
+ *
+ * Replaces the icon-based left nav with a session model where each session
+ * is an independent workspace containing a thread panel and page panel with tabs.
+ */
+export const SessionPagesView = () => {
+  // Session state: sessions array + activeSessionId
+  const [sessionState, setSessionState] = useState(initializeSessionState);
+
+  // Active view: 'session' (show active session) or 'session-list' (browse all sessions)
+  const [activeView, setActiveView] = useState('session');
+
+  // Derive active session from state
+  const activeSession = sessionState.sessions.find(
+    (s) => s.id === sessionState.activeSessionId
+  );
+
+  // --- Left Nav handlers ---
+
+  /** Plus_Button: create a new session and navigate into it */
+  const handleCreateSession = useCallback(() => {
+    setSessionState((prev) => {
+      const next = createSession(prev);
+      return next;
+    });
+    setActiveView('session');
+  }, []);
+
+  /** Sessions_Button: show the session list */
+  const handleBrowseSessions = useCallback(() => {
+    setActiveView('session-list');
+  }, []);
+
+  // --- Session List handlers ---
+
+  /** Select a session from the list */
+  const handleSelectSession = useCallback((sessionId) => {
+    setSessionState((prev) => setActiveSession(prev, sessionId));
+    setActiveView('session');
+  }, []);
+
+  // --- Session Container handlers ---
+
+  /** Partial update to the active session */
+  const handleUpdateSession = useCallback((updates) => {
+    setSessionState((prev) => {
+      if (!prev.activeSessionId) return prev;
+      return updateSession(prev, prev.activeSessionId, updates);
+    });
+  }, []);
+
+  /** Open a canvas page as a tab in the active session */
+  const handleOpenCanvasPage = useCallback((pageKey, title) => {
+    setSessionState((prev) => {
+      if (!prev.activeSessionId) return prev;
+      const pageEntry = SOURCE_PAGE_MOCK[pageKey];
+      const displayTitle = title || (pageEntry ? pageEntry.title : pageKey);
+      return openCanvasPage(prev, prev.activeSessionId, pageKey, displayTitle);
+    });
+  }, []);
+
+  // --- EmptySessionPage handlers ---
+
+  /** Start a new thread from the empty session page */
+  const handleStartThread = useCallback((prompt) => {
+    setSessionState((prev) => {
+      if (!prev.activeSessionId) return prev;
+      const threadKey = `thread-${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2, 9)}`;
+      const pendingThread = {
+        key: threadKey,
+        messages: prompt
+          ? [{ role: 'user', author: 'You', content: prompt }]
+          : [],
+        sourcePageTitle: null,
+      };
+      return updateSession(prev, prev.activeSessionId, {
+        threadKey,
+        pendingThread,
+        threadPanelState: 'full-screen',
+        title: prompt ? prompt.slice(0, 40) : 'New Thread',
+      });
+    });
+  }, []);
+
+  /** Open a page from the empty session page */
+  const handleOpenPage = useCallback(
+    (pageKey) => {
+      const pageEntry = SOURCE_PAGE_MOCK[pageKey];
+      const title = pageEntry ? pageEntry.title : pageKey;
+      handleOpenCanvasPage(pageKey, title);
+    },
+    [handleOpenCanvasPage]
+  );
+
+  // --- Render ---
+
+  /** Determine if the active session should show EmptySessionPage */
+  const isEmptySession =
+    activeSession &&
+    !activeSession.threadKey &&
+    !activeSession.pendingThread &&
+    activeSession.tabs.length === 0;
+
+  const renderMainContent = () => {
+    if (activeView === 'session-list') {
+      return (
+        <SessionList
+          sessions={sessionState.sessions}
+          activeSessionId={sessionState.activeSessionId}
+          onSelectSession={handleSelectSession}
+          onCreateSession={handleCreateSession}
+        />
+      );
+    }
+
+    if (!activeSession) {
+      return null;
+    }
+
+    if (isEmptySession) {
+      return (
+        <EmptySessionPage
+          onStartThread={handleStartThread}
+          onOpenPage={handleOpenPage}
+          recentItems={[]}
+          favoriteItems={[]}
+          systemAlert={null}
+        />
+      );
+    }
+
+    return (
+      <SessionContainer
+        session={activeSession}
+        onUpdateSession={handleUpdateSession}
+        onOpenCanvasPage={handleOpenCanvasPage}
+      />
+    );
+  };
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+      }}>
+      <SessionLeftNav
+        sessionCount={sessionState.sessions.length}
+        onCreateSession={handleCreateSession}
+        onBrowseSessions={handleBrowseSessions}
+        activeView={activeView}
+      />
+      <div
+        style={{
+          flex: 1,
+          overflow: 'hidden',
+          display: 'flex',
+        }}>
+        {renderMainContent()}
+      </div>
     </div>
   );
 };

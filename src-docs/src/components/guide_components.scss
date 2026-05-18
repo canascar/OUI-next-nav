@@ -339,6 +339,15 @@ body {
 @import '../views/sample_pages/search_popover';
 @import '../views/sample_pages/workspace_page';
 @import '../views/sample_pages/settings_page';
+@import '../views/sample_pages/session_container';
+@import '../views/sample_pages/session_list';
+@import '../views/sample_pages/new_tab_page';
+@import '../views/sample_pages/floating_ask_ai_button';
+@import '../views/sample_pages/empty_session_page';
+@import '../views/sample_pages/session_left_nav';
+@import '../views/sample_pages/thread_panel';
+@import '../views/sample_pages/resize_handle';
+@import '../views/sample_pages/page_panel';
 
 @include ouiBreakpoint('xs', 's') {
   .guideSideNav {

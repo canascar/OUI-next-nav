@@ -143,14 +143,10 @@ export const HomePage = ({ onNavigate, onContinueAsThread }) => {
 
           <div className="samplePagesLeftNav__navGroup">
             <div className="samplePagesLeftNav__navGroupHeader">
-              <span className="samplePagesLeftNav__navGroupLabel">
-                Active
-              </span>
+              <span className="samplePagesLeftNav__navGroupLabel">Active</span>
               <OuiButtonIcon
                 iconType={activeOpen ? 'minus' : 'plus'}
-                aria-label={
-                  activeOpen ? 'Collapse Active' : 'Expand Active'
-                }
+                aria-label={activeOpen ? 'Collapse Active' : 'Expand Active'}
                 size="xs"
                 color="text"
                 display="empty"

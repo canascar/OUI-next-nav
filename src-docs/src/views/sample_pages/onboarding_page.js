@@ -46,7 +46,9 @@ const parseContent = (content) => {
 
     if (line.startsWith('**') && line.endsWith('**')) {
       elements.push(
-        <p key={key++} style={{ margin: '8px 0 4px', fontSize: 12, fontWeight: 700 }}>
+        <p
+          key={key++}
+          style={{ margin: '8px 0 4px', fontSize: 12, fontWeight: 700 }}>
           {line.replace(/\*\*/g, '')}
         </p>
       );
@@ -68,7 +70,11 @@ const parseContent = (content) => {
     } else if (line.trim() === '') {
       i++;
     } else {
-      elements.push(<p key={key++} style={{ margin: 0 }}>{line}</p>);
+      elements.push(
+        <p key={key++} style={{ margin: 0 }}>
+          {line}
+        </p>
+      );
       i++;
     }
   }
@@ -88,14 +94,34 @@ const UserMessage = ({ content }) => (
 );
 
 // Link preview attachment card (Tool UI style)
-const LinkPreviewAttachment = ({ href, title, description, onAddToCanvas, canvasItems }) => {
-  const added = canvasItems.some((c) => c.type === 'link-preview' && c.title === title);
+const LinkPreviewAttachment = ({
+  href,
+  title,
+  description,
+  onAddToCanvas,
+  canvasItems,
+}) => {
+  const added = canvasItems.some(
+    (c) => c.type === 'link-preview' && c.title === title
+  );
   return (
     <div className="threadPage__attachmentWrap">
       <button
         type="button"
-        className={`threadPage__addToCanvas${added ? ' threadPage__addToCanvas--added' : ''}`}
-        onClick={added ? undefined : () => onAddToCanvas({ type: 'link-preview', href, title, description })}>
+        className={`threadPage__addToCanvas${
+          added ? ' threadPage__addToCanvas--added' : ''
+        }`}
+        onClick={
+          added
+            ? undefined
+            : () =>
+                onAddToCanvas({
+                  type: 'link-preview',
+                  href,
+                  title,
+                  description,
+                })
+        }>
         {added ? 'Added as related asset' : 'Add as related asset'}
       </button>
       {href ? (
@@ -139,7 +165,16 @@ const LinkPreviewAttachment = ({ href, title, description, onAddToCanvas, canvas
 // Renders a single attachment by type
 const renderAttachment = (att, idx, onAddToCanvas, canvasItems) => {
   if (att.type === 'link-preview') {
-    return <LinkPreviewAttachment key={idx} href={att.href} title={att.title} description={att.description} onAddToCanvas={onAddToCanvas} canvasItems={canvasItems} />;
+    return (
+      <LinkPreviewAttachment
+        key={idx}
+        href={att.href}
+        title={att.title}
+        description={att.description}
+        onAddToCanvas={onAddToCanvas}
+        canvasItems={canvasItems}
+      />
+    );
   }
   if (att.type === 'code-block') {
     return (
@@ -150,7 +185,11 @@ const renderAttachment = (att, idx, onAddToCanvas, canvasItems) => {
               <strong>{att.title}</strong>
             </OuiText>
           )}
-          <OuiCodeBlock language={att.language} fontSize="s" paddingSize="s" isCopyable>
+          <OuiCodeBlock
+            language={att.language}
+            fontSize="s"
+            paddingSize="s"
+            isCopyable>
             {att.code}
           </OuiCodeBlock>
         </div>
@@ -194,17 +233,37 @@ const renderAttachment = (att, idx, onAddToCanvas, canvasItems) => {
 };
 
 // Assistant message with attachments and feedback
-const AssistantMessage = ({ content, streaming, attachment, attachments, onAddToCanvas, canvasItems }) => {
+const AssistantMessage = ({
+  content,
+  streaming,
+  attachment,
+  attachments,
+  onAddToCanvas,
+  canvasItems,
+}) => {
   const allAttachments = attachments || (attachment ? [attachment] : []);
   return (
     <div className="threadPage__message threadPage__message--assistant">
       <div className="threadPage__bubble threadPage__bubble--assistant">
         {content && <OuiText size="s">{parseContent(content)}</OuiText>}
-        {!streaming && allAttachments.map((att, idx) => renderAttachment(att, idx, onAddToCanvas, canvasItems))}
+        {!streaming &&
+          allAttachments.map((att, idx) =>
+            renderAttachment(att, idx, onAddToCanvas, canvasItems)
+          )}
         {!streaming && (
           <div className="threadPage__feedback">
-            <OuiButtonIcon iconType="thumbsUp" aria-label="Helpful" size="xs" color="text" />
-            <OuiButtonIcon iconType="thumbsDown" aria-label="Not helpful" size="xs" color="text" />
+            <OuiButtonIcon
+              iconType="thumbsUp"
+              aria-label="Helpful"
+              size="xs"
+              color="text"
+            />
+            <OuiButtonIcon
+              iconType="thumbsDown"
+              aria-label="Not helpful"
+              size="xs"
+              color="text"
+            />
           </div>
         )}
       </div>
@@ -258,7 +317,11 @@ const TaskListMessage = ({ tasks, statuses, collapsed }) => {
 const CONVERSATION_STEPS = [
   {
     // Step 0: User says "I am using k8s"
-    tasks: ['Scanning project structure', 'Detecting infrastructure', 'Analyzing dependencies'],
+    tasks: [
+      'Scanning project structure',
+      'Detecting infrastructure',
+      'Analyzing dependencies',
+    ],
     responses: [
       {
         content:
@@ -309,7 +372,11 @@ spec:
   },
   {
     // Step 2: User says "I am ready"
-    tasks: ['Deploying collector to cluster', 'Verifying data pipeline', 'Waiting for first events'],
+    tasks: [
+      'Deploying collector to cluster',
+      'Verifying data pipeline',
+      'Waiting for first events',
+    ],
     responses: [
       {
         content:
@@ -337,24 +404,26 @@ spec:
         },
       },
       {
-        content:
-          "I've generated a few dashboards for you to get started:",
+        content: "I've generated a few dashboards for you to get started:",
         tasksBefore: ['Building dashboards', 'Configuring visualizations'],
         attachments: [
           {
             type: 'link-preview',
             title: 'Kubernetes Cluster Overview',
-            description: 'Node health, pod status, resource requests vs limits, and namespace utilization across your cluster.',
+            description:
+              'Node health, pod status, resource requests vs limits, and namespace utilization across your cluster.',
           },
           {
             type: 'link-preview',
             title: 'Service Latency & Error Rates',
-            description: 'P50/P95/P99 latency and error rate trends for each service, with breakdown by endpoint.',
+            description:
+              'P50/P95/P99 latency and error rate trends for each service, with breakdown by endpoint.',
           },
           {
             type: 'link-preview',
             title: 'Log Volume by Namespace',
-            description: 'Log ingestion rates per namespace with severity distribution and top error patterns.',
+            description:
+              'Log ingestion rates per namespace with severity distribution and top error patterns.',
           },
         ],
       },
@@ -504,7 +573,12 @@ export const OnboardingPage = () => {
 
           // Add task list message
           const tTask = setTimeout(() => {
-            const taskMsg = { role: 'tasks', tasks: inlineTasks, statuses: ['running'], collapsed: false };
+            const taskMsg = {
+              role: 'tasks',
+              tasks: inlineTasks,
+              statuses: ['running'],
+              collapsed: false,
+            };
             setMessages((prev) => [...prev, taskMsg]);
           }, taskDelay);
           streamTimers.current.push(tTask);
@@ -515,7 +589,9 @@ export const OnboardingPage = () => {
             const tAnim = setTimeout(() => {
               setMessages((prev) => {
                 const updated = [...prev];
-                const idx = updated.findLastIndex((m) => m.role === 'tasks' && !m.collapsed);
+                const idx = updated.findLastIndex(
+                  (m) => m.role === 'tasks' && !m.collapsed
+                );
                 if (idx >= 0) {
                   const newStatuses = [...updated[idx].statuses];
                   newStatuses[ti - 1] = 'done';
@@ -533,9 +609,14 @@ export const OnboardingPage = () => {
           const tFinish = setTimeout(() => {
             setMessages((prev) => {
               const updated = [...prev];
-              const idx = updated.findLastIndex((m) => m.role === 'tasks' && !m.collapsed);
+              const idx = updated.findLastIndex(
+                (m) => m.role === 'tasks' && !m.collapsed
+              );
               if (idx >= 0) {
-                updated[idx] = { ...updated[idx], statuses: inlineTasks.map(() => 'done') };
+                updated[idx] = {
+                  ...updated[idx],
+                  statuses: inlineTasks.map(() => 'done'),
+                };
               }
               return updated;
             });
@@ -546,7 +627,9 @@ export const OnboardingPage = () => {
           const tCollapse = setTimeout(() => {
             setMessages((prev) => {
               const updated = [...prev];
-              const idx = updated.findLastIndex((m) => m.role === 'tasks' && !m.collapsed);
+              const idx = updated.findLastIndex(
+                (m) => m.role === 'tasks' && !m.collapsed
+              );
               if (idx >= 0) {
                 updated[idx] = { ...updated[idx], collapsed: true };
               }
@@ -567,7 +650,9 @@ export const OnboardingPage = () => {
             role: 'assistant',
             content: '',
             streaming: true,
-            ...(response.attachments ? { attachments: response.attachments } : { attachment: response.attachment }),
+            ...(response.attachments
+              ? { attachments: response.attachments }
+              : { attachment: response.attachment }),
           };
           setMessages((prev) => [...prev, msgData]);
 
@@ -587,7 +672,9 @@ export const OnboardingPage = () => {
 
               // Auto-add attachments to right panel when streaming finishes
               if (i === tokens.length - 1) {
-                const atts = response.attachments || (response.attachment ? [response.attachment] : []);
+                const atts =
+                  response.attachments ||
+                  (response.attachment ? [response.attachment] : []);
                 if (atts.length > 0) {
                   setCanvasItems((prev) => [...prev, ...atts]);
                   setIsCanvasOpen(true);
@@ -607,7 +694,12 @@ export const OnboardingPage = () => {
 
     if (tasks) {
       // Show task list first
-      const taskMsg = { role: 'tasks', tasks, statuses: ['running'], collapsed: false };
+      const taskMsg = {
+        role: 'tasks',
+        tasks,
+        statuses: ['running'],
+        collapsed: false,
+      };
       setMessages((prev) => [...prev, taskMsg]);
 
       // Animate tasks
@@ -696,270 +788,350 @@ export const OnboardingPage = () => {
             flexDirection: 'column',
             overflow: 'hidden',
           }}>
-      {/* Simple header — no left nav toggle, no thread flyout */}
-      <div className="detailPageHeader">
-        <div className="detailPageHeader__title">
-          {messages.length > 0 ? 'Set up from new' : THREAD.title}
-          {messages.length > 0 && (
-            <button
-              type="button"
-              className="onboardingPage__startOver"
-              onClick={() => window.location.reload()}>
-              Start over
-            </button>
-          )}
-        </div>
-        <div className="detailPageHeader__actions">
-          <OuiToolTip content="Related Assets" position="bottom">
-            <OuiButtonIcon
-              iconType="dockedRight"
-              aria-label="Related Assets"
-              size="s"
-              color="text"
-              display="empty"
-              onClick={() => setIsCanvasOpen((open) => !open)}
-            />
-          </OuiToolTip>
-        </div>
-      </div>
-
-      {/* Body: feed + optional canvas flyout */}
-      <div className="threadPage__body">
-        {/* Conversation column */}
-        <div className="threadPage__conversationCol">
-          <div className="threadPage__feed" ref={feedRef}>
-            {messages.length === 0 ? (
-              <div className="onboardingPage__options">
-                <OuiTitle size="m">
-                  <h2>Set up observability solution</h2>
-                </OuiTitle>
-                <OuiFlexGroup gutterSize="l" style={{ marginTop: 24 }}>
-                  <OuiFlexItem key="new">
-                    <button
-                      type="button"
-                      className={`onboardingPage__optionCard${selectedOption === 'new' ? ' onboardingPage__optionCard--selected' : ''}`}
-                      onClick={() => setSelectedOption('new')}>
-                      <OuiIcon type="plusInCircle" size="l" color="primary" />
-                      <OuiText size="s">
-                        <strong>Set up from new</strong>
-                      </OuiText>
-                      <OuiText size="xs" color="subdued">
-                        <p style={{ margin: 0 }}>Start fresh with a new observability configuration tailored to your environment.</p>
-                      </OuiText>
-                    </button>
-                    {selectedOption === 'new' && (
-                      <OuiText size="s" className="onboardingPage__optionDetail">
-                        <p>Tell me about your infrastructure setup — what services are you running, and where are they deployed? I will configure the right collectors and pipelines for you.</p>
-                      </OuiText>
-                    )}
-                  </OuiFlexItem>
-                  <OuiFlexItem key="migrate">
-                    <button
-                      type="button"
-                      className={`onboardingPage__optionCard${selectedOption === 'migrate' ? ' onboardingPage__optionCard--selected' : ''}`}
-                      onClick={() => setSelectedOption('migrate')}>
-                      <OuiIcon type="importAction" size="l" color="primary" />
-                      <OuiText size="s">
-                        <strong>Migrate from others</strong>
-                      </OuiText>
-                      <OuiText size="xs" color="subdued">
-                        <p style={{ margin: 0 }}>Bring your existing observability configuration from another platform to OpenSearch.</p>
-                      </OuiText>
-                    </button>
-                    {selectedOption === 'migrate' && (
-                      <OuiText size="s" className="onboardingPage__optionDetail">
-                        <p>Tell me about your current observability platform — what tools are you using today, and what data are you collecting? I will help you migrate everything over.</p>
-                      </OuiText>
-                    )}
-                  </OuiFlexItem>
-                </OuiFlexGroup>
-              </div>
-            ) : (
-              messages.map((msg, i) => {
-              if (msg.role === 'user') {
-                return <UserMessage key={i} content={msg.content} />;
-              }
-              if (msg.role === 'tasks') {
-                return (
-                  <TaskListMessage
-                    key={i}
-                    tasks={msg.tasks}
-                    statuses={msg.statuses}
-                    collapsed={msg.collapsed}
-                  />
-                );
-              }
-              return (
-                <AssistantMessage
-                  key={i}
-                  content={msg.content}
-                  streaming={msg.streaming}
-                  attachment={msg.attachment}
-                  attachments={msg.attachments}
-                  onAddToCanvas={() => {}}
-                  canvasItems={canvasItems}
-                />
-              );
-            })
-            )}
-          </div>
-
-          {/* Input area */}
-          <div className="threadPage__inputArea">
-            <div className="threadPage__inputWrapper">
-              <OuiCompressedTextArea
-                placeholder="Ask anything. Type / for actions."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={handleKeyDown}
-                rows={3}
-                resize="none"
-                fullWidth
-                className="threadPage__textarea"
-              />
-              <div className="threadPage__inputActions">
+          {/* Simple header — no left nav toggle, no thread flyout */}
+          <div className="detailPageHeader">
+            <div className="detailPageHeader__title">
+              {messages.length > 0 ? 'Set up from new' : THREAD.title}
+              {messages.length > 0 && (
+                <button
+                  type="button"
+                  className="onboardingPage__startOver"
+                  onClick={() => window.location.reload()}>
+                  Start over
+                </button>
+              )}
+            </div>
+            <div className="detailPageHeader__actions">
+              <OuiToolTip content="Related Assets" position="bottom">
                 <OuiButtonIcon
-                  iconType="plus"
-                  aria-label="Add attachment"
+                  iconType="dockedRight"
+                  aria-label="Related Assets"
                   size="s"
                   color="text"
+                  display="empty"
+                  onClick={() => setIsCanvasOpen((open) => !open)}
                 />
-                <OuiButtonIcon
-                  iconType="sortUp"
-                  aria-label="Send message"
-                  display="fill"
-                  size="s"
-                  isDisabled={!message.trim() || isTyping || messages.some((m) => m.streaming)}
-                  onClick={handleSend}
-                />
+              </OuiToolTip>
+            </div>
+          </div>
+
+          {/* Body: feed + optional canvas flyout */}
+          <div className="threadPage__body">
+            {/* Conversation column */}
+            <div className="threadPage__conversationCol">
+              <div className="threadPage__feed" ref={feedRef}>
+                {messages.length === 0 ? (
+                  <div className="onboardingPage__options">
+                    <OuiTitle size="m">
+                      <h2>Set up observability solution</h2>
+                    </OuiTitle>
+                    <OuiFlexGroup gutterSize="l" style={{ marginTop: 24 }}>
+                      <OuiFlexItem key="new">
+                        <button
+                          type="button"
+                          className={`onboardingPage__optionCard${
+                            selectedOption === 'new'
+                              ? ' onboardingPage__optionCard--selected'
+                              : ''
+                          }`}
+                          onClick={() => setSelectedOption('new')}>
+                          <OuiIcon
+                            type="plusInCircle"
+                            size="l"
+                            color="primary"
+                          />
+                          <OuiText size="s">
+                            <strong>Set up from new</strong>
+                          </OuiText>
+                          <OuiText size="xs" color="subdued">
+                            <p style={{ margin: 0 }}>
+                              Start fresh with a new observability configuration
+                              tailored to your environment.
+                            </p>
+                          </OuiText>
+                        </button>
+                        {selectedOption === 'new' && (
+                          <OuiText
+                            size="s"
+                            className="onboardingPage__optionDetail">
+                            <p>
+                              Tell me about your infrastructure setup — what
+                              services are you running, and where are they
+                              deployed? I will configure the right collectors
+                              and pipelines for you.
+                            </p>
+                          </OuiText>
+                        )}
+                      </OuiFlexItem>
+                      <OuiFlexItem key="migrate">
+                        <button
+                          type="button"
+                          className={`onboardingPage__optionCard${
+                            selectedOption === 'migrate'
+                              ? ' onboardingPage__optionCard--selected'
+                              : ''
+                          }`}
+                          onClick={() => setSelectedOption('migrate')}>
+                          <OuiIcon
+                            type="importAction"
+                            size="l"
+                            color="primary"
+                          />
+                          <OuiText size="s">
+                            <strong>Migrate from others</strong>
+                          </OuiText>
+                          <OuiText size="xs" color="subdued">
+                            <p style={{ margin: 0 }}>
+                              Bring your existing observability configuration
+                              from another platform to OpenSearch.
+                            </p>
+                          </OuiText>
+                        </button>
+                        {selectedOption === 'migrate' && (
+                          <OuiText
+                            size="s"
+                            className="onboardingPage__optionDetail">
+                            <p>
+                              Tell me about your current observability platform
+                              — what tools are you using today, and what data
+                              are you collecting? I will help you migrate
+                              everything over.
+                            </p>
+                          </OuiText>
+                        )}
+                      </OuiFlexItem>
+                    </OuiFlexGroup>
+                  </div>
+                ) : (
+                  messages.map((msg, i) => {
+                    if (msg.role === 'user') {
+                      return <UserMessage key={i} content={msg.content} />;
+                    }
+                    if (msg.role === 'tasks') {
+                      return (
+                        <TaskListMessage
+                          key={i}
+                          tasks={msg.tasks}
+                          statuses={msg.statuses}
+                          collapsed={msg.collapsed}
+                        />
+                      );
+                    }
+                    return (
+                      <AssistantMessage
+                        key={i}
+                        content={msg.content}
+                        streaming={msg.streaming}
+                        attachment={msg.attachment}
+                        attachments={msg.attachments}
+                        onAddToCanvas={() => {}}
+                        canvasItems={canvasItems}
+                      />
+                    );
+                  })
+                )}
+              </div>
+
+              {/* Input area */}
+              <div className="threadPage__inputArea">
+                <div className="threadPage__inputWrapper">
+                  <OuiCompressedTextArea
+                    placeholder="Ask anything. Type / for actions."
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    rows={3}
+                    resize="none"
+                    fullWidth
+                    className="threadPage__textarea"
+                  />
+                  <div className="threadPage__inputActions">
+                    <OuiButtonIcon
+                      iconType="plus"
+                      aria-label="Add attachment"
+                      size="s"
+                      color="text"
+                    />
+                    <OuiButtonIcon
+                      iconType="sortUp"
+                      aria-label="Send message"
+                      display="fill"
+                      size="s"
+                      isDisabled={
+                        !message.trim() ||
+                        isTyping ||
+                        messages.some((m) => m.streaming)
+                      }
+                      onClick={handleSend}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Canvas flyout (push panel) */}
+            <div
+              className={`threadPage__canvasFlyout${
+                isCanvasOpen ? ' threadPage__canvasFlyout--open' : ''
+              }${
+                isCanvasDragging ? ' threadPage__canvasFlyout--dragging' : ''
+              }`}
+              style={isCanvasOpen ? { width: canvasWidth } : undefined}>
+              <div className="threadPage__canvasFlyoutInner">
+                <div
+                  className="threadPage__canvasResizeHandle"
+                  onMouseDown={handleDragStart}
+                  role="separator"
+                  aria-orientation="vertical"
+                  aria-label="Resize canvas"
+                  tabIndex={0}>
+                  <span className="threadPage__canvasResizeGrip">
+                    <OuiIcon type="grab" size="s" />
+                  </span>
+                </div>
+                <OuiFlyoutHeader>
+                  <OuiTabs size="s" className="threadPage__canvasTabs">
+                    <OuiTab
+                      isSelected={activeCanvasTab === 0}
+                      onClick={() => setActiveCanvasTab(0)}>
+                      Setup plan
+                    </OuiTab>
+                    {canvasItems.map((item, i) => (
+                      <OuiTab
+                        key={i}
+                        isSelected={activeCanvasTab === i + 1}
+                        onClick={() => setActiveCanvasTab(i + 1)}>
+                        {item.title ||
+                          (item.type === 'query' ? 'Query' : `Asset ${i + 1}`)}
+                      </OuiTab>
+                    ))}
+                  </OuiTabs>
+                </OuiFlyoutHeader>
+                <OuiFlyoutBody>
+                  {activeCanvasTab === 0 ? (
+                    <div className="onboardingPage__planList">
+                      {setupPlanSteps.length === 0 ? (
+                        <OuiText size="s" color="subdued">
+                          <p>
+                            Your setup plan will appear here as you progress.
+                          </p>
+                        </OuiText>
+                      ) : (
+                        setupPlanSteps.map((step, i) => (
+                          <div key={i} className="onboardingPage__planItem">
+                            <div className="onboardingPage__planIcon">
+                              {step.status === 'done' ? (
+                                <OuiIcon
+                                  type="checkInCircleEmpty"
+                                  size="m"
+                                  color="success"
+                                />
+                              ) : (
+                                <OuiIcon type="dot" size="m" color="primary" />
+                              )}
+                            </div>
+                            <OuiText size="s">
+                              <span
+                                className={
+                                  step.status === 'current'
+                                    ? 'onboardingPage__planLabel--current'
+                                    : ''
+                                }>
+                                {step.label}
+                              </span>
+                            </OuiText>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  ) : (
+                    <div className="threadPage__canvasDetail">
+                      {canvasItems[activeCanvasTab - 1] &&
+                        canvasItems[activeCanvasTab - 1].type === 'page' && (
+                          <>
+                            <OuiText size="s">
+                              <strong>
+                                {canvasItems[activeCanvasTab - 1].title}
+                              </strong>
+                            </OuiText>
+                            <OuiText size="s" color="subdued">
+                              <p>
+                                {canvasItems[activeCanvasTab - 1].description}
+                              </p>
+                            </OuiText>
+                          </>
+                        )}
+                      {canvasItems[activeCanvasTab - 1] &&
+                        canvasItems[activeCanvasTab - 1].type === 'query' && (
+                          <OuiCodeBlock fontSize="s" paddingSize="s" isCopyable>
+                            {canvasItems[activeCanvasTab - 1].query}
+                          </OuiCodeBlock>
+                        )}
+                      {canvasItems[activeCanvasTab - 1] &&
+                        canvasItems[activeCanvasTab - 1].type ===
+                          'code-block' && (
+                          <>
+                            {canvasItems[activeCanvasTab - 1].title && (
+                              <OuiText size="s">
+                                <strong>
+                                  {canvasItems[activeCanvasTab - 1].title}
+                                </strong>
+                              </OuiText>
+                            )}
+                            <OuiCodeBlock
+                              language={
+                                canvasItems[activeCanvasTab - 1].language
+                              }
+                              fontSize="s"
+                              paddingSize="s"
+                              isCopyable>
+                              {canvasItems[activeCanvasTab - 1].code}
+                            </OuiCodeBlock>
+                          </>
+                        )}
+                      {canvasItems[activeCanvasTab - 1] &&
+                        canvasItems[activeCanvasTab - 1].type ===
+                          'data-table' && (
+                          <>
+                            {canvasItems[activeCanvasTab - 1].title && (
+                              <OuiText size="s">
+                                <strong>
+                                  {canvasItems[activeCanvasTab - 1].title}
+                                </strong>
+                              </OuiText>
+                            )}
+                            <div className="threadPage__dataTableScroll">
+                              <table className="threadPage__dataTable">
+                                <thead>
+                                  <tr>
+                                    {canvasItems[
+                                      activeCanvasTab - 1
+                                    ].columns.map((col, i) => (
+                                      <th key={i}>{col}</th>
+                                    ))}
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {canvasItems[activeCanvasTab - 1].rows.map(
+                                    (row, i) => (
+                                      <tr key={i}>
+                                        {row.map((cell, j) => (
+                                          <td key={j}>{cell}</td>
+                                        ))}
+                                      </tr>
+                                    )
+                                  )}
+                                </tbody>
+                              </table>
+                            </div>
+                          </>
+                        )}
+                    </div>
+                  )}
+                </OuiFlyoutBody>
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Canvas flyout (push panel) */}
-        <div
-          className={`threadPage__canvasFlyout${isCanvasOpen ? ' threadPage__canvasFlyout--open' : ''}${isCanvasDragging ? ' threadPage__canvasFlyout--dragging' : ''}`}
-          style={isCanvasOpen ? { width: canvasWidth } : undefined}>
-          <div className="threadPage__canvasFlyoutInner">
-            <div
-              className="threadPage__canvasResizeHandle"
-              onMouseDown={handleDragStart}
-              role="separator"
-              aria-orientation="vertical"
-              aria-label="Resize canvas"
-              tabIndex={0}>
-              <span className="threadPage__canvasResizeGrip">
-                <OuiIcon type="grab" size="s" />
-              </span>
-            </div>
-            <OuiFlyoutHeader>
-              <OuiTabs size="s" className="threadPage__canvasTabs">
-                <OuiTab
-                  isSelected={activeCanvasTab === 0}
-                  onClick={() => setActiveCanvasTab(0)}>
-                  Setup plan
-                </OuiTab>
-                {canvasItems.map((item, i) => (
-                  <OuiTab
-                    key={i}
-                    isSelected={activeCanvasTab === i + 1}
-                    onClick={() => setActiveCanvasTab(i + 1)}>
-                    {item.title || (item.type === 'query' ? 'Query' : `Asset ${i + 1}`)}
-                  </OuiTab>
-                ))}
-              </OuiTabs>
-            </OuiFlyoutHeader>
-            <OuiFlyoutBody>
-              {activeCanvasTab === 0 ? (
-                <div className="onboardingPage__planList">
-                  {setupPlanSteps.length === 0 ? (
-                    <OuiText size="s" color="subdued">
-                      <p>Your setup plan will appear here as you progress.</p>
-                    </OuiText>
-                  ) : (
-                    setupPlanSteps.map((step, i) => (
-                      <div key={i} className="onboardingPage__planItem">
-                        <div className="onboardingPage__planIcon">
-                          {step.status === 'done' ? (
-                            <OuiIcon type="checkInCircleEmpty" size="m" color="success" />
-                          ) : (
-                            <OuiIcon type="dot" size="m" color="primary" />
-                          )}
-                        </div>
-                        <OuiText size="s">
-                          <span className={step.status === 'current' ? 'onboardingPage__planLabel--current' : ''}>
-                            {step.label}
-                          </span>
-                        </OuiText>
-                      </div>
-                    ))
-                  )}
-                </div>
-              ) : (
-                <div className="threadPage__canvasDetail">
-                  {canvasItems[activeCanvasTab - 1] && canvasItems[activeCanvasTab - 1].type === 'page' && (
-                    <>
-                      <OuiText size="s">
-                        <strong>{canvasItems[activeCanvasTab - 1].title}</strong>
-                      </OuiText>
-                      <OuiText size="s" color="subdued">
-                        <p>{canvasItems[activeCanvasTab - 1].description}</p>
-                      </OuiText>
-                    </>
-                  )}
-                  {canvasItems[activeCanvasTab - 1] && canvasItems[activeCanvasTab - 1].type === 'query' && (
-                    <OuiCodeBlock fontSize="s" paddingSize="s" isCopyable>
-                      {canvasItems[activeCanvasTab - 1].query}
-                    </OuiCodeBlock>
-                  )}
-                  {canvasItems[activeCanvasTab - 1] && canvasItems[activeCanvasTab - 1].type === 'code-block' && (
-                    <>
-                      {canvasItems[activeCanvasTab - 1].title && (
-                        <OuiText size="s">
-                          <strong>{canvasItems[activeCanvasTab - 1].title}</strong>
-                        </OuiText>
-                      )}
-                      <OuiCodeBlock language={canvasItems[activeCanvasTab - 1].language} fontSize="s" paddingSize="s" isCopyable>
-                        {canvasItems[activeCanvasTab - 1].code}
-                      </OuiCodeBlock>
-                    </>
-                  )}
-                  {canvasItems[activeCanvasTab - 1] && canvasItems[activeCanvasTab - 1].type === 'data-table' && (
-                    <>
-                      {canvasItems[activeCanvasTab - 1].title && (
-                        <OuiText size="s">
-                          <strong>{canvasItems[activeCanvasTab - 1].title}</strong>
-                        </OuiText>
-                      )}
-                      <div className="threadPage__dataTableScroll">
-                        <table className="threadPage__dataTable">
-                          <thead>
-                            <tr>
-                              {canvasItems[activeCanvasTab - 1].columns.map((col, i) => (
-                                <th key={i}>{col}</th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {canvasItems[activeCanvasTab - 1].rows.map((row, i) => (
-                              <tr key={i}>
-                                {row.map((cell, j) => (
-                                  <td key={j}>{cell}</td>
-                                ))}
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </>
-                  )}
-                </div>
-              )}
-            </OuiFlyoutBody>
-          </div>
-        </div>
-      </div>
         </div>
       </div>
     </div>

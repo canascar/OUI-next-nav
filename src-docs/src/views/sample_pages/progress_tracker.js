@@ -111,7 +111,9 @@ export const ProgressTracker = ({ id, steps, elapsedTime, collapsed }) => {
               </div>
               <div className="progressTracker__stepContent">
                 <OuiText size="xs">
-                  <span className="progressTracker__stepLabel">{step.label}</span>
+                  <span className="progressTracker__stepLabel">
+                    {step.label}
+                  </span>
                 </OuiText>
                 {step.description && (
                   <OuiText size="xs" color="subdued">

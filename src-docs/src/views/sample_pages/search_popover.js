@@ -300,7 +300,6 @@ export const SearchPopover = ({ isOpen, onClose, onNavigate, onAskAi }) => {
     }
   }, [isOpen]);
 
-
   // Filter items by query
   const filteredSections = useMemo(() => {
     const q = query.toLowerCase().trim();
@@ -348,79 +347,79 @@ export const SearchPopover = ({ isOpen, onClose, onNavigate, onAskAi }) => {
 
   return (
     <OuiOverlayMask onClick={onClose} headerZindexLocation="below">
-    <div ref={popoverRef} className="searchPopover">
-      {/* Search input */}
-      <div className="searchPopover__input">
-        <div className="searchPopover__inputWrapper">
-          <OuiCompressedFieldText
-            inputRef={inputRef}
-            placeholder="Search anything or Ask AI"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-            fullWidth
-          />
-          {hasQuery && (
-            <OuiButtonEmpty
-              className="searchPopover__askAiButton"
-              size="s"
-              iconType="generate"
-              onClick={handleAskAi}>
-              Ask AI
-            </OuiButtonEmpty>
-          )}
+      <div ref={popoverRef} className="searchPopover">
+        {/* Search input */}
+        <div className="searchPopover__input">
+          <div className="searchPopover__inputWrapper">
+            <OuiCompressedFieldText
+              inputRef={inputRef}
+              placeholder="Search anything or Ask AI"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              fullWidth
+            />
+            {hasQuery && (
+              <OuiButtonEmpty
+                className="searchPopover__askAiButton"
+                size="s"
+                iconType="generate"
+                onClick={handleAskAi}>
+                Ask AI
+              </OuiButtonEmpty>
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* Results — only show when typing */}
-      {hasQuery && (
-        <div className="searchPopover__body">
-          {!hasResults ? (
-            <div className="searchPopover__empty">
-              <OuiText size="s" color="subdued">
-                <p>No results found</p>
-              </OuiText>
-            </div>
-          ) : (
-            filteredSections.map((section) => (
-              <div key={section.section} className="searchPopover__section">
-                <div className="searchPopover__sectionTitle">
-                  <OuiText size="xs" color="subdued">
-                    <strong>{section.section}</strong>
-                  </OuiText>
-                </div>
-                <OuiListGroup gutterSize="none" maxWidth={false}>
-                  {section.items.map((item, index) => (
-                    <React.Fragment key={item.key}>
-                      {index > 0 && (
-                        <div className="searchPopover__ruleDivider">
-                          <OuiHorizontalRule margin="none" />
-                        </div>
-                      )}
-                      <OuiListGroupItem
-                        label={
-                          <div>
-                            <OuiText size="s">
-                              <strong>{item.label}</strong>
-                            </OuiText>
-                            {item.subtitle && (
-                              <OuiText size="xs" color="subdued">
-                                {item.subtitle}
-                              </OuiText>
-                            )}
-                          </div>
-                        }
-                        onClick={() => handleItemClick(item.key)}
-                      />
-                    </React.Fragment>
-                  ))}
-                </OuiListGroup>
+        {/* Results — only show when typing */}
+        {hasQuery && (
+          <div className="searchPopover__body">
+            {!hasResults ? (
+              <div className="searchPopover__empty">
+                <OuiText size="s" color="subdued">
+                  <p>No results found</p>
+                </OuiText>
               </div>
-            ))
-          )}
-        </div>
-      )}
-    </div>
+            ) : (
+              filteredSections.map((section) => (
+                <div key={section.section} className="searchPopover__section">
+                  <div className="searchPopover__sectionTitle">
+                    <OuiText size="xs" color="subdued">
+                      <strong>{section.section}</strong>
+                    </OuiText>
+                  </div>
+                  <OuiListGroup gutterSize="none" maxWidth={false}>
+                    {section.items.map((item, index) => (
+                      <React.Fragment key={item.key}>
+                        {index > 0 && (
+                          <div className="searchPopover__ruleDivider">
+                            <OuiHorizontalRule margin="none" />
+                          </div>
+                        )}
+                        <OuiListGroupItem
+                          label={
+                            <div>
+                              <OuiText size="s">
+                                <strong>{item.label}</strong>
+                              </OuiText>
+                              {item.subtitle && (
+                                <OuiText size="xs" color="subdued">
+                                  {item.subtitle}
+                                </OuiText>
+                              )}
+                            </div>
+                          }
+                          onClick={() => handleItemClick(item.key)}
+                        />
+                      </React.Fragment>
+                    ))}
+                  </OuiListGroup>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
     </OuiOverlayMask>
   );
 };
