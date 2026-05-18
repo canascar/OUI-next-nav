@@ -73,7 +73,7 @@
     @include ouiTextTruncate;
     @include ouiFontSizeXS;
     color: $ouiTextSubduedColor;
-    margin-top: $ouiSizeXS / 2;
+    margin-top: calc($ouiSizeXS / 2);
   }
 
   &__meta {
@@ -94,7 +94,7 @@
 
   &__status {
     @include ouiFontSizeXS;
-    margin-bottom: $ouiSizeXS / 2;
+    margin-bottom: calc($ouiSizeXS / 2);
 
     &--primary {
       color: $ouiColorPrimary;

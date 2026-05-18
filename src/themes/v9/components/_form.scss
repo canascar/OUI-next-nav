@@ -317,7 +317,7 @@
 .react-datepicker__navigation--next {
   &:hover,
   &:focus {
-    border-radius: $ouiBorderRadiusSmall / 2 !important;
+    border-radius: calc($ouiBorderRadiusSmall / 2) !important;
   }
 }
 // sass-lint:enable no-important

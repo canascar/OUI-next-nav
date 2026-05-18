@@ -40,10 +40,10 @@
 
 // sass-lint:disable quotes
 // Agentic OSD Utility Typography
-// Body: IBM Plex Sans | Display: Space Grotesk | Code: IBM Plex Mono
-$ouiFontFamily: #{"'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'"} !default;
-$ouiFontFamilyDisplay: #{"'Space Grotesk', 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"} !default;
-$ouiCodeFontFamily: #{"'IBM Plex Mono', Consolas, Menlo, Courier, monospace"} !default;
+// Body: Outfit | Display: Space Grotesk | Code: JetBrains Mono
+$ouiFontFamily: #{"'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'"} !default;
+$ouiFontFamilyDisplay: #{"'Space Grotesk', 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"} !default;
+$ouiCodeFontFamily: #{"'JetBrains Mono', Consolas, Menlo, Courier, monospace"} !default;
 // sass-lint:enable quotes
 
 // Careful using ligatures. Code editors like ACE will often error because of width calculations
@@ -91,36 +91,42 @@ $ouiTitles: (
     'font-size': $ouiFontSizeS,
     'line-height': $ouiHeadingLineHeight,
     'font-weight': $ouiFontWeightSemiBold,
+    'font-family': $ouiFontFamilyDisplay,
   ),
   // h5: 14px / semibold
   'xxs': (
     'font-size': $ouiFontSizeS,
     'line-height': $ouiHeadingLineHeight,
     'font-weight': $ouiFontWeightSemiBold,
+    'font-family': $ouiFontFamilyDisplay,
   ),
   // h4: 16px / semibold
   'xs': (
     'font-size': $ouiFontSizeM,
     'line-height': $ouiHeadingLineHeight,
     'font-weight': $ouiFontWeightSemiBold,
+    'font-family': $ouiFontFamilyDisplay,
   ),
   // h3: 18px / semibold
   's': (
     'font-size': $ouiFontSizeL,
     'line-height': $ouiHeadingLineHeight,
     'font-weight': $ouiFontWeightSemiBold,
+    'font-family': $ouiFontFamilyDisplay,
   ),
   // h2: 24px / medium
   'm': (
     'font-size': $ouiFontSizeXL,
     'line-height': $ouiHeadingLineHeight,
     'font-weight': $ouiFontWeightMedium,
+    'font-family': $ouiFontFamilyDisplay,
   ),
   // h1: 28px / medium
   'l': (
     'font-size': $ouiFontSizeXXL,
     'line-height': $ouiHeadingLineHeight,
     'font-weight': $ouiFontWeightMedium,
+    'font-family': $ouiFontFamilyDisplay,
   ),
 ) !default;
 

@@ -40,12 +40,12 @@ export const OllyIndicator = ({ state = 'idle' }) => {
     }
   }, [state]);
 
-  // Colors - Agentic OSD Utility palette
-  const primary = isDark ? '#7A9FD4' : '#2E4A8F';      // Amethyst (dark) / Minsk (light)
-  const secondary = isDark ? '#B8D4F0' : '#4168B8';   // Rose Quartz (dark) / Violet Topaz (light)
+  // Colors - OpenSearch logo colors
+  const primary = isDark ? '#0284C7' : '#075985';
+  const secondary = isDark ? '#BAE6FD' : '#082F49';
   const textColor = isDark ? '#aaa' : '#888';
   const shimmerLight = isDark ? '#fff' : '#ccc';
-  const glareColor = isDark ? '#7A9FD4' : '#4168B8';  // Amethyst (dark) / Violet Topaz (light)
+  const glareColor = isDark ? '#7dd3fc' : '#4fc3f7';
 
   if (state === 'idle') {
     return (

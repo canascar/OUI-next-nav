@@ -765,6 +765,7 @@ export const SamplePagesLeftNav = ({
   return (
     <>
     <OuiLeftNav
+      className="samplePagesLeftNav"
       aria-label="Sample pages navigation"
       logo={<OuiIcon type="logoOpenSearch" size="l" />}
       footer={

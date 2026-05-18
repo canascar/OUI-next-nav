@@ -4,15 +4,23 @@
  */
 
 // sass-lint:disable no-color-literals
-// Agentic OSD Utility logo colors
-// Light mode: Minsk (primary) / Violet Topaz (secondary)
-$ouiLogoPrimaryLight: #2E4A8F;
-$ouiLogoSecondaryLight: #4168B8;
-// Dark mode: Amethyst (primary) / Rose Quartz (secondary)
-$ouiLogoPrimaryDark: #7A9FD4;
-$ouiLogoSecondaryDark: #B8D4F0;
+// OpenSearch logo colors
+// Light mode
+$ouiLogoPrimaryLight: #075985;
+$ouiLogoSecondaryLight: #082F49;
+// Dark mode
+$ouiLogoPrimaryDark: #0284C7;
+$ouiLogoSecondaryDark: #BAE6FD;
 // sass-lint:enable no-color-literals
 
+// Light mode defaults
+.ouiHeader--default,
+.samplePagesLeftNav {
+  --ouiLogoPrimary: #{$ouiLogoPrimaryLight};
+  --ouiLogoSecondary: #{$ouiLogoSecondaryLight};
+}
+
+// Dark header
 .ouiHeader--dark {
   --ouiLogoPrimary: #{$ouiLogoPrimaryDark};
   --ouiLogoSecondary: #{$ouiLogoSecondaryDark};
