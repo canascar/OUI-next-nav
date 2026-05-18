@@ -1,0 +1,468 @@
+// Onboarding Wizard — step-by-step split layout
+// sass-lint:disable no-color-literals
+
+.onboardWizard {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  background: linear-gradient(135deg, #f0fafa 0%, #f7f9fc 50%, #ffffff 100%);
+}
+
+.onboardWizard__left {
+  width: 38%;
+  min-width: 320px;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 32px 16px;
+  overflow-y: auto;
+}
+
+.onboardWizard__leftInner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.onboardWizard__right {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 40px 80px;
+  overflow-y: auto;
+}
+
+.onboardWizard__rightPanel {
+  width: 100%;
+  max-width: 680px;
+  background: $ouiColorEmptyShade;
+  border-radius: $ouiBorderRadius * 2;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  padding: 32px;
+  min-height: 400px;
+}
+
+// Step indicator
+.onboardWizard__stepIndicator {
+  padding: 4px 0;
+}
+
+// Question area
+.onboardWizard__question {
+  padding: 12px 16px;
+  background: $ouiColorEmptyShade;
+  border-radius: $ouiBorderRadius;
+  border: 1px solid $ouiBorderColor;
+}
+
+// Chip options
+.onboardWizard__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.onboardWizard__chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1px solid $ouiBorderColor;
+  background: $ouiColorEmptyShade;
+  font-size: $ouiFontSizeS;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 150ms ease;
+
+  &:hover:not(:disabled) {
+    border-color: $ouiColorPrimary;
+    background: rgba($ouiColorPrimary, 0.05);
+  }
+
+  &--selected {
+    background: $ouiColorDarkestShade;
+    color: $ouiColorEmptyShade;
+    border-color: $ouiColorDarkestShade;
+
+    &:hover:not(:disabled) {
+      background: $ouiColorDarkestShade;
+      border-color: $ouiColorDarkestShade;
+    }
+  }
+
+  &--confirm {
+    background: $ouiColorPrimary;
+    color: $ouiColorEmptyShade;
+    border-color: $ouiColorPrimary;
+
+    &:hover:not(:disabled) {
+      background: darken($ouiColorPrimary, 5%);
+      border-color: darken($ouiColorPrimary, 5%);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+// Card options
+.onboardWizard__optionCards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.onboardWizard__optionCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorEmptyShade;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  width: 100%;
+  transition: background-color 150ms ease, border-color 150ms ease;
+
+  &:hover:not(:disabled) {
+    background: rgba($ouiColorPrimary, 0.04);
+    border-color: $ouiColorPrimary;
+  }
+
+  &--selected {
+    border-color: $ouiColorPrimary;
+    background: rgba($ouiColorPrimary, 0.08);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+// Processing indicator
+.onboardWizard__processing {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+// Progress dots (timeline between question and confirmation)
+.onboardWizard__progressDots {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 0;
+  gap: 4px;
+}
+
+.onboardWizard__dotLine {
+  width: 2px;
+  height: 20px;
+  background: $ouiColorPrimary;
+  border-radius: 1px;
+  opacity: 0.4;
+}
+
+.onboardWizard__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: $ouiBorderColor;
+  transition: background-color 200ms ease;
+
+  &--done {
+    background: $ouiColorSuccess;
+  }
+}
+
+// Confirmation card
+.onboardWizard__confirmation {
+  padding: 12px 16px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorEmptyShade;
+}
+
+.onboardWizard__confirmIcon {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+// Next button
+.onboardWizard__nextBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 20px;
+  border: none;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorPrimary;
+  color: $ouiColorEmptyShade;
+  font-size: $ouiFontSizeS;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+
+  &:hover {
+    background: darken($ouiColorPrimary, 8%);
+  }
+}
+
+// Input area at bottom of left panel
+.onboardWizard__inputArea {
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+.onboardWizard__inputPlaceholder {
+  padding: 10px 14px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorEmptyShade;
+}
+
+// Footer
+.onboardWizard__footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  padding: 12px;
+  pointer-events: none;
+}
+
+.onboardWizard__finishLater {
+  pointer-events: all;
+  background: none;
+  border: none;
+  color: $ouiTextSubduedColor;
+  font-size: $ouiFontSizeXS;
+  font-family: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+
+  &:hover {
+    color: $ouiTextColor;
+  }
+}
+
+// --- Right Panel Content Styles ---
+
+.onboardWizard__rightContent {
+  min-height: 340px;
+}
+
+.onboardWizard__rightHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+// Provider cards grid (data sources step)
+.onboardWizard__providerGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.onboardWizard__providerCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 20px 12px 14px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorEmptyShade;
+  text-align: center;
+  transition: border-color 150ms ease;
+
+  &--selected {
+    border-color: $ouiColorPrimary;
+    box-shadow: 0 0 0 1px $ouiColorPrimary;
+  }
+}
+
+.onboardWizard__providerIcon {
+  margin-bottom: 4px;
+}
+
+.onboardWizard__connectedBadge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  background: $ouiColorSuccess;
+  color: $ouiColorEmptyShade;
+  border-radius: 10px;
+}
+
+.onboardWizard__liveIndicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: $ouiColorSuccess;
+}
+
+.onboardWizard__liveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: $ouiColorSuccess;
+  animation: onboardWizardPulse 1.5s infinite;
+}
+
+@keyframes onboardWizardPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+// Live ingest panel
+.onboardWizard__ingestPanel {
+  padding: 16px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorLightestShade;
+}
+
+.onboardWizard__ingestHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.onboardWizard__ingestRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid $ouiBorderColor;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.onboardWizard__ingestLabel {
+  width: 60px;
+  font-size: $ouiFontSizeXS;
+  font-weight: 600;
+  color: $ouiTextSubduedColor;
+  text-transform: uppercase;
+}
+
+.onboardWizard__ingestRate {
+  width: 70px;
+  font-size: $ouiFontSizeXS;
+  font-weight: 500;
+}
+
+.onboardWizard__sparkline {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.onboardWizard__sparkDot {
+  display: inline-block;
+  border-radius: 50%;
+}
+
+.onboardWizard__ingestToggle {
+  flex-shrink: 0;
+}
+
+// Signal cards (choose signals step)
+.onboardWizard__signalList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.onboardWizard__signalCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorEmptyShade;
+  transition: border-color 150ms ease, background-color 150ms ease;
+
+  &--active {
+    border-color: $ouiColorSuccess;
+    background: rgba($ouiColorSuccess, 0.04);
+  }
+}
+
+.onboardWizard__signalCheck {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+// Retention stats
+.onboardWizard__retentionStats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.onboardWizard__statCard {
+  padding: 20px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorEmptyShade;
+  text-align: center;
+}
+
+// Summary
+.onboardWizard__summaryList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.onboardWizard__summaryRow {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 16px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorEmptyShade;
+}
+
+// Info placeholder
+.onboardWizard__infoPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  border: 1px dashed $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+}

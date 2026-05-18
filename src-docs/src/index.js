@@ -33,6 +33,7 @@ import ScrollToHash from './components/scroll_to_hash';
 import { LinkWrapper } from './views/link_wrapper';
 import { SamplePagesView } from './views/sample_pages/sample_pages_view';
 import { OnboardingPage } from './views/sample_pages/onboarding_page';
+import { OnboardingWizardPage } from './views/sample_pages/onboarding_wizard_page';
 
 registerTheme('light', [themeLight]);
 registerTheme('dark', [themeDark]);
@@ -67,6 +68,14 @@ render(
       <Router history={history}>
         <ScrollToHash />
         <Switch>
+          <Route
+            path="/onboarding-wizard"
+            render={() => (
+              <LinkWrapper>
+                <OnboardingWizardPage />
+              </LinkWrapper>
+            )}
+          />
           <Route
             path="/onboarding"
             render={() => (
