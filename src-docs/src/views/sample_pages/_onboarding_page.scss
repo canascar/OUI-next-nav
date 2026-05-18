@@ -1,0 +1,94 @@
+// sass-lint:disable no-color-literals
+
+.onboardingPage__options {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.onboardingPage__optionCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 20px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  width: 100%;
+  transition: background-color 150ms ease-in-out, border-color 150ms ease-in-out;
+
+  &:hover {
+    background-color: rgba($ouiColorPrimary, 0.05);
+    border-color: $ouiColorPrimary;
+  }
+
+  &--selected {
+    border-color: $ouiColorPrimary;
+    background-color: rgba($ouiColorPrimary, 0.08);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $ouiColorPrimary;
+    outline-offset: 1px;
+  }
+}
+
+
+// Setup plan checklist in right panel
+.onboardingPage__planList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.onboardingPage__planItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.onboardingPage__planIcon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.onboardingPage__planLabel--current {
+  font-weight: 600;
+  color: $ouiColorPrimary;
+}
+
+.onboardingPage__optionDetail {
+  margin-top: 12px;
+  padding-left: 4px;
+}
+
+.onboardingPage__startOver {
+  margin-left: 12px;
+  padding: 2px 8px;
+  font-size: $ouiFontSizeXS;
+  line-height: 20px;
+  font-family: inherit;
+  color: $ouiTextSubduedColor;
+  background: none;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  cursor: pointer;
+
+  &:hover {
+    color: $ouiTextColor;
+    border-color: $ouiTextSubduedColor;
+  }
+}

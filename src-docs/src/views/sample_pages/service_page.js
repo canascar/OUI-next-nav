@@ -9,10 +9,10 @@
  * GitHub history for details.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 import {
-  OuiSuperDatePicker,
+  OuiAccordion,
   OuiFieldSearch,
   OuiBasicTable,
   OuiFlexGroup,
@@ -32,6 +32,8 @@ import {
   OuiToolTip,
   OuiButtonIcon,
 } from '../../../../src/components';
+
+import { DetailPageHeader } from './detail_page_header';
 
 // --- Mock Data ---
 
@@ -132,6 +134,12 @@ const ENV_OPTIONS = [
   { id: 'lambda', label: 'Lambda' },
 ];
 
+const FAILURE_RATIO_OPTIONS = [
+  { id: 'low', label: '< 1%' },
+  { id: 'medium', label: '1-5%' },
+  { id: 'high', label: '> 5%' },
+];
+
 const LANGUAGE_OPTIONS = [
   { id: 'cpp', label: 'cpp' },
   { id: 'dotnet', label: 'dotnet' },
@@ -148,7 +156,10 @@ const LATENCY_TABS = [
 
 // --- Sparkline placeholder (simple inline SVG) ---
 
-const Sparkline = ({ values, color = '#006BB4' }) => {
+const Sparkline = ({
+  values,
+  className = 'servicePage__sparkline--primary',
+}) => {
   const max = Math.max(...values, 1);
   const width = 60;
   const height = 20;
@@ -160,7 +171,12 @@ const Sparkline = ({ values, color = '#006BB4' }) => {
     .join(' ');
   return (
     <svg width={width} height={height} style={{ verticalAlign: 'middle' }}>
-      <polyline fill="none" stroke={color} strokeWidth="1.5" points={points} />
+      <polyline
+        fill="none"
+        className={className}
+        strokeWidth="1.5"
+        points={points}
+      />
     </svg>
   );
 };
@@ -190,97 +206,97 @@ const FilterSidebar = () => {
   const [envSelection, setEnvSelection] = useState([]);
   const [latencyRange, setLatencyRange] = useState(['4', '443']);
   const [throughputRange, setThroughputRange] = useState(['8', '310']);
+  const [failureSelection, setFailureSelection] = useState([]);
   const [langSelection, setLangSelection] = useState([]);
 
   return (
-    <OuiPanel
-      paddingSize="m"
-      style={{ width: 200, minWidth: 200, flexShrink: 0 }}>
-      <OuiFlexGroup
-        alignItems="center"
-        justifyContent="spaceBetween"
-        responsive={false}
-        gutterSize="none">
-        <OuiFlexItem grow={false}>
-          <OuiTitle size="xxs">
-            <h3>Filters</h3>
-          </OuiTitle>
-        </OuiFlexItem>
-        <OuiFlexItem grow={false}>
-          <OuiButtonIcon
-            iconType="filter"
-            aria-label="Filter options"
-            size="s"
-          />
-        </OuiFlexItem>
-      </OuiFlexGroup>
-      <OuiSpacer size="m" />
+    <div style={{ padding: 16 }}>
+      <OuiAccordion
+        id="filter-environment"
+        buttonContent="Environment"
+        initialIsOpen>
+        <OuiSpacer size="xs" />
+        <OuiCheckboxGroup
+          options={ENV_OPTIONS}
+          idToSelectedMap={envSelection.reduce(
+            (acc, id) => ({ ...acc, [id]: true }),
+            {}
+          )}
+          onChange={(id) =>
+            setEnvSelection((prev) =>
+              prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+            )
+          }
+          compressed
+        />
+      </OuiAccordion>
 
-      <OuiTitle size="xxxs">
-        <h4>Environment</h4>
-      </OuiTitle>
-      <OuiSpacer size="xs" />
-      <OuiCheckboxGroup
-        options={ENV_OPTIONS}
-        idToSelectedMap={envSelection.reduce(
-          (acc, id) => ({ ...acc, [id]: true }),
-          {}
-        )}
-        onChange={(id) =>
-          setEnvSelection((prev) =>
-            prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-          )
-        }
-      />
-      <OuiSpacer size="m" />
+      <OuiSpacer size="s" />
 
-      <OuiTitle size="xxxs">
-        <h4>Latency</h4>
-      </OuiTitle>
-      <OuiSpacer size="xs" />
-      <OuiDualRange
-        min={0}
-        max={500}
-        value={latencyRange}
-        onChange={setLatencyRange}
-        showInput={false}
-        aria-label="Latency range"
-      />
-      <OuiText size="xs" color="subdued">
-        <p>
-          {latencyRange[0]}ms – {latencyRange[1]}ms
-        </p>
-      </OuiText>
-      <OuiSpacer size="m" />
+      <OuiAccordion id="filter-latency" buttonContent="Latency" initialIsOpen>
+        <OuiSpacer size="xs" />
+        <OuiDualRange
+          min={0}
+          max={500}
+          value={latencyRange}
+          onChange={setLatencyRange}
+          showInput={false}
+          compressed
+          aria-label="Latency range"
+        />
+        <OuiText size="xs" color="subdued" style={{ textAlign: 'center' }}>
+          <p>
+            {latencyRange[0]}ms – {latencyRange[1]}ms
+          </p>
+        </OuiText>
+      </OuiAccordion>
 
-      <OuiTitle size="xxxs">
-        <h4>Throughput</h4>
-      </OuiTitle>
-      <OuiSpacer size="xs" />
-      <OuiDualRange
-        min={0}
-        max={400}
-        value={throughputRange}
-        onChange={setThroughputRange}
-        showInput={false}
-        aria-label="Throughput range"
-      />
-      <OuiText size="xs" color="subdued">
-        <p>
-          {throughputRange[0]} req/int – {throughputRange[1]} req/int
-        </p>
-      </OuiText>
-      <OuiSpacer size="m" />
+      <OuiSpacer size="s" />
 
-      <OuiTitle size="xxxs">
-        <h4>Failure ratio</h4>
-      </OuiTitle>
-      <OuiSpacer size="xs" />
-      <OuiHealth color="success">{'< 1%'}</OuiHealth>
-      <OuiHealth color="warning">1-5%</OuiHealth>
-      <OuiHealth color="danger">{'> 5%'}</OuiHealth>
-      <OuiSpacer size="m" />
+      <OuiAccordion
+        id="filter-throughput"
+        buttonContent="Throughput"
+        initialIsOpen>
+        <OuiSpacer size="xs" />
+        <OuiDualRange
+          min={0}
+          max={400}
+          value={throughputRange}
+          onChange={setThroughputRange}
+          showInput={false}
+          compressed
+          aria-label="Throughput range"
+        />
+        <OuiText size="xs" color="subdued" style={{ textAlign: 'center' }}>
+          <p>
+            {throughputRange[0]} req/int – {throughputRange[1]} req/int
+          </p>
+        </OuiText>
+      </OuiAccordion>
 
+      <OuiSpacer size="s" />
+
+      <OuiAccordion
+        id="filter-failure-ratio"
+        buttonContent="Failure ratio"
+        initialIsOpen>
+        <OuiSpacer size="xs" />
+        <OuiCheckboxGroup
+          options={FAILURE_RATIO_OPTIONS}
+          idToSelectedMap={failureSelection.reduce(
+            (acc, id) => ({ ...acc, [id]: true }),
+            {}
+          )}
+          onChange={(id) =>
+            setFailureSelection((prev) =>
+              prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+            )
+          }
+          compressed
+        />
+      </OuiAccordion>
+
+      <OuiSpacer size="m" />
       <OuiHorizontalRule margin="s" />
       <OuiTitle size="xxxs">
         <h4>Attributes</h4>
@@ -290,16 +306,19 @@ const FilterSidebar = () => {
         <p>telemetry.sdk.language</p>
       </OuiText>
       <OuiSpacer size="xs" />
-      <OuiFieldSearch placeholder="Search" aria-label="Search attributes" />
+      <OuiFieldSearch compressed fullWidth aria-label="Search attributes" />
       <OuiSpacer size="xs" />
-      <OuiFlexGroup gutterSize="xs" responsive={false}>
+      <OuiFlexGroup
+        gutterSize="xs"
+        responsive={false}
+        justifyContent="spaceBetween">
         <OuiFlexItem grow={false}>
           <OuiButtonEmpty size="xs" flush="left">
             Select all
           </OuiButtonEmpty>
         </OuiFlexItem>
         <OuiFlexItem grow={false}>
-          <OuiButtonEmpty size="xs" flush="left">
+          <OuiButtonEmpty size="xs" flush="right">
             Clear all
           </OuiButtonEmpty>
         </OuiFlexItem>
@@ -315,12 +334,30 @@ const FilterSidebar = () => {
             prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
           )
         }
+        compressed
       />
-    </OuiPanel>
+    </div>
   );
 };
 
 // --- Summary Panels ---
+
+const faultServiceColumns = [
+  {
+    field: 'service',
+    name: 'Service',
+    render: (name) => (
+      <OuiLink href="#" onClick={(e) => e.preventDefault()}>
+        {name}
+      </OuiLink>
+    ),
+  },
+  {
+    field: 'faultRate',
+    name: 'Fault rate',
+    render: (value) => <FaultBar value={value} />,
+  },
+];
 
 const TopFaultServicesPanel = () => (
   <OuiPanel paddingSize="m">
@@ -328,38 +365,40 @@ const TopFaultServicesPanel = () => (
       <h3>Top services by fault rate</h3>
     </OuiTitle>
     <OuiSpacer size="s" />
-    <OuiFlexGroup gutterSize="xs" direction="column">
-      <OuiFlexItem>
-        <OuiFlexGroup responsive={false} gutterSize="s" alignItems="center">
-          <OuiFlexItem grow={false} style={{ width: 120 }}>
-            <OuiText size="xs">
-              <strong>Service</strong>
-            </OuiText>
-          </OuiFlexItem>
-          <OuiFlexItem>
-            <OuiText size="xs">
-              <strong>Fault rate</strong>
-            </OuiText>
-          </OuiFlexItem>
-        </OuiFlexGroup>
-      </OuiFlexItem>
-      {TOP_FAULT_SERVICES.map((item) => (
-        <OuiFlexItem key={item.service}>
-          <OuiFlexGroup responsive={false} gutterSize="s" alignItems="center">
-            <OuiFlexItem grow={false} style={{ width: 120 }}>
-              <OuiLink href="#" onClick={(e) => e.preventDefault()}>
-                {item.service}
-              </OuiLink>
-            </OuiFlexItem>
-            <OuiFlexItem>
-              <FaultBar value={item.faultRate} />
-            </OuiFlexItem>
-          </OuiFlexGroup>
-        </OuiFlexItem>
-      ))}
-    </OuiFlexGroup>
+    <OuiBasicTable
+      items={TOP_FAULT_SERVICES}
+      columns={faultServiceColumns}
+      tableLayout="auto"
+      compressed
+    />
   </OuiPanel>
 );
+
+const depPathColumns = [
+  {
+    field: 'depService',
+    name: 'Dependency service',
+    render: (name) => (
+      <OuiLink href="#" onClick={(e) => e.preventDefault()}>
+        {name}
+      </OuiLink>
+    ),
+  },
+  {
+    field: 'service',
+    name: 'Service',
+    render: (name) => (
+      <OuiLink href="#" onClick={(e) => e.preventDefault()}>
+        {name}
+      </OuiLink>
+    ),
+  },
+  {
+    field: 'faultRate',
+    name: 'Fault rate',
+    render: (value) => <FaultBar value={value} />,
+  },
+];
 
 const TopDependencyPathsPanel = () => (
   <OuiPanel paddingSize="m">
@@ -367,46 +406,12 @@ const TopDependencyPathsPanel = () => (
       <h3>Top dependency paths by fault rate</h3>
     </OuiTitle>
     <OuiSpacer size="s" />
-    <OuiFlexGroup gutterSize="xs" direction="column">
-      <OuiFlexItem>
-        <OuiFlexGroup responsive={false} gutterSize="s" alignItems="center">
-          <OuiFlexItem grow={false} style={{ width: 110 }}>
-            <OuiText size="xs">
-              <strong>Dependency service</strong>
-            </OuiText>
-          </OuiFlexItem>
-          <OuiFlexItem grow={false} style={{ width: 110 }}>
-            <OuiText size="xs">
-              <strong>Service</strong>
-            </OuiText>
-          </OuiFlexItem>
-          <OuiFlexItem>
-            <OuiText size="xs">
-              <strong>Fault rate</strong>
-            </OuiText>
-          </OuiFlexItem>
-        </OuiFlexGroup>
-      </OuiFlexItem>
-      {TOP_DEPENDENCY_PATHS.map((item, i) => (
-        <OuiFlexItem key={i}>
-          <OuiFlexGroup responsive={false} gutterSize="s" alignItems="center">
-            <OuiFlexItem grow={false} style={{ width: 110 }}>
-              <OuiLink href="#" onClick={(e) => e.preventDefault()}>
-                {item.depService}
-              </OuiLink>
-            </OuiFlexItem>
-            <OuiFlexItem grow={false} style={{ width: 110 }}>
-              <OuiLink href="#" onClick={(e) => e.preventDefault()}>
-                {item.service}
-              </OuiLink>
-            </OuiFlexItem>
-            <OuiFlexItem>
-              <FaultBar value={item.faultRate} />
-            </OuiFlexItem>
-          </OuiFlexGroup>
-        </OuiFlexItem>
-      ))}
-    </OuiFlexGroup>
+    <OuiBasicTable
+      items={TOP_DEPENDENCY_PATHS}
+      columns={depPathColumns}
+      tableLayout="auto"
+      compressed
+    />
   </OuiPanel>
 );
 
@@ -523,7 +528,7 @@ const catalogColumns = [
               throughput * 0.95,
               throughput * 0.85,
             ]}
-            color="#69707D"
+            className="servicePage__sparkline--subdued"
           />
         </OuiFlexItem>
       </OuiFlexGroup>
@@ -549,7 +554,11 @@ const catalogColumns = [
                 ratio * 1.05,
                 ratio * 0.95,
               ]}
-              color={ratio > 20 ? '#BD271E' : '#69707D'}
+              className={
+                ratio > 20
+                  ? 'servicePage__sparkline--danger'
+                  : 'servicePage__sparkline--subdued'
+              }
             />
           )}
         </OuiFlexItem>
@@ -565,117 +574,193 @@ const catalogColumns = [
 
 // --- Main ServicePage Component ---
 
-export const ServicePage = () => {
+export const ServicePage = ({
+  onContinueAsThread,
+  isAskAiPanelOpen,
+  onAskAiToggle,
+}) => {
   const [latencyTab, setLatencyTab] = useState('p99');
-  const [start, setStart] = useState('now-15m');
-  const [end, setEnd] = useState('now');
+  const [filterWidth, setFilterWidth] = useState(240);
+  const [isDragging, setIsDragging] = useState(false);
+  const [activeTab, setActiveTab] = useState('services');
+  const dragging = useRef(false);
+  const bodyRef = useRef(null);
 
-  const onTimeChange = ({ start: s, end: e }) => {
-    setStart(s);
-    setEnd(e);
-  };
+  // Drag-to-resize handlers for filter panel (same pattern as Discover fields panel)
+  const handleResizeStart = useCallback((e) => {
+    e.preventDefault();
+    dragging.current = true;
+    setIsDragging(true);
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  }, []);
+
+  useEffect(() => {
+    const handleResizeMove = (e) => {
+      if (!dragging.current || !bodyRef.current) return;
+      const bodyRect = bodyRef.current.getBoundingClientRect();
+      const newWidth = e.clientX - bodyRect.left;
+      setFilterWidth(Math.max(180, Math.min(newWidth, 500)));
+    };
+    const handleResizeEnd = () => {
+      if (!dragging.current) return;
+      dragging.current = false;
+      setIsDragging(false);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+    window.addEventListener('mousemove', handleResizeMove);
+    window.addEventListener('mouseup', handleResizeEnd);
+    return () => {
+      window.removeEventListener('mousemove', handleResizeMove);
+      window.removeEventListener('mouseup', handleResizeEnd);
+    };
+  }, []);
 
   return (
-    <div style={{ minHeight: '100%' }}>
-      {/* Page title + APM Settings */}
-      <OuiFlexGroup
-        justifyContent="spaceBetween"
-        alignItems="center"
-        responsive={false}>
-        <OuiFlexItem grow={false}>
-          <OuiTitle size="l">
-            <h1>Services</h1>
-          </OuiTitle>
-        </OuiFlexItem>
-        <OuiFlexItem grow={false}>
-          <OuiButtonEmpty iconType="gear" size="s">
-            APM Settings
+    <div
+      style={{
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+      }}>
+      {/* Page title + date picker + actions */}
+      <DetailPageHeader
+        title="Application Performance Services"
+        onContinueAsThread={onContinueAsThread}
+        isAskAiPanelOpen={isAskAiPanelOpen}
+        onAskAiToggle={onAskAiToggle}
+      />
+
+      {/* Tab bar */}
+      <div className="servicePage__tabBar">
+        <div className="servicePage__tabBarLeft">
+          <OuiButtonGroup
+            legend="APM view toggle"
+            options={[
+              { id: 'services', label: 'Services' },
+              { id: 'application-map', label: 'Application map' },
+            ]}
+            idSelected={activeTab}
+            onChange={(id) => setActiveTab(id)}
+            buttonSize="compressed"
+            isFullWidth
+            style={{ width: 320 }}
+          />
+        </div>
+        <div className="servicePage__tabActions">
+          <OuiButtonEmpty size="s" iconType="popout" iconSide="right">
+            View documentation
           </OuiButtonEmpty>
-        </OuiFlexItem>
-      </OuiFlexGroup>
-      <OuiSpacer size="m" />
+        </div>
+      </div>
 
-      {/* Search bar + time controls */}
-      <OuiFlexGroup gutterSize="s" alignItems="center" responsive={false}>
-        <OuiFlexItem>
-          <OuiFieldSearch
-            placeholder="Filter by service name or environment"
-            fullWidth
-          />
-        </OuiFlexItem>
-        <OuiFlexItem grow={false}>
-          <OuiSuperDatePicker
-            start={start}
-            end={end}
-            onTimeChange={onTimeChange}
-          />
-        </OuiFlexItem>
-      </OuiFlexGroup>
-      <OuiSpacer size="l" />
+      {/* Body: filter panel (left) + resize handle + main content */}
+      <div className="servicePage__body" ref={bodyRef}>
+        {/* Filter panel (left sidebar) */}
+        <div style={{ width: filterWidth, flexShrink: 0 }}>
+          <OuiPanel
+            paddingSize="none"
+            className="servicePage__filterPanel"
+            hasShadow={false}
+            hasBorder>
+            <div className="servicePage__filterPanelHeader">
+              <OuiTitle size="xxs">
+                <h2>Filters</h2>
+              </OuiTitle>
+            </div>
+            <div style={{ padding: '8px 12px' }}>
+              <OuiFieldSearch
+                placeholder="Filter by service na..."
+                fullWidth
+                compressed
+                aria-label="Filter services"
+              />
+            </div>
+            <div className="servicePage__filterPanelScroll">
+              <FilterSidebar />
+            </div>
+          </OuiPanel>
+        </div>
 
-      {/* Main content: filter sidebar + panels */}
-      <OuiFlexGroup gutterSize="l" responsive={false}>
-        <OuiFlexItem grow={false}>
-          <FilterSidebar />
-        </OuiFlexItem>
+        {/* Resize handle */}
+        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+        <div
+          className={`servicePage__resizeHandle${
+            isDragging ? ' servicePage__resizeHandle--active' : ''
+          }`}
+          onMouseDown={handleResizeStart}
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize filter panel"
+          tabIndex={0}
+        />
 
-        <OuiFlexItem>
-          {/* Top summary panels */}
-          <OuiFlexGroup gutterSize="l">
-            <OuiFlexItem>
-              <TopFaultServicesPanel />
-            </OuiFlexItem>
-            <OuiFlexItem>
-              <TopDependencyPathsPanel />
-            </OuiFlexItem>
-          </OuiFlexGroup>
-          <OuiSpacer size="l" />
-
-          {/* Service Catalog */}
-          <OuiPanel paddingSize="m">
-            <OuiFlexGroup
-              justifyContent="spaceBetween"
-              alignItems="center"
-              responsive={false}>
-              <OuiFlexItem grow={false}>
-                <OuiTitle size="xs">
-                  <h3>Service Catalog</h3>
-                </OuiTitle>
+        {/* Main content column */}
+        <div className="servicePage__contentCol">
+          <div
+            style={{
+              padding: '0',
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              flex: 1,
+            }}>
+            {/* Top summary panels */}
+            <OuiFlexGroup gutterSize="m">
+              <OuiFlexItem>
+                <TopFaultServicesPanel />
               </OuiFlexItem>
-              <OuiFlexItem grow={false}>
-                <OuiFlexGroup
-                  gutterSize="s"
-                  alignItems="center"
-                  responsive={false}>
-                  <OuiFlexItem grow={false}>
-                    <OuiText size="xs">Latency</OuiText>
-                  </OuiFlexItem>
-                  <OuiFlexItem grow={false}>
-                    <OuiButtonGroup
-                      legend="Latency percentile"
-                      options={LATENCY_TABS}
-                      idSelected={latencyTab}
-                      onChange={(id) => setLatencyTab(id)}
-                    />
-                  </OuiFlexItem>
-                </OuiFlexGroup>
+              <OuiFlexItem>
+                <TopDependencyPathsPanel />
               </OuiFlexItem>
             </OuiFlexGroup>
-            <OuiSpacer size="m" />
 
-            <OuiBasicTable
-              items={SERVICES}
-              columns={catalogColumns}
-              rowHeader="name"
-              tableLayout="auto"
-            />
-            <OuiSpacer size="s" />
-            <OuiText size="xs" color="subdued">
-              <p>Rows per page: 10</p>
-            </OuiText>
-          </OuiPanel>
-        </OuiFlexItem>
-      </OuiFlexGroup>
+            {/* Service Catalog */}
+            <OuiPanel paddingSize="m" style={{ marginTop: 16 }}>
+              <OuiFlexGroup
+                justifyContent="spaceBetween"
+                alignItems="center"
+                responsive={false}>
+                <OuiFlexItem grow={false}>
+                  <OuiTitle size="xs">
+                    <h3>Service Catalog</h3>
+                  </OuiTitle>
+                </OuiFlexItem>
+                <OuiFlexItem grow={false}>
+                  <OuiFlexGroup
+                    gutterSize="s"
+                    alignItems="center"
+                    responsive={false}>
+                    <OuiFlexItem grow={false}>
+                      <OuiText size="xs">Latency</OuiText>
+                    </OuiFlexItem>
+                    <OuiFlexItem grow={false}>
+                      <OuiButtonGroup
+                        legend="Latency percentile"
+                        options={LATENCY_TABS}
+                        idSelected={latencyTab}
+                        onChange={(id) => setLatencyTab(id)}
+                        buttonSize="compressed"
+                      />
+                    </OuiFlexItem>
+                  </OuiFlexGroup>
+                </OuiFlexItem>
+              </OuiFlexGroup>
+
+              <OuiBasicTable
+                items={SERVICES}
+                columns={catalogColumns}
+                rowHeader="name"
+                tableLayout="fixed"
+              />
+              <OuiText size="xs" color="subdued" style={{ marginTop: 8 }}>
+                <p>Rows per page: 10</p>
+              </OuiText>
+            </OuiPanel>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

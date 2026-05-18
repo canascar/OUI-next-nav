@@ -1,0 +1,58 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+// sass-lint:disable no-misspelled-properties
+
+// ============================================================
+// RESIZE HANDLE — Draggable divider between ThreadPanel and PagePanel
+// ============================================================
+
+.resizeHandle {
+  position: relative;
+  width: 0;
+  flex-shrink: 0;
+  cursor: col-resize;
+  outline: none;
+  margin: 0 -4px;
+  z-index: 10;
+
+  // Hit area for grabbing — spans the full 8px gap
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -4px;
+    right: -4px;
+    border-radius: 2px;
+    transition: background-color 150ms ease-in-out;
+  }
+
+  &:hover::before {
+    background-color: $ouiColorPrimary;
+  }
+
+  &:focus::before {
+    background-color: $ouiColorPrimary;
+    box-shadow: 0 0 0 2px rgba($ouiColorPrimary, 0.3);
+  }
+
+  // Active/dragging state
+  &--active::before {
+    background-color: $ouiColorPrimary;
+  }
+}
+
+// Body class applied during drag to maintain cursor across the page
+.resizeHandle--dragging {
+  cursor: col-resize;
+  user-select: none;
+}

@@ -1,0 +1,62 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+// sass-lint:disable no-misspelled-properties, no-important
+
+.threadPanel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+  background-color: $ouiColorEmptyShade;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.threadPanel--animating {
+  transition: width 250ms ease-in-out;
+}
+
+// Header bar
+.threadPanel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px 0 16px;
+  border-bottom: 1px solid $ouiBorderColor;
+  flex-shrink: 0;
+  height: 48px;
+}
+
+.threadPanel__headerLeft {
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeS;
+}
+
+.threadPanel__title {
+  font-size: $ouiFontSizeXS;
+  color: $ouiTitleColor;
+  white-space: nowrap;
+}
+
+.threadPanel__headerRight {
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeM;
+}
+
+.threadPanel__content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}

@@ -9,13 +9,25 @@
  * GitHub history for details.
  */
 
+const path = require('path');
 const baseConfig = require('../.babelrc.js');
-const index = baseConfig.plugins.indexOf(
-  './scripts/babel/proptypes-from-ts-props'
+
+// Resolve relative plugin paths to absolute so they work regardless of CWD
+// (e.g. when Jest transforms files under src-docs/)
+const rootDir = path.resolve(__dirname, '..');
+baseConfig.plugins = baseConfig.plugins.map((plugin) => {
+  if (typeof plugin === 'string' && plugin.startsWith('./scripts/babel/')) {
+    return path.resolve(rootDir, plugin);
+  }
+  return plugin;
+});
+
+const index = baseConfig.plugins.findIndex(
+  (p) => typeof p === 'string' && p.endsWith('proptypes-from-ts-props')
 );
 baseConfig.plugins.splice(
   index + 1,
   0,
-  './scripts/babel/react-docgen-typescript'
+  path.resolve(rootDir, './scripts/babel/react-docgen-typescript')
 );
 module.exports = baseConfig;

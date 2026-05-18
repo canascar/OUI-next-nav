@@ -31,8 +31,12 @@ import themeV9Dark from './theme_v9_dark.scss';
 import { ThemeProvider } from './components/with_theme/theme_context';
 import ScrollToHash from './components/scroll_to_hash';
 import { LinkWrapper } from './views/link_wrapper';
-import { SamplePagesView } from './views/sample_pages/sample_pages_view';
+import {
+  SamplePagesView,
+  SessionPagesView,
+} from './views/sample_pages/sample_pages_view';
 import { LoginPage } from './views/sample_pages/login_page';
+import { OnboardingPage } from './views/sample_pages/onboarding_page';
 
 registerTheme('light', [themeLight]);
 registerTheme('dark', [themeDark]);
@@ -80,10 +84,26 @@ render(
             )}
           />
           <Route
+            path="/onboarding"
+            render={() => (
+              <LinkWrapper>
+                <OnboardingPage />
+              </LinkWrapper>
+            )}
+          />
+          <Route
             path="/sample-pages"
             render={() => (
               <LinkWrapper>
                 <SamplePagesView />
+              </LinkWrapper>
+            )}
+          />
+          <Route
+            path="/session-pages"
+            render={() => (
+              <LinkWrapper>
+                <SessionPagesView />
               </LinkWrapper>
             )}
           />

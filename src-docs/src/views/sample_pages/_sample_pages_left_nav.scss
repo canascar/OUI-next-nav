@@ -11,15 +11,290 @@
 
 // sass-lint:disable no-misspelled-properties, no-color-literals, leading-zero
 
+// Fixed-width popover panel for nav popovers (tools, workspace, apps)
+.samplePagesLeftNav__popoverPanel {
+  width: 280px;
+  border: 1px solid $ouiBorderColor;
+
+  .ouiListGroupItem__button {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+// ============================================================
+// TOOLS POPOVER (More panel in collapsed mode)
+// ============================================================
+.samplePagesLeftNav__toolsPopover {
+  margin: -8px; // counteract OuiPopover panelPaddingSize="s"
+}
+
+.samplePagesLeftNav__toolsPopoverHeader {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  font-size: $ouiFontSizeXS;
+  line-height: 18px;
+  color: $ouiColorDarkShade;
+  border-bottom: 1px solid $ouiBorderColor;
+}
+
+.samplePagesLeftNav__toolsPopoverContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+
+  // Ensure popover wrappers stretch full width
+  > div {
+    width: 100%;
+  }
+
+  .ouiPopover,
+  .ouiPopover__anchor {
+    width: 100%;
+  }
+}
+
+.samplePagesLeftNav__toolsPopoverItem {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  appearance: none;
+  text-align: left;
+  font-size: $ouiFontSizeS;
+  line-height: 20px;
+  color: $ouiTextColor;
+
+  &:hover {
+    background-color: rgba($ouiColorDarkestShade, 0.07);
+    border-radius: 4px;
+  }
+
+  &--parent {
+    cursor: default;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  &--child {
+    color: $ouiColorDarkShade;
+  }
+}
+
+.samplePagesLeftNav__toolsPopoverItemLabel {
+  flex: 1;
+  min-width: 0;
+}
+
+.samplePagesLeftNav__toolsPopoverGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+// ============================================================
+// WORKSPACE POPOVER
+// ============================================================
+.samplePagesLeftNav__workspacePopover {
+  margin: -8px; // counteract OuiPopover panelPaddingSize="s"
+}
+
+.samplePagesLeftNav__workspacePopoverContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+
+  > div {
+    width: 100%;
+  }
+
+  .ouiPopover,
+  .ouiPopover__anchor {
+    width: 100%;
+  }
+}
+
+.samplePagesLeftNav__workspacePicker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  padding: 0 8px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.samplePagesLeftNav__workspacePickerInfo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.samplePagesLeftNav__workspacePickerText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.samplePagesLeftNav__workspacePickerName {
+  font-size: $ouiFontSizeS;
+  font-weight: 700;
+  line-height: 20px;
+  color: $ouiTextColor;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.samplePagesLeftNav__workspacePickerType {
+  font-size: 10.5px;
+  line-height: 18px;
+  color: $ouiColorDarkShade;
+  letter-spacing: -0.08px;
+}
+
+// ============================================================
+// PROFILE POPOVER
+// ============================================================
+.samplePagesLeftNav__profilePopoverHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 48px;
+  padding: 0 16px;
+  border-bottom: 1px solid $ouiBorderColor;
+}
+
+.samplePagesLeftNav__profilePopoverName {
+  font-size: $ouiFontSizeXS;
+  line-height: 18px;
+  color: $ouiTextColor;
+}
+
+// ============================================================
+// THREAD POPOVER (Recent Thread panel in collapsed mode)
+// ============================================================
+.samplePagesLeftNav__threadPopover {
+  margin: -8px; // counteract OuiPopover panelPaddingSize="s"
+
+  // Make tabs fill the full width equally
+  .ouiTabs {
+    display: flex;
+  }
+
+  .ouiTab {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+  }
+}
+
+.samplePagesLeftNav__threadPopoverHeader {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px 0 16px;
+  font-size: $ouiFontSizeXS;
+  line-height: 18px;
+  color: $ouiColorDarkShade;
+  border-bottom: 1px solid $ouiBorderColor;
+}
+
+.samplePagesLeftNav__threadPopoverContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+}
+
+.samplePagesLeftNav__threadPopoverFooter {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  border-top: 1px solid $ouiBorderColor;
+}
+
+.samplePagesLeftNav__threadPopoverItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  padding: 8px;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  appearance: none;
+  text-align: left;
+
+  &:hover {
+    background-color: rgba($ouiColorDarkestShade, 0.07);
+  }
+
+  &--active {
+    background-color: $ouiColorLightestShade;
+  }
+}
+
+.samplePagesLeftNav__threadPopoverTitle {
+  font-size: $ouiFontSizeS;
+  font-weight: 600;
+  line-height: 21px;
+  letter-spacing: -0.28px;
+  color: $ouiTextColor;
+}
+
+.samplePagesLeftNav__threadPopoverSubtitle {
+  font-size: $ouiFontSizeXS;
+  line-height: 18px;
+  color: $ouiTextColor;
+}
+
 // Wrapper holds both the collapsed nav and the expanded panel
 .samplePagesLeftNav__wrapper {
   display: flex;
   height: 100%;
   flex-shrink: 0;
+  position: relative; // for the expand button to escape overflow
 }
 
-// Narrow icon-centric left nav (collapsed state from Figma node 96:4838)
+// Clip container that animates width — sits inside the wrapper
+.samplePagesLeftNav__clip {
+  overflow: hidden;
+  height: 100%;
+  transition: width 200ms ease-out;
+}
+
+.samplePagesLeftNav__clip--collapsed {
+  width: 48px;
+}
+
+.samplePagesLeftNav__clip--expanded {
+  width: 220px;
+}
+
+// ============================================================
+// COLLAPSED NAV (icon-only, 48px)
+// ============================================================
 .samplePagesLeftNav {
+  width: 48px;
+  min-width: 48px;
   background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .2);
   border-right: none;
   display: flex;
@@ -29,37 +304,61 @@
   z-index: 2;
 }
 
-// Logo header
+// Logo header (collapsed)
 .samplePagesLeftNav__header {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px 12px 0;
+  padding: 20px 8px;
   flex-shrink: 0;
 }
 
-// Nav items container — grows to fill space
+// Logo button
+.samplePagesLeftNav__logoButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  appearance: none;
+}
+
+// 24x24 wrapper for the 16x16 expand icon (matches logo dimensions)
+.samplePagesLeftNav__expandIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+// (Logo wrap and floating expand button removed — expand is now a nav item)
+
+// Nav items container (collapsed)
 .samplePagesLeftNav__items {
   flex: 1 0 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
-  padding: 24px 12px;
+  gap: 4px;
+  padding: 0 8px;
   min-height: 0;
+  overflow-y: auto;
 }
 
-// Each nav item is a clickable button with icon + label
+// Each nav item — icon only, 32x32 (collapsed)
 .samplePagesLeftNav__navItem {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 4px;
-  width: 48px;
-  height: 48px;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   background: none;
   border: none;
-  padding: 0;
+  padding: 4px;
   cursor: pointer;
   appearance: none;
 
@@ -77,7 +376,7 @@
   }
 }
 
-// Icon wrapper — 24x24 with 4px border-radius
+// Icon wrapper (collapsed)
 .samplePagesLeftNav__navIcon {
   display: flex;
   align-items: center;
@@ -104,15 +403,17 @@
   display: none;
 }
 
-// Horizontal rule in footer — full width of the nav
+// Horizontal rule (collapsed) — quarter width, centered, border color
 .samplePagesLeftNav__rule {
-  width: 100%;
   flex-shrink: 0;
   background-color: lightOrDarkTheme($ouiColorLightShade, $ouiColorEmptyShade) !important; // sass-lint:disable-line no-important
   border: none !important; // sass-lint:disable-line no-important
+  border-color: $ouiBorderColor;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
-// Footer — horizontal row at bottom
+// Footer (collapsed)
 .samplePagesLeftNav__footer {
   flex-shrink: 0;
   display: flex;
@@ -126,6 +427,61 @@
 
 .samplePagesLeftNav__footer .ouiAvatar {
   flex-shrink: 0;
+}
+
+// 32x32 container for footer items — matches nav body items
+.samplePagesLeftNav__footerItem {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+// ============================================================
+// EXPANDED NAV (icon + text, 220px)
+// ============================================================
+.samplePagesLeftNav--expanded {
+  width: 220px;
+  min-width: 220px;
+  align-items: stretch;
+
+  // Lock inner content width to prevent text wrapping during transition
+  > * {
+    min-width: 220px;
+  }
+}
+
+// Header row in expanded mode: logo left, lock + collapse icons right
+.samplePagesLeftNav__headerExpanded {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 12px;
+  flex-shrink: 0;
+}
+
+.samplePagesLeftNav__headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+// Scrollable items area (expanded)
+.samplePagesLeftNav__itemsExpanded {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  padding: 0 8px;
+  min-height: 0;
+  overflow-y: auto;
+  gap: 4px;
+
+  // Ensure popover wrappers stretch full width
+  > div {
+    width: 100%;
+  }
 }
 
 // Expanded panel — slides out to the right of the collapsed nav
@@ -145,71 +501,266 @@
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
+  padding: 0 8px;
+  min-height: 0;
+  gap: 4px;
+
+  // Ensure popover wrappers stretch full width
+  > div {
+    width: 100%;
+  }
+}
+
+// 4px vertical spacer between sections (adds to the 4px gap on each side = 12px total)
+.samplePagesLeftNav__spacer {
+  height: 4px;
+  flex-shrink: 0;
+}
+
+// Each nav item in expanded mode — 32px height, icon + text
+.samplePagesLeftNav__navItemExpanded {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 32px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  appearance: none;
+  text-align: left;
+  color: $ouiTextColor;
+  transition: background-color 150ms ease;
+
+  &:hover {
+    background-color: rgba($ouiColorDarkestShade, 0.07);
+    border-radius: 4px;
+  }
+
+  &--active {
+    background-color: rgba($ouiColorPrimary, 0.1);
+    border-radius: 4px;
+  }
+
+  &--active:hover {
+    background-color: rgba($ouiColorPrimary, 0.15);
+  }
+
+  &--child {
+    // Children under subgroups — same height, subdued text
+  }
+
+  &--parent {
+    // Parent items (Anomaly Detection, Alerting) — not clickable as a whole, just layout
+    cursor: default;
+  }
+}
+
+// Force OuiPopover to be full width inside expanded items
+.samplePagesLeftNav__itemsExpanded .ouiPopover {
+  width: 100%;
+}
+
+.samplePagesLeftNav__itemsExpanded .ouiPopover__anchor {
+  width: 100%;
+}
+
+// 32x32 icon area with 4px padding around a 24px icon
+.samplePagesLeftNav__navItemIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  padding: 4px;
+}
+
+.samplePagesLeftNav__navItemExpandedLabel {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  font-size: $ouiFontSizeS;
+  line-height: 20px;
+
+  &--subdued {
+    color: $ouiColorDarkShade;
+  }
+}
+
+// Subgroup container (Anomaly Detection, Alerting) — no internal gap
+.samplePagesLeftNav__subgroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+// Tree lines for subgroup children
+.samplePagesLeftNav__subgroupChildren {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  
+  // Vertical line on the container — spans from first to last child
+  &::before {
+    content: '';
+    position: absolute;
+    left: 16px; // center of the 32px tree line area
+    top: 0;
+    bottom: 16px; // stop at center of last item
+    width: 1px;
+    background-color: $ouiBorderColor;
+    z-index: 1;
+  }
+
+  // Ensure popover wrappers stretch full width
+  > div {
+    width: 100%;
+  }
+
+  .ouiPopover,
+  .ouiPopover__anchor {
+    width: 100%;
+  }
+}
+
+// 32x32 container for the horizontal branch only
+.samplePagesLeftNav__treeLine {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  padding: 0 4px;
+  position: relative;
+  z-index: 1; // sit above hover background
+
+  // Horizontal branch — from center to right edge
+  &::after {
+    content: '';
+    position: absolute;
+    left: 16px;
+    top: 17px;
+    width: 12px;
+    height: 1px;
+    background-color: $ouiBorderColor;
+  }
+}
+
+// (Horizontal rule in expanded mode removed — using spacers instead)
+
+// ============================================================
+// NAV GROUP (collapsible sections in expanded mode)
+// ============================================================
+.samplePagesLeftNav__navGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+// Section header — small subdued label, 24px height
+.samplePagesLeftNav__sectionHeader {
+  display: flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 4px 0 8px;
+  font-size: $ouiFontSizeXS;
+  line-height: 18px;
+  color: $ouiColorDarkShade;
+  flex-shrink: 0;
+}
+
+// Collapsible section header with toggle — 24px height, label + icon button
+.samplePagesLeftNav__navGroupHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 0 0 8px;
+  height: 24px;
+  font-size: $ouiFontSizeXS;
+  line-height: 18px;
+  color: $ouiColorDarkShade;
+  flex-shrink: 0;
+}
+
+.samplePagesLeftNav__navGroupLabel {
+  flex: 1;
+}
+
+// (navGroupChevron removed — using OuiButtonIcon for toggle instead)
+
+.samplePagesLeftNav__navGroupChildren {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+// (Tree-style groups removed — using flat subgroups instead)
+
+// Subgroup chevron (minus/plus toggle on parent items)
+.samplePagesLeftNav__subgroupChevron {
+  flex-shrink: 0;
+}
+
+// Footer in expanded mode
+.samplePagesLeftNav__footerExpanded {
+  flex-shrink: 0;
+  padding: 8px 0;
+}
+
+.samplePagesLeftNav__footerIcons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.samplePagesLeftNav__footerIcons .ouiAvatar {
+  flex-shrink: 0;
+}
+
+// ============================================================
+// EXPANDED PANEL (detail panel)
+// ============================================================
+
+// Outer clip wrapper — animates width, clips content
+.samplePagesLeftNav__panelClip {
+  overflow: hidden;
+  height: 100%;
+  flex-shrink: 0;
   z-index: 1;
-  animation: slideInPanel 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-
-  &--closing {
-    animation: slideOutPanel 200ms cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
-  }
-
-  // Fade content in separately so text doesn't wrap during width animation
-  > * {
-    animation: fadeInPanelContent 250ms ease-out forwards;
-    animation-delay: 80ms;
-    opacity: 0;
-  }
-
-  &--closing > * {
-    animation: fadeOutPanelContent 100ms ease-in forwards;
-    opacity: 1;
-  }
+  animation: slidePanelIn 200ms ease-out forwards;
 }
 
-@keyframes slideInPanel {
-  from {
-    width: 0;
-    min-width: 0;
-  }
-
-  to {
-    width: 320px;
-    min-width: 320px;
-  }
+.samplePagesLeftNav__panelClip--collapsing {
+  animation: slidePanelOut 200ms ease-in forwards;
 }
 
-@keyframes slideOutPanel {
-  from {
-    width: 320px;
-    min-width: 320px;
-  }
-
-  to {
-    width: 0;
-    min-width: 0;
-  }
+@keyframes slidePanelIn {
+  from { width: 0; }
+  to { width: 280px; }
 }
 
-@keyframes fadeInPanelContent {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+@keyframes slidePanelOut {
+  from { width: 280px; }
+  to { width: 0; }
 }
 
-@keyframes fadeOutPanelContent {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
+// Expanded panel
+.samplePagesLeftNav__expandedPanel {
+  width: 280px;
+  min-width: 280px;
+  background-color: $ouiColorEmptyShade;
+  border-right: 1px solid $ouiBorderColor;
+  border-top-right-radius: 24px;
+  border-bottom-right-radius: 0;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
-// Header row: title + close button on the same line
+// Header row: title + close button
 .samplePagesLeftNav__expandedPanelHeader {
   display: flex;
   align-items: center;
@@ -218,17 +769,14 @@
   flex-shrink: 0;
 }
 
-// Content area inside the expanded panel
-// Removed samplePagesLeftNav__panelContent wrapper
-
 // Override list group item styling for richer labels
 .samplePagesLeftNav__expandedPanel .ouiListGroupItem__label {
   white-space: normal;
 }
 
 .samplePagesLeftNav__expandedPanel .ouiListGroup {
-  padding-left: 0;
-  padding-right: 0;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 
 .samplePagesLeftNav__expandedPanel .ouiListGroupItem {
@@ -236,7 +784,7 @@
 }
 
 .samplePagesLeftNav__ruleDivider {
-  padding: 0;
+  padding: 4px 8px;
 }
 
 // Hover popover — floats next to the nav, positioned absolutely
@@ -254,46 +802,71 @@
   display: flex;
   flex-direction: column;
   z-index: 10;
+}
 
-  .ouiListGroupItem__label {
-    white-space: normal;
-  }
+// Tabs inside expanded panel
+.samplePagesLeftNav__panelTabs {
+  padding: 0 12px 8px;
+  flex-shrink: 0;
 
-  .ouiListGroup {
-    padding-left: 0;
-    padding-right: 0;
-  }
-
-  .ouiListGroupItem {
-    padding: 8px 0;
-  }
-
-  .samplePagesLeftNav__ruleDivider {
-    padding: 0;
+  .ouiTabs {
+    overflow-x: auto;
   }
 }
 
-// Nav panel list items — no border radius, no gaps
-.samplePagesLeftNav__expandedPanel,
-.samplePagesLeftNav__hoverPopover {
-  .ouiListGroupItem {
-    border-radius: $ouiBorderRadiusSmall;
-    margin: 0 0 4px;
-  }
+// Search field below header in expanded mode (hidden by default, shown via search icon)
+.samplePagesLeftNav__searchField {
+  padding: 0 12px 8px;
+  flex-shrink: 0;
+}
 
-  .ouiListGroup {
-    gap: 0;
-    padding: 8px;
-  }
+// ============================================================
+// CONTENT PANEL (white rounded wrapper for page content)
+// ============================================================
+.samplePagesContentPanel {
+  height: 100%;
+  background-color: $ouiColorEmptyShade;
+  border-radius: 8px;
+  overflow: hidden;
+}
 
-  // Hide horizontal rule dividers
-  .samplePagesLeftNav__ruleDivider {
-    display: none;
+// Side panel (left panel) — now rendered as flyout overlay
+.samplePagesContentPanel--sidePanel {
+  width: 280px;
+  min-width: 0;
+  flex-shrink: 0;
+  overflow: hidden;
+  animation: sidePanelExpand 200ms ease-out forwards;
+
+  // Prevent text wrapping during animation
+  .detailPagePanel {
+    width: 280px;
+    min-width: 280px;
   }
 }
 
-// Page-level panel — semi-transparent for depth
-.samplePagesMainPanel {
-  background-color: rgba($ouiColorEmptyShade, .6) !important; // sass-lint:disable-line no-important, no-color-literals
-  backdrop-filter: blur(4px);
+.samplePagesContentPanel--sidePanelCollapsing {
+  animation: sidePanelCollapse 200ms ease-in forwards;
+}
+
+@keyframes sidePanelExpand {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 280px;
+    opacity: 1;
+  }
+}
+
+@keyframes sidePanelCollapse {
+  from {
+    width: 280px;
+    opacity: 1;
+  }
+  to {
+    width: 0;
+    opacity: 0;
+  }
 }

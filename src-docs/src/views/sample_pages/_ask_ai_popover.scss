@@ -1,0 +1,665 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+// sass-lint:disable no-misspelled-properties, no-color-literals
+
+// Wrapper that anchors the popover relative to the Ask AI button
+.askAiPopover__anchor {
+  position: relative;
+  display: inline-flex;
+}
+
+// Floating Ask AI button — positioned relative to the content panel bottom-left
+.askAiFloating {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+
+  .askAiFloating__button {
+    appearance: none;
+    border: 1px solid $ouiFormBorderColor;
+    border-radius: 6px;
+    background-color: $ouiFormBackgroundColor;
+    padding: 6px 8px;
+    width: 200px;
+    height: 32px;
+    line-height: 20px;
+    font-size: $ouiFontSizeS;
+    color: $ouiTextSubduedColor;
+    cursor: pointer;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    transition: width 250ms ease-in-out;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      right: 50%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, $ouiColorPrimary 50%, transparent 100%);
+      transition: left 200ms ease-out, right 200ms ease-out;
+    }
+
+    &:hover::after {
+      left: 0;
+      right: 0;
+    }
+
+    &:focus {
+      outline: none;
+
+      &::after {
+        left: 0;
+        right: 0;
+      }
+    }
+
+    &--loading {
+      position: relative;
+      border-color: transparent;
+      overflow: visible;
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        border-radius: 7px;
+        padding: 1px;
+        background: conic-gradient(
+          from var(--angle),
+          $ouiColorPrimary 0%,
+          rgba($ouiColorPrimary, 0) 30%,
+          rgba($ouiColorPrimary, 0) 100%
+        );
+        -webkit-mask:
+          linear-gradient(#fff 0 0) content-box,
+          linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        animation: askAiBorderSnake 3s ease-in-out infinite;
+      }
+    }
+
+    &--pulse {
+      animation: askAiPulse 1.5s ease-in-out infinite;
+      box-shadow: 0 0 0 2px rgba($ouiColorPrimary, 0.2);
+    }
+  }
+}
+
+.askAiFloating__buttonWrap {
+  padding: 8px;
+  border-radius: 8px 8px 0 0;
+  background: rgba($ouiColorEmptyShade, .7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 0 24px rgba(0, 0, 0, .06);
+}
+
+@keyframes askAiGradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes askAiNeonSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.askAiPopover {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  width: 400px;
+  max-height: 480px;
+  background-color: $ouiColorEmptyShade;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .12);
+  display: flex;
+  flex-direction: column;
+  z-index: 9999;
+  overflow: hidden;
+
+  &--dragged {
+    // When dragged, position is controlled by inline fixed styles
+    position: fixed;
+    bottom: auto;
+    right: auto;
+    width: 400px;
+    max-height: 480px;
+  }
+
+  &--anchored {
+    // When anchored to highlighted text, position is controlled by inline fixed styles
+    position: fixed;
+    bottom: auto;
+    right: auto;
+    width: 400px;
+    max-height: 480px;
+  }
+}
+
+.askAiPopover__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 8px 8px 12px;
+  border-bottom: 1px solid $ouiBorderColor;
+  cursor: grab;
+  user-select: none;
+  flex-shrink: 0;
+  position: relative;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.askAiPopover__grabIcon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 150ms ease-in-out;
+
+  .askAiPopover__header:hover & {
+    opacity: 1;
+  }
+}
+
+.askAiPopover__headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.askAiPopover__title {
+  font-size: $ouiFontSizeS;
+  font-weight: 600;
+}
+
+.askAiPopover__headerRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.askAiPopover__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  min-height: 120px;
+
+  .askAiPopover--panel & {
+    max-height: none;
+  }
+}
+
+.askAiPopover__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 80px;
+}
+
+.askAiPopover__messages {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.askAiPopover__msg {
+  &--user {
+    align-self: flex-end;
+    max-width: 85%;
+    background-color: rgba($ouiColorDarkShade, .06);
+    padding: 6px 10px;
+    border-radius: 8px 8px 2px;
+  }
+
+  &--assistant {
+    align-self: flex-start;
+    max-width: 85%;
+  }
+}
+
+.askAiPopover__feedback {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.askAiPopover__input {
+  padding: 8px;
+  flex-shrink: 0;
+}
+
+.askAiPopover__inputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .ouiButtonIcon {
+    flex-shrink: 0;
+  }
+}
+
+
+// Expand-to-thread animation overlay
+// sass-lint:disable no-vendor-prefixes
+
+@keyframes askAiExpand {
+  0% {
+    left: var(--from-left);
+    top: var(--from-top);
+    width: var(--from-width);
+    height: var(--from-height);
+    border-radius: $ouiBorderRadius;
+    opacity: 1;
+  }
+
+  100% {
+    left: var(--to-left);
+    top: var(--to-top);
+    width: var(--to-width);
+    height: var(--to-height);
+    border-radius: 0;
+    opacity: 1;
+  }
+}
+
+@keyframes askAiCollapsePage {
+  0% {
+    left: var(--from-left);
+    top: var(--from-top);
+    width: var(--from-width);
+    height: var(--from-height);
+    opacity: 1;
+  }
+
+  100% {
+    left: var(--to-left);
+    top: var(--to-top);
+    width: var(--to-width);
+    height: var(--to-height);
+    opacity: 1;
+  }
+}
+
+@keyframes askAiExpandFadeIn {
+  0% {
+    opacity: .6;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.askAiExpandOverlay {
+  position: fixed;
+  z-index: 10001;
+  background-color: $ouiColorEmptyShade;
+  border: 1px solid $ouiBorderColor;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, .15);
+  overflow: hidden;
+  animation: askAiExpand 380ms cubic-bezier(.2, .9, .3, 1) forwards;
+  pointer-events: none;
+
+  &--page {
+    animation: askAiCollapsePage 380ms cubic-bezier(.2, .9, .3, 1) forwards;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .1);
+    border-left: 1px solid $ouiBorderColor;
+  }
+}
+
+.askAiExpandOverlay__content {
+  padding: 16px;
+  animation: askAiExpandFadeIn 320ms ease-out forwards;
+}
+
+.askAiExpandOverlay__messages {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 600px;
+}
+
+// Nav-triggered Ask AI popover — positioned like the search popover
+.navAskAiPopover__anchor {
+  position: fixed;
+  top: 240px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 9999;
+  pointer-events: none;
+
+  .askAiPopover {
+    position: relative;
+    top: 0;
+    right: auto;
+    left: 0;
+    pointer-events: all;
+  }
+}
+
+// Ask AI right panel — docked to the right side of the content area
+.askAiPanel {
+  width: 480px;
+  min-width: 480px;
+  margin-left: 8px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  background-color: $ouiColorEmptyShade;
+  overflow: hidden;
+  animation: askAiPanelExpand 200ms ease-out forwards;
+}
+
+.askAiPanel--closing {
+  animation: askAiPanelCollapse 200ms ease-in forwards;
+}
+
+@keyframes askAiPanelExpand {
+  0% {
+    width: 0;
+    min-width: 0;
+    margin-left: 0;
+    opacity: 0;
+  }
+
+  100% {
+    width: 480px;
+    min-width: 480px;
+    margin-left: 8px;
+    opacity: 1;
+  }
+}
+
+@keyframes askAiPanelCollapse {
+  0% {
+    width: 480px;
+    min-width: 480px;
+    margin-left: 8px;
+    opacity: 1;
+  }
+
+  100% {
+    width: 0;
+    min-width: 0;
+    margin-left: 0;
+    opacity: 0;
+  }
+}
+
+.askAiPopover--panel {
+  position: relative;
+  bottom: auto;
+  right: auto;
+  width: 100%;
+  max-height: none;
+  height: 100%;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.askAiPopover__header--panel {
+  height: 48px;
+  cursor: default;
+  border-bottom: 1px solid $ouiBorderColor;
+
+  &:active {
+    cursor: default;
+  }
+
+  .askAiPopover__title {
+    font-size: $ouiFontSizeM;
+    font-weight: 500;
+    color: $ouiTitleColor;
+  }
+}
+
+
+
+
+// Inline Ask AI — immersive, no border, blur background
+.askAiInline {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 9999;
+}
+
+.askAiInline__conversation {
+  width: 576px;
+  max-height: 360px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  background: rgba($ouiColorEmptyShade, .65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  animation: askAiInlineFadeIn 200ms ease-out;
+  position: relative;
+}
+
+.askAiInline__dragHandle {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 12px;
+  cursor: grab;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 150ms ease-in-out;
+
+  .askAiInline__conversation:hover & {
+    opacity: 1;
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.askAiInline--dragged {
+  bottom: auto;
+  right: auto;
+}
+
+.askAiInline__msg {
+  &--user {
+    align-self: flex-end;
+    max-width: 90%;
+    padding: 6px 10px;
+    border-radius: 8px 8px 2px;
+    background: rgba($ouiColorDarkShade, .08);
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  &--assistant {
+    align-self: flex-start;
+    max-width: 90%;
+  }
+}
+
+.askAiInline__feedback {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.askAiInline__input {
+  padding: 8px;
+  border-radius: 8px 8px 0 0;
+  background: rgba($ouiColorEmptyShade, .7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 0 24px rgba(0, 0, 0, .06);
+  animation: askAiInputExpand 250ms ease-out;
+
+  &--closing {
+    animation: askAiInputCollapse 250ms ease-in forwards;
+  }
+}
+
+.askAiInline__inputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .ouiButtonIcon {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px;
+    min-height: 32px;
+  }
+}
+
+.askAiInline__textfield {
+  width: 480px;
+  position: relative;
+
+  input {
+    border: 1px solid $ouiFormBorderColor !important;
+    box-shadow: none !important;
+    background-color: $ouiFormBackgroundColor !important;
+    border-radius: 6px !important;
+    padding: 6px 12px !important;
+    height: 32px !important;
+    font-size: $ouiFontSizeS !important;
+    line-height: 20px !important;
+
+    &:focus {
+      border-bottom-color: transparent !important;
+    }
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    right: 50%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, $ouiColorPrimary 50%, transparent 100%);
+    transition: left 200ms ease-out, right 200ms ease-out;
+    pointer-events: none;
+  }
+
+  &:focus-within::after {
+    left: 0;
+    right: 0;
+  }
+}
+
+@keyframes askAiInputExpand {
+  0% {
+    opacity: 0.8;
+    transform: scaleX(0.2);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes askAiInputCollapse {
+  0% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scaleX(0.2);
+  }
+}
+
+@keyframes askAiInlineFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes askAiPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 2px rgba($ouiColorPrimary, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba($ouiColorPrimary, 0.1);
+  }
+}
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes askAiBorderSnake {
+  0% {
+    --angle: 0deg;
+  }
+  100% {
+    --angle: 360deg;
+  }
+}

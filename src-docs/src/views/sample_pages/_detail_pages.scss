@@ -1,0 +1,279 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+// ============================================================
+// DETAIL PAGE HEADER (shared across all detail pages)
+// ============================================================
+.detailPageHeader {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.detailPageHeader__title {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 100%;
+  padding: 0 8px 0 12px;
+  border-bottom: 1px solid $ouiBorderColor;
+  font-size: $ouiFontSizeM;
+  font-weight: 500;
+  line-height: 19px;
+  color: $ouiTitleColor;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.detailPageHeader__actions {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 12px;
+  gap: 8px;
+  flex-shrink: 0;
+  border-bottom: 1px solid $ouiBorderColor;
+}
+
+// Legacy support — keep old class names working
+.alertsPage__header,
+.assetsPage__header,
+.dashboardsPage__header,
+.skillsPage__header,
+.applicationMapPage__header,
+.topologyMapPage__header,
+.agentMonitoringTracesPage__header,
+.agentMonitoringSpansPage__header,
+.appPerfTracesPage__header,
+.notebooksPage__header,
+.anomalyDashboardPage__header,
+.detectorsPage__header,
+.forecastersPage__header,
+.alertsDetailPage__header,
+.monitorsPage__header,
+.destinationsPage__header,
+.dataSourcesPage__header,
+.indexPatternsPage__header,
+.datasetsPage__header,
+.assetsDetailPage__header,
+.sampleDataPage__header {
+  border-bottom: 1px solid $ouiBorderColor;
+}
+
+.detailPageHeader__ruleDivider {
+  width: 1px;
+  height: 16px;
+  background-color: $ouiBorderColor;
+}
+
+// Panel toggle button in header
+.detailPageHeader__panelToggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 48px;
+  flex-shrink: 0;
+  padding: 0 12px;
+  border-right: 1px solid $ouiBorderColor;
+  border-bottom: 1px solid $ouiBorderColor;
+}
+
+// ============================================================
+// DETAIL PAGE PANEL (flyout overlay on top of page content)
+// ============================================================
+.detailPagePanel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.detailPagePanel__header {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  border-bottom: 1px solid $ouiBorderColor;
+  flex-shrink: 0;
+}
+
+.detailPagePanel__headerTitle {
+  font-size: $ouiFontSizeM;
+  font-weight: 500;
+  line-height: 19px;
+  color: $ouiTitleColor;
+  white-space: nowrap;
+}
+
+.detailPagePanel__headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.detailPagePanel__content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.detailPagePanel__tabs {
+  padding: 0 12px;
+  margin-top: 8px;
+  flex-shrink: 0;
+
+  // Make tabs fill the full width equally
+  .ouiTabs {
+    display: flex;
+  }
+
+  .ouiTab {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+  }
+}
+
+.detailPagePanel__item {
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  text-align: left;
+  width: 100%;
+
+  &:hover {
+    background-color: $ouiColorLightestShade;
+  }
+}
+
+.detailPagePanel__item--active {
+  background-color: $ouiColorLightestShade;
+}
+
+.detailPagePanel__itemTitle {
+  font-size: $ouiFontSizeS;
+  font-weight: 600;
+  line-height: 21px;
+  letter-spacing: -0.28px;
+  color: $ouiTextColor;
+}
+
+.detailPagePanel__itemSubtitle {
+  font-size: $ouiFontSizeXS;
+  line-height: 18px;
+  color: $ouiTextColor;
+}
+
+// ============================================================
+// DETAIL PAGE FLYOUT (overlay panel on top of page content)
+// ============================================================
+
+.detailPageFlyout__cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  border-radius: 8px;
+  animation: ouiAnimFadeIn $ouiAnimSpeedFast ease-in;
+
+  $backgroundColor: $ouiColorEmptyShade;
+
+  @if (lightness($ouiTextColor) > 50) {
+    $backgroundColor: $ouiColorLightShade;
+  }
+
+  background: transparentize($backgroundColor, .2);
+}
+
+.detailPageFlyout__cover--closing {
+  animation: detailPageFlyoutClose 200ms ease-in forwards;
+}
+
+.detailPageFlyout {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 600px;
+  height: 100%;
+  z-index: 1000;
+  background-color: $ouiColorEmptyShade;
+  border-right: 1px solid $ouiColorLightShade;
+  border-radius: 8px 0 0 8px;
+  box-shadow:
+    0 2px 1px rgba(0, 0, 0, 0.05),
+    0 4px 2px rgba(0, 0, 0, 0.05),
+    0 8px 4px rgba(0, 0, 0, 0.05),
+    0 16px 8px rgba(0, 0, 0, 0.05),
+    0 24px 16px rgba(0, 0, 0, 0.05),
+    0 40px 32px rgba(0, 0, 0, 0.05);
+  animation: detailPageFlyoutOpen 200ms ease-out forwards;
+  overflow: hidden;
+}
+
+.detailPageFlyout--closing {
+  animation: detailPageFlyoutClose 200ms ease-in forwards;
+}
+
+@keyframes detailPageFlyoutOpen {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes detailPageFlyoutClose {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+// ============================================================
+// DASHBOARD PAGES
+// ============================================================
+
+.dashboardPage__content {
+  max-width: 1200px;
+}
+
+.dashboardPage__alertList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dashboardPage__alertItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px 0;
+}

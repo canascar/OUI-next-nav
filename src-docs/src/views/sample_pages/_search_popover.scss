@@ -1,0 +1,91 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+// sass-lint:disable no-misspelled-properties, no-color-literals
+
+.searchPopover {
+  position: fixed;
+  top: 240px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  max-height: 480px;
+  background-color: $ouiColorEmptyShade;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .12);
+  display: flex;
+  flex-direction: column;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.searchPopover__input {
+  padding: 8px;
+  flex-shrink: 0;
+}
+
+.searchPopover__inputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  .ouiFormControlLayout {
+    flex: 1;
+  }
+}
+
+.searchPopover__askAiButton {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.searchPopover__body {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 40px;
+  max-height: 400px;
+  border-top: 1px solid $ouiBorderColor;
+}
+
+.searchPopover__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 12px;
+}
+
+.searchPopover__section {
+  &:not(:last-child) {
+    border-bottom: 1px solid $ouiBorderColor;
+  }
+}
+
+.searchPopover__sectionTitle {
+  padding: 8px 16px 4px;
+}
+
+.searchPopover__section .ouiListGroup {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.searchPopover__section .ouiListGroupItem {
+  padding: 6px 0;
+}
+
+.searchPopover__section .ouiListGroupItem__label {
+  white-space: normal;
+}
+
+.searchPopover__ruleDivider {
+  padding: 2px 8px;
+}

@@ -1,0 +1,68 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+// sass-lint:disable no-misspelled-properties
+
+.sessionContainer {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+  gap: 8px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-right: 8px;
+  position: relative;
+}
+
+// Remove gap when chat pane is minimized so page panel reaches the left edge
+.sessionContainer--chatMinimized {
+  gap: 0;
+}
+
+// Right pane wrapper — explicit width, animated
+.sessionContainer__pagePanelWrap {
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.sessionContainer__pagePanelWrap--animating {
+  transition: width 250ms ease-in-out;
+}
+
+// Collapsed panel strip (inside pagePanelWrap when full-screen)
+.sessionContainer__collapsedPanel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: $ouiColorEmptyShade;
+  border-radius: 8px;
+}
+
+.sessionContainer__collapsedPanelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  border-bottom: 1px solid $ouiBorderColor;
+  padding: 0 $ouiSizeS;
+}
+
+.sessionContainer__collapsedTabs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+}
