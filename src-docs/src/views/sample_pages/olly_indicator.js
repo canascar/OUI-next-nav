@@ -40,12 +40,12 @@ export const OllyIndicator = ({ state = 'idle' }) => {
     }
   }, [state]);
 
-  // Colors
-  const primary = isDark ? '#1A8FD1' : '#005EB8';
-  const secondary = isDark ? '#A8DEFF' : '#003B5C';
+  // Colors - Agentic OSD Utility palette
+  const primary = isDark ? '#7A9FD4' : '#2E4A8F';      // Amethyst (dark) / Minsk (light)
+  const secondary = isDark ? '#B8D4F0' : '#4168B8';   // Rose Quartz (dark) / Violet Topaz (light)
   const textColor = isDark ? '#aaa' : '#888';
   const shimmerLight = isDark ? '#fff' : '#ccc';
-  const glareColor = isDark ? '#7dd3fc' : '#4fc3f7';
+  const glareColor = isDark ? '#7A9FD4' : '#4168B8';  // Amethyst (dark) / Violet Topaz (light)
 
   if (state === 'idle') {
     return (

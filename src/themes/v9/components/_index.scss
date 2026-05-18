@@ -30,17 +30,23 @@
 @import 'breadcrumbs';
 @import 'tabs';
 
-// Logo colors for dark mode
+// Logo colors - Agentic OSD Utility palette
 :root {
-  --ouiLogoPrimary: #{lightOrDarkTheme(#005EB8, #1A8FD1)};
-  --ouiLogoSecondary: #{lightOrDarkTheme(#003B5C, #A8DEFF)};
+  --ouiLogoPrimary: #{lightOrDarkTheme(#2E4A8F, #7A9FD4)};
+  --ouiLogoSecondary: #{lightOrDarkTheme(#4168B8, #B8D4F0)};
 
   // Text colors for inline styles in popovers
   --ouiColorDarkShade: #{$ouiColorDarkShade};
   --ouiColorMediumShade: #{$ouiColorMediumShade};
   --ouiColorEmptyShade: #{$ouiColorEmptyShade};
+  --ouiColorLightestShade: #{$ouiColorLightestShade};
+  --ouiColorLightShade: #{$ouiColorLightShade};
   --ouiTextColor: #{$ouiTextColor};
   --ouiColorPrimary: #{$ouiColorPrimary};
+
+  // Nav popover item hover/active states - more visible in dark mode
+  --navItemHover: #{lightOrDarkTheme(rgba(46, 74, 143, 0.08), rgba(122, 159, 212, 0.2))};
+  --navItemActive: #{lightOrDarkTheme(rgba(46, 74, 143, 0.15), rgba(122, 159, 212, 0.35))};
 }
 
 // Popover panel border
@@ -89,5 +95,18 @@
     background-color: rgba($ouiColorPrimary, 0.18) !important;
     transform: translateY(-1px);
   }
+}
+
+// Documentation side navigation - blue-tinted transparent background
+.guideSideNav {
+  background: #{lightOrDarkTheme(
+    rgba($ouiColorLightestShade, 0.3),
+    rgba($ouiColorLightestShade, 0.3)
+  )} !important;
+  backdrop-filter: blur(8px);
+  border-right: 1px solid #{lightOrDarkTheme(
+    rgba($ouiColorPrimary, 0.08),
+    rgba($ouiColorPrimary, 0.15)
+  )};
 }
 

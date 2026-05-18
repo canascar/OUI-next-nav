@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 
 import {
   OuiFlexGroup,
@@ -23,8 +23,9 @@ import {
   OuiButtonEmpty,
   OuiBadge,
   OuiThreadInput,
-  OuiHorizontalRule,
+  OuiThreadList,
 } from '../../../../src/components';
+import { ThemeContext } from '../../components/with_theme';
 
 // --- Quick action pills ---
 const QUICK_ACTIONS = [
@@ -38,28 +39,25 @@ const QUICK_ACTIONS = [
 // --- Recent threads ---
 const RECENT_THREADS = [
   {
-    icon: 'alert',
+    iconType: 'alert',
     title: 'Error Rate Spike',
-    type: 'Thread',
-    time: '2 hours ago',
+    description: 'Thread · 2 hours ago',
     status: 'Report is ready',
-    statusColor: 'primary',
+    statusTextColor: 'primary',
   },
   {
-    icon: 'clock',
+    iconType: 'clock',
     title: 'Health check, Apr 11',
-    type: 'Automation',
-    time: '2:00 AM',
+    description: 'Automation · 2:00 AM',
     status: 'Requires approval',
-    statusColor: 'warning',
+    statusTextColor: 'warning',
   },
   {
-    icon: 'sparkles',
+    iconType: 'sparkles',
     title: 'Orchestrator misroute',
-    type: 'Investigation',
-    time: '2 hours ago',
+    description: 'Investigation · 2 hours ago',
     status: 'Report is ready',
-    statusColor: 'primary',
+    statusTextColor: 'primary',
   },
 ];
 
@@ -109,6 +107,11 @@ const getRandomGreeting = () => {
 export const ThreadsPage = ({ onPageChange }) => {
   const [inputValue, setInputValue] = useState('');
   const [greeting, setGreeting] = useState(getRandomGreeting);
+  const themeContext = useContext(ThemeContext);
+  const isDark = themeContext.theme === 'v9-dark';
+  
+  // Background color matching the parent container
+  const bgColor = isDark ? '#060D1A' : '#F4F6FB';
 
   // Pick a new greeting each time the component mounts
   React.useEffect(() => {
@@ -125,8 +128,14 @@ export const ThreadsPage = ({ onPageChange }) => {
     setInputValue('');
   };
 
+  // Add onClick handlers to thread items
+  const threadItems = RECENT_THREADS.map((thread) => ({
+    ...thread,
+    onClick: () => onPageChange && onPageChange('thread'),
+  }));
+
   return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100%' }}>
+    <div style={{ minHeight: '100%' }}>
       <style>{`
         @keyframes breatheIn {
           0% { opacity: 0; transform: scale(0.96) translateY(6px); }
@@ -135,169 +144,145 @@ export const ThreadsPage = ({ onPageChange }) => {
         .threadsGreeting {
           animation: breatheIn 600ms cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
         }
-        .recentThreadRow {
-          cursor: pointer;
-          border-radius: 12px;
-          transition: background-color 150ms ease, transform 150ms ease;
-        }
-        .recentThreadRow:hover {
-          background-color: rgba(46, 74, 143, 0.08);
-          transform: translateY(-1px);
-        }
-        .recentThreadRow:active {
-          background-color: rgba(46, 74, 143, 0.14);
-          transform: translateY(-1px);
+        .threadsPageHeader {
+          position: sticky;
+          top: 0;
+          z-index: 10;
         }
       `}</style>
-      <div style={{ maxWidth: 900, width: '100%', padding: '24px 16px' }}>
-      <OuiSpacer size="xl" />
+      
+      {/* Sticky header section */}
+      <div className="threadsPageHeader" style={{ 
+        maxWidth: 900, 
+        width: '100%', 
+        margin: '0 auto',
+        padding: '24px 16px 0',
+        backgroundColor: bgColor,
+      }}>
+        <OuiSpacer size="xl" />
 
-      {/* Hero heading */}
-      <div style={{ textAlign: 'center' }} className="threadsGreeting">
-        <OuiTitle size="l">
-          <h1>{greeting}</h1>
-        </OuiTitle>
-      </div>
+        {/* Hero heading */}
+        <div style={{ textAlign: 'center' }} className="threadsGreeting">
+          <OuiTitle size="l">
+            <h1>{greeting}</h1>
+          </OuiTitle>
+        </div>
 
-      <OuiSpacer size="xl" />
+        <OuiSpacer size="xl" />
 
-      {/* Thread input */}
-      <OuiThreadInput
-        placeholder="Ask anything or use / for commands"
-        value={inputValue}
-        onChange={setInputValue}
-        onSubmit={handleSubmit}
-        actionsLeft={
-          <OuiButtonIcon
-            iconType="plus"
-            aria-label="Add attachment"
-            size="s"
-            color="text"
-          />
-        }
-        actionsRight={
-          <OuiButtonIcon
-            iconType="sortUp"
-            aria-label="Send message"
-            display="fill"
-            size="s"
-            color="primary"
-            isDisabled={!inputValue.trim()}
-            onClick={() => handleSubmit(inputValue)}
-          />
-        }
-      />
+        {/* Thread input */}
+        <OuiThreadInput
+          placeholder="Ask anything or use / for commands"
+          value={inputValue}
+          onChange={setInputValue}
+          onSubmit={handleSubmit}
+          actionsLeft={
+            <OuiButtonIcon
+              iconType="plus"
+              aria-label="Add attachment"
+              size="s"
+              color="text"
+            />
+          }
+          actionsRight={
+            <OuiButtonIcon
+              iconType="sortUp"
+              aria-label="Send message"
+              display="fill"
+              size="s"
+              color="primary"
+              isDisabled={!inputValue.trim()}
+              onClick={() => handleSubmit(inputValue)}
+            />
+          }
+        />
 
-      <OuiSpacer size="l" />
-      <OuiSpacer size="s" />
+        <OuiSpacer size="l" />
+        <OuiSpacer size="s" />
 
-      {/* Quick action pills */}
-      <OuiFlexGroup
-        gutterSize="m"
-        wrap
-        responsive={false}
-        justifyContent="center">
-        {QUICK_ACTIONS.map((action, i) => (
-          <OuiFlexItem key={i} grow={false}>
-            <OuiBadge iconType={action.icon} color="primary" onClick={() => {}} onClickAriaLabel={action.label}>
-              {action.label}
+        {/* Quick action pills */}
+        <OuiFlexGroup
+          gutterSize="m"
+          wrap
+          responsive={false}
+          justifyContent="center">
+          {QUICK_ACTIONS.map((action, i) => (
+            <OuiFlexItem key={i} grow={false}>
+              <OuiBadge iconType={action.icon} color="primary" onClick={() => {}} onClickAriaLabel={action.label}>
+                {action.label}
+              </OuiBadge>
+            </OuiFlexItem>
+          ))}
+          <OuiFlexItem grow={false}>
+            <OuiBadge iconType="plus" color="primary" onClick={() => {}} onClickAriaLabel="More">
+              More
             </OuiBadge>
           </OuiFlexItem>
-        ))}
-        <OuiFlexItem grow={false}>
-          <OuiBadge iconType="plus" color="primary" onClick={() => {}} onClickAriaLabel="More">
-            More
-          </OuiBadge>
-        </OuiFlexItem>
-      </OuiFlexGroup>
-
-      <OuiSpacer size="xl" />
-
-      {/* Pick up where you left off */}
-      <OuiText size="xs" color="subdued">
-        <strong style={{ letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-          Pick up where you left off
-        </strong>
-      </OuiText>
-      <OuiSpacer size="l" />
-
-      {RECENT_THREADS.map((thread, i) => (
-        <div key={i} className="recentThreadRow" style={{ marginBottom: 2 }}>
-          <OuiFlexGroup
-            alignItems="center"
-            gutterSize="m"
-            responsive={false}
-            style={{ padding: '16px 8px' }}>
-            <OuiFlexItem grow={false}>
-              <OuiIcon type={thread.icon} size="m" color="subdued" />
-            </OuiFlexItem>
-            <OuiFlexItem>
-              <OuiFlexGroup
-                alignItems="center"
-                gutterSize="s"
-                responsive={false}>
-                <OuiFlexItem grow={false}>
-                  <OuiText size="s">
-                    <strong>{thread.title}</strong>
-                  </OuiText>
-                </OuiFlexItem>
-                <OuiFlexItem grow={false}>
-                  <OuiText size="xs" color="subdued">
-                    {thread.type} · {thread.time}
-                  </OuiText>
-                </OuiFlexItem>
-              </OuiFlexGroup>
-            </OuiFlexItem>
-            <OuiFlexItem grow={false}>
-              <OuiText size="xs" color={thread.statusColor}>
-                {thread.status}
-              </OuiText>
-            </OuiFlexItem>
-          </OuiFlexGroup>
-        </div>
-      ))}
-
-      <OuiSpacer size="m" />
-      <div style={{ textAlign: 'center' }}>
-        <OuiButtonEmpty size="s" onClick={() => onPageChange && onPageChange('recents')}>
-          View all threads
-        </OuiButtonEmpty>
+        </OuiFlexGroup>
+        
+        <OuiSpacer size="xl" />
       </div>
 
-      <OuiSpacer size="xl" />
+      {/* Scrollable content section */}
+      <div style={{ 
+        maxWidth: 900, 
+        width: '100%', 
+        margin: '0 auto',
+        padding: '0 16px 24px'
+      }}>
+        {/* Pick up where you left off */}
+        <OuiText size="xs" color="subdued">
+          <strong style={{ letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+            Pick up where you left off
+          </strong>
+        </OuiText>
+        <OuiSpacer size="m" />
 
-      {/* Start something afresh */}
-      <OuiText size="xs" color="subdued">
-        <strong style={{ letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-          Start something afresh
-        </strong>
-      </OuiText>
-      <OuiSpacer size="l" />
+        <OuiThreadList items={threadItems} flush />
 
-      <OuiFlexGroup gutterSize="m" wrap>
-        {START_CARDS.map((card, i) => (
-          <OuiFlexItem key={i} grow={false} style={{ minWidth: 'calc(33.33% - 12px)', maxWidth: 'calc(33.33% - 12px)' }}>
-            <OuiPanel paddingSize="m" hasBorder className="startCard">
-              <OuiFlexGroup
-                gutterSize="m"
-                alignItems="center"
-                responsive={false}>
-                <OuiFlexItem grow={false}>
-                  <OuiIcon type={card.icon} size="l" color="subdued" />
-                </OuiFlexItem>
-                <OuiFlexItem>
-                  <OuiText size="s">
-                    <strong>{card.title}</strong>
-                  </OuiText>
-                  <OuiText size="xs" color="subdued">
-                    {card.description}
-                  </OuiText>
-                </OuiFlexItem>
-              </OuiFlexGroup>
-            </OuiPanel>
-          </OuiFlexItem>
-        ))}
-      </OuiFlexGroup>
+        <OuiSpacer size="m" />
+        <div style={{ textAlign: 'center' }}>
+          <OuiButtonEmpty size="s" onClick={() => onPageChange && onPageChange('recents')}>
+            View all threads
+          </OuiButtonEmpty>
+        </div>
+
+        <OuiSpacer size="xl" />
+
+        {/* Start something afresh */}
+        <OuiText size="xs" color="subdued">
+          <strong style={{ letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+            Start something afresh
+          </strong>
+        </OuiText>
+        <OuiSpacer size="l" />
+
+        <OuiFlexGroup gutterSize="m" wrap>
+          {START_CARDS.map((card, i) => (
+            <OuiFlexItem key={i} grow={false} style={{ minWidth: 'calc(33.33% - 12px)', maxWidth: 'calc(33.33% - 12px)' }}>
+              <OuiPanel paddingSize="m" hasBorder className="startCard">
+                <OuiFlexGroup
+                  gutterSize="m"
+                  alignItems="center"
+                  responsive={false}>
+                  <OuiFlexItem grow={false}>
+                    <OuiIcon type={card.icon} size="l" color="subdued" />
+                  </OuiFlexItem>
+                  <OuiFlexItem>
+                    <OuiText size="s">
+                      <strong>{card.title}</strong>
+                    </OuiText>
+                    <OuiText size="xs" color="subdued">
+                      {card.description}
+                    </OuiText>
+                  </OuiFlexItem>
+                </OuiFlexGroup>
+              </OuiPanel>
+            </OuiFlexItem>
+          ))}
+        </OuiFlexGroup>
+        
+        <OuiSpacer size="xl" />
       </div>
     </div>
   );

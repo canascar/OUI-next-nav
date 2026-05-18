@@ -4,9 +4,13 @@
  */
 
 // sass-lint:disable no-color-literals
-// Dark header background — always use light logo colors
-$ouiLogoPrimaryDark: #38BDF8;
-$ouiLogoSecondaryDark: #0284C7;
+// Agentic OSD Utility logo colors
+// Light mode: Minsk (primary) / Violet Topaz (secondary)
+$ouiLogoPrimaryLight: #2E4A8F;
+$ouiLogoSecondaryLight: #4168B8;
+// Dark mode: Amethyst (primary) / Rose Quartz (secondary)
+$ouiLogoPrimaryDark: #7A9FD4;
+$ouiLogoSecondaryDark: #B8D4F0;
 // sass-lint:enable no-color-literals
 
 .ouiHeader--dark {

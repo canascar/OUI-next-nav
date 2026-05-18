@@ -60,7 +60,7 @@ export default () => {
       height: 300, 
       display: 'flex', 
       flexDirection: 'column',
-      border: '1px solid #D3DAE6',
+      border: '1px solid var(--ouiColorLightShade, #D3DAE6)',
       borderRadius: 6,
       overflow: 'hidden'
     }}>
@@ -80,7 +80,7 @@ export default () => {
             key={i}
             style={{
               padding: '8px 12px',
-              background: '#F5F7FA',
+              background: 'var(--ouiColorLightestShade, #F5F7FA)',
               borderRadius: 8,
               maxWidth: '80%'
             }}

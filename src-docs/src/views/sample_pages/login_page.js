@@ -46,10 +46,10 @@ export const LoginPage = ({ onLogin }) => {
 
   // Agentic OSD Utility: Graph paper grid background (matching sample pages)
   const gridColor = isDark
-    ? 'rgba(122, 159, 212, 0.06)'
+    ? 'rgba(122, 159, 212, 0.12)'
     : 'rgba(46, 74, 143, 0.04)';
   const gridColorSmall = isDark
-    ? 'rgba(122, 159, 212, 0.025)'
+    ? 'rgba(122, 159, 212, 0.05)'
     : 'rgba(46, 74, 143, 0.015)';
   const bgColor = isDark ? '#060D1A' : '#F4F6FB';
 
@@ -130,7 +130,7 @@ export const LoginPage = ({ onLogin }) => {
             style={{
               padding: 48,
               backgroundColor: isDark
-                ? 'rgba(36, 37, 38, 0.75)'
+                ? 'rgba(36, 37, 38, 0.55)'
                 : 'rgba(255, 255, 255, 0.4)',
             }}>
             {/* Logo */}

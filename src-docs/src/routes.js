@@ -221,6 +221,8 @@ import { TextExample } from './views/text/text_example';
 
 import { ThreadInputExample } from './views/thread_input/thread_input_example';
 
+import { ThreadListExample } from './views/thread_list/thread_list_example';
+
 import { TitleExample } from './views/title/title_example';
 
 import { ToastExample } from './views/toast/toast_example';
@@ -415,6 +417,7 @@ const navigation = [
       SchemaExample,
       StatExample,
       TextExample,
+      ThreadListExample,
       TitleExample,
       ToastExample,
       ToolTipExample,

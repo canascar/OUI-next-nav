@@ -362,6 +362,8 @@ export { useOuiTextDiff } from './text_diff';
 
 export { OuiThreadInput, OuiThreadScrollButton } from './thread_input';
 
+export { OuiThreadList, OuiThreadListItem } from './thread_list';
+
 export { OuiTitle } from './title';
 
 export { OuiGlobalToastList, OuiGlobalToastListItem, OuiToast } from './toast';

@@ -285,10 +285,10 @@ export const SamplePagesLeftNav = ({
           background: transparent;
         }
         .threadItem:hover {
-          background: rgba(46, 74, 143, 0.08);
+          background: var(--navItemHover, rgba(46, 74, 143, 0.08));
         }
         .threadItem:active {
-          background: rgba(46, 74, 143, 0.15);
+          background: var(--navItemActive, rgba(46, 74, 143, 0.15));
         }
       `}</style>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px' }}>
@@ -338,10 +338,10 @@ export const SamplePagesLeftNav = ({
           background: transparent;
         }
         .metricsItem:hover {
-          background: rgba(46, 74, 143, 0.08);
+          background: var(--navItemHover, rgba(46, 74, 143, 0.08));
         }
         .metricsItem:active {
-          background: rgba(46, 74, 143, 0.15);
+          background: var(--navItemActive, rgba(46, 74, 143, 0.15));
         }
       `}</style>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px' }}>
@@ -402,7 +402,7 @@ export const SamplePagesLeftNav = ({
           background: transparent;
         }
         .moreRow:hover {
-          background: rgba(46, 74, 143, 0.08);
+          background: var(--navItemHover, rgba(46, 74, 143, 0.08));
         }
         .moreChild {
           display: block;
@@ -429,7 +429,7 @@ export const SamplePagesLeftNav = ({
           padding-left: 0;
         }
         .moreChild:hover {
-          background: rgba(46, 74, 143, 0.08);
+          background: var(--navItemHover, rgba(46, 74, 143, 0.08));
         }
       `}</style>
       <div style={{ padding: '4px 12px 12px', fontSize: 13, color: 'var(--ouiColorMediumShade, #69707D)' }}>More</div>
@@ -469,7 +469,7 @@ export const SamplePagesLeftNav = ({
                       background: transparent;
                     }
                     .notebookItem:hover {
-                      background: rgba(46, 74, 143, 0.08);
+                      background: var(--navItemHover, rgba(46, 74, 143, 0.08));
                     }
                   `}</style>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px' }}>
@@ -535,10 +535,10 @@ export const SamplePagesLeftNav = ({
           background: transparent;
         }
         .discoverItem:hover {
-          background: rgba(46, 74, 143, 0.08);
+          background: var(--navItemHover, rgba(46, 74, 143, 0.08));
         }
         .discoverItem:active {
-          background: rgba(46, 74, 143, 0.15);
+          background: var(--navItemActive, rgba(46, 74, 143, 0.15));
         }
       `}</style>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px' }}>
@@ -598,10 +598,10 @@ export const SamplePagesLeftNav = ({
           background: transparent;
         }
         .dashboardItem:hover {
-          background: rgba(46, 74, 143, 0.08);
+          background: var(--navItemHover, rgba(46, 74, 143, 0.08));
         }
         .dashboardItem:active {
-          background: rgba(46, 74, 143, 0.15);
+          background: var(--navItemActive, rgba(46, 74, 143, 0.15));
         }
       `}</style>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px' }}>
@@ -685,10 +685,10 @@ export const SamplePagesLeftNav = ({
           background: transparent;
         }
         .threadItem:hover {
-          background: rgba(46, 74, 143, 0.08);
+          background: var(--navItemHover, rgba(46, 74, 143, 0.08));
         }
         .threadItem:active {
-          background: rgba(46, 74, 143, 0.15);
+          background: var(--navItemActive, rgba(46, 74, 143, 0.15));
         }
       `}</style>
       <div
@@ -799,7 +799,7 @@ export const SamplePagesLeftNav = ({
                   transition: background 150ms ease;
                 }
                 .wsMenuItem:hover {
-                  background: rgba(46, 74, 143, 0.08);
+                  background: var(--navItemHover, rgba(46, 74, 143, 0.08));
                 }
                 .wsSelectTrigger {
                   display: flex;
@@ -826,7 +826,7 @@ export const SamplePagesLeftNav = ({
                   transition: background 150ms ease;
                 }
                 .wsSelectOption:hover {
-                  background: rgba(46, 74, 143, 0.08);
+                  background: var(--navItemHover, rgba(46, 74, 143, 0.08));
                 }
               `}</style>
 
@@ -973,7 +973,7 @@ export const SamplePagesLeftNav = ({
                   transition: background 150ms ease;
                 }
                 .userMenuItem:hover {
-                  background: rgba(46, 74, 143, 0.08);
+                  background: var(--navItemHover, rgba(46, 74, 143, 0.08));
                 }
                 .userMenuChild {
                   display: block;
@@ -999,7 +999,7 @@ export const SamplePagesLeftNav = ({
                   margin-left: 20px;
                 }
                 .userMenuChild:hover {
-                  background: rgba(46, 74, 143, 0.08);
+                  background: var(--navItemHover, rgba(46, 74, 143, 0.08));
                 }
               `}</style>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 12px' }}>

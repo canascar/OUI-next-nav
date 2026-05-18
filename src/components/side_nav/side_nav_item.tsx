@@ -231,7 +231,7 @@ export function OuiSideNavItem<
     'ouiSideNavItemButton',
     {
       'ouiSideNavItemButton--isClickable': isClickable,
-      'ouiSideNavItemButton-isOpen': depth > 0 && itemIsOpen && !isSelected,
+      'ouiSideNavItemButton-isOpen': itemIsOpen && !isSelected && childrenOnly,
       'ouiSideNavItemButton-isSelected': isSelected,
     },
     buttonClassName
@@ -239,7 +239,8 @@ export function OuiSideNavItem<
 
   let caret;
 
-  if (depth > 0 && childrenOnly) {
+  // Show caret for collapsible items (childrenOnly means it acts as accordion)
+  if (childrenOnly) {
     caret = <OuiIcon type={itemIsOpen ? 'arrowDown' : 'arrowRight'} size="s" />;
   }
 

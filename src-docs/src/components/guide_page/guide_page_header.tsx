@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 
 import {
   OuiHeaderLogo,
@@ -20,14 +20,21 @@ import { OuiIcon } from '../../../../src/components/icon';
 import { OuiToolTip } from '../../../../src/components/tool_tip';
 import { OuiPopover } from '../../../../src/components/popover';
 import { useIsWithinBreakpoints } from '../../../../src/services/hooks';
-import { OuiButton, OuiButtonEmpty } from '../../../../src/components/button';
+import { OuiButton, OuiButtonEmpty, OuiButtonIcon } from '../../../../src/components/button';
 import { OuiBetaBadge } from '../../../../src/components/badge/beta_badge';
 
 import { GuideThemeSelector } from '../guide_theme_selector';
+import { ThemeContext } from '../with_theme';
 import figmaLogo from '../../images/logo-figma.svg';
 
 export const GuidePageHeader: React.FunctionComponent<{}> = () => {
   const isMobileSize = useIsWithinBreakpoints(['xs', 's']);
+  const themeContext = useContext(ThemeContext);
+  const isDark = themeContext.theme === 'v9-dark';
+
+  const toggleTheme = () => {
+    themeContext.changeTheme(isDark ? 'v9-light' : 'v9-dark');
+  };
 
   function renderLogo() {
     return (
@@ -39,6 +46,23 @@ export const GuidePageHeader: React.FunctionComponent<{}> = () => {
           style={{ verticalAlign: 'middle' }}
         />
       </OuiHeaderLogo>
+    );
+  }
+
+  function renderThemeToggle() {
+    const label = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+    const iconType = isDark ? 'cloudSunny' : 'moon';
+    return (
+      <OuiToolTip content={label}>
+        <OuiButtonIcon
+          aria-label={label}
+          iconType={iconType}
+          onClick={toggleTheme}
+          size="s"
+          color="ghost"
+          display="empty"
+        />
+      </OuiToolTip>
     );
   }
 
@@ -75,12 +99,14 @@ export const GuidePageHeader: React.FunctionComponent<{}> = () => {
   }
 
   function renderSamplePages() {
-    const href = '#/login';
     const label = 'Sample Pages';
+    const handleClick = () => {
+      window.open(`${window.location.origin}${window.location.pathname}#/login`, '_blank');
+    };
     return (
       <OuiButton
         size="s"
-        href={href}
+        onClick={handleClick}
         color="ghost"
         minWidth={0}
         style={{ marginRight: 16 }}>
@@ -128,7 +154,7 @@ export const GuidePageHeader: React.FunctionComponent<{}> = () => {
       theme="dark"
       sections={[
         {
-          items: [renderLogo()],
+          items: [renderLogo(), renderThemeToggle()],
           borders: 'none',
         },
         {

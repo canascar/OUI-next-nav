@@ -88,30 +88,9 @@ export const SamplePagesView = () => {
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
 
-  // Agentic OSD Utility: Graph paper grid background
-  // Grid colors: Deep Blue for light mode, Sky for dark mode
-  const gridColor = isDark
-    ? 'rgba(122, 159, 212, 0.06)'  // Sky blue for dark
-    : 'rgba(46, 74, 143, 0.04)';   // Deep blue for light (scaled back)
-  const gridColorSmall = isDark
-    ? 'rgba(122, 159, 212, 0.025)'
-    : 'rgba(46, 74, 143, 0.015)';
   const bgColor = isDark
     ? '#060D1A'  // Obsidian
     : '#F4F6FB'; // Opal
-
-  const gridBackground = `
-    linear-gradient(to right, ${gridColor} 1px, transparent 1px),
-    linear-gradient(to bottom, ${gridColor} 1px, transparent 1px),
-    linear-gradient(to right, ${gridColorSmall} 1px, transparent 1px),
-    linear-gradient(to bottom, ${gridColorSmall} 1px, transparent 1px)
-  `;
-
-  // Vignette effect - fades edges and corners
-  const vignetteColor = isDark
-    ? 'rgba(6, 13, 26, 0.85)'   // Obsidian with opacity
-    : 'rgba(244, 246, 251, 0.9)'; // Opal with opacity
-  const vignette = `radial-gradient(ellipse at center, transparent 40%, ${vignetteColor} 100%)`;
 
   const DEFAULT_ITEMS = {
     service: 'services',
@@ -156,19 +135,7 @@ export const SamplePagesView = () => {
         right: 0,
         bottom: 0,
         backgroundColor: bgColor,
-        backgroundImage: gridBackground,
-        backgroundSize: '24px 24px, 24px 24px, 6px 6px, 6px 6px',
       }}>
-      {/* Vignette overlay */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          background: vignette,
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
       <style>{`
         .samplePagesContent .ouiPanel {
           padding: ${cardPadding}px !important;
@@ -216,19 +183,18 @@ export const SamplePagesView = () => {
         onGutterChange={setGutter}
         showLabels={showLabels}
         onShowLabelsChange={setShowLabels}
-        style={{ position: 'relative', zIndex: 1 }}
       />
       <div
-        className="samplePagesContent"
+        className={`samplePagesContent ${activePage === 'recents' ? 'samplePagesContent--noTopPadding' : ''}`}
         key={activePage}
         style={{
           flex: 1,
           overflowY: 'auto',
+          overflowX: 'hidden',
           padding,
           paddingLeft: padding + 8,
+          paddingTop: activePage === 'recents' ? 0 : padding,
           animation: 'pageFadeIn 300ms ease-out forwards',
-          position: 'relative',
-          zIndex: 1,
         }}>
         <style>{`
           @keyframes pageFadeIn {
