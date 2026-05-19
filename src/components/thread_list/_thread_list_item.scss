@@ -1,0 +1,119 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+.ouiThreadListItem {
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeM;
+  padding: $ouiSizeM $ouiSizeS;
+  border-bottom: $ouiBorderThin;
+  transition: background-color 150ms ease, transform 150ms ease, border-color 150ms ease, border-radius 150ms ease;
+
+  &--clickable {
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba($ouiColorPrimary, 0.06);
+      transform: translateY(-1px);
+      border-bottom-color: transparent;
+      border-radius: $ouiBorderRadius;
+    }
+
+    &:active {
+      background-color: rgba($ouiColorPrimary, 0.1);
+    }
+
+    &:focus {
+      outline: none;
+      background-color: rgba($ouiColorPrimary, 0.08);
+      border-bottom-color: transparent;
+      border-radius: $ouiBorderRadius;
+    }
+  }
+
+  &--active {
+    background-color: rgba($ouiColorPrimary, 0.08);
+    border-bottom-color: transparent;
+    border-radius: $ouiBorderRadius;
+  }
+
+  &--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    @include ouiTextTruncate;
+    @include ouiFontSizeS;
+    font-weight: $ouiFontWeightSemiBold;
+    color: $ouiTextColor;
+  }
+
+  &__description {
+    @include ouiTextTruncate;
+    @include ouiFontSizeXS;
+    color: $ouiTextSubduedColor;
+    margin-top: calc($ouiSizeXS / 2);
+  }
+
+  &__meta {
+    flex-shrink: 0;
+    text-align: right;
+    min-width: 120px;
+  }
+
+  &__metaPrimary {
+    @include ouiFontSizeXS;
+    color: $ouiTextSubduedColor;
+  }
+
+  &__metaSecondary {
+    @include ouiFontSizeXS;
+    color: $ouiTextSubduedColor;
+  }
+
+  &__status {
+    @include ouiFontSizeXS;
+    margin-bottom: calc($ouiSizeXS / 2);
+
+    &--primary {
+      color: $ouiColorPrimary;
+    }
+
+    &--success {
+      color: $ouiColorSuccess;
+    }
+
+    &--warning {
+      color: $ouiColorWarning;
+    }
+
+    &--danger {
+      color: $ouiColorDanger;
+    }
+
+    &--subdued {
+      color: $ouiTextSubduedColor;
+    }
+  }
+}

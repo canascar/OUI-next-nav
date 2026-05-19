@@ -13,7 +13,7 @@
   background-color: $ouiColorLightestShade !important;
   border-radius: $ouiBorderRadius !important;
   padding: 4px !important;
-  gap: 2px;
+  gap: 4px;
   border: 1px solid transparentize($ouiColorLightShade, .5) !important;
 
   // Remove the bottom border line
@@ -29,7 +29,7 @@
 
 // Individual tab — pill style
 .ouiTab {
-  border-radius: calc(#{$ouiBorderRadius} - 2px) !important;
+  border-radius: calc(#{$ouiBorderRadius} - 4px) !important;
   padding: $ouiSizeS $ouiSizeM !important;
   font-weight: $ouiFontWeightMedium !important;
   // sass-lint:disable indentation
@@ -82,6 +82,7 @@
   padding: 3px !important;
 
   .ouiTab {
+    border-radius: calc(#{$ouiBorderRadius} - 3px) !important;
     padding: $ouiSizeXS $ouiSizeS !important;
   }
 

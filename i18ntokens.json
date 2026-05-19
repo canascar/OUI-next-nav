@@ -576,6 +576,24 @@
     "filepath": "src/components/split_button/split_button.tsx"
   },
   {
+    "token": "ouiSheet.closeAriaLabel",
+    "defString": "Close this dialog",
+    "highlighting": "string",
+    "loc": {
+      "start": {
+        "line": 106,
+        "column": 6,
+        "index": 2633
+      },
+      "end": {
+        "line": 108,
+        "column": 36,
+        "index": 2718
+      }
+    },
+    "filepath": "src/components/sheet/sheet.tsx"
+  },
+  {
     "token": "ouiSelectable.loadingOptions",
     "defString": "Loading options",
     "highlighting": "string",
@@ -1879,12 +1897,12 @@
       "start": {
         "line": 129,
         "column": 6,
-        "index": 3324
+        "index": 3336
       },
       "end": {
         "line": 132,
         "column": 8,
-        "index": 3423
+        "index": 3435
       }
     },
     "filepath": "src/components/date_picker/super_date_picker/super_update_button.tsx"
@@ -1897,12 +1915,12 @@
       "start": {
         "line": 136,
         "column": 8,
-        "index": 3508
+        "index": 3520
       },
       "end": {
         "line": 139,
         "column": 10,
-        "index": 3615
+        "index": 3627
       }
     },
     "filepath": "src/components/date_picker/super_date_picker/super_update_button.tsx"
@@ -1915,12 +1933,12 @@
       "start": {
         "line": 141,
         "column": 8,
-        "index": 3636
+        "index": 3648
       },
       "end": {
         "line": 144,
         "column": 10,
-        "index": 3739
+        "index": 3751
       }
     },
     "filepath": "src/components/date_picker/super_date_picker/super_update_button.tsx"
@@ -1933,12 +1951,12 @@
       "start": {
         "line": 151,
         "column": 8,
-        "index": 3835
+        "index": 3847
       },
       "end": {
         "line": 154,
         "column": 10,
-        "index": 3947
+        "index": 3959
       }
     },
     "filepath": "src/components/date_picker/super_date_picker/super_update_button.tsx"
@@ -1951,12 +1969,12 @@
       "start": {
         "line": 158,
         "column": 8,
-        "index": 4034
+        "index": 4046
       },
       "end": {
         "line": 161,
         "column": 10,
-        "index": 4147
+        "index": 4159
       }
     },
     "filepath": "src/components/date_picker/super_date_picker/super_update_button.tsx"
@@ -1967,14 +1985,14 @@
     "highlighting": "string",
     "loc": {
       "start": {
-        "line": 437,
+        "line": 451,
         "column": 14,
-        "index": 11485
+        "index": 11729
       },
       "end": {
-        "line": 440,
+        "line": 454,
         "column": 16,
-        "index": 11611
+        "index": 11855
       }
     },
     "filepath": "src/components/date_picker/super_date_picker/super_date_picker.tsx"

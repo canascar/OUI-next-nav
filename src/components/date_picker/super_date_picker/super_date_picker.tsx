@@ -154,6 +154,7 @@ export type OuiSuperDatePickerProps = CommonProps & {
 interface OuiSuperDatePickerState {
   end: ShortDate;
   hasChanged: boolean;
+  hasInteracted: boolean;
   isEndDatePopoverOpen: boolean;
   isInvalid: boolean;
   isQuickSelectOpen: boolean;
@@ -218,6 +219,7 @@ export class OuiSuperDatePicker extends Component<
     end: this.props.end,
     isInvalid: isRangeInvalid(this.props.start, this.props.end),
     hasChanged: false,
+    hasInteracted: false,
     showPrettyDuration: showPrettyDuration(
       this.props.start,
       this.props.end,
@@ -325,12 +327,19 @@ export class OuiSuperDatePicker extends Component<
   };
 
   hidePrettyDuration = () => {
-    this.setState({ showPrettyDuration: false, isStartDatePopoverOpen: true });
+    this.setState({
+      showPrettyDuration: false,
+      isStartDatePopoverOpen: true,
+      hasInteracted: true,
+    });
   };
 
   onStartDatePopoverToggle = () => {
     this.setState((prevState) => {
-      return { isStartDatePopoverOpen: !prevState.isStartDatePopoverOpen };
+      return {
+        isStartDatePopoverOpen: !prevState.isStartDatePopoverOpen,
+        hasInteracted: true,
+      };
     });
   };
 
@@ -340,7 +349,10 @@ export class OuiSuperDatePicker extends Component<
 
   onEndDatePopoverToggle = () => {
     this.setState((prevState) => {
-      return { isEndDatePopoverOpen: !prevState.isEndDatePopoverOpen };
+      return {
+        isEndDatePopoverOpen: !prevState.isEndDatePopoverOpen,
+        hasInteracted: true,
+      };
     });
   };
 
@@ -569,7 +581,10 @@ export class OuiSuperDatePicker extends Component<
         refreshInterval={refreshInterval}
         start={start}
         onPopoverToggle={(isOpen) =>
-          this.setState({ isQuickSelectOpen: isOpen })
+          this.setState({
+            isQuickSelectOpen: isOpen,
+            hasInteracted: true,
+          })
         }
       />
     );
@@ -581,6 +596,8 @@ export class OuiSuperDatePicker extends Component<
         this.state.isStartDatePopoverOpen ||
         this.state.isEndDatePopoverOpen ||
         this.state.isQuickSelectOpen,
+      'ouiSuperDatePicker__flexWrapper--hasInteracted': this.state
+        .hasInteracted,
     });
 
     return (

@@ -26,6 +26,8 @@ export { OuiBeacon } from './beacon';
 
 export { OuiBottomBar } from './bottom_bar';
 
+export { OuiBrandGradient } from './brand_gradient';
+
 export { OuiBreadcrumbs, OuiSimplifiedBreadcrumbs } from './breadcrumbs';
 
 export {
@@ -87,6 +89,7 @@ export {
 export {
   OuiDatePicker,
   OuiDatePickerRange,
+  OuiDatePickerUnified,
   OuiSuperDatePicker,
   OuiCompressedSuperDatePicker,
   OuiSuperUpdateButton,
@@ -135,6 +138,8 @@ export {
   OuiFlyoutFooter,
   OuiFlyoutHeader,
 } from './flyout';
+
+export { OuiSheet } from './sheet';
 
 export { OuiFocusTrap } from './focus_trap';
 
@@ -222,6 +227,8 @@ export {
 } from './loading';
 
 export { OuiKeyPadMenu, OuiKeyPadMenuItem } from './key_pad_menu';
+
+export { OuiLeftNav } from './left_nav';
 
 export { OuiLink } from './link';
 
@@ -352,6 +359,10 @@ export { OuiTab, OuiTabs, OuiTabbedContent } from './tabs';
 export { OuiText, OuiTextColor, OuiTextAlign } from './text';
 
 export { useOuiTextDiff } from './text_diff';
+
+export { OuiThreadInput, OuiThreadScrollButton } from './thread_input';
+
+export { OuiThreadList, OuiThreadListItem } from './thread_list';
 
 export { OuiTitle } from './title';
 

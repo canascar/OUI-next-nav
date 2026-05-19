@@ -126,6 +126,7 @@
     "remark-rehype": "^8.0.0",
     "tabbable": "^6.1.2",
     "text-diff": "^1.0.1",
+    "three": "0.162.0",
     "unified": "^9.2.0",
     "unist-util-visit": "^2.0.3",
     "url-parse": "^1.5.10",

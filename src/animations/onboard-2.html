@@ -1,0 +1,811 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+
+import {
+  OuiButton,
+  OuiButtonEmpty,
+  OuiButtonIcon,
+  OuiCompressedTextArea,
+  OuiIcon,
+  OuiProgress,
+  OuiText,
+  OuiTitle,
+} from '../../../../src/components';
+
+import { DetailPageHeader } from './detail_page_header';
+
+// Stage & step definition (linear, revealed as conversation advances)
+const STAGES = [
+  {
+    id: 'data-source',
+    label: '1 · Data source',
+    steps: [
+      { id: 'choose-type', label: 'Choose data type' },
+      { id: 'connect-sample', label: 'Connect sample data' },
+    ],
+  },
+  {
+    id: 'collector',
+    label: '2 · Collector',
+    steps: [
+      { id: 'describe-intent', label: 'Describe data intent' },
+      { id: 'set-destination', label: 'Set destination' },
+      { id: 'configure-transformer', label: 'Configure transformer' },
+    ],
+  },
+  {
+    id: 'ingestion',
+    label: '3 · Ingestion',
+    steps: [
+      { id: 'collecting', label: 'Collecting live data' },
+      { id: 'validate-schema', label: 'Validate schema' },
+    ],
+  },
+  {
+    id: 'insights',
+    label: '4 · Insights',
+    steps: [
+      { id: 'generate-dashboards', label: 'Generate dashboards' },
+      { id: 'suggest-queries', label: 'Suggest starter queries' },
+    ],
+  },
+  {
+    id: 'migration',
+    label: '5 · Migration',
+    steps: [{ id: 'import-splunk', label: 'Import Splunk artifacts' }],
+  },
+];
+
+const TOTAL_STEPS = STAGES.reduce((sum, s) => sum + s.steps.length, 0);
+
+// Initial step state keyed by stepId — 'hidden' | 'active' | 'collecting' | 'done' | 'skipped'
+const initialStepStates = () => {
+  const state = {};
+  STAGES.forEach((stage) => {
+    stage.steps.forEach((step) => {
+      state[step.id] = 'hidden';
+    });
+  });
+  return state;
+};
+
+// Chip option button — unselected, selected, or dimmed
+const ChipButton = ({ label, state, onClick, accent }) => {
+  // state: 'idle' | 'selected' | 'dimmed'
+  if (state === 'selected') {
+    return (
+      <OuiButton
+        size="s"
+        fill
+        color="primary"
+        onClick={undefined}
+        className="onboardingPage__chip onboardingPage__chip--selected">
+        {label}
+      </OuiButton>
+    );
+  }
+  if (state === 'dimmed') {
+    return (
+      <OuiButton
+        size="s"
+        color="text"
+        isDisabled
+        className="onboardingPage__chip onboardingPage__chip--dimmed">
+        {label}
+      </OuiButton>
+    );
+  }
+  return (
+    <OuiButton
+      size="s"
+      color={accent ? 'accent' : 'text'}
+      onClick={onClick}
+      className={`onboardingPage__chip${
+        accent ? ' onboardingPage__chip--accent' : ''
+      }`}>
+      {label}
+    </OuiButton>
+  );
+};
+
+// Typing indicator (three pulsing dots)
+const TypingIndicator = () => (
+  <div className="onboardingPage__message onboardingPage__message--assistant">
+    <div className="onboardingPage__typing" aria-label="Assistant is typing">
+      <span className="onboardingPage__typingDot" />
+      <span className="onboardingPage__typingDot" />
+      <span className="onboardingPage__typingDot" />
+    </div>
+  </div>
+);
+
+// Step row on the right panel
+const StepRow = ({ step, state }) => {
+  if (state === 'hidden') return null;
+
+  let iconEl;
+  if (state === 'done') {
+    iconEl = <OuiIcon type="checkInCircleFilled" size="m" color="success" />;
+  } else if (state === 'skipped') {
+    iconEl = <OuiIcon type="minusInCircle" size="m" color="subdued" />;
+  } else if (state === 'collecting') {
+    iconEl = <span className="onboardingPage__stepPulse" aria-hidden="true" />;
+  } else {
+    // active
+    iconEl = (
+      <span className="onboardingPage__stepActiveDot" aria-hidden="true" />
+    );
+  }
+
+  return (
+    <div
+      className={`onboardingPage__step onboardingPage__step--${state} onboardingPage__stepEnter`}>
+      <div className="onboardingPage__stepIcon">{iconEl}</div>
+      <OuiText size="s" className="onboardingPage__stepLabel">
+        <span>{step.label}</span>
+      </OuiText>
+    </div>
+  );
+};
+
+// Stage block (header + steps)
+const StageBlock = ({ stage, stepStates }) => {
+  const anyVisible = stage.steps.some((s) => stepStates[s.id] !== 'hidden');
+  if (!anyVisible) return null;
+  return (
+    <div className="onboardingPage__stage onboardingPage__stageEnter">
+      <div className="onboardingPage__stageHeader">{stage.label}</div>
+      <div className="onboardingPage__stageSteps">
+        {stage.steps.map((step) => (
+          <StepRow key={step.id} step={step} state={stepStates[step.id]} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Insights carousel (stage 4) — horizontal card deck with thumbnails,
+// inspired by tool-ui ItemCarousel. Each card surfaces a generated dashboard
+// or query with an icon-based thumbnail, type tag, title, and quick actions.
+const INSIGHTS_ITEMS = [
+  {
+    id: 'error-rate',
+    type: 'dashboard',
+    title: 'Error rate over time',
+    subtitle: 'Top error sources · Last 24h',
+    icon: 'visArea',
+    accent: 'primary',
+  },
+  {
+    id: 'latency',
+    type: 'dashboard',
+    title: 'P95 / P99 latency',
+    subtitle: 'Grouped by service',
+    icon: 'visLine',
+    accent: 'primary',
+  },
+  {
+    id: 'errors-stack',
+    type: 'query',
+    title: 'Last 100 errors',
+    subtitle: 'With stack trace',
+    icon: 'visQueryPPL',
+    accent: 'accent',
+  },
+  {
+    id: 'log-levels',
+    type: 'query',
+    title: 'Top log levels',
+    subtitle: 'Last 15 minutes',
+    icon: 'visBarVertical',
+    accent: 'accent',
+  },
+];
+
+const TYPE_LABEL = {
+  dashboard: 'Dashboard',
+  query: 'Query',
+};
+
+const InsightCard = ({ item }) => (
+  <div className="onboardingPage__carouselCard">
+    <div
+      className={`onboardingPage__carouselThumb onboardingPage__carouselThumb--${item.accent}`}>
+      <OuiIcon type={item.icon} size="xl" />
+    </div>
+    <div className="onboardingPage__carouselBody">
+      <span
+        className={`onboardingPage__carouselTag onboardingPage__carouselTag--${item.accent}`}>
+        {TYPE_LABEL[item.type]}
+      </span>
+      <OuiText size="s" className="onboardingPage__carouselTitle">
+        <strong>{item.title}</strong>
+      </OuiText>
+      <OuiText size="xs" color="subdued">
+        <span>{item.subtitle}</span>
+      </OuiText>
+    </div>
+    <div className="onboardingPage__carouselActions">
+      <OuiButtonEmpty size="xs" iconType="popout" iconSide="right" flush="left">
+        Open
+      </OuiButtonEmpty>
+    </div>
+  </div>
+);
+
+const InsightsCard = ({ onAccept, accepted }) => (
+  <div className="onboardingPage__insights">
+    <div className="onboardingPage__insightsLede">
+      <OuiText size="s">
+        <strong>Dashboards and insights ready for you</strong>
+      </OuiText>
+      <OuiText size="xs" color="subdued">
+        <span>Scroll through to preview. Open any card to jump into it.</span>
+      </OuiText>
+    </div>
+    <div
+      className="onboardingPage__carousel"
+      role="region"
+      aria-label="Generated dashboards and queries">
+      {INSIGHTS_ITEMS.map((item) => (
+        <InsightCard key={item.id} item={item} />
+      ))}
+    </div>
+    <div className="onboardingPage__insightsAction">
+      {accepted ? (
+        <OuiButton size="s" fill color="success" isDisabled iconType="check">
+          Continue
+        </OuiButton>
+      ) : (
+        <OuiButton size="s" fill color="primary" onClick={onAccept}>
+          Continue
+        </OuiButton>
+      )}
+    </div>
+  </div>
+);
+
+export const OnboardingPage = ({ isPanelOpen, onTogglePanel }) => {
+  const [messages, setMessages] = useState([]);
+  const [stepStates, setStepStates] = useState(initialStepStates);
+  const [phase, setPhase] = useState('idle');
+  const [isTyping, setIsTyping] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_dataType, setDataType] = useState(null);
+  const [intent, setIntent] = useState(null);
+  const [source, setSource] = useState(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_semantic, setSemantic] = useState(null);
+  const [headerSubtitle, setHeaderSubtitle] = useState('Getting started...');
+  const [insightsAccepted, setInsightsAccepted] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+
+  const feedRef = useRef(null);
+  const timersRef = useRef([]);
+  const startedRef = useRef(false);
+
+  // Queue a timer (so we can cancel on unmount / reset)
+  const after = useCallback((ms, fn) => {
+    const t = setTimeout(fn, ms);
+    timersRef.current.push(t);
+    return t;
+  }, []);
+
+  // Add an assistant message with a ~2s typing indicator first
+  const sayAI = useCallback(
+    (content, delay = 2000) =>
+      new Promise((resolve) => {
+        setIsTyping(true);
+        after(delay, () => {
+          setIsTyping(false);
+          setMessages((prev) => [
+            ...prev,
+            { role: 'assistant', content, id: `m-${prev.length}` },
+          ]);
+          resolve();
+        });
+      }),
+    [after]
+  );
+
+  // Add an AI "chip prompt" message: content + chips
+  const askAI = useCallback(
+    (content, chips, { accentIndex } = {}) =>
+      new Promise((resolve) => {
+        setIsTyping(true);
+        after(2000, () => {
+          setIsTyping(false);
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: 'assistant',
+              content,
+              chips,
+              accentIndex,
+              selected: null,
+              id: `m-${prev.length}`,
+            },
+          ]);
+          resolve();
+        });
+      }),
+    [after]
+  );
+
+  // Append user message bubble (echo of chip choice)
+  const sayUser = useCallback((content) => {
+    setMessages((prev) => [
+      ...prev,
+      { role: 'user', content, id: `m-${prev.length}` },
+    ]);
+  }, []);
+
+  // Update a step state by id
+  const setStep = useCallback((stepId, state) => {
+    setStepStates((prev) => ({ ...prev, [stepId]: state }));
+  }, []);
+
+  // Mark a chip prompt message as selected (locks chips)
+  const lockChips = useCallback((messageId, selectedIndex) => {
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.id === messageId ? { ...m, selected: selectedIndex } : m
+      )
+    );
+  }, []);
+
+  // --- Phase transitions ---
+
+  // Stage 1: data source
+  useEffect(() => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    (async () => {
+      await sayAI("Welcome! Let's get your data into OpenSearch.");
+      setStep('choose-type', 'active');
+      await askAI('First, what kind of data do you want to work with?', [
+        'Application logs',
+        'Metrics / traces',
+        'Security events',
+        'Upload sample data',
+      ]);
+      setPhase('stage1-await-datatype');
+    })();
+  }, [sayAI, askAI, setStep]);
+
+  // Clean up timers on unmount
+  useEffect(
+    () => () => {
+      timersRef.current.forEach(clearTimeout);
+    },
+    []
+  );
+
+  // Auto-scroll feed
+  useEffect(() => {
+    if (feedRef.current) {
+      feedRef.current.scrollTop = feedRef.current.scrollHeight;
+    }
+  }, [messages, isTyping]);
+
+  // Handle stage 1 chip pick
+  const pickDataType = useCallback(
+    async (index, label, messageId) => {
+      lockChips(messageId, index);
+      sayUser(label);
+      setDataType(label);
+      setStep('choose-type', 'done');
+      if (label === 'Upload sample data') {
+        await sayAI(
+          "Great, I'll load a sample log dataset so you can explore right away."
+        );
+        setStep('connect-sample', 'done');
+      } else {
+        setStep('connect-sample', 'skipped');
+      }
+      // Transition to stage 2
+      await sayAI(`Nice. Now let's set up your collector for ${label}.`);
+      setStep('describe-intent', 'active');
+      await askAI(
+        'What are you trying to understand from this data? This helps me figure out the right transformer and field mappings.',
+        [
+          'Debug errors & exceptions',
+          'Monitor latency & performance',
+          'Track user behaviour',
+          'Detect security anomalies',
+        ]
+      );
+      setPhase('stage2-await-intent');
+    },
+    [lockChips, sayUser, setStep, sayAI, askAI]
+  );
+
+  // Handle stage 2: intent
+  const pickIntent = useCallback(
+    async (index, label, messageId) => {
+      lockChips(messageId, index);
+      sayUser(label);
+      setIntent(label);
+      setStep('describe-intent', 'done');
+      await sayAI(
+        `Got it — ${label.toLowerCase()}. Where is this data coming from?`
+      );
+      setStep('set-destination', 'active');
+      await askAI(
+        'Pick your source. (OpenSearch is the default destination on the receiving side — this step is about the source.)',
+        [
+          'CloudWatch Logs',
+          'Kinesis Data Streams',
+          'S3 bucket',
+          'Direct API / SDK',
+          'Fluent Bit / agent',
+        ]
+      );
+      setPhase('stage2-await-source');
+    },
+    [lockChips, sayUser, setStep, sayAI, askAI]
+  );
+
+  // Handle stage 2: source pick
+  const pickSource = useCallback(
+    async (index, label, messageId) => {
+      lockChips(messageId, index);
+      sayUser(label);
+      setSource(label);
+      setStep('set-destination', 'done');
+      await sayAI(`I'll pull from ${label} and map the fields automatically.`);
+      setStep('configure-transformer', 'active');
+      // Highlight accent on "Yes" when intent suggests errors or security
+      const accentIndex =
+        intent &&
+        (intent.toLowerCase().includes('error') ||
+          intent.toLowerCase().includes('security'))
+          ? 0
+          : undefined;
+      await askAI(
+        'One option: I can enrich your logs with semantic embeddings, so you can search by meaning, not just keywords. Useful for error messages and anomaly detection.',
+        ['Yes, enable semantic search', 'No, keyword search is fine'],
+        { accentIndex }
+      );
+      setPhase('stage2-await-semantic');
+    },
+    [lockChips, sayUser, setStep, sayAI, askAI, intent]
+  );
+
+  // Handle stage 2: semantic pick → moves through stages 3 & 4 automatically
+  const pickSemantic = useCallback(
+    async (index, label, messageId) => {
+      lockChips(messageId, index);
+      sayUser(label);
+      const enabled = index === 0;
+      setSemantic(enabled);
+      setStep('configure-transformer', 'done');
+
+      // Stage 3 — Ingestion
+      await sayAI(
+        `Collector is live. Data is flowing from ${source}${
+          enabled ? ' with semantic embeddings enabled' : ''
+        }.`
+      );
+      await sayAI("I'll validate the schema once I have enough events.");
+      setStep('collecting', 'collecting');
+      setHeaderSubtitle('Collecting data...');
+
+      // Wait ~4s
+      after(4000, async () => {
+        setStep('collecting', 'done');
+        setStep('validate-schema', 'active');
+        await sayAI(
+          'Schema looks clean — 14 fields mapped, 0 errors. Timestamps normalised to ISO 8601.'
+        );
+        setStep('validate-schema', 'done');
+
+        // Stage 4 — Insights
+        setHeaderSubtitle('Generating insights...');
+        await sayAI(
+          "Data is flowing. I've generated a starter dashboard and a few queries you can preview below — open any card to dive in."
+        );
+        setStep('generate-dashboards', 'active');
+        setStep('suggest-queries', 'active');
+        // Show insights card
+        setMessages((prev) => [
+          ...prev,
+          { role: 'insights', id: `m-${prev.length}` },
+        ]);
+        setPhase('stage4-await-trust');
+      });
+    },
+    [lockChips, sayUser, setStep, sayAI, source, after]
+  );
+
+  // Handle stage 4 trust
+  const acceptInsights = useCallback(async () => {
+    setInsightsAccepted(true);
+    setStep('generate-dashboards', 'done');
+    setStep('suggest-queries', 'done');
+    // Stage 5 — Migration (skippable)
+    await sayAI(
+      'Your OpenSearch setup is working. One last optional step — if you have existing Splunk saved searches, dashboards, or alerts, I can import them.'
+    );
+    setStep('import-splunk', 'active');
+    await askAI('Import from Splunk?', [
+      'Yes, import from Splunk',
+      'Skip for now',
+    ]);
+    setPhase('stage5-await-migration');
+  }, [setStep, sayAI, askAI]);
+
+  // Handle stage 5 migration choice
+  const pickMigration = useCallback(
+    async (index, label, messageId) => {
+      lockChips(messageId, index);
+      sayUser(label);
+      if (index === 1) {
+        // Skip
+        setStep('import-splunk', 'skipped');
+        await sayAI(
+          'No problem — you can import artifacts any time from Settings.'
+        );
+      } else {
+        // Import
+        setStep('import-splunk', 'done');
+        await sayAI(
+          "Importing your Splunk artifacts now. I'll flag anything that needs manual review."
+        );
+      }
+      await sayAI(
+        "You're all set. OpenSearch is live, data is flowing, and your first dashboards are ready. Welcome aboard."
+      );
+      setHeaderSubtitle('Setup complete');
+      setPhase('done');
+    },
+    [lockChips, sayUser, setStep, sayAI]
+  );
+
+  // Dispatch chip selection based on current phase
+  const handleChipClick = useCallback(
+    (messageId, chipIndex, chipLabel) => {
+      switch (phase) {
+        case 'stage1-await-datatype':
+          pickDataType(chipIndex, chipLabel, messageId);
+          break;
+        case 'stage2-await-intent':
+          pickIntent(chipIndex, chipLabel, messageId);
+          break;
+        case 'stage2-await-source':
+          pickSource(chipIndex, chipLabel, messageId);
+          break;
+        case 'stage2-await-semantic':
+          pickSemantic(chipIndex, chipLabel, messageId);
+          break;
+        case 'stage5-await-migration':
+          pickMigration(chipIndex, chipLabel, messageId);
+          break;
+        default:
+          break;
+      }
+    },
+    [phase, pickDataType, pickIntent, pickSource, pickSemantic, pickMigration]
+  );
+
+  // Persistent chat input — send as a user message, AI responds with a brief ack.
+  // Free-text doesn't change the setup flow; it just lets users ask questions.
+  const handleInputSend = useCallback(() => {
+    const text = inputValue.trim();
+    if (!text) return;
+    sayUser(text);
+    setInputValue('');
+    sayAI(
+      "I'll keep going with the setup. Feel free to ask anything — I'll answer without pausing the flow."
+    );
+  }, [inputValue, sayUser, sayAI]);
+
+  const handleInputKeyDown = useCallback(
+    (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleInputSend();
+      }
+    },
+    [handleInputSend]
+  );
+
+  // Count completed/skipped steps for progress bar
+  const completedCount = Object.values(stepStates).filter(
+    (s) => s === 'done' || s === 'skipped'
+  ).length;
+
+  return (
+    <div className="onboardingPage">
+      <DetailPageHeader
+        title="OpenSearch onboarding"
+        isPanelOpen={isPanelOpen}
+        onTogglePanel={onTogglePanel}
+        firstActionIcon="refresh"
+        firstActionLabel="Restart setup"
+        onFirstAction={() => {
+          timersRef.current.forEach(clearTimeout);
+          timersRef.current = [];
+          startedRef.current = false;
+          setMessages([]);
+          setStepStates(initialStepStates());
+          setPhase('idle');
+          setIsTyping(false);
+          setDataType(null);
+          setIntent(null);
+          setSource(null);
+          setSemantic(null);
+          setInsightsAccepted(false);
+          setInputValue('');
+          setHeaderSubtitle('Getting started...');
+        }}
+        hideAskAi>
+        <div className="onboardingPage__headerTitle">
+          <OuiTitle size="xs">
+            <h2>OpenSearch onboarding</h2>
+          </OuiTitle>
+          <OuiText size="xs" color="subdued">
+            <span>{headerSubtitle}</span>
+          </OuiText>
+        </div>
+      </DetailPageHeader>
+
+      <div className="onboardingPage__body">
+        {/* Chat column */}
+        <div className="onboardingPage__chatCol">
+          <div className="onboardingPage__feed" ref={feedRef}>
+            {messages.map((msg) => {
+              if (msg.role === 'user') {
+                return (
+                  <div
+                    key={msg.id}
+                    className="onboardingPage__message onboardingPage__message--user">
+                    <div className="onboardingPage__bubble onboardingPage__bubble--user">
+                      <OuiText size="s">
+                        <p>{msg.content}</p>
+                      </OuiText>
+                    </div>
+                  </div>
+                );
+              }
+              if (msg.role === 'insights') {
+                return (
+                  <div
+                    key={msg.id}
+                    className="onboardingPage__message onboardingPage__message--assistant">
+                    <InsightsCard
+                      onAccept={acceptInsights}
+                      accepted={insightsAccepted}
+                    />
+                  </div>
+                );
+              }
+              // assistant
+              return (
+                <div
+                  key={msg.id}
+                  className="onboardingPage__message onboardingPage__message--assistant">
+                  <div className="onboardingPage__bubble onboardingPage__bubble--assistant">
+                    <OuiText size="s">
+                      <p style={{ margin: 0 }}>{msg.content}</p>
+                    </OuiText>
+                    {msg.chips && (
+                      <div className="onboardingPage__chips">
+                        {msg.chips.map((chipLabel, i) => {
+                          const hasSelection = msg.selected !== null;
+                          const isSelected = hasSelection && msg.selected === i;
+                          let state;
+                          if (!hasSelection) {
+                            state = 'idle';
+                          } else if (isSelected) {
+                            state = 'selected';
+                          } else {
+                            state = 'dimmed';
+                          }
+                          const accent =
+                            state === 'idle' && msg.accentIndex === i;
+                          return (
+                            <ChipButton
+                              key={i}
+                              label={chipLabel}
+                              state={state}
+                              accent={accent}
+                              onClick={() =>
+                                handleChipClick(msg.id, i, chipLabel)
+                              }
+                            />
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+            {isTyping && <TypingIndicator />}
+          </div>
+
+          {/* Persistent chat input at the bottom of every step */}
+          <div className="onboardingPage__inputArea">
+            <div className="onboardingPage__inputWrapper">
+              <OuiCompressedTextArea
+                placeholder="Ask anything about your setup..."
+                fullWidth
+                resize="none"
+                rows={2}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleInputKeyDown}
+                className="onboardingPage__textarea"
+              />
+              <div className="onboardingPage__inputActions">
+                <OuiButtonIcon
+                  iconType="plus"
+                  aria-label="Add attachment"
+                  size="s"
+                  color="text"
+                />
+                <OuiButtonIcon
+                  iconType="sortUp"
+                  aria-label="Send message"
+                  display="fill"
+                  size="s"
+                  isDisabled={!inputValue.trim()}
+                  onClick={handleInputSend}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Setup plan column */}
+        <div className="onboardingPage__planCol">
+          <div className="onboardingPage__planHeader">
+            <OuiTitle size="xxs">
+              <h3>Setup plan</h3>
+            </OuiTitle>
+          </div>
+          <div className="onboardingPage__planBody">
+            {STAGES.map((stage) => (
+              <StageBlock
+                key={stage.id}
+                stage={stage}
+                stepStates={stepStates}
+              />
+            ))}
+          </div>
+          <div className="onboardingPage__planFooter">
+            <OuiText size="xs" color="subdued">
+              <span>
+                {completedCount} of {TOTAL_STEPS} steps complete
+              </span>
+            </OuiText>
+            <OuiProgress
+              value={completedCount}
+              max={TOTAL_STEPS}
+              size="s"
+              color="primary"
+            />
+            {phase === 'done' && (
+              <div className="onboardingPage__planFooterAction">
+                <OuiButtonEmpty size="xs" iconType="check">
+                  Setup complete
+                </OuiButtonEmpty>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

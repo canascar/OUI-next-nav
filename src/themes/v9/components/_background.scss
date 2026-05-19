@@ -5,83 +5,122 @@
 
 // sass-lint:disable no-color-literals, leading-zero, no-trailing-zero
 
-// V9 theme gradient backgrounds with frosted glass overlay
+// V9 theme — Agentic OSD Utility: Solid backgrounds with graph paper grid and vignette
 
-$v9DarkGradient: linear-gradient(241deg, #0F1B2D 0%, #25405C 28%, #2E4C6E 61%, #132838 100%);
+// Graph paper grid variables
+$grid-size: 24px;
+$grid-size-small: 6px;
 
-$v9LightGradient: linear-gradient(241deg, #94A3B8 0%, #A5D0F0 28%, #E2E8F0 61%, #CBD5E1 100%);
+// Mixin for graph paper grid background
+@mixin graph-paper-grid-light {
+  background-image:
+    // Large grid lines
+    linear-gradient(to right, rgba(46, 74, 143, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(46, 74, 143, 0.04) 1px, transparent 1px),
+    // Small grid lines
+    linear-gradient(to right, rgba(46, 74, 143, 0.015) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(46, 74, 143, 0.015) 1px, transparent 1px);
+  background-size:
+    $grid-size $grid-size,
+    $grid-size $grid-size,
+    $grid-size-small $grid-size-small,
+    $grid-size-small $grid-size-small;
+  background-position: 0 0;
+}
+
+@mixin graph-paper-grid-dark {
+  background-image:
+    // Large grid lines
+    linear-gradient(to right, rgba(122, 159, 212, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(122, 159, 212, 0.12) 1px, transparent 1px),
+    // Small grid lines
+    linear-gradient(to right, rgba(122, 159, 212, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(122, 159, 212, 0.05) 1px, transparent 1px);
+  background-size:
+    $grid-size $grid-size,
+    $grid-size $grid-size,
+    $grid-size-small $grid-size-small,
+    $grid-size-small $grid-size-small;
+  background-position: 0 0;
+}
 
 @if (lightness($ouiPageBackgroundColor) < 50) {
-  // Dark mode — deep cosmic
+  // ============================================================
+  // DARK MODE — Obsidian background with subtle blue grid
+  // ============================================================
   html {
     background-color: $ouiPageBackgroundColor;
-    background-image: $v9DarkGradient;
-    background-size: 200% 200%;
-    background-attachment: fixed;
+    @include graph-paper-grid-dark;
     min-height: 100vh;
-    animation: gradient-drift 12s ease-in-out infinite;
+    position: relative;
+
+    // Vignette overlay - sits between grid background and content
+    // Fades the grid at edges but not the UI elements
+    &::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(6, 13, 26, 0.85) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
   }
 
   body {
     background: transparent;
     min-height: 100vh;
     position: relative;
-
-    // Frosted overlay — dark tinted glass
-    &::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      backdrop-filter: blur(80px) saturate(1.4);
-      background: rgba(2, 6, 23, .55);
-      pointer-events: none;
-      z-index: 0;
-    }
+    z-index: 1;
   }
 
   .ouiPage,
   .ouiPageBody {
     background: transparent !important; // sass-lint:disable-line no-important
-    position: relative;
-    z-index: 1;
+  }
+
+  // Utility class for applying grid to fixed containers
+  .v9-grid-background {
+    background-color: $ouiPageBackgroundColor;
+    @include graph-paper-grid-dark;
   }
 
 } @else {
-  // Light mode — soft dawn
+  // ============================================================
+  // LIGHT MODE — Opal background with subtle blue grid
+  // ============================================================
   html {
     background-color: $ouiPageBackgroundColor;
-    background-image: $v9LightGradient;
-    background-attachment: fixed;
+    @include graph-paper-grid-light;
     min-height: 100vh;
+    position: relative;
+
+    // Vignette overlay - sits between grid background and content
+    // Fades the grid at edges but not the UI elements
+    &::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(244, 246, 251, 0.9) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
   }
 
   body {
     background: transparent;
     min-height: 100vh;
     position: relative;
-
-    // Frosted overlay — light milky glass
-    &::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      backdrop-filter: blur(60px) saturate(1.8);
-      background: rgba(248, 250, 252, .6);
-      pointer-events: none;
-      z-index: 0;
-    }
+    z-index: 1;
   }
 
   .ouiPage,
   .ouiPageBody {
     background: transparent !important; // sass-lint:disable-line no-important
-    position: relative;
-    z-index: 1;
   }
-}
 
-@keyframes gradient-drift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  // Utility class for applying grid to fixed containers
+  .v9-grid-background {
+    background-color: $ouiPageBackgroundColor;
+    @include graph-paper-grid-light;
+  }
 }

@@ -11,7 +11,7 @@
 
 // V9 Theme-specific component overrides
 @import 'accordion';
-// @import 'background';
+@import 'background';
 @import 'badge';
 @import 'button';
 @import 'call_out';
@@ -29,4 +29,84 @@
 @import 'selectable';
 @import 'breadcrumbs';
 @import 'tabs';
+
+// Logo colors - Agentic OSD Utility palette
+:root {
+  --ouiLogoPrimary: #{lightOrDarkTheme(#2E4A8F, #7A9FD4)};
+  --ouiLogoSecondary: #{lightOrDarkTheme(#4168B8, #B8D4F0)};
+
+  // Text colors for inline styles in popovers
+  --ouiColorDarkShade: #{$ouiColorDarkShade};
+  --ouiColorMediumShade: #{$ouiColorMediumShade};
+  --ouiColorEmptyShade: #{$ouiColorEmptyShade};
+  --ouiColorLightestShade: #{$ouiColorLightestShade};
+  --ouiColorLightShade: #{$ouiColorLightShade};
+  --ouiTextColor: #{$ouiTextColor};
+  --ouiColorPrimary: #{$ouiColorPrimary};
+
+  // Nav popover item hover/active states - more visible in dark mode
+  --navItemHover: #{lightOrDarkTheme(rgba(46, 74, 143, 0.08), rgba(122, 159, 212, 0.2))};
+  --navItemActive: #{lightOrDarkTheme(rgba(46, 74, 143, 0.15), rgba(122, 159, 212, 0.35))};
+}
+
+// Popover panel border
+.ouiPopover__panel,
+.ouiPopover__panel.ouiPanel {
+  border: 1px solid $ouiBorderColor !important;
+  border-radius: 10px !important;
+}
+
+// Avatar popover: force to right of left nav
+.avatarPopover.ouiPopover__panel {
+  left: 36px !important;
+  bottom: 16px !important;
+  top: auto !important;
+}
+
+// Datepicker popover border
+.react-datepicker-popper .react-datepicker {
+  border: 1px solid $ouiBorderColor;
+  border-radius: 12px;
+}
+
+// Resizable panels - transparent background
+.ouiResizablePanel,
+.ouiResizablePanel .ouiResizablePanel__content {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+// Start cards hover/active states
+.ouiPanel.startCard {
+  cursor: pointer;
+  transition: border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease, transform 200ms ease !important;
+
+  &:hover {
+    border-color: $ouiColorPrimary !important;
+    box-shadow: 0 0 0 1px $ouiColorPrimary, 0 4px 12px rgba($ouiColorPrimary, 0.15) !important;
+    background-color: rgba($ouiColorPrimary, 0.12) !important;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    border-color: $ouiColorPrimary !important;
+    box-shadow: 0 0 0 2px $ouiColorPrimary, 0 2px 8px rgba($ouiColorPrimary, 0.2) !important;
+    background-color: rgba($ouiColorPrimary, 0.18) !important;
+    transform: translateY(-1px);
+  }
+}
+
+// Documentation side navigation - blue-tinted transparent background
+.guideSideNav {
+  background: #{lightOrDarkTheme(
+    rgba($ouiColorLightestShade, 0.3),
+    rgba($ouiColorLightestShade, 0.3)
+  )} !important;
+  backdrop-filter: blur(8px);
+  border-right: 1px solid #{lightOrDarkTheme(
+    rgba($ouiColorPrimary, 0.08),
+    rgba($ouiColorPrimary, 0.15)
+  )};
+}
 

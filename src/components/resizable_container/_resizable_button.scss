@@ -23,7 +23,7 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    background-color: $ouiColorDarkestShade;
+    background-color: $ouiBorderColor;
     transition: (
       width $ouiResizableButtonTransitionSpeed ease,
       height $ouiResizableButtonTransitionSpeed ease,
@@ -41,15 +41,15 @@
     &:before,
     &:after {
       width: 1px;
-      height: $ouiSizeM;
+      height: 100%;
     }
 
     &:before {
-      transform: translate(-2px, -50%);
+      transform: translate(-1px, -50%);
     }
 
     &:after {
-      transform: translate(1px, -50%);
+      transform: translate(0, -50%);
     }
   }
 
@@ -61,16 +61,16 @@
 
     &:before,
     &:after {
-      width: $ouiSizeM;
+      width: 100%;
       height: 1px;
     }
 
     &:before {
-      transform: translate(-50%, -2px);
+      transform: translate(-50%, -1px);
     }
 
     &:after {
-      transform: translate(-50%, 1px);
+      transform: translate(-50%, 0);
     }
   }
 

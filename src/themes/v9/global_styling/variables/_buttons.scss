@@ -19,7 +19,8 @@ $ouiButtonColorDisabled: tintOrShade($ouiColorPrimary, 60%, 60%) !default;
 $ouiButtonColorDisabledText: makeDisabledContrastColor($ouiButtonColorDisabled) !default;
 $ouiButtonColorGhostDisabled: lightOrDarkTheme($ouiColorDarkShade, $ouiColorLightShade) !default;
 
-$ouiButtonBorderRadius: $ouiBorderRadius !default;
+// Agentic OSD Utility: Pill-shaped buttons
+$ouiButtonBorderRadius: 9999px !default;
 
 // Add transition support
 // sass-lint:disable indentation

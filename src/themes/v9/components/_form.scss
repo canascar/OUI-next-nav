@@ -84,7 +84,7 @@
 .ouiTextArea,
 .ouiDatePopoverButton,
 .ouiSuperDatePicker__prettyFormat {
-  background-color: $ouiFormBackgroundColor !important;
+  background-color: rgba(red($ouiFormBackgroundColor), green($ouiFormBackgroundColor), blue($ouiFormBackgroundColor), 0.55) !important;
 }
 
 .ouiFormControlLayout:not(.ouiFormControlLayout--group) {
@@ -103,7 +103,7 @@
 .ouiFieldPassword--compressed,
 .ouiSelect--compressed,
 .ouiDatePopoverButton-compressed {
-  background-color: $ouiFormBackgroundColor !important;
+  background-color: rgba(red($ouiFormBackgroundColor), green($ouiFormBackgroundColor), blue($ouiFormBackgroundColor), 0.55) !important;
 }
 
 // Inside groups, inputs get no radius (group clips them)
@@ -120,11 +120,12 @@
 // sass-lint:disable no-important
 .ouiDatePickerRange,
 .ouiDatePickerRange--inGroup {
-  background-color: $ouiFormBackgroundColor !important;
+  background-color: rgba(red($ouiFormBackgroundColor), green($ouiFormBackgroundColor), blue($ouiFormBackgroundColor), 0.55) !important;
 }
 // sass-lint:enable no-important
 
 // Hover contrast for context menus, popovers, and dropdowns
+// Using Agentic OSD theme colors for consistent hover states
 .ouiContextMenuItem:enabled:hover,
 .ouiContextMenuItem:enabled:focus,
 .ouiFilterSelectItem:hover,
@@ -132,35 +133,75 @@
 .ouiComboBoxOption:hover,
 .ouiComboBoxOption:focus {
   // sass-lint:disable no-important
-  background-color: transparentize($ouiColorLightShade, .5) !important;
+  background-color: lightOrDarkTheme(rgba(46, 74, 143, .08), rgba(122, 159, 212, .12)) !important;
   // sass-lint:enable no-important
 }
 
 // Hover and selected contrast for list group items (nav panels, popovers)
 // — merged with popover/nav panel states below
 
-// Lighter table row hover in dark mode
+// Lighter table row hover using Agentic OSD theme colors
 // sass-lint:disable no-important
 .ouiTableRow:hover .ouiTableRowCell,
 .ouiTableRow-isClickable:hover .ouiTableRowCell {
-  background-color: transparentize($ouiColorLightShade, .25) !important;
+  background-color: lightOrDarkTheme(rgba(46, 74, 143, .06), rgba(122, 159, 212, .10)) !important;
 }
 // sass-lint:enable no-important
 
-// Remove shadows and borders from all panels and cards
-// sass-lint:disable no-important
-.ouiPanel,
+// Soft drop shadow on all panels, cards, and form control groups
+// sass-lint:disable no-important, no-color-literals
+.ouiPanel:not(.ouiPageContent),
 .ouiCard {
+  box-shadow: lightOrDarkTheme(
+    0 2px 12px rgba(0, 60, 120, 0.08) #{','} 0 1px 4px rgba(0, 60, 120, 0.05),
+    0 2px 12px rgba(0, 0, 0, 0.12) #{','} 0 1px 4px rgba(0, 0, 0, 0.08)
+  ) !important;
+  border: 1px solid lightOrDarkTheme(
+    rgba(46, 74, 143, 0.08),
+    rgba(122, 159, 212, 0.12)
+  ) !important;
+}
+
+.ouiFormControlLayout--group {
   box-shadow: none !important;
-  border: none !important;
+  border: 1px solid $ouiFormBorderColor !important;
+  background-color: rgba(red($ouiFormBackgroundColor), green($ouiFormBackgroundColor), blue($ouiFormBackgroundColor), 0.55) !important;
+  backdrop-filter: blur(60px) !important;
+  -webkit-backdrop-filter: blur(60px) !important;
+  transition: box-shadow 150ms ease-in-out, background-color 150ms ease-in-out, transform 150ms ease-in-out !important;
+  transform: translateY(0) !important;
+}
+
+.ouiFormControlLayout--group:hover,
+.ouiFormControlLayout--group:focus-within {
+  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)) !important;
+  transform: translateY(-1px) !important;
+}
+
+.ouiFormControlLayout--group:focus-within {
+  background-color: $ouiFormBackgroundColor !important;
+}
+
+// Remove shadow from nested panels to prevent overlap
+.ouiPanel .ouiPanel,
+.ouiPanel .ouiCard,
+.ouiCard .ouiPanel,
+.ouiCard .ouiCard {
+  box-shadow: none !important;
 }
 // sass-lint:enable no-important
 
 // Subdued "Show dates" link in super date picker
 // sass-lint:disable no-important
+.ouiSuperDatePicker__prettyFormat {
+  align-items: center !important;
+}
+
 .ouiSuperDatePicker__prettyFormatLink {
   color: $ouiColorMediumShade !important;
   font-weight: $ouiFontWeightRegular !important;
+  padding-left: $ouiSizeM !important;
+  font-size: $ouiFontSizeXS !important;
 
   &:hover {
     color: $ouiColorDarkShade !important;
@@ -180,25 +221,32 @@
 .ouiPopover__panel {
   border: 1px solid transparentize($ouiColorLightShade, .3) !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, .15), 0 2px 8px rgba(0, 0, 0, .1) !important;
-  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .65) !important;
-  backdrop-filter: blur(16px);
+  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .30) !important;
+  backdrop-filter: blur(40px) !important;
+  -webkit-backdrop-filter: blur(40px) !important;
+}
+
+// Hide popover arrows for cleaner look
+.ouiPopover__panelArrow {
+  display: none !important;
 }
 // sass-lint:enable no-important, no-color-literals, leading-zero
 
 // Backdrop blur on modal and flyout overlays
 // sass-lint:disable no-important, no-color-literals
 .ouiOverlayMask {
-  backdrop-filter: blur(16px);
-  background-color: rgba(red($ouiPageBackgroundColor), green($ouiPageBackgroundColor), blue($ouiPageBackgroundColor), .55) !important;
+  backdrop-filter: blur(65px);
+  background-color: rgba(red($ouiPageBackgroundColor), green($ouiPageBackgroundColor), blue($ouiPageBackgroundColor), .30) !important;
 }
 // sass-lint:enable no-important, no-color-literals
 
 // Hover and active states in popovers and nav panels
+// Using Agentic OSD theme colors: light tint of primary for light mode, more visible in dark mode
 // sass-lint:disable no-important, no-color-literals
 .ouiListGroupItem-isClickable:hover,
 .ouiListGroupItem-isClickable:focus-within,
 .ouiListGroupItem-isActive {
-  background-color: lightOrDarkTheme(#D4DADB, #383B3E) !important;
+  background-color: lightOrDarkTheme(#E8EDF8, #3A5080) !important;
 }
 
 // Grayed out disabled/unclickable states in dropdowns and selectable lists
@@ -232,22 +280,257 @@
 // Super date picker — compacted by default, expands on interaction
 // sass-lint:disable no-important, leading-zero
 .ouiSuperDatePicker__flexWrapper {
-  width: 340px !important;
-  transition: width 450ms cubic-bezier(0.16, 1, 0.3, 1) !important;
-  overflow: hidden;
+  width: auto !important;
+  overflow: visible !important; // Allow shadows to show on hover
 
-  &:focus-within,
-  &:hover,
+  // Only animate width changes after the first interaction
+  &.ouiSuperDatePicker__flexWrapper--hasInteracted {
+    transition: width 450ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+
   &--isOpen {
     width: $ouiSuperDatePickerWidth + $ouiSuperDatePickerButtonWidth + $ouiSizeS !important;
   }
 }
 
 .ouiSuperDatePicker__flexWrapper--noUpdateButton {
-  &:focus-within,
-  &:hover,
   &.ouiSuperDatePicker__flexWrapper--isOpen {
     width: $ouiSuperDatePickerWidth !important;
   }
 }
+
+// Fix overflow on super date picker children to allow shadows
+.ouiSuperDatePicker > .ouiFormControlLayout__childrenWrapper {
+  overflow: visible !important;
+}
+
+// Date picker range container - allow overflow for shadows
+.ouiDatePickerRange,
+.ouiDatePickerRange--inGroup {
+  overflow: visible !important;
+}
 // sass-lint:enable no-important, leading-zero
+
+// Reduce border radius on calendar navigation arrows
+// sass-lint:disable no-important
+.react-datepicker__navigation--previous,
+.react-datepicker__navigation--next {
+  &:hover,
+  &:focus {
+    border-radius: calc($ouiBorderRadiusSmall / 2) !important;
+  }
+}
+// sass-lint:enable no-important
+
+// Enhanced hover shadows on buttons and form fields
+// sass-lint:disable no-important, no-color-literals
+.ouiButton {
+  transition: box-shadow 250ms cubic-bezier(0.22, 0.61, 0.36, 1), 
+              background-color 150ms ease-in-out, 
+              transform 250ms cubic-bezier(0.22, 0.61, 0.36, 1), 
+              filter 150ms ease-in-out !important;
+  box-shadow: none !important;
+  transform: translateY(0) !important;
+}
+
+// Outline buttons hover - subtle lift with soft shadow
+.ouiButton:not(.ouiButton--fill):not(.ouiButton-isDisabled):hover,
+.ouiButton:not(.ouiButton--fill):not(.ouiButton-isDisabled):focus {
+  box-shadow: 0 4px 12px rgba(46, 74, 143, 0.15) !important;
+  transform: translateY(-2px) !important;
+}
+
+.ouiButton:not(.ouiButton--fill):not(.ouiButton-isDisabled):active {
+  box-shadow: none !important;
+  transform: translateY(0) scale(0.98) !important;
+  filter: none !important;
+}
+
+// Filled buttons hover - soft diffused blue glow
+.ouiButton--fill:not(.ouiButton-isDisabled):hover,
+.ouiButton--fill:not(.ouiButton-isDisabled):focus {
+  box-shadow: 0 8px 24px rgba(65, 104, 184, 0.45),
+              0 4px 8px rgba(65, 104, 184, 0.25) !important;
+  transform: translateY(-2px) !important;
+}
+
+.ouiButton--fill:not(.ouiButton-isDisabled):active {
+  box-shadow: none !important;
+  transform: translateY(0) scale(0.98) !important;
+  filter: none !important;
+}
+
+.ouiFieldText,
+.ouiFieldSearch,
+.ouiFieldNumber,
+.ouiFieldPassword,
+.ouiSelect,
+.ouiTextArea,
+.ouiDatePopoverButton,
+.ouiSuperDatePicker__prettyFormat {
+  transition: box-shadow 150ms ease-in-out, background-color 150ms ease-in-out !important;
+}
+
+.ouiFieldText:hover,
+.ouiFieldText:focus,
+.ouiFieldSearch:hover,
+.ouiFieldSearch:focus,
+.ouiFieldNumber:hover,
+.ouiFieldNumber:focus,
+.ouiFieldPassword:hover,
+.ouiFieldPassword:focus,
+.ouiSelect:hover,
+.ouiSelect:focus,
+.ouiTextArea:hover,
+.ouiTextArea:focus,
+.ouiDatePopoverButton:hover,
+.ouiDatePopoverButton:focus,
+.ouiSuperDatePicker__prettyFormat:hover,
+.ouiSuperDatePicker__prettyFormat:focus {
+  background-color: $ouiFormBackgroundColor !important;
+}
+
+.ouiFieldText:hover,
+.ouiFieldText:focus,
+.ouiFieldSearch:hover,
+.ouiFieldSearch:focus,
+.ouiFieldNumber:hover,
+.ouiFieldNumber:focus,
+.ouiFieldPassword:hover,
+.ouiFieldPassword:focus,
+.ouiSelect:hover,
+.ouiSelect:focus,
+.ouiTextArea:hover,
+.ouiTextArea:focus {
+  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)), inset 0 0 0 1px $ouiFormBorderColor !important;
+}
+
+.ouiFieldText:active,
+.ouiFieldSearch:active,
+.ouiFieldNumber:active,
+.ouiFieldPassword:active,
+.ouiSelect:active,
+.ouiTextArea:active {
+  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)), inset 0 0 0 1px $ouiFormBorderColor !important;
+}
+// sass-lint:enable no-important, no-color-literals
+
+// Suppress individual element shadows inside grouped controls
+// But allow the refresh button (last button) to have its hover shadow
+.ouiFormControlLayout--group .ouiFieldText,
+.ouiFormControlLayout--group .ouiFieldSearch,
+.ouiFormControlLayout--group .ouiFieldNumber,
+.ouiFormControlLayout--group .ouiFieldPassword,
+.ouiFormControlLayout--group .ouiSelect {
+  box-shadow: none !important;
+}
+
+// Allow buttons in form groups to have hover shadows
+.ouiFormControlLayout--group .ouiButton:not(:hover):not(:focus),
+.ouiFormControlLayout--group .ouiButtonIcon:not(:hover):not(:focus),
+.ouiFormControlLayout--group .ouiButtonEmpty:not(:hover):not(:focus) {
+  box-shadow: none !important;
+}
+// sass-lint:enable no-important, no-color-literals
+
+// Date picker button hover treatment - match outline button style
+// sass-lint:disable no-important, no-color-literals
+.ouiDatePopoverButton {
+  transition: box-shadow 250ms cubic-bezier(0.22, 0.61, 0.36, 1),
+              background-color 150ms ease-in-out,
+              transform 250ms cubic-bezier(0.22, 0.61, 0.36, 1) !important;
+}
+
+.ouiDatePopoverButton:hover,
+.ouiDatePopoverButton:focus {
+  box-shadow: 0 4px 12px rgba(46, 74, 143, 0.15) !important;
+  transform: translateY(-1px) !important;
+}
+
+.ouiDatePopoverButton:active {
+  box-shadow: none !important;
+  transform: translateY(0) !important;
+}
+// sass-lint:enable no-important, no-color-literals
+
+// Transparent table cell backgrounds
+// sass-lint:disable no-important
+.ouiTableRowCell,
+.ouiTableHeaderCell,
+.ouiTableRow,
+.ouiTable {
+  background-color: transparent !important;
+}
+// sass-lint:enable no-important
+
+// Animate entire form control layout (inputs with icons) on focus
+// sass-lint:disable no-important
+.ouiFormControlLayout:not(.ouiFormControlLayout--group) {
+  transition: box-shadow 150ms ease-in-out, background-color 150ms ease-in-out, transform 150ms ease-in-out !important;
+  transform: translateY(0) !important;
+
+  &:hover,
+  &:focus-within {
+    transform: translateY(-1px) !important;
+  }
+}
+// sass-lint:enable no-important
+
+// Make form control layout wrappers transparent so input transparency shows through
+// sass-lint:disable no-important
+.ouiFormControlLayout {
+  background-color: transparent !important;
+}
+
+.ouiFormControlLayout__childrenWrapper {
+  background-color: transparent !important;
+}
+// sass-lint:enable no-important
+
+// Stronger header border in light mode
+// sass-lint:disable no-important, no-color-literals
+.ouiHeader {
+  border-bottom: 1px solid #A0A8B0 !important;
+}
+
+@if (lightness($ouiPageBackgroundColor) < 50) {
+  .ouiHeader {
+    border-bottom: 1px solid $ouiColorLightShade !important;
+  }
+}
+// sass-lint:enable no-important, no-color-literals
+
+// More visible horizontal rules in light mode
+// sass-lint:disable no-important, no-color-literals
+.ouiHorizontalRule {
+  background-color: lightOrDarkTheme(#A0A8B0, $ouiColorLightShade) !important;
+}
+// sass-lint:enable no-important, no-color-literals
+
+// Form rows and panels — no transform animation
+// sass-lint:disable no-important
+.ouiFormRow,
+.ouiFormControlLayout--group {
+  transition: box-shadow 150ms ease-in-out, background-color 150ms ease-in-out !important;
+}
+// sass-lint:enable no-important
+
+// Inside form rows/panels, elements don't need individual transforms
+// (removed — let individual fields animate)
+
+// Panels with focused inputs keep shadows only, no transform
+// sass-lint:disable no-important
+.ouiPanel:focus-within {
+  transition: box-shadow 150ms ease-in-out !important;
+}
+// sass-lint:enable no-important
+
+// Page content panels — transparent, no shadow
+// sass-lint:disable no-important
+.ouiPageContent {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+// sass-lint:enable no-important
