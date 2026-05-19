@@ -82,7 +82,7 @@ render(
             path="/sample-pages"
             render={() => (
               <LinkWrapper>
-                <SamplePagesView />
+                <SessionPagesView />
               </LinkWrapper>
             )}
           />
@@ -90,7 +90,7 @@ render(
             path="/session-pages"
             render={() => (
               <LinkWrapper>
-                <SessionPagesView />
+                <SamplePagesView />
               </LinkWrapper>
             )}
           />
