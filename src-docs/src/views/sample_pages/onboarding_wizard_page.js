@@ -44,7 +44,7 @@ const STEPS = [
     mainStep: 1,
     subStep: 1,
     question:
-      'Welcome to OpenSearch Observability! I\u2019ll help you get your data flowing. What would you like to observe?',
+      'Welcome to OpenSearch for Observability. I\u2019ll help you set up your data. What would you like to observe?',
     optionType: 'chips',
     options: [
       { key: 'application', label: 'Collect data from your application' },
@@ -66,7 +66,7 @@ const STEPS = [
     },
   },
   {
-    title: 'Select your environment',
+    title: 'Set up data sources',
     mainStep: 1,
     subStep: 2,
     question:
@@ -103,7 +103,7 @@ const STEPS = [
       'Run the following command to start your OpenTelemetry collector. Once it\u2019s running, click "I am ready" to continue.',
     optionType: 'chips',
     options: [
-      { key: 'ready', label: 'I am ready' },
+      { key: 'ready', label: 'I am ready', primary: true },
       { key: 'goback', label: 'Go back' },
     ],
     confirmation: () =>
@@ -118,27 +118,28 @@ const STEPS = [
     title: 'Connect your data source',
     mainStep: 2,
     question:
-      'Next: hook up your telemetry. Where does your infrastructure live?',
+      'Next: Connect to telemetry from additional data sources',
     optionType: 'chips',
     options: [
       { key: 'opensearch', label: 'OpenSearch' },
       { key: 'prometheus', label: 'Prometheus' },
       { key: 'cloudwatch', label: 'Amazon CloudWatch Logs' },
       { key: 's3', label: 'Amazon S3' },
-      { key: 'skip', label: 'Skip' },
     ],
+    skipLabel: 'Skip for now',
     confirmation: (selected) => {
       const labels = {
         opensearch: 'OpenSearch',
         prometheus: 'Prometheus',
         cloudwatch: 'Amazon CloudWatch Logs',
         s3: 'Amazon S3',
-        skip: 'Skipped',
       };
-      if (selected === 'skip') return 'Skipped data source connection.';
+      if (!selected || (Array.isArray(selected) && selected.length === 0)) {
+        return 'Skipped data source connection.';
+      }
       const services = Math.floor(Math.random() * 5) + 4;
       const logGroups = Math.floor(Math.random() * 30) + 20;
-      return `Connected to ${labels[selected]}. I\u2019m seeing ${services} services and ${logGroups} log groups.`;
+      return `Connected to ${labels[selected] || selected}. I\u2019m seeing ${services} services and ${logGroups} log groups.`;
     },
     rightPanel: {
       title: 'Data Sources',
@@ -150,7 +151,7 @@ const STEPS = [
     title: 'Transform your data',
     mainStep: 3,
     question:
-      'Your data is flowing! Logs from agents aren\u2019t always in the perfect format. Would you like to make any changes to your log sources? We have a few out-of-the-box options \u2014 you can always do this later if you want to just move forward.',
+      'Logs collected aren\u2019t always in the perfect format. Would you like to make any changes to your log sources?',
     optionType: 'multiselect',
     options: [
       {
@@ -192,7 +193,7 @@ const STEPS = [
     question: 'Here\u2019s a summary of your setup. Everything look good?',
     optionType: 'chips',
     options: [
-      { key: 'deploy', label: 'Looks good \u2014 deploy my configuration' },
+      { key: 'deploy', label: 'Looks good \u2014 deploy my configuration', primary: true },
       { key: 'changes', label: 'I want to make changes' },
     ],
     confirmation: () => 'Configuration deployed! Collecting data now.',
@@ -251,30 +252,16 @@ const OTEL_COMMAND = `docker run \\
 // RIGHT PANEL SUBCOMPONENTS
 // ─────────────────────────────────────────────
 
-const GettingStartedPanel = ({ selectedOption }) => {
-  const cards = [
-    {
-      key: 'application',
-      icon: 'app_code',
-      title: 'Application Data',
-      description: 'Instrument your code to collect traces, logs, and metrics.',
-    },
-    {
-      key: 'cloud',
-      icon: 'logo_cloud',
-      title: 'Cloud Services',
-      description:
-        'Connect AWS, Azure, or GCP to stream infrastructure telemetry.',
-    },
-    {
-      key: 'sample',
-      icon: 'vis_area',
-      title: 'Sample Data',
-      description:
-        'Explore pre-loaded datasets to see observability in action.',
-    },
-  ];
+const CHECKLIST_STEPS = [
+  { label: 'What do you want to observe?', description: 'Choose your observability path' },
+  { label: 'Connect your data source', description: 'Hook up telemetry from your infrastructure' },
+  { label: 'Transform your data', description: 'Clean and enrich your log sources' },
+  { label: 'Review and confirm', description: 'Verify your configuration before deploying' },
+  { label: 'Collecting your data', description: 'Watch live data flow into OpenSearch' },
+  { label: "You're all set!", description: 'Explore dashboards, alerts, and more' },
+];
 
+const GettingStartedPanel = () => {
   return (
     <div className="onboardWizard__rightContent">
       <RightPanelHeader
@@ -283,23 +270,18 @@ const GettingStartedPanel = ({ selectedOption }) => {
         subtitle="Choose your observability path"
       />
       <OuiSpacer size="l" />
-      <div className="onboardWizard__cardGrid">
-        {cards.map((card) => (
-          <div
-            key={card.key}
-            className={`onboardWizard__previewCard${
-              selectedOption === card.key
-                ? ' onboardWizard__previewCard--active'
-                : ''
-            }`}>
-            <OuiIcon type={card.icon} size="xl" />
-            <OuiSpacer size="s" />
-            <OuiText size="s">
-              <strong>{card.title}</strong>
-            </OuiText>
-            <OuiText size="xs" color="subdued">
-              <p style={{ margin: 0 }}>{card.description}</p>
-            </OuiText>
+      <div className="onboardWizard__checklist">
+        {CHECKLIST_STEPS.map((item, i) => (
+          <div key={i} className="onboardWizard__checklistItem">
+            <div className="onboardWizard__checklistCircle" />
+            <div className="onboardWizard__checklistText">
+              <OuiText size="s">
+                <strong>{item.label}</strong>
+              </OuiText>
+              <OuiText size="xs" color="subdued">
+                <p style={{ margin: 0 }}>{item.description}</p>
+              </OuiText>
+            </div>
           </div>
         ))}
       </div>
@@ -529,25 +511,6 @@ const DataSourcesPanel = ({ selectedOption, confirmed }) => {
           </div>
         ))}
       </div>
-      {confirmed && selectedOption && selectedOption !== 'skip' && (
-        <>
-          <OuiSpacer size="l" />
-          <div className="onboardWizard__ingestPanel">
-            <div className="onboardWizard__ingestHeader">
-              <OuiText size="xs">
-                <strong>LIVE INGEST</strong>
-              </OuiText>
-              <OuiText size="xs" color="subdued">
-                2,347 events/s
-              </OuiText>
-            </div>
-            <OuiSpacer size="s" />
-            <IngestRow label="Metrics" rate="~2,347/s" color="#00BFB3" />
-            <IngestRow label="Logs" rate="~189/s" color="#006DE4" />
-            <IngestRow label="Traces" rate="~56/s" color="#F5A700" />
-          </div>
-        </>
-      )}
     </div>
   );
 };
@@ -687,39 +650,6 @@ const SummaryPanel = ({ allSelections }) => {
             </div>
           );
         })}
-      </div>
-      <OuiSpacer size="l" />
-      <div className="onboardWizard__estimatedResources">
-        <OuiText size="xs">
-          <strong>Estimated Resources</strong>
-        </OuiText>
-        <OuiSpacer size="xs" />
-        <div className="onboardWizard__resourceGrid">
-          <div className="onboardWizard__resourceItem">
-            <OuiText size="xs" color="subdued">
-              Storage/day
-            </OuiText>
-            <OuiText size="s">
-              <strong>~8.5 GB</strong>
-            </OuiText>
-          </div>
-          <div className="onboardWizard__resourceItem">
-            <OuiText size="xs" color="subdued">
-              Indices created
-            </OuiText>
-            <OuiText size="s">
-              <strong>4</strong>
-            </OuiText>
-          </div>
-          <div className="onboardWizard__resourceItem">
-            <OuiText size="xs" color="subdued">
-              Instance type
-            </OuiText>
-            <OuiText size="s">
-              <strong>r6g.large</strong>
-            </OuiText>
-          </div>
-        </div>
       </div>
     </div>
   );
@@ -975,7 +905,7 @@ const RightPanelContent = ({
 
   switch (rightPanel.contentType) {
     case 'getting-started':
-      return <GettingStartedPanel selectedOption={selectedOption} />;
+      return <GettingStartedPanel />;
     case 'environment':
       return <EnvironmentPanel selectedOption={selectedOption} />;
     case 'collector-setup':
@@ -1024,20 +954,52 @@ export const OnboardingWizardPage = () => {
   const [confirmedSteps, setConfirmedSteps] = useState({});
   const [isProcessing, setIsProcessing] = useState(false);
   const [message, setMessage] = useState('');
+  const [streamedText, setStreamedText] = useState('');
+  const [isStreaming, setIsStreaming] = useState(true);
   const feedRef = useRef(null);
+  const streamTimers = useRef([]);
 
   const totalSteps = STEPS.length;
   const totalMainSteps = STEPS[STEPS.length - 1].mainStep;
   const step = STEPS[currentStep];
-  const currentSelection = selections[currentStep] || null;
+  const currentSelection = selections[currentStep] ?? step.defaultSelection ?? null;
   const isConfirmed = !!confirmedSteps[currentStep];
+
+  // Stream the current step's question text when step changes
+  useEffect(() => {
+    // Clear previous timers
+    streamTimers.current.forEach(clearTimeout);
+    streamTimers.current = [];
+
+    const fullText = step.question;
+    const tokens = fullText.split(/(\s+)/);
+    setStreamedText('');
+    setIsStreaming(true);
+
+    let built = '';
+    tokens.forEach((token, i) => {
+      const timer = setTimeout(() => {
+        built += token;
+        setStreamedText(built);
+        if (i === tokens.length - 1) {
+          setIsStreaming(false);
+        }
+      }, i * 30);
+      streamTimers.current.push(timer);
+    });
+
+    return () => {
+      streamTimers.current.forEach(clearTimeout);
+      streamTimers.current = [];
+    };
+  }, [currentStep, step.question]);
 
   // Auto-scroll feed to bottom when conversation changes
   useEffect(() => {
     if (feedRef.current) {
       feedRef.current.scrollTop = feedRef.current.scrollHeight;
     }
-  }, [currentStep, isConfirmed, isProcessing]);
+  }, [currentStep, isConfirmed, isProcessing, streamedText]);
 
   const handleChipSelect = useCallback(
     (key) => {
@@ -1132,7 +1094,6 @@ export const OnboardingWizardPage = () => {
   const handleSend = () => {
     const text = message.trim();
     if (!text) return;
-    // Use message text as a chip selection for the current step
     const matchedOption = step.options.find(
       (opt) => opt.label.toLowerCase() === text.toLowerCase()
     );
@@ -1206,16 +1167,20 @@ export const OnboardingWizardPage = () => {
       }
     }
 
-    // Current step: assistant question
+    // Current step: assistant question (with typing animation)
     messages.push(
       <div key={`q-${currentStep}`} className="threadPage__message threadPage__message--assistant">
         <div className="threadPage__bubble threadPage__bubble--assistant">
           <OuiText size="s">
-            <p>{step.question}</p>
+            <p>{streamedText}</p>
           </OuiText>
-          <OuiSpacer size="m" />
-          {/* Render interactive options inside the assistant message */}
-          {renderOptions()}
+          {!isStreaming && !isConfirmed && (
+            <>
+              <OuiSpacer size="m" />
+              {/* Render interactive options after typing completes */}
+              {renderOptions()}
+            </>
+          )}
         </div>
       </div>
     );
@@ -1273,26 +1238,39 @@ export const OnboardingWizardPage = () => {
 
     if (step.optionType === 'chips') {
       return (
-        <div className="onboardWizard__chips">
-          {step.options.map((opt) => (
-            <button
-              key={opt.key}
-              type="button"
-              className={`onboardWizard__chip${
-                currentSelection === opt.key
-                  ? ' onboardWizard__chip--selected'
-                  : ''
-              }`}
-              onClick={() =>
-                isLastStep
-                  ? handleFinalNavigation(opt.key)
-                  : handleChipSelect(opt.key)
-              }
-              disabled={isConfirmed || isProcessing}>
-              {opt.label}
-            </button>
-          ))}
-        </div>
+        <>
+          <div className="onboardWizard__chips">
+            {step.options.map((opt) => (
+              <button
+                key={opt.key}
+                type="button"
+                className={`onboardWizard__chip${
+                  currentSelection === opt.key
+                    ? ' onboardWizard__chip--selected'
+                    : ''
+                }${opt.primary ? ' onboardWizard__chip--confirm' : ''}`}
+                onClick={() =>
+                  isLastStep
+                    ? handleFinalNavigation(opt.key)
+                    : handleChipSelect(opt.key)
+                }
+                disabled={isConfirmed || isProcessing}>
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          {step.skipLabel && (
+            <div className="onboardWizard__multiActions" style={{ marginTop: 8 }}>
+              <button
+                type="button"
+                className="onboardWizard__skipLink"
+                onClick={handleSkip}
+                disabled={isProcessing}>
+                {step.skipLabel}
+              </button>
+            </div>
+          )}
+        </>
       );
     }
 
@@ -1393,7 +1371,7 @@ export const OnboardingWizardPage = () => {
                 {/* Step indicator header */}
                 <div className="onboardWizard__stepIndicator" style={{ padding: '12px 16px 0' }}>
                   <OuiTitle size="xxxs">
-                    <h5>Step {step.mainStep} of {totalMainSteps}</h5>
+                    <h6>Step {step.mainStep} of {totalMainSteps}</h6>
                   </OuiTitle>
                   <OuiTitle size="xs">
                     <h3>{step.title}</h3>
@@ -1435,7 +1413,7 @@ export const OnboardingWizardPage = () => {
                   {buildConversation()}
                 </div>
 
-                {/* Input area — reuses threadPage__inputArea pattern */}
+                {/* Input area */}
                 <div className="threadPage__inputArea">
                   <div className="threadPage__inputWrapper">
                     <OuiCompressedTextArea
@@ -1466,6 +1444,7 @@ export const OnboardingWizardPage = () => {
                     </div>
                   </div>
                 </div>
+
               </div>
             </div>
 

@@ -52,7 +52,7 @@ A step-by-step guided onboarding wizard for collecting data into OpenSearch Obse
 
 | Element | Description | Notes |
 |---------|-------------|-------|
-| Step indicator | `Step X of 6` in H5 style, followed by the step title in H3 style below it | Shows progress and current step context |
+| Step indicator | `Step X of 6` in H6 style, followed by the step title in H3 style below it | Shows progress and current step context |
 | Progress dots | Horizontal dot trail between steps (timeline) | One dot per main step — indicates completed/current |
 | "Finish onboarding later" link | Bottom center of page | Allows user to exit and resume later |
 | Background | Light gradient (left panel slightly different from right) | Sets onboarding apart from main app |
@@ -82,7 +82,7 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 
 ### Step 1 of 6 — Sub-step 1a
 
-**Step Title:** `What do you want to observe?`
+**Step Title:** `Set up data sources`
 
 #### Left Panel — Question
 
@@ -103,16 +103,16 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 |-------|---------|
 | Panel title | `Getting Started` |
 | Panel subtitle | `Choose your observability path` |
-| Content type | Card grid |
-| Content details | 3 illustrated cards representing each option: (1) Application icon with code brackets, (2) Cloud icon with connection lines, (3) Sample data icon with chart. Each card has a title, short description, and icon. |
-| Dynamic behavior | When a chip is selected on the left, the corresponding card on the right highlights with a border glow and expands slightly to show additional detail about what that path includes. |
+| Content type | Readonly checklist |
+| Content details | A vertical list of 6 items representing the main onboarding steps. Each item is a card with: (1) an empty circle indicator (non-interactive), (2) the step title in bold, (3) a subdued description. Steps: "What do you want to observe?", "Connect your data source", "Transform your data", "Review and confirm", "Collecting your data", "You're all set!" |
+| Dynamic behavior | None — the checklist is purely informational, showing the user the full journey ahead. Items are not clickable or checkable. |
 | Secondary section | None |
 
 ---
 
 ### Step 1 of 6 — Sub-step 1b
 
-**Step Title:** `Select your environment`
+**Step Title:** `Set up data sources`
 
 #### Left Panel — Question
 
@@ -125,7 +125,6 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 | | Option 2: `EKS` |
 | | Option 3: `Kubernetes` |
 | | Option 4: `Other` |
-| Default selection | None |
 | Confirmation message | ✓ DONE — **{selected environment}** selected. I'll configure the collector for your environment. |
 
 #### Right Panel — Preview
@@ -143,7 +142,7 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 
 ### Step 1 of 6 — Sub-step 1c
 
-**Step Title:** `Configure your OpenTelemetry collector`
+**Step Title:** `Set up data sources`
 
 #### Left Panel — Question
 
@@ -152,7 +151,7 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 | System message | *Run the following command to start your OpenTelemetry collector. Once it's running, click "I am ready" to continue.* |
 | Option type | Chips (pill buttons) |
 | Options | |
-| | Option 1: `I am ready` |
+| | Option 1: `I am ready` | Option 1 is primary button |
 | | Option 2: `Go back` |
 | Default selection | None |
 | Confirmation message | ✓ DONE — Collector configured. Moving to data source connection. |
@@ -172,20 +171,20 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 
 ### Step 2 of 6
 
-**Step Title:** `Connect your data source`
+**Step Title:** `Connect additional data sources`
 
 #### Left Panel — Question
 
 | Field | Content |
 |-------|---------|
-| System message | *Next: hook up your telemetry. Where does your infrastructure live?* |
+| System message | *Next: Connect to telemetry from additional data sources* |
 | Option type | Chips (pill buttons) |
 | Options | |
 | | Option 1: `OpenSearch` |
 | | Option 2: `Prometheus` |
 | | Option 3: `Amazon CloudWatch Logs` |
 | | Option 4: `Amazon S3` |
-| | Option 5: `Skip` |
+| Action | `Skip for now` — text link below the options to advance without selecting any data sources |
 | Default selection | None |
 | Confirmation message | ✓ DONE — Connected to **{selected provider}**. I'm seeing **{N} services** and **{N} log groups**. |
 
@@ -198,7 +197,7 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 | Content type | Card grid |
 | Content details | 3–4 cloud provider cards (AWS, Azure, GCP, On-prem) each showing: provider logo, name, subtitle ("Cloud infrastructure"), and connection status badge (disconnected/connected/live). |
 | Dynamic behavior | When a provider chip is selected, the system initiates a connection check. The corresponding card transitions from "Disconnected" → spinner → "Connected" with a green badge and "Live" pulse indicator. Other cards remain in their default disconnected state. |
-| Secondary section | **LIVE INGEST** dashboard panel showing: total event count (e.g., 2,347 events/s) with sparkline rows for Metrics (~rate/s), Logs (~rate/s), Traces (~rate/s). Each row has a colored dot indicator and an on/off toggle. This section appears only after successful connection. |
+| Secondary section | None |
 
 ---
 
@@ -210,7 +209,7 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 
 | Field | Content |
 |-------|---------|
-| System message | *Your data is flowing! Logs from agents aren't always in the perfect format. Would you like to make any changes to your log sources? We have a few out-of-the-box options — you can always do this later if you want to just move forward.* |
+| System message | *Logs collected aren't always in the perfect format. Would you like to make any changes to your log sources?* |
 | Option type | Multi-select (checkboxes) |
 | Options | |
 | | Option 1: `Remove Personally Identifiable data` — Strip PII such as emails, IP addresses, and names from your log sources |
@@ -244,7 +243,7 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 | System message | *Here's a summary of your setup. Everything look good?* |
 | Option type | Chips (pill buttons) |
 | Options | |
-| | Option 1: `Looks good — deploy my configuration` |
+| | Option 1: `Looks good — deploy my configuration` | Option 1 is primary button |
 | | Option 2: `I want to make changes` |
 | Default selection | None |
 | Confirmation message | ✓ DONE — Configuration deployed! Collecting data now. |
@@ -258,7 +257,6 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 | Content type | Configuration summary |
 | Content details | A structured summary card showing all selections: (1) Observation goal, (2) Environment, (3) Data source / provider, (4) Signals enabled (metrics, logs, traces), (5) Estimated data volume, (6) Index patterns to be created. Each row shows the step title, selected value, and an edit icon. |
 | Dynamic behavior | If user selects "I want to make changes," the right panel highlights the editable fields and the left panel navigates back to the relevant step. If user confirms, a deployment progress indicator appears showing: creating indices → configuring pipeline → starting collection → verifying data flow. |
-| Secondary section | **Estimated Resources** — Shows estimated storage usage per day, number of indices created, and recommended instance type. |
 
 ---
 
@@ -273,7 +271,7 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 | System message | *Your pipeline is deployed and data is flowing in! I'm collecting logs, metrics, and traces from your sources. You can watch the live counts on the right — once you're satisfied, continue to finish setup.* |
 | Option type | Chips (pill buttons) |
 | Options | |
-| | Option 1: `Continue` |
+| | Option 1: `Continue` | Option 1 is primary button |
 | Default selection | None |
 | Confirmation message | ✓ DONE — Data collection verified. Your observability pipeline is active. |
 
@@ -325,6 +323,7 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 
 | Behavior | Description |
 |----------|-------------|
+| Typing animation | System (assistant) messages are streamed word-by-word with a typing effect (~30ms per token), matching the thread page's streaming pattern. Interactive options (chips, multi-select) only appear after the typing animation completes. |
 | Step transition | Auto-advances to the next step ~1 second after confirmation. No "Continue" button — the flow progresses automatically once the user makes a selection and the confirmation displays. The last step (Step 6) does not auto-advance; its chips navigate to other pages. When advancing to a new main step, the chat history from previous main steps is cleared — only sub-step history within the current main step is visible. |
 | Back navigation | Users can click on any completed main step dot in the progress timeline to navigate back. Changes to earlier steps cascade-reset subsequent steps. Sub-step 1c also has an explicit "Go back" option that returns to 1b. |
 | Skip steps | Sub-step 1b (environment) is skippable if user chose "sample data" in sub-step 1a. A "Skip" text link appears below the options. |
@@ -394,6 +393,7 @@ Based on the screenshot reference:
 - "DONE" status cards have a green checkmark icon and bordered container
 - Decision/validation states use yellow/amber highlighting (as seen in the flowchart's middle panel)
 - Error states use red/destructive coloring with retry action
+- Option chips and multi-select options are left-aligned, matching the system message alignment
 - The overall feel is clean, spacious, and conversational
 
 ---
