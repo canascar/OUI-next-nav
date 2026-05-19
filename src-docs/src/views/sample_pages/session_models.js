@@ -12,6 +12,10 @@
 import {
   AlertPageMock,
   LogsPageMock,
+  EmptyDiscoverPageMock,
+  AppMapPageMock,
+  AppTracesPageMock,
+  AppServicesPageMock,
   DashboardPageMock,
   InventoryAnalysisPageMock,
   ConnectionPoolPageMock,
@@ -96,6 +100,11 @@ export const SOURCE_PAGE_MOCK = {
   notebooks: { component: InventoryAnalysisPageMock, title: 'Notebooks' },
   metrics: { component: ConnectionPoolPageMock, title: 'Metrics' },
   discover: { component: LogsPageMock, title: 'Discover' },
+  'discover-log': { component: EmptyDiscoverPageMock, title: 'Discover (log)' },
+  'discover-metric': { component: EmptyDiscoverPageMock, title: 'Discover (Metric)' },
+  'app-map': { component: AppMapPageMock, title: 'Application Map' },
+  'app-traces': { component: AppTracesPageMock, title: 'Application Traces' },
+  'app-services': { component: AppServicesPageMock, title: 'Application Services' },
   traces: { component: TraceAnalysisPageMock, title: 'Trace Analysis' },
 };
 

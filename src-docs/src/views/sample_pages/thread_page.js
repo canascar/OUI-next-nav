@@ -1253,8 +1253,8 @@ export const ThreadPage = ({
   onPageChange,
   onNavigate,
 }) => {
-  const threadKey = selectedItem || 'latency-spike';
-  const thread = THREADS[threadKey] || NEW_THREAD;
+  const threadKey = selectedItem || (onNavigate ? null : 'latency-spike');
+  const thread = (threadKey && THREADS[threadKey]) || NEW_THREAD;
   const initialMessages = pendingMessages || thread.messages;
 
   // Determine effective scripted response key — detect connection-timeout pattern from pending messages
@@ -1416,6 +1416,75 @@ export const ThreadPage = ({
       setCanvasItems([{ type: 'source-page', title, page: sourcePage }]);
       setActiveCanvasTab(0);
       setIsCanvasOpen(true);
+    }
+
+    // Auto-trigger mock response when starting a new thread with a user message
+    if (
+      pendingMessages &&
+      pendingMessages.length > 0 &&
+      pendingMessages[pendingMessages.length - 1].role === 'user' &&
+      !pendingMessages.some((m) => m.role === 'assistant')
+    ) {
+      hasInteracted.current = true;
+      const idx = responseIndex.current % MOCK_RESPONSES.length;
+      const mockResponse = MOCK_RESPONSES[idx];
+      const tasks = MOCK_TASKS[idx % MOCK_TASKS.length];
+      responseIndex.current += 1;
+      const fullContent = mockResponse.content;
+      const attachment = mockResponse.attachment;
+      const attachments = mockResponse.attachments;
+
+      setIsTyping(true);
+      const taskMsg = { role: 'tasks', tasks, statuses: ['running'], collapsed: false };
+      const t0 = setTimeout(() => {
+        setMessages((prev) => [...prev, taskMsg]);
+      }, 500);
+      streamTimers.current.push(t0);
+
+      const t1 = setTimeout(() => {
+        setMessages((prev) => {
+          const updated = [...prev];
+          const ti = updated.findLastIndex((m) => m.role === 'tasks');
+          if (ti >= 0) updated[ti] = { ...updated[ti], statuses: ['done', 'running'] };
+          return updated;
+        });
+      }, 3000);
+      streamTimers.current.push(t1);
+
+      const t2 = setTimeout(() => {
+        setMessages((prev) => {
+          const updated = [...prev];
+          const ti = updated.findLastIndex((m) => m.role === 'tasks');
+          if (ti >= 0) updated[ti] = { ...updated[ti], statuses: ['done', 'done'] };
+          return updated;
+        });
+      }, 5500);
+      streamTimers.current.push(t2);
+
+      const t3 = setTimeout(() => {
+        setMessages((prev) => {
+          const updated = [...prev];
+          const ti = updated.findLastIndex((m) => m.role === 'tasks');
+          if (ti >= 0) updated[ti] = { ...updated[ti], collapsed: true };
+          return updated;
+        });
+        setIsTyping(false);
+        const tokens = fullContent.split(/(\s+)/);
+        setMessages((prev) => [...prev, { role: 'assistant', content: '', streaming: true, attachment, attachments }]);
+        let built = '';
+        tokens.forEach((token, i) => {
+          const timer = setTimeout(() => {
+            built += token;
+            setMessages((prev) => {
+              const updated = [...prev];
+              updated[updated.length - 1] = { role: 'assistant', content: built, streaming: i < tokens.length - 1, attachment, attachments };
+              return updated;
+            });
+          }, i * 30);
+          streamTimers.current.push(timer);
+        });
+      }, 6000);
+      streamTimers.current.push(t3);
     }
   }, [
     threadKey,

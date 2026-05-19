@@ -9,69 +9,14 @@
  * GitHub history for details.
  */
 
-// sass-lint:disable no-misspelled-properties
-
-// ============================================================
-// NEW TAB PAGE — Grid of available pages for navigation
-// ============================================================
-
 .newTabPage {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 48px 24px;
+  gap: 24px;
+  padding: 80px 24px 24px;
   height: 100%;
-  overflow-y: auto;
-}
-
-.newTabPage__header {
-  text-align: center;
-  margin-bottom: 32px;
-}
-
-.newTabPage__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 16px;
+  max-width: 832px;
+  margin: 0 auto;
   width: 100%;
-  max-width: 640px;
-}
-
-.newTabPage__card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 24px 16px;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  background-color: $ouiColorEmptyShade;
-  cursor: pointer;
-  transition: background-color 150ms ease, box-shadow 150ms ease;
-
-  &:hover {
-    background-color: $ouiColorLightestShade;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  }
-
-  &:focus {
-    outline: 2px solid $ouiColorPrimary;
-    outline-offset: -2px;
-  }
-
-  &:active {
-    background-color: $ouiColorLightShade;
-  }
-}
-
-.newTabPage__cardIcon {
-  color: $ouiColorDarkShade;
-}
-
-.newTabPage__cardTitle {
-  font-size: $ouiFontSizeS;
-  font-weight: 500;
-  color: $ouiTextColor;
-  text-align: center;
 }

@@ -1132,6 +1132,8 @@ export const LogsPage = ({
   onTogglePanel,
   isAskAiPanelOpen,
   onAskAiToggle,
+  hideAskAi,
+  onQueryExecute,
 }) => {
   const queryDef = selectedItem && QUERY_DEFS[selectedItem];
   const savedResults =
@@ -1169,15 +1171,20 @@ export const LogsPage = ({
       e.preventDefault();
       if (queryText.trim()) {
         setQueryExecuted(true);
-        // After 0.5s, start loading effect on Ask AI button
-        if (highlightTimer.current) clearTimeout(highlightTimer.current);
-        highlightTimer.current = setTimeout(() => {
-          setHighlightAskAi('loading');
-          // After 6s (2 loops × 3s), switch to pulse highlight
+        // If onQueryExecute is provided (tab bar generate icon flow), signal parent
+        if (onQueryExecute) {
+          onQueryExecute(queryText);
+        } else {
+          // Fallback: highlight the Ask AI button in the header
+          if (highlightTimer.current) clearTimeout(highlightTimer.current);
           highlightTimer.current = setTimeout(() => {
-            setHighlightAskAi('pulse');
-          }, 6000);
-        }, 500);
+            setHighlightAskAi('loading');
+            // After 6s (2 loops × 3s), switch to pulse highlight
+            highlightTimer.current = setTimeout(() => {
+              setHighlightAskAi('pulse');
+            }, 6000);
+          }, 500);
+        }
       }
     }
   };
@@ -1293,6 +1300,7 @@ export const LogsPage = ({
         onTogglePanel={onTogglePanel}
         isAskAiPanelOpen={isAskAiPanelOpen}
         onAskAiToggle={onAskAiToggle}
+        hideAskAi={hideAskAi}
         firstActionIcon={isQueryEditable ? 'save' : 'pencil'}
         firstActionLabel={isQueryEditable ? 'Save' : 'Edit'}
         mockAiResponses={
