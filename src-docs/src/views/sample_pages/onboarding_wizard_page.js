@@ -12,6 +12,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 import {
+  OuiButtonIcon,
   OuiIcon,
   OuiText,
   OuiTitle,
@@ -20,16 +21,28 @@ import {
   OuiCode,
   OuiCheckbox,
   OuiToolTip,
+  OuiCompressedTextArea,
 } from '../../../../src/components';
 
 /**
  * STEPS CONFIGURATION
- * 8-step onboarding flow for OpenSearch Observability Data Collection.
+ * Onboarding flow for OpenSearch Observability Data Collection.
+ * Steps are grouped into main steps. Steps 1–3 are sub-steps of main step 1.
  * Each step defines left panel (question + options) and right panel (preview).
+ *
+ * Main steps:
+ *   1. What do you want to observe? (includes environment + collector config)
+ *   2. Connect your data source
+ *   3. Transform your data
+ *   4. Review and confirm
+ *   5. Collecting your data
+ *   6. You're all set!
  */
 const STEPS = [
   {
     title: 'What do you want to observe?',
+    mainStep: 1,
+    subStep: 1,
     question:
       'Welcome to OpenSearch Observability! I\u2019ll help you get your data flowing. What would you like to observe?',
     optionType: 'chips',
@@ -54,6 +67,8 @@ const STEPS = [
   },
   {
     title: 'Select your environment',
+    mainStep: 1,
+    subStep: 2,
     question:
       'What environment are you collecting data from? This helps me recommend the right integration approach.',
     optionType: 'chips',
@@ -82,6 +97,8 @@ const STEPS = [
   },
   {
     title: 'Configure your OpenTelemetry collector',
+    mainStep: 1,
+    subStep: 3,
     question:
       'Run the following command to start your OpenTelemetry collector. Once it\u2019s running, click "I am ready" to continue.',
     optionType: 'chips',
@@ -99,6 +116,7 @@ const STEPS = [
   },
   {
     title: 'Connect your data source',
+    mainStep: 2,
     question:
       'Next: hook up your telemetry. Where does your infrastructure live?',
     optionType: 'chips',
@@ -130,6 +148,7 @@ const STEPS = [
   },
   {
     title: 'Transform your data',
+    mainStep: 3,
     question:
       'Your data is flowing! Logs from agents aren\u2019t always in the perfect format. Would you like to make any changes to your log sources? We have a few out-of-the-box options \u2014 you can always do this later if you want to just move forward.',
     optionType: 'multiselect',
@@ -169,6 +188,7 @@ const STEPS = [
   },
   {
     title: 'Review and confirm',
+    mainStep: 4,
     question: 'Here\u2019s a summary of your setup. Everything look good?',
     optionType: 'chips',
     options: [
@@ -184,6 +204,7 @@ const STEPS = [
   },
   {
     title: 'Collecting your data',
+    mainStep: 5,
     question:
       'Your pipeline is deployed and data is flowing in! I\u2019m collecting logs, metrics, and traces from your sources. You can watch the live counts on the right \u2014 once you\u2019re satisfied, continue to finish setup.',
     optionType: 'chips',
@@ -198,6 +219,7 @@ const STEPS = [
   },
   {
     title: "You're all set!",
+    mainStep: 6,
     question:
       'Your observability pipeline is live! Data is flowing into OpenSearch. Here are some next steps to explore.',
     optionType: 'chips',
@@ -1001,19 +1023,21 @@ export const OnboardingWizardPage = () => {
   const [selections, setSelections] = useState({});
   const [confirmedSteps, setConfirmedSteps] = useState({});
   const [isProcessing, setIsProcessing] = useState(false);
-  const scrollRef = useRef(null);
+  const [message, setMessage] = useState('');
+  const feedRef = useRef(null);
 
   const totalSteps = STEPS.length;
+  const totalMainSteps = STEPS[STEPS.length - 1].mainStep;
   const step = STEPS[currentStep];
   const currentSelection = selections[currentStep] || null;
   const isConfirmed = !!confirmedSteps[currentStep];
 
-  // Scroll left panel to bottom when step changes
+  // Auto-scroll feed to bottom when conversation changes
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    if (feedRef.current) {
+      feedRef.current.scrollTop = feedRef.current.scrollHeight;
     }
-  }, [currentStep, isConfirmed]);
+  }, [currentStep, isConfirmed, isProcessing]);
 
   const handleChipSelect = useCallback(
     (key) => {
@@ -1068,11 +1092,15 @@ export const OnboardingWizardPage = () => {
     }, 800);
   }, [currentStep, isConfirmed, isProcessing]);
 
-  const handleNextStep = useCallback(() => {
-    if (currentStep < totalSteps - 1) {
-      setCurrentStep(currentStep + 1);
+  // Auto-advance to next step after confirmation (with brief delay to show confirmation)
+  useEffect(() => {
+    if (isConfirmed && currentStep < totalSteps - 1) {
+      const timer = setTimeout(() => {
+        setCurrentStep((prev) => prev + 1);
+      }, 1000);
+      return () => clearTimeout(timer);
     }
-  }, [currentStep, totalSteps]);
+  }, [isConfirmed, currentStep, totalSteps]);
 
   const handleStepClick = useCallback(
     (stepIdx) => {
@@ -1097,12 +1125,231 @@ export const OnboardingWizardPage = () => {
   };
 
   // Step 8: selections navigate away
-  const handleFinalNavigation = (key) => {
-    // In a real app these would route elsewhere
+  const handleFinalNavigation = () => {
     window.location.hash = '/sample-pages';
   };
 
+  const handleSend = () => {
+    const text = message.trim();
+    if (!text) return;
+    // Use message text as a chip selection for the current step
+    const matchedOption = step.options.find(
+      (opt) => opt.label.toLowerCase() === text.toLowerCase()
+    );
+    if (matchedOption) {
+      handleChipSelect(matchedOption.key);
+    }
+    setMessage('');
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
   const isLastStep = currentStep === totalSteps - 1;
+
+  // Build the conversation messages from completed steps + current step
+  const buildConversation = () => {
+    const messages = [];
+    const currentMainStep = step.mainStep;
+
+    // Only show chat history from sub-steps within the same main step
+    for (let i = 0; i < currentStep; i++) {
+      const pastStep = STEPS[i];
+      const pastSelection = selections[i];
+
+      // Skip steps from previous main steps — only show sub-step history
+      if (pastStep.mainStep !== currentMainStep) continue;
+
+      // Assistant question
+      messages.push(
+        <div key={`q-${i}`} className="threadPage__message threadPage__message--assistant">
+          <div className="threadPage__bubble threadPage__bubble--assistant">
+            <OuiText size="s">
+              <p>{pastStep.question}</p>
+            </OuiText>
+          </div>
+        </div>
+      );
+
+      // User selection as user message
+      if (pastSelection) {
+        const selectionLabel = getSelectionLabel(pastStep, pastSelection);
+        messages.push(
+          <div key={`a-${i}`} className="threadPage__message threadPage__message--user">
+            <div className="threadPage__bubble threadPage__bubble--user">
+              <OuiText size="s">
+                <p>{selectionLabel}</p>
+              </OuiText>
+            </div>
+          </div>
+        );
+      }
+
+      // Confirmation
+      if (confirmedSteps[i] && pastStep.confirmation) {
+        messages.push(
+          <div key={`c-${i}`} className="threadPage__message threadPage__message--assistant">
+            <div className="threadPage__bubble threadPage__bubble--assistant">
+              <div className="onboardWizard__confirmInline">
+                <OuiIcon type="checkInCircleFilled" size="s" color="success" />
+                <OuiText size="xs">
+                  <span>{pastStep.confirmation(pastSelection)}</span>
+                </OuiText>
+              </div>
+            </div>
+          </div>
+        );
+      }
+    }
+
+    // Current step: assistant question
+    messages.push(
+      <div key={`q-${currentStep}`} className="threadPage__message threadPage__message--assistant">
+        <div className="threadPage__bubble threadPage__bubble--assistant">
+          <OuiText size="s">
+            <p>{step.question}</p>
+          </OuiText>
+          <OuiSpacer size="m" />
+          {/* Render interactive options inside the assistant message */}
+          {renderOptions()}
+        </div>
+      </div>
+    );
+
+    // If the current step has a selection, show user message
+    if (currentSelection && isConfirmed) {
+      const selectionLabel = getSelectionLabel(step, currentSelection);
+      messages.push(
+        <div key={`a-${currentStep}`} className="threadPage__message threadPage__message--user">
+          <div className="threadPage__bubble threadPage__bubble--user">
+            <OuiText size="s">
+              <p>{selectionLabel}</p>
+            </OuiText>
+          </div>
+        </div>
+      );
+    }
+
+    // Processing indicator
+    if (isProcessing) {
+      messages.push(
+        <div key="processing" className="threadPage__message threadPage__message--assistant">
+          <div className="threadPage__bubble threadPage__bubble--assistant">
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <OuiLoadingSpinner size="s" />
+              <OuiText size="xs" color="subdued">Processing...</OuiText>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Confirmation for current step
+    if (isConfirmed && step.confirmation) {
+      messages.push(
+        <div key={`c-${currentStep}`} className="threadPage__message threadPage__message--assistant">
+          <div className="threadPage__bubble threadPage__bubble--assistant">
+            <div className="onboardWizard__confirmInline">
+              <OuiIcon type="checkInCircleFilled" size="s" color="success" />
+              <OuiText size="xs">
+                <span>{step.confirmation(currentSelection)}</span>
+              </OuiText>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return messages;
+  };
+
+  // Render interactive options (chips or multi-select) for the current step
+  const renderOptions = () => {
+    if (isConfirmed) return null;
+
+    if (step.optionType === 'chips') {
+      return (
+        <div className="onboardWizard__chips">
+          {step.options.map((opt) => (
+            <button
+              key={opt.key}
+              type="button"
+              className={`onboardWizard__chip${
+                currentSelection === opt.key
+                  ? ' onboardWizard__chip--selected'
+                  : ''
+              }`}
+              onClick={() =>
+                isLastStep
+                  ? handleFinalNavigation(opt.key)
+                  : handleChipSelect(opt.key)
+              }
+              disabled={isConfirmed || isProcessing}>
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      );
+    }
+
+    if (step.optionType === 'multiselect') {
+      return (
+        <div className="onboardWizard__multiSelect">
+          {step.options.map((opt) => {
+            const checked =
+              Array.isArray(currentSelection) &&
+              currentSelection.includes(opt.key);
+            return (
+              <div key={opt.key} className="onboardWizard__multiOption">
+                <OuiCheckbox
+                  id={`transform-${opt.key}`}
+                  label={opt.label}
+                  checked={checked}
+                  onChange={() => handleMultiSelectToggle(opt.key)}
+                  disabled={isConfirmed || isProcessing}
+                />
+                <OuiText
+                  size="xs"
+                  color="subdued"
+                  className="onboardWizard__multiDesc">
+                  {opt.description}
+                </OuiText>
+              </div>
+            );
+          })}
+          {!isConfirmed && (
+            <div className="onboardWizard__multiActions">
+              <button
+                type="button"
+                className="onboardWizard__chip onboardWizard__chip--confirm"
+                onClick={handleMultiSelectConfirm}
+                disabled={
+                  isProcessing ||
+                  !currentSelection ||
+                  (Array.isArray(currentSelection) &&
+                    currentSelection.length === 0)
+                }>
+                Apply transformations
+              </button>
+              <button
+                type="button"
+                className="onboardWizard__skipLink"
+                onClick={handleSkip}
+                disabled={isProcessing}>
+                {step.skipLabel}
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return null;
+  };
 
   return (
     <div
@@ -1140,183 +1387,84 @@ export const OnboardingWizardPage = () => {
           className="samplePagesContentPanel"
           style={{ flex: 1, minWidth: 0, position: 'relative' }}>
           <div className="onboardWizard">
-            {/* Left Panel */}
-            <div className="onboardWizard__left" ref={scrollRef}>
-              <div className="onboardWizard__leftInner">
-                {/* Step indicator */}
-                <div className="onboardWizard__stepIndicator">
-                  <OuiText size="xs" color="subdued">
-                    Step {currentStep + 1}/{totalSteps} &middot; {step.title}
-                  </OuiText>
-                </div>
-
-                {/* Timeline dots for completed steps */}
-                {currentStep > 0 && (
-                  <div className="onboardWizard__timeline">
-                    {Array.from({ length: currentStep }, (_, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        className="onboardWizard__timelineDot onboardWizard__timelineDot--done"
-                        onClick={() => handleStepClick(i)}
-                        aria-label={`Go back to step ${i + 1}: ${STEPS[i].title}`}
-                        title={STEPS[i].title}
-                      />
-                    ))}
-                    <span className="onboardWizard__timelineDot onboardWizard__timelineDot--current" />
-                  </div>
-                )}
-
-                <OuiSpacer size="l" />
-
-                {/* System message / question */}
-                <div className="onboardWizard__question">
-                  <OuiText size="s">
-                    <p>{step.question}</p>
-                  </OuiText>
-                </div>
-
-                <OuiSpacer size="m" />
-
-                {/* Options - Chips */}
-                {step.optionType === 'chips' && (
-                  <div className="onboardWizard__chips">
-                    {step.options.map((opt) => (
-                      <button
-                        key={opt.key}
-                        type="button"
-                        className={`onboardWizard__chip${
-                          currentSelection === opt.key
-                            ? ' onboardWizard__chip--selected'
-                            : ''
-                        }`}
-                        onClick={() =>
-                          isLastStep
-                            ? handleFinalNavigation(opt.key)
-                            : handleChipSelect(opt.key)
+            {/* Left Panel — Thread-style chat interaction */}
+            <div className="threadPage__body" style={{ flex: '0 0 38%', minWidth: 320, maxWidth: 480 }}>
+              <div className="threadPage__conversationCol">
+                {/* Step indicator header */}
+                <div className="onboardWizard__stepIndicator" style={{ padding: '12px 16px 0' }}>
+                  <OuiTitle size="xxxs">
+                    <h5>Step {step.mainStep} of {totalMainSteps}</h5>
+                  </OuiTitle>
+                  <OuiTitle size="xs">
+                    <h3>{step.title}</h3>
+                  </OuiTitle>
+                  {currentStep > 0 && (
+                    <div className="onboardWizard__timeline" style={{ marginTop: 8 }}>
+                      {Array.from({ length: totalMainSteps }, (_, mainIdx) => {
+                        const mainNum = mainIdx + 1;
+                        const isMainDone = step.mainStep > mainNum;
+                        const isMainCurrent = step.mainStep === mainNum;
+                        if (!isMainDone && !isMainCurrent) return null;
+                        // Find the first sub-step index for this main step (for navigation)
+                        const firstSubIdx = STEPS.findIndex((s) => s.mainStep === mainNum);
+                        if (isMainDone) {
+                          return (
+                            <button
+                              key={mainIdx}
+                              type="button"
+                              className="onboardWizard__timelineDot onboardWizard__timelineDot--done"
+                              onClick={() => handleStepClick(firstSubIdx)}
+                              aria-label={`Go back to step ${mainNum}: ${STEPS[firstSubIdx].title}`}
+                              title={STEPS[firstSubIdx].title}
+                            />
+                          );
                         }
-                        disabled={isConfirmed || isProcessing}>
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* Options - Multi-select (Step 5) */}
-                {step.optionType === 'multiselect' && (
-                  <div className="onboardWizard__multiSelect">
-                    {step.options.map((opt) => {
-                      const checked =
-                        Array.isArray(currentSelection) &&
-                        currentSelection.includes(opt.key);
-                      return (
-                        <div key={opt.key} className="onboardWizard__multiOption">
-                          <OuiCheckbox
-                            id={`transform-${opt.key}`}
-                            label={opt.label}
-                            checked={checked}
-                            onChange={() => handleMultiSelectToggle(opt.key)}
-                            disabled={isConfirmed || isProcessing}
+                        return (
+                          <span
+                            key={mainIdx}
+                            className="onboardWizard__timelineDot onboardWizard__timelineDot--current"
                           />
-                          <OuiText
-                            size="xs"
-                            color="subdued"
-                            className="onboardWizard__multiDesc">
-                            {opt.description}
-                          </OuiText>
-                        </div>
-                      );
-                    })}
-                    {!isConfirmed && (
-                      <div className="onboardWizard__multiActions">
-                        <button
-                          type="button"
-                          className="onboardWizard__chip onboardWizard__chip--confirm"
-                          onClick={handleMultiSelectConfirm}
-                          disabled={
-                            isProcessing ||
-                            !currentSelection ||
-                            (Array.isArray(currentSelection) &&
-                              currentSelection.length === 0)
-                          }>
-                          Apply transformations
-                        </button>
-                        <button
-                          type="button"
-                          className="onboardWizard__skipLink"
-                          onClick={handleSkip}
-                          disabled={isProcessing}>
-                          {step.skipLabel}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Processing indicator */}
-                {isProcessing && (
-                  <>
-                    <OuiSpacer size="m" />
-                    <div className="onboardWizard__processing">
-                      <OuiLoadingSpinner size="s" />
-                      <OuiText size="xs" color="subdued">
-                        Processing...
-                      </OuiText>
+                        );
+                      })}
                     </div>
-                  </>
-                )}
+                  )}
+                </div>
 
-                {/* Progress dots between question and confirmation */}
-                {(isConfirmed || isProcessing) && (
-                  <div className="onboardWizard__progressDots">
-                    <span className="onboardWizard__dotLine" />
-                    <span
-                      className={`onboardWizard__dot${
-                        isConfirmed ? ' onboardWizard__dot--done' : ''
-                      }`}
+                {/* Conversation feed — reuses threadPage__feed pattern */}
+                <div className="threadPage__feed" ref={feedRef}>
+                  {buildConversation()}
+                </div>
+
+                {/* Input area — reuses threadPage__inputArea pattern */}
+                <div className="threadPage__inputArea">
+                  <div className="threadPage__inputWrapper">
+                    <OuiCompressedTextArea
+                      placeholder="Ask anything or use / for commands"
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      onKeyDown={handleKeyDown}
+                      rows={2}
+                      resize="none"
+                      fullWidth
+                      className="threadPage__textarea"
                     />
-                  </div>
-                )}
-
-                {/* Confirmation card */}
-                {isConfirmed && step.confirmation && (
-                  <div className="onboardWizard__confirmation">
-                    <div className="onboardWizard__confirmIcon">
-                      <OuiIcon
-                        type="checkInCircleFilled"
-                        size="m"
-                        color="success"
+                    <div className="threadPage__inputActions">
+                      <OuiButtonIcon
+                        iconType="plus"
+                        aria-label="Add attachment"
+                        size="s"
+                        color="text"
                       />
-                      <OuiText size="xs">
-                        <strong>DONE</strong>
-                      </OuiText>
+                      <OuiButtonIcon
+                        iconType="sortUp"
+                        aria-label="Send message"
+                        display="fill"
+                        size="s"
+                        isDisabled={!message.trim() || isProcessing}
+                        onClick={handleSend}
+                      />
                     </div>
-                    <OuiText size="s">
-                      <p>{step.confirmation(currentSelection)}</p>
-                    </OuiText>
                   </div>
-                )}
-
-                {/* Next / Continue button */}
-                {isConfirmed && !isLastStep && (
-                  <>
-                    <OuiSpacer size="m" />
-                    <button
-                      type="button"
-                      className="onboardWizard__nextBtn"
-                      onClick={handleNextStep}>
-                      Continue &rarr;
-                    </button>
-                  </>
-                )}
-              </div>
-
-              {/* Input area at bottom */}
-              <div className="onboardWizard__inputArea">
-                <div className="onboardWizard__inputPlaceholder">
-                  <OuiText size="xs" color="subdued">
-                    Ask anything or use / for commands
-                  </OuiText>
                 </div>
               </div>
             </div>
@@ -1348,3 +1496,18 @@ export const OnboardingWizardPage = () => {
     </div>
   );
 };
+
+// Helper to get a label for a user's selection
+function getSelectionLabel(step, selection) {
+  if (Array.isArray(selection)) {
+    if (selection.length === 0) return 'Skipped';
+    return selection
+      .map((key) => {
+        const opt = step.options.find((o) => o.key === key);
+        return opt ? opt.label : key;
+      })
+      .join(', ');
+  }
+  const opt = step.options.find((o) => o.key === selection);
+  return opt ? opt.label : selection;
+}

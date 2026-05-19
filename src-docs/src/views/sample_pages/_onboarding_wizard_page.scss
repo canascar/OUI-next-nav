@@ -12,9 +12,10 @@
 }
 
 // ─────────────────────────────────────────────
-// LEFT PANEL
+// LEFT PANEL (now uses threadPage__ classes)
 // ─────────────────────────────────────────────
 
+// Legacy left panel styles retained for any remaining references
 .onboardWizard__left {
   width: 38%;
   min-width: 320px;
@@ -29,6 +30,13 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+}
+
+// Inline confirmation (used inside thread-style messages)
+.onboardWizard__confirmInline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 // ─────────────────────────────────────────────
@@ -319,7 +327,7 @@
 // ─────────────────────────────────────────────
 
 .onboardWizard__footer {
-  position: fixed;
+  position: absolute;
   bottom: 0;
   left: 0;
   right: 0;

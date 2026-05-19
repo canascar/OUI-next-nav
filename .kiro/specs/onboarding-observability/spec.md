@@ -52,8 +52,8 @@ A step-by-step guided onboarding wizard for collecting data into OpenSearch Obse
 
 | Element | Description | Notes |
 |---------|-------------|-------|
-| Step indicator | `Step X/N · Step Title` at top-left | Shows progress through the flow |
-| Progress dots | Vertical dot trail between steps (timeline) | Indicates completed/current/upcoming |
+| Step indicator | `Step X of 6` in H5 style, followed by the step title in H3 style below it | Shows progress and current step context |
+| Progress dots | Horizontal dot trail between steps (timeline) | One dot per main step — indicates completed/current |
 | "Finish onboarding later" link | Bottom center of page | Allows user to exit and resume later |
 | Background | Light gradient (left panel slightly different from right) | Sets onboarding apart from main app |
 
@@ -61,11 +61,18 @@ A step-by-step guided onboarding wizard for collecting data into OpenSearch Obse
 
 ## Flow Architecture (from diagram)
 
-The onboarding flow is organized into three logical phases derived from the flowchart:
+The onboarding flow is organized into 6 main steps. Step 1 contains sub-steps for environment selection and collector configuration:
 
-1. **Registration/Profile Phase** (Steps 1–2): Identify user intent and select technology stack
-2. **Data Collection Phase** (Steps 3–5): Connect data source, validate connectivity, and configure/transform collection parameters
-3. **Dashboard/Completion Phase** (Steps 6–8): Review configuration, observe live data collection, and launch observability dashboards
+| Main Step | Title | Sub-steps |
+|-----------|-------|-----------|
+| 1 | What do you want to observe? | 1a. Choose observation goal, 1b. Select environment, 1c. Configure collector |
+| 2 | Connect your data source | — |
+| 3 | Transform your data | — |
+| 4 | Review and confirm | — |
+| 5 | Collecting your data | — |
+| 6 | You're all set! | — |
+
+The step indicator displays `Step X/6` based on the main step number. Timeline dots track main step completion (not sub-steps).
 
 ---
 
@@ -73,7 +80,7 @@ The onboarding flow is organized into three logical phases derived from the flow
 
 ---
 
-### Step 1 of 8
+### Step 1 of 6 — Sub-step 1a
 
 **Step Title:** `What do you want to observe?`
 
@@ -81,7 +88,7 @@ The onboarding flow is organized into three logical phases derived from the flow
 
 | Field | Content |
 |-------|---------|
-| System message | *Welcome to OpenSearch Observability! I'll help you get your data flowing. What would you like to observe?* |
+| System message | *Welcome to OpenSearch for Observability. I'll help you set up your data. What would you like to observe?* |
 | Option type | Chips (pill buttons) |
 | Options | |
 | | Option 1: `Collect data from your application` |
@@ -103,7 +110,7 @@ The onboarding flow is organized into three logical phases derived from the flow
 
 ---
 
-### Step 2 of 8
+### Step 1 of 6 — Sub-step 1b
 
 **Step Title:** `Select your environment`
 
@@ -134,7 +141,7 @@ The onboarding flow is organized into three logical phases derived from the flow
 
 ---
 
-### Step 3 of 8
+### Step 1 of 6 — Sub-step 1c
 
 **Step Title:** `Configure your OpenTelemetry collector`
 
@@ -163,7 +170,7 @@ The onboarding flow is organized into three logical phases derived from the flow
 
 ---
 
-### Step 4 of 8
+### Step 2 of 6
 
 **Step Title:** `Connect your data source`
 
@@ -195,7 +202,7 @@ The onboarding flow is organized into three logical phases derived from the flow
 
 ---
 
-### Step 5 of 8
+### Step 3 of 6
 
 **Step Title:** `Transform your data`
 
@@ -226,7 +233,7 @@ The onboarding flow is organized into three logical phases derived from the flow
 
 ---
 
-### Step 6 of 8
+### Step 4 of 6
 
 **Step Title:** `Review and confirm`
 
@@ -255,7 +262,7 @@ The onboarding flow is organized into three logical phases derived from the flow
 
 ---
 
-### Step 7 of 8
+### Step 5 of 6
 
 **Step Title:** `Collecting your data`
 
@@ -283,7 +290,7 @@ The onboarding flow is organized into three logical phases derived from the flow
 
 ---
 
-### Step 8 of 8
+### Step 6 of 6
 
 **Step Title:** `You're all set!`
 
@@ -318,12 +325,12 @@ The onboarding flow is organized into three logical phases derived from the flow
 
 | Behavior | Description |
 |----------|-------------|
-| Step transition | Auto-advance after selection + confirmation animation (1s delay). Steps 3, 5, 6, and 7 require explicit confirmation before advancing due to their configuration/deployment nature. |
-| Back navigation | Users can click on any completed step in the progress timeline (left side dots) to navigate back. Changes to earlier steps cascade-reset subsequent steps. Step 3 also has an explicit "Go back" option. |
-| Skip steps | Step 2 (environment) is skippable if user chose "sample data" in Step 1. A "Skip" text link appears below the options. |
-| Validation | Steps 1–4 require a selection before advancing. Step 4 additionally validates that the connection is successful before showing confirmation. Step 5 allows skipping without selection. Step 6 requires explicit confirmation. Step 7 requires user to click "Continue" after observing live data. |
-| Loading states | Step 3 shows a collector verification spinner when "I am ready" is clicked. Step 4 shows a connection/validation spinner (2–5s) after provider selection. Step 6 shows a deployment progress bar with stage indicators when user confirms. Step 7 shows live-updating counters immediately upon entering. |
-| Completion | After Step 8, selecting a destination navigates the user out of the onboarding flow to the chosen feature (dashboards, discover, alerts, or back to onboarding for additional sources). |
+| Step transition | Auto-advances to the next step ~1 second after confirmation. No "Continue" button — the flow progresses automatically once the user makes a selection and the confirmation displays. The last step (Step 6) does not auto-advance; its chips navigate to other pages. When advancing to a new main step, the chat history from previous main steps is cleared — only sub-step history within the current main step is visible. |
+| Back navigation | Users can click on any completed main step dot in the progress timeline to navigate back. Changes to earlier steps cascade-reset subsequent steps. Sub-step 1c also has an explicit "Go back" option that returns to 1b. |
+| Skip steps | Sub-step 1b (environment) is skippable if user chose "sample data" in sub-step 1a. A "Skip" text link appears below the options. |
+| Validation | Sub-steps 1a–1c and Step 2 require a selection before advancing. Step 2 additionally validates that the connection is successful before showing confirmation. Step 3 allows skipping without selection. Step 4 requires explicit confirmation via chip selection ("Looks good"). Step 5 requires user to click "Continue" chip after observing live data. |
+| Loading states | Sub-step 1c shows a collector verification spinner when "I am ready" is clicked. Step 2 shows a connection/validation spinner (2–5s) after provider selection. Step 4 shows a deployment progress bar with stage indicators when user confirms. Step 5 shows live-updating counters immediately upon entering. |
+| Completion | After Step 6, selecting a destination navigates the user out of the onboarding flow to the chosen feature (dashboards, discover, alerts, or back to onboarding for additional sources). |
 
 ---
 
@@ -331,48 +338,45 @@ The onboarding flow is organized into three logical phases derived from the flow
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ PHASE 1: Registration / Profile                                          │
+│ STEP 1: What do you want to observe? (contains 3 sub-steps)             │
 │                                                                          │
-│  [Start] → Step 1: Choose observation goal                              │
-│         ├─ "Application" → Step 2: Select environment                   │
-│         ├─ "Cloud services" → Step 2: Select environment (cloud preset) │
-│         └─ "Sample data" → Skip to Step 3 (pre-configured)             │
+│  [Start] → 1a: Choose observation goal                                  │
+│         ├─ "Application" → 1b: Select environment                       │
+│         ├─ "Cloud services" → 1b: Select environment (cloud preset)     │
+│         └─ "Sample data" → Skip to 1c (pre-configured)                 │
 │                                                                          │
-│  Step 2: Select environment → Step 3                                     │
+│  1b: Select environment → 1c                                            │
 │                                                                          │
-│  Step 3: Configure OTel collector                                        │
-│         ├─ "I am ready" → Step 4                                        │
-│         └─ "Go back" → Step 2                                           │
+│  1c: Configure OTel collector                                            │
+│         ├─ "I am ready" → Step 2                                        │
+│         └─ "Go back" → 1b                                               │
 └─────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ PHASE 2: Data Collection / Validation                                    │
+│ STEP 2: Connect data source                                              │
 │                                                                          │
-│  Step 4: Connect data source                                            │
 │         → [Attempt connection]                                          │
 │         → ◇ Is connection valid?                                        │
-│           ├─ YES → Step 5: Configure collection parameters              │
+│           ├─ YES → Step 3: Transform your data                          │
 │           └─ NO  → Show error + retry prompt (loop back)                │
 │                                                                          │
-│  Step 5: Transform your data                                            │
+│ STEP 3: Transform your data                                              │
 │         → User multi-selects transformations OR clicks "Skip for now"   │
-│         ├─ Selections made → Apply transformations → Step 6             │
-│         └─ "Skip for now" → No transformations applied → Step 6         │
+│         ├─ Selections made → Apply transformations → Step 4             │
+│         └─ "Skip for now" → No transformations applied → Step 4         │
 └─────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ PHASE 3: Dashboard / Completion                                          │
-│                                                                          │
-│  Step 6: Review and confirm                                             │
+│ STEP 4: Review and confirm                                               │
 │         ├─ "Looks good" → [Deploy configuration]                        │
-│         │              → Step 7: Live data collection                    │
+│         │              → Step 5: Live data collection                    │
 │         └─ "Make changes" → Navigate back to relevant step              │
 │                                                                          │
-│  Step 7: Collecting your data                                           │
+│ STEP 5: Collecting your data                                             │
 │         → Live counters show logs, metrics, traces incrementing         │
-│         → "Continue" → Step 8: Completion                               │
+│         → "Continue" → Step 6: Completion                               │
 │                                                                          │
-│  Step 8: Completion                                                      │
+│ STEP 6: You're all set!                                                  │
 │         → User selects destination → Exit onboarding                    │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
