@@ -1476,7 +1476,7 @@ function initializeSessionState() {
     threadKey: null,
     pendingThread: null,
     title: 'New Session',
-    threadPanelState: 'side-by-side',
+    threadPanelState: 'minimized',
     threadPanelWidth: 30,
     tabs: [],
     activeTabId: null,

@@ -18,8 +18,7 @@ import {
 } from '../../../../src/components';
 import { ThreadPanel } from './thread_panel';
 import { ResizeHandle } from './resize_handle';
-import { PagePanel } from './page_panel';
-import { FloatingAskAiButton } from './floating_ask_ai_button';
+import { PagePanel, PAGE_TAB_ICONS } from './page_panel';
 
 /**
  * SessionContainer — Two side-by-side panels, each with their own header.
@@ -34,8 +33,18 @@ export const SessionContainer = ({
   const { threadPanelState, threadPanelWidth } = session;
   const threadPanelRef = useRef(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isEntering, setIsEntering] = useState(true);
   const [isCollapsedListOpen, setIsCollapsedListOpen] = useState(false);
+  const [aiButtonHighlight, setAiButtonHighlight] = useState(false);
+  const [pendingAiResponse, setPendingAiResponse] = useState(null);
   const animTimerRef = useRef(null);
+  const highlightTimerRef = useRef(null);
+
+  // Clear entrance animation after it plays
+  useEffect(() => {
+    const timer = setTimeout(() => setIsEntering(false), 400);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Trigger animation; auto-clear after 300ms
   const triggerAnimation = useCallback(() => {
@@ -47,8 +56,49 @@ export const SessionContainer = ({
   useEffect(() => {
     return () => {
       if (animTimerRef.current) clearTimeout(animTimerRef.current);
+      if (highlightTimerRef.current) clearTimeout(highlightTimerRef.current);
     };
   }, []);
+
+  /** Called when a page executes a query that should trigger AI insight */
+  const handleQueryExecute = useCallback((queryText) => {
+    // After 1s delay, highlight the generate icon blue
+    if (highlightTimerRef.current) clearTimeout(highlightTimerRef.current);
+    highlightTimerRef.current = setTimeout(() => {
+      setAiButtonHighlight(true);
+      setPendingAiResponse({
+        prompt: queryText,
+        response: 'I see 847 connection timeout errors to payments-db starting at 14:30. Want me to check the trace data for this dependency?',
+      });
+    }, 1000);
+  }, []);
+
+  /** Handle expand chat — if AI highlight is active, create thread with mock response */
+  const handleExpandChat = useCallback(() => {
+    triggerAnimation();
+    if (aiButtonHighlight && pendingAiResponse) {
+      // Clear highlight state
+      setAiButtonHighlight(false);
+      // Expand chat and create pending thread with the mock response
+      const threadKey = `thread-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+      const pendingThread = {
+        key: threadKey,
+        messages: [
+          { role: 'user', author: 'You', content: pendingAiResponse.prompt },
+          { role: 'assistant', content: pendingAiResponse.response, streaming: false },
+        ],
+        sourcePageTitle: 'Discover (log)',
+      };
+      onUpdateSession({
+        threadPanelState: 'side-by-side',
+        threadKey,
+        pendingThread,
+      });
+      setPendingAiResponse(null);
+    } else {
+      onUpdateSession({ threadPanelState: 'side-by-side' });
+    }
+  }, [triggerAnimation, onUpdateSession, aiButtonHighlight, pendingAiResponse]);
 
   const handleResize = useCallback((leftWidthPercent) => {
     if (threadPanelRef.current) {
@@ -148,7 +198,7 @@ export const SessionContainer = ({
     <div
       className={`sessionContainer${
         isMinimized ? ' sessionContainer--chatMinimized' : ''
-      }`}>
+      }${isEntering ? ' sessionContainer--entering' : ''}`}>
       {/* Left: Chat panel */}
       <ThreadPanel
         ref={threadPanelRef}
@@ -190,6 +240,9 @@ export const SessionContainer = ({
             onTabClose={handleTabClose}
             onAddTab={handleAddTab}
             onSelectPage={handleSelectPage}
+            onExpandChat={isMinimized ? handleExpandChat : undefined}
+            aiButtonHighlight={aiButtonHighlight}
+            onQueryExecute={handleQueryExecute}
           />
         </div>
         <div
@@ -236,7 +289,7 @@ export const SessionContainer = ({
             {session.tabs.map((tab) => (
               <OuiToolTip key={tab.id} content={tab.title} position="left">
                 <OuiButtonIcon
-                  iconType="controlsHorizontal"
+                  iconType={PAGE_TAB_ICONS[tab.pageKey] || 'folderClosed'}
                   aria-label={tab.title}
                   size="s"
                   color="text"
@@ -263,11 +316,6 @@ export const SessionContainer = ({
         </div>
       </div>
 
-      {/* Floating Ask AI button — only when chat is minimized */}
-      <FloatingAskAiButton
-        visible={isMinimized}
-        onClick={() => handleSizeChange('side-by-side')}
-      />
     </div>
   );
 };

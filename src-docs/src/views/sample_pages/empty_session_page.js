@@ -12,12 +12,14 @@
 import React, { useState, useMemo } from 'react';
 
 import {
-  OuiButton,
-  OuiFieldSearch,
+  OuiButtonIcon,
+  OuiCompressedTextArea,
+  OuiHorizontalRule,
   OuiIcon,
+  OuiTab,
+  OuiTabs,
   OuiText,
   OuiTitle,
-  OuiToolTip,
 } from '../../../../src/components';
 
 import { SOURCE_PAGE_MOCK } from './session_models';
@@ -30,53 +32,147 @@ const QUICK_ACCESS_ITEMS = [
   {
     key: 'new-chat',
     label: 'New chat',
-    icon: 'sparkleFilled',
+    icon: 'generate',
     action: 'thread',
   },
   {
-    key: 'dashboards',
-    label: 'Dashboards',
-    icon: 'dashboardApp',
+    key: 'discover-log',
+    label: 'Discover (log)',
+    icon: 'navDiscover',
     action: 'page',
-    pageKey: 'dashboards',
+    pageKey: 'discover-log',
   },
   {
-    key: 'logs',
-    label: 'Logs',
-    icon: 'logsApp',
-    action: 'page',
-    pageKey: 'logs',
-  },
-  {
-    key: 'metrics',
-    label: 'Metric',
+    key: 'discover-metric',
+    label: 'Discover (Metric)',
     icon: 'visArea',
     action: 'page',
-    pageKey: 'metrics',
+    pageKey: 'discover-metric',
   },
   {
-    key: 'topology',
-    label: 'Topology Map',
-    icon: 'graphApp',
+    key: 'app-map',
+    label: 'Application Map',
+    icon: 'navServiceMap',
     action: 'page',
-    pageKey: 'traces',
+    pageKey: 'app-map',
   },
   {
-    key: 'apm',
-    label: 'Application Performance',
-    icon: 'apmApp',
+    key: 'app-traces',
+    label: 'Application Traces',
+    icon: 'apmTrace',
     action: 'page',
-    pageKey: 'traces',
+    pageKey: 'app-traces',
   },
   {
-    key: 'monitoring',
-    label: 'Agent Monitoring',
-    icon: 'monitoringApp',
+    key: 'app-services',
+    label: 'Application Services',
+    icon: 'navDashboards',
     action: 'page',
-    pageKey: 'alerts',
+    pageKey: 'app-services',
   },
-  { key: 'more', label: 'More', icon: 'grid', action: 'more' },
+  { key: 'more', label: 'More', icon: 'apps', action: 'more' },
 ];
+
+/**
+ * Filter chips for the bottom section.
+ */
+const FILTER_CHIPS = [
+  { key: 'favorites', label: 'Favorites', icon: 'starEmpty' },
+  { key: 'dashboards', label: 'Dashboards', icon: 'navDashboards' },
+  { key: 'saved-logs', label: 'Saved logs', icon: 'navDiscover' },
+  { key: 'saved-metric', label: 'Saved metric', icon: 'visArea' },
+  { key: 'alerts', label: 'Alerts', icon: 'navAlerting' },
+];
+
+/**
+ * Mock data for each filter chip.
+ */
+const CHIP_DATA = {
+  favorites: [
+    { key: 'fav-1', title: 'System overview', subtitle: 'Dashboard · Updated 5 min ago' },
+    { key: 'fav-2', title: 'Error rate by service', subtitle: 'Saved log · source=logs | where level="ERROR"' },
+    { key: 'fav-3', title: 'CPU utilization', subtitle: 'Saved metric · source=metrics | stats avg(cpu) by host' },
+    { key: 'fav-4', title: 'Payment service P99 latency breach', subtitle: 'Alert · Critical · 15 min ago' },
+    { key: 'fav-5', title: 'API performance', subtitle: 'Dashboard · Updated 30 min ago' },
+  ],
+  dashboards: [
+    { key: 'dash-1', title: 'System overview', subtitle: 'Updated 5 min ago' },
+    { key: 'dash-2', title: 'Web traffic analytics', subtitle: 'Updated 15 min ago' },
+    { key: 'dash-3', title: 'API performance', subtitle: 'Updated 30 min ago' },
+    { key: 'dash-4', title: 'Payment service — connection pool', subtitle: 'Created from thread · just now' },
+  ],
+  'saved-logs': [
+    { key: 'log-1', title: 'Error rate by service', subtitle: 'source=logs | where level="ERROR"' },
+    { key: 'log-2', title: 'Auth failure events', subtitle: 'source=logs | where event="auth_fail"' },
+    { key: 'log-3', title: 'Slow query log', subtitle: 'source=logs | where duration > 5000' },
+    { key: 'log-4', title: 'Payment service timeout logs', subtitle: 'source=payment | where level="WARN"' },
+    { key: 'log-5', title: 'Connection timeout errors', subtitle: 'source=logs | where severity="ERROR"' },
+  ],
+  'saved-metric': [
+    { key: 'met-1', title: 'Throughput over time', subtitle: 'source=metrics | stats avg(throughput)' },
+    { key: 'met-2', title: 'CPU utilization', subtitle: 'source=metrics | stats avg(cpu) by host' },
+    { key: 'met-3', title: 'Memory pressure', subtitle: 'source=metrics | stats max(mem_used)' },
+    { key: 'met-4', title: 'Disk I/O by volume', subtitle: 'source=metrics | stats avg(disk_io) by volume' },
+  ],
+  alerts: [
+    { key: 'alert-1', title: 'CPU threshold exceeded', subtitle: 'Critical · 10 min ago' },
+    { key: 'alert-2', title: 'Disk usage warning', subtitle: 'Warning · 1 hour ago' },
+    { key: 'alert-3', title: 'Error rate spike', subtitle: 'Critical · 3 hours ago' },
+    { key: 'alert-4', title: 'Payment service P99 latency breach', subtitle: 'Critical · 15 min ago' },
+  ],
+};
+
+/**
+ * Saved objects data for the bottom section when a quick access item is selected.
+ */
+const SAVED_OBJECTS = {
+  dashboards: {
+    items: [
+      { key: 'system-overview', title: 'System overview', subtitle: 'Updated 5 min ago' },
+      { key: 'web-traffic', title: 'Web traffic analytics', subtitle: 'Updated 15 min ago' },
+      { key: 'api-performance', title: 'API performance', subtitle: 'Updated 30 min ago' },
+      { key: 'payment-pool-dashboard', title: 'Payment service — connection pool', subtitle: 'Created from thread · just now' },
+    ],
+  },
+  logs: {
+    tabs: [
+      { id: 'saved-results', name: 'Saved results' },
+      { id: 'saved-query', name: 'Saved query' },
+    ],
+    tabItems: {
+      'saved-results': [
+        { key: 'error-rate', title: 'Error rate by service', subtitle: 'source=logs | where level="ERROR"' },
+        { key: 'auth-failures', title: 'Auth failure events', subtitle: 'source=logs | where event="auth_fail"' },
+        { key: 'slow-queries', title: 'Slow query log', subtitle: 'source=logs | where duration > 5000' },
+        { key: 'payment-timeout-logs', title: 'Payment service timeout logs', subtitle: 'source=payment | where level="WARN"' },
+        { key: 'connection-timeout-errors', title: 'Connection timeout errors', subtitle: 'source=logs | where severity="ERROR"' },
+      ],
+      'saved-query': [
+        { key: 'query-latency-by-host', title: 'Latency by host', subtitle: 'source=logs | stats avg(latency) by host' },
+        { key: 'query-5xx-responses', title: '5xx responses', subtitle: 'source=logs | where status >= 500 | stats count() by path' },
+        { key: 'query-top-users', title: 'Top users by request count', subtitle: 'source=logs | stats count() as requests by user' },
+      ],
+    },
+  },
+  metrics: {
+    tabs: [
+      { id: 'saved-results', name: 'Saved results' },
+      { id: 'saved-query', name: 'Saved query' },
+    ],
+    tabItems: {
+      'saved-results': [
+        { key: 'throughput', title: 'Throughput over time', subtitle: 'source=metrics | stats avg(throughput)' },
+        { key: 'cpu-utilization', title: 'CPU utilization', subtitle: 'source=metrics | stats avg(cpu) by host' },
+        { key: 'memory-pressure', title: 'Memory pressure', subtitle: 'source=metrics | stats max(mem_used)' },
+      ],
+      'saved-query': [
+        { key: 'query-disk-io', title: 'Disk I/O by volume', subtitle: 'source=metrics | stats avg(disk_io) by volume' },
+        { key: 'query-network-errors', title: 'Network error rate', subtitle: 'source=metrics | where net_errors > 0' },
+        { key: 'query-gc-pauses', title: 'GC pause duration', subtitle: 'source=metrics | stats max(gc_pause_ms) by service' },
+      ],
+    },
+  },
+};
 
 /**
  * SystemCallout — Displays a system alert with red left border and pink background.
@@ -90,16 +186,15 @@ const SystemCallout = ({ alert, onAction }) => {
 
   return (
     <div className="emptySessionPage__callout" role="alert">
+      <div className="emptySessionPage__calloutBorder" />
       <div className="emptySessionPage__calloutContent">
-        <OuiText size="s">
-          <p>{alert.message}</p>
-        </OuiText>
-        <OuiButton
-          size="s"
-          color="danger"
+        <p className="emptySessionPage__calloutText">{alert.message}</p>
+        <button
+          type="button"
+          className="emptySessionPage__calloutCta"
           onClick={() => onAction(alert.actionTarget)}>
           {alert.actionLabel}
-        </OuiButton>
+        </button>
       </div>
     </div>
   );
@@ -112,7 +207,7 @@ const SystemCallout = ({ alert, onAction }) => {
  * @param {(prompt: string) => void} props.onStartThread
  * @param {(pageKey: string) => void} props.onOpenPage
  */
-const DualPurposeInput = ({ onStartThread, onOpenPage }) => {
+const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange }) => {
   const [inputValue, setInputValue] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
 
@@ -128,6 +223,9 @@ const DualPurposeInput = ({ onStartThread, onOpenPage }) => {
     const value = e.target.value;
     setInputValue(value);
     setShowSuggestions(value.trim().length > 0);
+    if (onSearchChange) {
+      onSearchChange(value);
+    }
   };
 
   const handleSubmit = (e) => {
@@ -156,29 +254,47 @@ const DualPurposeInput = ({ onStartThread, onOpenPage }) => {
   return (
     <div className="emptySessionPage__inputWrap">
       <div className="emptySessionPage__inputField">
-        <OuiIcon type="plusInCircle" className="emptySessionPage__inputIcon" />
-        <OuiFieldSearch
-          placeholder="Ask AI or search a page"
+        <OuiCompressedTextArea
+          placeholder="Ask anything. Type / for actions."
           value={inputValue}
           onChange={handleChange}
           onKeyDown={handleSubmit}
+          rows={3}
+          resize="none"
           fullWidth
-          aria-label="Ask AI or search a page"
+          className="emptySessionPage__textarea"
         />
-      </div>
-      {showSuggestions && matchingPages.length > 0 && (
-        <div className="emptySessionPage__suggestions">
-          {matchingPages.map(({ key, title }) => (
-            <button
-              key={key}
-              className="emptySessionPage__suggestionItem"
-              onClick={() => handleSelectPage(key)}>
-              <OuiIcon type="document" size="s" />
-              <span>{title}</span>
-            </button>
-          ))}
+        <div className="emptySessionPage__inputActions">
+          <OuiButtonIcon
+            iconType="plus"
+            aria-label="Add attachment"
+            size="s"
+            color="text"
+          />
+          <OuiButtonIcon
+            iconType="sortUp"
+            aria-label="Send"
+            display="fill"
+            size="s"
+            isDisabled={!inputValue.trim()}
+            onClick={() => {
+              if (inputValue.trim()) {
+                const exactMatch = Object.entries(SOURCE_PAGE_MOCK).find(
+                  ([, { title }]) =>
+                    title.toLowerCase() === inputValue.trim().toLowerCase()
+                );
+                if (exactMatch) {
+                  onOpenPage(exactMatch[0]);
+                } else {
+                  onStartThread(inputValue.trim());
+                }
+                setInputValue('');
+                setShowSuggestions(false);
+              }
+            }}
+          />
         </div>
-      )}
+      </div>
     </div>
   );
 };
@@ -207,14 +323,17 @@ const QuickAccessRow = ({ onStartThread, onOpenPage }) => {
     <div className="emptySessionPage__quickAccess">
       <div className="emptySessionPage__quickAccessRow">
         {QUICK_ACCESS_ITEMS.map((item) => (
-          <OuiToolTip key={item.key} content={item.label} position="bottom">
+          <div
+            key={item.key}
+            className="emptySessionPage__quickAccessItem"
+            onClick={() => handleClick(item)}>
             <button
               className="emptySessionPage__quickAccessButton"
-              onClick={() => handleClick(item)}
               aria-label={item.label}>
-              <OuiIcon type={item.icon} size="l" />
+              <OuiIcon type={item.icon} size="m" />
             </button>
-          </OuiToolTip>
+            <span className="emptySessionPage__quickAccessLabel">{item.label}</span>
+          </div>
         ))}
       </div>
       {showMore && (
@@ -258,38 +377,27 @@ const RecentAndFavoriteTabs = ({ recentItems, favoriteItems, onOpenPage }) => {
 
   return (
     <div className="emptySessionPage__tabs">
-      <div className="emptySessionPage__tabHeaders" role="tablist">
-        <button
-          className={`emptySessionPage__tabHeader${
-            activeTab === 'recent' ? ' emptySessionPage__tabHeader--active' : ''
-          }`}
-          role="tab"
-          aria-selected={activeTab === 'recent'}
+      <OuiTabs size="s" display="condensed" style={{ maxWidth: 'fit-content' }}>
+        <OuiTab
+          isSelected={activeTab === 'recent'}
           onClick={() => setActiveTab('recent')}>
-          Recent visit
-        </button>
-        <button
-          className={`emptySessionPage__tabHeader${
-            activeTab === 'favorites'
-              ? ' emptySessionPage__tabHeader--active'
-              : ''
-          }`}
-          role="tab"
-          aria-selected={activeTab === 'favorites'}
+          Recent
+        </OuiTab>
+        <OuiTab
+          isSelected={activeTab === 'favorites'}
           onClick={() => setActiveTab('favorites')}>
           Favorite
-        </button>
-      </div>
+        </OuiTab>
+      </OuiTabs>
       <div className="emptySessionPage__tabContent" role="tabpanel">
         {items.length === 0 ? (
-          <OuiText
-            size="s"
-            color="subdued"
-            className="emptySessionPage__emptyList">
-            <p>
-              {activeTab === 'recent' ? 'No recent visits' : 'No favorites yet'}
-            </p>
-          </OuiText>
+          <>
+            <div className="emptySessionPage__placeholderRow" />
+            <div className="emptySessionPage__placeholderRow" />
+            <div className="emptySessionPage__placeholderRow" />
+            <div className="emptySessionPage__placeholderRow" />
+            <div className="emptySessionPage__placeholderRow" />
+          </>
         ) : (
           <ul className="emptySessionPage__itemList">
             {items.map((item) => (
@@ -314,6 +422,85 @@ const RecentAndFavoriteTabs = ({ recentItems, favoriteItems, onOpenPage }) => {
             ))}
           </ul>
         )}
+      </div>
+    </div>
+  );
+};
+
+/**
+ * BottomSection — Shows saved objects list when a browse key is active,
+ * otherwise shows Recent/Favorite tabs.
+ */
+const BottomSection = ({ browseKey, recentItems, favoriteItems, onOpenPage }) => {
+  const [subTab, setSubTab] = useState(null);
+
+  // Reset sub-tab when browse key changes
+  React.useEffect(() => {
+    if (browseKey && SAVED_OBJECTS[browseKey]?.tabs) {
+      setSubTab(SAVED_OBJECTS[browseKey].tabs[0].id);
+    } else {
+      setSubTab(null);
+    }
+  }, [browseKey]);
+
+  if (!browseKey || !SAVED_OBJECTS[browseKey]) {
+    return (
+      <RecentAndFavoriteTabs
+        recentItems={recentItems}
+        favoriteItems={favoriteItems}
+        onOpenPage={onOpenPage}
+      />
+    );
+  }
+
+  const data = SAVED_OBJECTS[browseKey];
+
+  // Simple list (dashboards)
+  if (data.items && !data.tabs) {
+    return (
+      <div className="emptySessionPage__tabs">
+        <div className="emptySessionPage__sectionTitle">Dashboards</div>
+        <div className="emptySessionPage__tabContent">
+          {data.items.map((item) => (
+            <button
+              key={item.key}
+              className="emptySessionPage__listItem"
+              onClick={() => onOpenPage(browseKey)}>
+              <span className="emptySessionPage__listItemTitle">{item.title}</span>
+              <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Tabbed list (logs, metrics)
+  const activeSubTab = subTab || (data.tabs ? data.tabs[0].id : null);
+  const tabItems = data.tabItems[activeSubTab] || [];
+
+  return (
+    <div className="emptySessionPage__tabs">
+      <OuiTabs size="s" display="condensed" style={{ maxWidth: 'fit-content' }}>
+        {data.tabs.map((tab) => (
+          <OuiTab
+            key={tab.id}
+            isSelected={activeSubTab === tab.id}
+            onClick={() => setSubTab(tab.id)}>
+            {tab.name}
+          </OuiTab>
+        ))}
+      </OuiTabs>
+      <div className="emptySessionPage__tabContent">
+        {tabItems.map((item) => (
+          <button
+            key={item.key}
+            className="emptySessionPage__listItem"
+            onClick={() => onOpenPage(browseKey)}>
+            <span className="emptySessionPage__listItemTitle">{item.title}</span>
+            <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
+          </button>
+        ))}
       </div>
     </div>
   );
@@ -360,6 +547,34 @@ export const EmptySessionPage = ({
   favoriteItems = [],
   systemAlert = null,
 }) => {
+  const [activeChip, setActiveChip] = useState('favorites');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Build a flat searchable list from all chip data + SOURCE_PAGE_MOCK
+  const allSearchableItems = useMemo(() => {
+    const items = [];
+    // Add all chip data items
+    Object.entries(CHIP_DATA).forEach(([category, categoryItems]) => {
+      categoryItems.forEach((item) => {
+        items.push({ ...item, category, pageKey: category === 'dashboards' ? 'dashboards' : category === 'saved-logs' ? 'logs' : category === 'saved-metric' ? 'metrics' : 'alerts' });
+      });
+    });
+    // Add SOURCE_PAGE_MOCK pages
+    Object.entries(SOURCE_PAGE_MOCK).forEach(([pageKey, { title }]) => {
+      items.push({ key: `page-${pageKey}`, title, subtitle: 'Page', category: 'pages', pageKey });
+    });
+    return items;
+  }, []);
+
+  // Filter items based on search query
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return null;
+    const query = searchQuery.toLowerCase();
+    return allSearchableItems.filter(
+      (item) => item.title.toLowerCase().includes(query) || (item.subtitle && item.subtitle.toLowerCase().includes(query))
+    );
+  }, [searchQuery, allSearchableItems]);
+
   return (
     <div className="emptySessionPage">
       <div className="emptySessionPage__panel">
@@ -370,24 +585,77 @@ export const EmptySessionPage = ({
           </OuiTitle>
         </div>
 
-        {/* System callout */}
-        <SystemCallout alert={systemAlert} onAction={onOpenPage} />
+        {/* Content container — max 832px */}
+        <div className="emptySessionPage__content">
+          {/* Textarea input */}
+          <DualPurposeInput
+            onStartThread={onStartThread}
+            onOpenPage={onOpenPage}
+            onSearchChange={setSearchQuery}
+          />
 
-        {/* Dual-purpose input */}
-        <DualPurposeInput
-          onStartThread={onStartThread}
-          onOpenPage={onOpenPage}
-        />
+          {/* Search results OR normal content */}
+          {searchResults ? (
+            <div className="emptySessionPage__tabContent">
+              {searchResults.length === 0 ? (
+                <p style={{ color: '#676e75', textAlign: 'center', padding: '16px' }}>No results found</p>
+              ) : (
+                <>
+                  <span className="emptySessionPage__searchLabel">Suggested pages</span>
+                  {searchResults.map((item) => (
+                    <button
+                      key={item.key}
+                      type="button"
+                      className="emptySessionPage__listItem"
+                      onClick={() => onOpenPage(item.pageKey)}>
+                      <span className="emptySessionPage__listItemTitle">{item.title}</span>
+                      <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
+                    </button>
+                  ))}
+                </>
+              )}
+            </div>
+          ) : (
+            <>
+              {/* Quick access row */}
+              <QuickAccessRow
+                onStartThread={onStartThread}
+                onOpenPage={onOpenPage}
+              />
 
-        {/* Quick access row */}
-        <QuickAccessRow onStartThread={onStartThread} onOpenPage={onOpenPage} />
+              {/* Horizontal rule */}
+              <OuiHorizontalRule margin="m" />
 
-        {/* Recent visit / Favorite tabs */}
-        <RecentAndFavoriteTabs
-          recentItems={recentItems}
-          favoriteItems={favoriteItems}
-          onOpenPage={onOpenPage}
-        />
+              {/* Filter chips */}
+              <div className="emptySessionPage__chips">
+                {FILTER_CHIPS.map((chip) => (
+                  <button
+                    key={chip.key}
+                    type="button"
+                    className={`emptySessionPage__chip${activeChip === chip.key ? ' emptySessionPage__chip--active' : ''}`}
+                    onClick={() => setActiveChip(chip.key)}>
+                    <OuiIcon type={chip.icon} size="m" />
+                    <span>{chip.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* List items based on active chip */}
+              <div className="emptySessionPage__tabContent">
+                {(CHIP_DATA[activeChip] || []).map((item) => (
+                  <button
+                    key={item.key}
+                    type="button"
+                    className="emptySessionPage__listItem"
+                    onClick={() => onOpenPage(activeChip === 'dashboards' ? 'dashboards' : activeChip === 'saved-logs' ? 'logs' : activeChip === 'saved-metric' ? 'metrics' : 'alerts')}>
+                    <span className="emptySessionPage__listItemTitle">{item.title}</span>
+                    <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

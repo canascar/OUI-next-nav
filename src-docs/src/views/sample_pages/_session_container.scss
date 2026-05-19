@@ -66,3 +66,34 @@
   gap: 4px;
   padding: 8px 4px;
 }
+
+// Entrance animation — panels expand from edges when transitioning from empty session
+.sessionContainer--entering .threadPanel {
+  animation: panelExpandFromLeft 350ms ease-out;
+}
+
+.sessionContainer--entering .sessionContainer__pagePanelWrap {
+  animation: panelExpandFromRight 350ms ease-out;
+}
+
+@keyframes panelExpandFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes panelExpandFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

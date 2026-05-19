@@ -35,6 +35,7 @@ import {
   OuiTitle,
 } from '../../../../src/components';
 import { LogsPageBody } from './logs_page';
+import { LogsPage } from './logs_page';
 
 // Two-column key-value row
 const KVRow = ({ label, children }) => (
@@ -369,6 +370,24 @@ export const LogsPageMock = ({ onQueryExecute }) => (
     />
   </div>
 );
+
+// Empty discover page — no query, no results, fully interactive
+export const EmptyDiscoverPageMock = ({ onQueryExecute }) => (
+  <div className="mockCanvasPage mockCanvasPage--fullBody">
+    <LogsPage selectedItem={null} hideAskAi onQueryExecute={onQueryExecute} />
+  </div>
+);
+
+// Empty placeholder page for pages not yet implemented
+export const EmptyPlaceholderPage = ({ title }) => (
+  <div className="mockCanvasPage" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#676e75' }}>
+    <p>{title || 'This page is empty'}</p>
+  </div>
+);
+
+export const AppMapPageMock = () => <EmptyPlaceholderPage title="Application Map" />;
+export const AppTracesPageMock = () => <EmptyPlaceholderPage title="Application Traces" />;
+export const AppServicesPageMock = () => <EmptyPlaceholderPage title="Application Services" />;
 
 // Trace analysis page mock — payments-db trace waterfall
 export const TraceAnalysisPageMock = () => (

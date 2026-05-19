@@ -434,10 +434,10 @@ spec:
     ],
   },
   {
-    // Step 3: User says "Start use" — navigate to sample-pages
+    // Step 3: User says "Start use" — navigate to session-pages
     tasks: null,
     responses: [],
-    navigate: '/sample-pages',
+    navigate: '/session-pages',
   },
 ];
 

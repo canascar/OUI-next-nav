@@ -12,12 +12,33 @@
 import React, { useRef, useState } from 'react';
 import {
   OuiButtonIcon,
+  OuiIcon,
   OuiPopover,
   OuiToolTip,
 } from '../../../../src/components';
 import { SOURCE_PAGE_MOCK } from './session_models';
 import { DetailPageHeader } from './detail_page_header';
 import { NewTabPage } from './new_tab_page';
+
+/**
+ * Icon mapping for page keys.
+ */
+export const PAGE_TAB_ICONS = {
+  logs: 'navDiscover',
+  alerts: 'navAlerting',
+  'alerts-detail': 'navAlerting',
+  dashboards: 'navDashboards',
+  notebooks: 'navNotebooks',
+  metrics: 'visArea',
+  discover: 'navDiscover',
+  'discover-log': 'navDiscover',
+  'discover-metric': 'visArea',
+  'app-map': 'navServiceMap',
+  'app-traces': 'apmTrace',
+  'app-services': 'navDashboards',
+  traces: 'navServices',
+  'new-tab': 'folderClosed',
+};
 
 /**
  * TabBar — Renders the horizontal tab bar with individual tabs and an add-tab button.
@@ -29,7 +50,7 @@ import { NewTabPage } from './new_tab_page';
  * @param {(tabId: string) => void} props.onTabClose - Tab close handler
  * @param {() => void} props.onAddTab - Add new tab handler
  */
-const TabBar = ({ tabs, activeTabId, onTabSelect, onTabClose, onAddTab }) => {
+const TabBar = ({ tabs, activeTabId, onTabSelect, onTabClose, onAddTab, onExpandChat, aiButtonHighlight }) => {
   const tabListRef = useRef(null);
   const [isListOpen, setIsListOpen] = useState(false);
 
@@ -58,6 +79,17 @@ const TabBar = ({ tabs, activeTabId, onTabSelect, onTabClose, onAddTab }) => {
 
   return (
     <div className="pagePanel__tabBar">
+      {onExpandChat && (
+        <div className={`pagePanel__aiButton${aiButtonHighlight ? ' pagePanel__aiButton--highlight' : ''}`} onClick={onExpandChat}>
+          <OuiButtonIcon
+            iconType="generate"
+            aria-label="Open AI chat"
+            size="s"
+            color={aiButtonHighlight ? 'primary' : 'text'}
+            display="empty"
+          />
+        </div>
+      )}
       <div
         className="pagePanel__tabList"
         role="tablist"
@@ -78,6 +110,7 @@ const TabBar = ({ tabs, activeTabId, onTabSelect, onTabClose, onAddTab }) => {
                 }`}
                 onClick={() => onTabSelect(tab.id)}
                 onKeyDown={(e) => handleKeyDown(e, tab.id, index)}>
+                <OuiIcon type={PAGE_TAB_ICONS[tab.pageKey] || 'folderClosed'} size="s" />
                 <span className="pagePanel__tabTitle">{tab.title}</span>
                 {isActive && (
                   <button
@@ -177,6 +210,9 @@ export const PagePanel = ({
   onTabClose,
   onAddTab,
   onSelectPage,
+  onExpandChat,
+  aiButtonHighlight,
+  onQueryExecute,
 }) => {
   const activeTab = tabs.find((tab) => tab.id === activeTabId);
 
@@ -205,11 +241,15 @@ export const PagePanel = ({
 
     const PageComponent = pageEntry.component;
 
+    // Pages that have their own header — skip DetailPageHeader
+    const PAGES_WITH_OWN_HEADER = new Set(['discover-log', 'discover-metric']);
+    const skipHeader = PAGES_WITH_OWN_HEADER.has(activeTab.pageKey);
+
     return (
       <div className="pagePanel__canvasWrapper">
-        <DetailPageHeader title={activeTab.title} hideAskAi />
+        {!skipHeader && <DetailPageHeader title={activeTab.title} hideAskAi />}
         <div className="pagePanel__canvasContent">
-          <PageComponent />
+          <PageComponent onQueryExecute={skipHeader ? onQueryExecute : undefined} />
         </div>
       </div>
     );
@@ -223,6 +263,8 @@ export const PagePanel = ({
         onTabSelect={onTabSelect}
         onTabClose={onTabClose}
         onAddTab={onAddTab}
+        onExpandChat={onExpandChat}
+        aiButtonHighlight={aiButtonHighlight}
       />
       <div
         className="pagePanel__content"
