@@ -9,15 +9,6 @@
  * GitHub history for details.
  */
 
-<<<<<<< HEAD
-import React, { useState, useContext } from 'react';
-
-// Import brace themes for the dev tools code editor (must import brace first)
-import 'brace';
-import 'brace/theme/github';
-import 'brace/theme/tomorrow_night';
-import 'brace/mode/json';
-=======
 import React, {
   useContext,
   useState,
@@ -26,7 +17,6 @@ import React, {
   useEffect,
   useMemo,
 } from 'react';
->>>>>>> sicheng/oui-lookfeel
 
 import {
   OuiLeftNav,
@@ -40,24 +30,19 @@ import {
   OuiSheet,
   OuiCodeEditor,
   OuiTitle,
-<<<<<<< HEAD
-  OuiSpacer,
-  OuiButton,
   OuiButtonEmpty,
-  OuiResizableContainer,
+  OuiHorizontalRule,
+  OuiListGroup,
+  OuiListGroupItem,
+  OuiText,
   OuiFlexGroup,
   OuiFlexItem,
-=======
-  OuiButtonEmpty,
-  OuiPopover,
-  OuiTabs,
-  OuiTab,
-  OuiToolTip,
->>>>>>> sicheng/oui-lookfeel
+  OuiButton,
+  OuiResizableContainer,
+  OuiResizablePanel,
+  OuiResizableButton,
 } from '../../../../src/components';
 import { ThemeContext } from '../../components/with_theme';
-<<<<<<< HEAD
-=======
 import { ALL_DRAGGABLE_ITEMS } from './nav_layout_utils';
 
 const NAV_ITEMS = [
@@ -2151,7 +2136,6 @@ const NavGroup = ({ label, isOpen, onToggle, children }) => (
     )}
   </div>
 );
->>>>>>> sicheng/oui-lookfeel
 
 export const SamplePagesLeftNav = ({
   activePage,
@@ -2168,40 +2152,6 @@ export const SamplePagesLeftNav = ({
   overflowItems,
   _onLayoutChange,
 }) => {
-<<<<<<< HEAD
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [showAppearance, setShowAppearance] = useState(false);
-  const [isThreadsOpen, setIsThreadsOpen] = useState(false);
-  const [isDashboardsOpen, setIsDashboardsOpen] = useState(false);
-  const [isDiscoverOpen, setIsDiscoverOpen] = useState(false);
-  const [discoverTab, setDiscoverTab] = useState('results');
-  const [isMetricsOpen, setIsMetricsOpen] = useState(false);
-  const [metricsTab, setMetricsTab] = useState('results');
-  const [isMoreOpen, setIsMoreOpen] = useState(false);
-  const [expandedMoreSections, setExpandedMoreSections] = useState(new Set());
-  const [showNotebooks, setShowNotebooks] = useState(false);
-  const [isUserOpen, setIsUserOpen] = useState(false);
-  const [showUserHelp, setShowUserHelp] = useState(false);
-  const [isWorkspacesOpen, setIsWorkspacesOpen] = useState(false);
-  const [selectedWorkspace, setSelectedWorkspace] = useState('observability');
-  const [showWorkspaceSelect, setShowWorkspaceSelect] = useState(false);
-  const [isDevToolsOpen, setIsDevToolsOpen] = useState(false);
-  const [devToolsQuery, setDevToolsQuery] = useState('GET _search\n{\n  "query": {\n    "match_all": {}\n  }\n}');
-  const [devToolsResponse, setDevToolsResponse] = useState('');
-  const [devToolsTab, setDevToolsTab] = useState('console');
-  const notebooksTimeout = React.useRef(null);
-  const userTimeout = React.useRef(null);
-  const workspacesTimeout = React.useRef(null);
-  const appearanceTimeout = React.useRef(null);
-  const threadsTimeout = React.useRef(null);
-  const dashboardsTimeout = React.useRef(null);
-  const discoverTimeout = React.useRef(null);
-  const metricsTimeout = React.useRef(null);
-  const moreTimeout = React.useRef(null);
-  const settingsTimeout = React.useRef(null);
-  const themeContext = useContext(ThemeContext);
-  const currentTheme = themeContext.theme;
-=======
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
   const [appearanceSelection, setAppearanceSelection] = useState(
@@ -2287,7 +2237,6 @@ export const SamplePagesLeftNav = ({
     collapsePanel();
     onPageChange('settings');
   }, [collapsePanel, onPageChange]);
->>>>>>> sicheng/oui-lookfeel
 
   const handleAppearanceEnter = () => {
     clearTimeout(appearanceTimeout.current);
@@ -2300,228 +2249,6 @@ export const SamplePagesLeftNav = ({
     }, 300);
   };
 
-<<<<<<< HEAD
-  const handleThreadsEnter = () => {
-    clearTimeout(threadsTimeout.current);
-    setIsThreadsOpen(true);
-  };
-  const handleThreadsLeave = () => {
-    threadsTimeout.current = setTimeout(() => setIsThreadsOpen(false), 200);
-  };
-
-  const handleDashboardsEnter = () => {
-    clearTimeout(dashboardsTimeout.current);
-    setIsDashboardsOpen(true);
-  };
-  const handleDashboardsLeave = () => {
-    dashboardsTimeout.current = setTimeout(() => setIsDashboardsOpen(false), 200);
-  };
-
-  const handleDiscoverEnter = () => {
-    clearTimeout(discoverTimeout.current);
-    setIsDiscoverOpen(true);
-  };
-  const handleDiscoverLeave = () => {
-    discoverTimeout.current = setTimeout(() => setIsDiscoverOpen(false), 200);
-  };
-
-  const handleMetricsEnter = () => {
-    clearTimeout(metricsTimeout.current);
-    setIsMetricsOpen(true);
-  };
-  const handleMetricsLeave = () => {
-    metricsTimeout.current = setTimeout(() => setIsMetricsOpen(false), 200);
-  };
-
-  const handleMoreEnter = () => {
-    clearTimeout(moreTimeout.current);
-    setIsMoreOpen(true);
-  };
-  const handleMoreLeave = () => {
-    moreTimeout.current = setTimeout(() => {
-      setIsMoreOpen(false);
-      setExpandedMoreSections(new Set());
-    }, 200);
-  };
-
-  const toggleMoreSection = (id) => {
-    setExpandedMoreSections((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-  };
-
-  const handleNotebooksEnter = () => {
-    clearTimeout(notebooksTimeout.current);
-    setShowNotebooks(true);
-  };
-  const handleNotebooksLeave = () => {
-    notebooksTimeout.current = setTimeout(() => setShowNotebooks(false), 200);
-  };
-
-  const handleUserEnter = () => {
-    clearTimeout(userTimeout.current);
-    setIsUserOpen(true);
-  };
-  const handleUserLeave = () => {
-    userTimeout.current = setTimeout(() => {
-      setIsUserOpen(false);
-      setShowUserHelp(false);
-    }, 200);
-  };
-
-  const handleSettingsEnter = () => {
-    clearTimeout(settingsTimeout.current);
-    setIsSettingsOpen(true);
-  };
-  const handleSettingsLeave = () => {
-    settingsTimeout.current = setTimeout(() => {
-      setIsSettingsOpen(false);
-      setShowAppearance(false);
-    }, 200);
-  };
-
-  const handleWorkspacesEnter = () => {
-    clearTimeout(workspacesTimeout.current);
-    setIsWorkspacesOpen(true);
-  };
-  const handleWorkspacesLeave = () => {
-    workspacesTimeout.current = setTimeout(() => {
-      setIsWorkspacesOpen(false);
-      setShowWorkspaceSelect(false);
-    }, 200);
-  };
-
-  const workspaceOptions = [
-    { value: 'observability', label: 'Workspace name', sub: 'Observability' },
-    { value: 'security', label: 'Security ops', sub: 'Security analytics' },
-    { value: 'search', label: 'Search team', sub: 'Enterprise search' },
-  ];
-  const currentWorkspace = workspaceOptions.find((w) => w.value === selectedWorkspace) || workspaceOptions[0];
-
-  const notebooks = [
-    { title: 'Runbook checklist', edited: '2 hours ago' },
-    { title: 'Incident postmortem', edited: '1 day ago' },
-    { title: 'Capacity planning', edited: '3 days ago' },
-  ];
-
-  const moreItems = [
-    { id: 'notebook', icon: 'document', label: 'Notebook' },
-    { id: 'forecasting', icon: 'visArea', label: 'Forecasting' },
-    {
-      id: 'anomaly',
-      icon: 'anomalyDetection',
-      label: 'Anomaly Detection',
-      children: ['Dashboard', 'Detectors'],
-    },
-    {
-      id: 'alerting',
-      icon: 'bell',
-      label: 'Alerting',
-      children: ['Alerts', 'Monitors', 'Destinations'],
-    },
-    {
-      id: 'ai',
-      icon: 'generate',
-      label: 'AI Configs',
-      children: ['Skills', 'Memories', 'Automations', 'MCP Servers'],
-    },
-  ];
-
-  const metricsSavedResults = [
-    { title: 'Throughput over time', query: 'source=metrics | stats avg(throughput)' },
-    { title: 'CPU utilization', query: 'source=metrics | stats avg(cpu) by host' },
-    { title: 'Memory pressure', query: 'source=metrics | stats max(mem_used)' },
-  ];
-
-  const metricsSavedQueries = [
-    { title: 'Disk I/O by volume', query: 'source=metrics | stats avg(disk_io) by volume | sort -avg_disk_io' },
-    { title: 'Network error rate', query: 'source=metrics | where net_errors > 0 | stats sum(net_errors) by interface' },
-    { title: 'GC pause duration', query: 'source=metrics | stats max(gc_pause_ms) by service | sort -max_gc_pause_ms' },
-  ];
-
-  const discoverSavedResults = [
-    { title: 'Error rate by service', query: 'source=logs | where level="ERROR"' },
-    { title: 'Auth failure events', query: 'source=logs | where event="auth_fail"' },
-    { title: 'Slow query log', query: 'source=logs | where duration > 5000' },
-  ];
-
-  const discoverSavedQueries = [
-    { title: 'Latency by host', query: 'source=logs | stats avg(latency) by host' },
-    { title: '5xx responses', query: 'source=logs | where status >= 500 | stats count() by path' },
-    { title: 'Top users by request count', query: 'source=logs | stats count() as requests by user | sort -requests | head 50' },
-  ];
-
-  const dashboards = [
-    { title: 'System overview', updated: '5 min ago' },
-    { title: 'Web traffic analytics', updated: '15 min ago' },
-    { title: 'API performance', updated: '30 min ago' },
-    { title: 'Service health', updated: '1 hour ago' },
-    { title: 'Error rates by region', updated: '2 hours ago' },
-  ];
-
-  const threads = [
-    { title: 'Latency spike investigation', author: 'Sarah Lee', time: '2 hours ago' },
-    { title: 'Checkout error rate alert', author: 'Alex Chen', time: '5 hours ago' },
-    { title: 'Weekly service review', author: 'Team Ops', time: '1 day ago' },
-    { title: 'Memory leak in catalog service', author: 'Jordan Park', time: '3 hours ago' },
-    { title: 'DNS resolution timeouts', author: 'Priya Sharma', time: '6 hours ago' },
-    { title: 'Failed deployment rollback', author: 'Marcus Webb', time: '8 hours ago' },
-    { title: 'TLS certificate expiry warning', author: 'Dana Kim', time: '12 hours ago' },
-    { title: 'Node disk pressure alerts', author: 'Riley Tanaka', time: '1 day ago' },
-  ];
-
-  const threadsContent = (
-    <div style={{ width: 300 }}>
-      <style>{`
-        .threadItem {
-          display: block;
-          padding: 16px;
-          margin: 2px 8px;
-          cursor: pointer;
-          border-radius: 8px;
-          font-size: 14px;
-          transition: background 150ms ease;
-          background: transparent;
-        }
-        .threadItem:hover {
-          background: var(--navItemHover, rgba(46, 74, 143, 0.08));
-        }
-        .threadItem:active {
-          background: var(--navItemActive, rgba(46, 74, 143, 0.15));
-        }
-      `}</style>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px' }}>
-        <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--ouiColorDarkShade, #69707D)' }}>Recent threads</span>
-        <OuiButtonIcon
-          iconType="plus"
-          aria-label="New thread"
-          color="primary"
-          display="fill"
-          size="s"
-          onClick={() => { setIsThreadsOpen(false); onPageChange('threads'); }}
-        />
-      </div>
-      <hr style={{ border: 'none', borderTop: '1px solid rgba(128,128,128,0.15)', margin: 0 }} />
-      <div style={{ maxHeight: 400, overflowY: 'auto', padding: '4px 0 8px' }}>
-        {threads.map((thread, i) => (
-          <div key={i} className="threadItem" onClick={() => { setIsThreadsOpen(false); onPageChange('thread'); }}>
-            <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 6 }}>{thread.title}</div>
-            <div style={{ fontSize: 12, color: 'var(--ouiColorMediumShade, #98A2B3)' }}>
-              {thread.author} · {thread.time}
-            </div>
-          </div>
-        ))}
-      </div>
-      <hr style={{ border: 'none', borderTop: '1px solid rgba(128,128,128,0.15)', margin: '8px 0 0' }} />
-      <div style={{ padding: '12px 16px', textAlign: 'center' }}>
-        <span style={{ fontSize: 13, color: 'var(--ouiColorMediumShade, #98A2B3)', cursor: 'pointer' }} onClick={() => { setIsThreadsOpen(false); onPageChange('recents'); }}>View all</span>
-=======
   // Items that show a popover in collapsed mode
   const POPOVER_KEYS = new Set([
     'thread',
@@ -3454,7 +3181,6 @@ export const SamplePagesLeftNav = ({
             : ' samplePagesLeftNav__clip--collapsed'
         }`}>
         {isNavExpanded ? renderExpandedNav() : renderCollapsedNav()}
->>>>>>> sicheng/oui-lookfeel
       </div>
     </div>
   );
