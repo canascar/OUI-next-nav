@@ -15,8 +15,8 @@ $ouiFormControlHeight: $ouiSizeXL !default;
 $ouiFormControlCompressedHeight: $ouiSizeXL !default;
 $ouiFormControlPadding: $ouiSizeM !default;
 $ouiFormControlCompressedPadding: $ouiSizeS !default;
-$ouiFormControlBorderRadius: $ouiBorderRadius !default;
-$ouiFormControlCompressedBorderRadius: $ouiBorderRadiusSmall !default;
+$ouiFormControlBorderRadius: 10px !default;
+$ouiFormControlCompressedBorderRadius: 6px !default;
 
 $ouiRadioSize: $ouiSize !default;
 $ouiCheckBoxSize: $ouiSize !default;

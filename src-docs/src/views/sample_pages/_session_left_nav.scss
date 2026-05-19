@@ -42,9 +42,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
   padding: 0 8px;
   min-height: 0;
+}
+
+// Horizontal rule divider
+.sessionLeftNav__divider {
+  width: 50%;
+  height: 1px;
+  background-color: $ouiBorderColor;
+  margin: $ouiSizeS 0;
 }
 
 // Action button — matches samplePagesLeftNav__navItem

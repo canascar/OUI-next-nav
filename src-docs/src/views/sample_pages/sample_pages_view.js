@@ -58,6 +58,7 @@ import {
 import { SessionLeftNav } from './session_left_nav';
 import { SessionContainer } from './session_container';
 import { SessionList } from './session_list';
+import { LibraryPage } from './library_page';
 import { EmptySessionPage } from './empty_session_page';
 import { SOURCE_PAGE_MOCK } from './session_models';
 import {
@@ -1524,6 +1525,11 @@ export const SessionPagesView = () => {
     setActiveView('session-list');
   }, []);
 
+  /** Library_Button: show the library page */
+  const handleBrowseLibrary = useCallback(() => {
+    setActiveView('library');
+  }, []);
+
   // --- Session List handlers ---
 
   /** Select a session from the list */
@@ -1608,6 +1614,32 @@ export const SessionPagesView = () => {
       );
     }
 
+    if (activeView === 'library') {
+      return (
+        <LibraryPage
+          onSelectPage={(pageKey, title) => {
+            // Create a new session with the page open and chat minimized
+            setSessionState((prev) => {
+              const next = createSession(prev);
+              const newSessionId = next.activeSessionId;
+              const tab = {
+                id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+                pageKey,
+                title,
+              };
+              return updateSession(next, newSessionId, {
+                tabs: [tab],
+                activeTabId: tab.id,
+                threadPanelState: 'minimized',
+                title,
+              });
+            });
+            setActiveView('session');
+          }}
+        />
+      );
+    }
+
     if (!activeSession) {
       return null;
     }
@@ -1617,6 +1649,26 @@ export const SessionPagesView = () => {
         <EmptySessionPage
           onStartThread={handleStartThread}
           onOpenPage={handleOpenPage}
+          onViewSession={() => {
+            handleSelectSession('latency-spike-session');
+          }}
+          onStartInvestigation={() => {
+            // Open alert page in the right pane, expand chat pane with investigation prompt
+            handleOpenCanvasPage('alerts', 'Alert: P95 Latency > 2s');
+            const threadKey = `thread-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+            const pendingThread = {
+              key: threadKey,
+              messages: [
+                { role: 'user', author: 'You', content: 'Investigate the alert: payment-service P99 latency exceeded 2,000ms threshold on 3 of 4 pods.' },
+              ],
+              sourcePageTitle: 'Alert: P95 Latency > 2s',
+            };
+            handleUpdateSession({
+              threadPanelState: 'side-by-side',
+              threadKey,
+              pendingThread,
+            });
+          }}
           recentItems={[]}
           favoriteItems={[]}
           systemAlert={null}
@@ -1647,6 +1699,7 @@ export const SessionPagesView = () => {
         sessionCount={sessionState.sessions.length}
         onCreateSession={handleCreateSession}
         onBrowseSessions={handleBrowseSessions}
+        onBrowseLibrary={handleBrowseLibrary}
         activeView={activeView}
       />
       <div

@@ -28,7 +28,7 @@ export const PAGE_TAB_ICONS = {
   alerts: 'navAlerting',
   'alerts-detail': 'navAlerting',
   dashboards: 'navDashboards',
-  notebooks: 'navNotebooks',
+  notebooks: 'document',
   metrics: 'visArea',
   discover: 'navDiscover',
   'discover-log': 'navDiscover',

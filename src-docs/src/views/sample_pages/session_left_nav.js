@@ -33,6 +33,7 @@ export const SessionLeftNav = ({
   sessionCount = 0,
   onCreateSession,
   onBrowseSessions,
+  onBrowseLibrary,
   activeView,
 }) => {
   const themeContext = useContext(ThemeContext);
@@ -90,6 +91,23 @@ export const SessionLeftNav = ({
               <span className="sessionLeftNav__badge">{sessionCount}</span>
             )}
           </div>
+        </OuiToolTip>
+
+        <div className="sessionLeftNav__divider" />
+
+        <OuiToolTip content="Library" position="right">
+          <OuiButtonIcon
+            className={`sessionLeftNav__actionButton${
+              activeView === 'library'
+                ? ' sessionLeftNav__actionButton--active'
+                : ''
+            }`}
+            iconType="apps"
+            aria-label="Library"
+            color="text"
+            display="empty"
+            onClick={onBrowseLibrary}
+          />
         </OuiToolTip>
       </div>
 

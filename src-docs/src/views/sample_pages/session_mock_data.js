@@ -121,8 +121,8 @@ export const LATENCY_SPIKE_THREAD_DATA = {
       attachments: [
         {
           type: 'link-preview',
-          key: 'traces',
-          title: 'Trace Analysis — Payment Service Spans',
+          key: 'notebooks',
+          title: 'Inventory service dependency analysis',
           description:
             'Trace waterfall showing acquire_connection bottleneck averaging 1,840ms across sampled requests.',
           viewAction: true,
@@ -153,8 +153,8 @@ echo "Done. Monitoring P99 latency for recovery..."`,
         },
         {
           type: 'link-preview',
-          key: 'dashboards',
-          title: 'Connection Pool Dashboard',
+          key: 'metrics',
+          title: 'Payment service connection pool metrics',
           description:
             'Live dashboard with pool utilization, acquire wait time, active connections, and P99 latency for the payment service.',
           viewAction: true,
@@ -191,14 +191,14 @@ export const LATENCY_SPIKE_SESSION = {
   tabs: [
     { id: 'tab-alerts-1', pageKey: 'alerts', title: 'Alert: P95 Latency > 2s' },
     {
-      id: 'tab-logs-1',
-      pageKey: 'logs',
-      title: 'Payment Service Logs — Last 30 Minutes',
+      id: 'tab-app-map-1',
+      pageKey: 'notebooks',
+      title: 'Inventory service dependency analysis',
     },
     {
-      id: 'tab-traces-1',
-      pageKey: 'traces',
-      title: 'Trace Analysis — Payment Service Spans',
+      id: 'tab-metrics-1',
+      pageKey: 'metrics',
+      title: 'Payment service connection pool metrics',
     },
   ],
   activeTabId: 'tab-alerts-1',

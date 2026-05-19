@@ -18,11 +18,18 @@
 .sessionList {
   display: flex;
   flex-direction: column;
+  align-items: center;
   width: 100%;
   height: 100%;
   padding: $ouiSizeL;
   overflow-y: auto;
-  background-color: $ouiColorLightestShade;
+  background-color: $ouiPageBackgroundColor;
+}
+
+// Content wrapper with max width
+.sessionList__content {
+  width: 100%;
+  max-width: 832px;
 }
 
 // Header with title and create button
@@ -32,6 +39,11 @@
   justify-content: space-between;
   margin-bottom: $ouiSizeL;
   flex-shrink: 0;
+}
+
+// Search bar
+.sessionList__search {
+  margin-bottom: $ouiSize;
 }
 
 // Cards container
@@ -77,10 +89,9 @@
   // Active session highlight
   &--active {
     border-color: $ouiColorPrimary;
-    background-color: tintOrShade($ouiColorPrimary, 95%, 80%);
 
     &:hover {
-      background-color: tintOrShade($ouiColorPrimary, 90%, 75%);
+      background-color: $ouiFocusBackgroundColor;
     }
   }
 }

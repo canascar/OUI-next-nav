@@ -4,11 +4,23 @@
  */
 
 // sass-lint:disable no-color-literals
-// Dark header background — always use light logo colors
-$ouiLogoPrimaryDark: #38BDF8;
-$ouiLogoSecondaryDark: #0284C7;
+// OpenSearch logo colors
+// Light mode
+$ouiLogoPrimaryLight: #075985;
+$ouiLogoSecondaryLight: #082F49;
+// Dark mode
+$ouiLogoPrimaryDark: #0284C7;
+$ouiLogoSecondaryDark: #BAE6FD;
 // sass-lint:enable no-color-literals
 
+// Light mode defaults
+.ouiHeader--default,
+.samplePagesLeftNav {
+  --ouiLogoPrimary: #{$ouiLogoPrimaryLight};
+  --ouiLogoSecondary: #{$ouiLogoSecondaryLight};
+}
+
+// Dark header
 .ouiHeader--dark {
   --ouiLogoPrimary: #{$ouiLogoPrimaryDark};
   --ouiLogoSecondary: #{$ouiLogoSecondaryDark};

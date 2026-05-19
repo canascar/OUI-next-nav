@@ -543,12 +543,15 @@ function formatRelativeTime(timestamp) {
 export const EmptySessionPage = ({
   onStartThread,
   onOpenPage,
+  onViewSession,
+  onStartInvestigation,
   recentItems = [],
   favoriteItems = [],
   systemAlert = null,
 }) => {
   const [activeChip, setActiveChip] = useState('favorites');
   const [searchQuery, setSearchQuery] = useState('');
+  const [alertDismissed, setAlertDismissed] = useState(false);
 
   // Build a flat searchable list from all chip data + SOURCE_PAGE_MOCK
   const allSearchableItems = useMemo(() => {
@@ -587,6 +590,28 @@ export const EmptySessionPage = ({
 
         {/* Content container — max 832px */}
         <div className="emptySessionPage__content">
+          {/* Alert callout */}
+          {!alertDismissed && (
+          <div className="emptySessionPage__alertCallout">
+            <div className="emptySessionPage__alertCalloutIcon">
+              <OuiIcon type="alert" color="warning" size="m" />
+            </div>
+            <div className="emptySessionPage__alertCalloutBody">
+              <p className="emptySessionPage__alertCalloutText">
+                <strong>Alert: payment-service P99 latency exceeded 2,000ms</strong> — Triggered May 13 at 02:32 PM UTC. The P99 response time for payment-service breached the configured threshold on 3 of 4 pods, with no recent deployments in the past 6 hours.
+              </p>
+              <p className="emptySessionPage__alertCalloutSubtext">
+                An AI investigation session is already in progress analyzing correlated traces and connection pool metrics.
+              </p>
+              <div className="emptySessionPage__alertCalloutActions">
+                <button type="button" className="emptySessionPage__alertCalloutAction emptySessionPage__alertCalloutAction--primary" onClick={onViewSession}>View ongoing session</button>
+                <button type="button" className="emptySessionPage__alertCalloutAction" onClick={onStartInvestigation}>Start new investigation</button>
+                <button type="button" className="emptySessionPage__alertCalloutAction" onClick={() => setAlertDismissed(true)}>Acknowledge alert</button>
+              </div>
+            </div>
+          </div>
+          )}
+
           {/* Textarea input */}
           <DualPurposeInput
             onStartThread={onStartThread}

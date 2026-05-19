@@ -673,7 +673,6 @@ const LinkPreviewAttachment = ({
 const StatsDisplayAttachment = ({ title, stats }) => {
   return (
     <div className="threadPage__attachmentWrap">
-      <SaveAsObjectButton />
       <div className="threadPage__attachment threadPage__attachment--statsDisplay">
         {title && (
           <OuiText size="xs">
@@ -706,7 +705,6 @@ const StatsDisplayAttachment = ({ title, stats }) => {
 const DataTableAttachment = ({ title, columns, rows }) => {
   return (
     <div className="threadPage__attachmentWrap">
-      <SaveAsObjectButton />
       <div className="threadPage__attachment threadPage__attachment--dataTable">
         {title && (
           <OuiText size="xs" style={{ marginBottom: 12 }}>
@@ -742,7 +740,6 @@ const DataTableAttachment = ({ title, columns, rows }) => {
 const CodeBlockAttachment = ({ title, language, code }) => {
   return (
     <div className="threadPage__attachmentWrap">
-      <SaveAsObjectButton />
       <div className="threadPage__attachment threadPage__attachment--codeBlock">
         {title && (
           <OuiText size="xs" style={{ marginBottom: 12 }}>
@@ -766,7 +763,6 @@ const ChartAttachment = ({ title, data }) => {
   const maxVal = Math.max(...data.map((d) => d.value));
   return (
     <div className="threadPage__attachmentWrap">
-      <SaveAsObjectButton />
       <div className="threadPage__attachment threadPage__attachment--chart">
         {title && (
           <OuiText size="xs" style={{ marginBottom: 12 }}>
@@ -1266,6 +1262,11 @@ export const ThreadPage = ({
           m.content && /847 connection timeout|payments-db/i.test(m.content)
       );
       if (hasConnectionTimeout) return 'connection-timeout';
+      const hasInvestigateAlert = pendingMessages.some(
+        (m) =>
+          m.content && /investigate.*alert|P99.*latency/i.test(m.content)
+      );
+      if (hasInvestigateAlert) return 'investigate-alert';
     }
     return threadKey;
   })();
@@ -1426,9 +1427,32 @@ export const ThreadPage = ({
       !pendingMessages.some((m) => m.role === 'assistant')
     ) {
       hasInteracted.current = true;
-      const idx = responseIndex.current % MOCK_RESPONSES.length;
-      const mockResponse = MOCK_RESPONSES[idx];
-      const tasks = MOCK_TASKS[idx % MOCK_TASKS.length];
+
+      // Use specific response for investigate-alert flow
+      const isInvestigateAlert = pendingMessages.some(
+        (m) => m.content && /investigate.*alert|P99.*latency/i.test(m.content)
+      );
+
+      let mockResponse;
+      let tasks;
+      if (isInvestigateAlert) {
+        tasks = [
+          { label: 'Querying payment-service metrics', description: 'Pulling P99 latency and connection pool data for the last hour' },
+          { label: 'Correlating with trace data', description: 'Analyzing spans for payment-service dependencies' },
+        ];
+        mockResponse = {
+          content: 'I\'ve analyzed the payment-service alert. Here\'s what I found:\n\n• The latency spike began at 14:29:58 UTC and correlates with a sudden increase in active connections to payments-db.\n• Connection pool utilization jumped from 40% to 98% across pods 1, 2, and 4. Pod 3 remained healthy due to lower traffic allocation.\n• No deployments or config changes occurred in the 6 hours prior to the incident.\n• Upstream traffic volume remained steady — this doesn\'t appear to be load-driven.\n\nThe most likely root cause is connection pool exhaustion on the database side. Want me to open the trace analysis and connection pool metrics as pages?',
+          attachment: {
+            type: 'link-preview',
+            title: 'Payment service — connection pool metrics',
+            description: 'Connection pool utilization spiked from 40% to 98% on 3 of 4 pods starting at 14:29:58 UTC.',
+          },
+        };
+      } else {
+        const idx = responseIndex.current % MOCK_RESPONSES.length;
+        mockResponse = MOCK_RESPONSES[idx];
+        tasks = MOCK_TASKS[idx % MOCK_TASKS.length];
+      }
       responseIndex.current += 1;
       const fullContent = mockResponse.content;
       const attachment = mockResponse.attachment;

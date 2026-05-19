@@ -52,6 +52,15 @@ export const ThreadPanel = forwardRef(
             <span className="threadPanel__title">{displayTitle}</span>
           </div>
           <div className="threadPanel__headerRight">
+            <OuiToolTip content="Share" position="bottom">
+              <OuiButtonIcon
+                iconType="share"
+                aria-label="Share"
+                size="s"
+                color="text"
+                display="empty"
+              />
+            </OuiToolTip>
             <OuiToolTip content="Minimize" position="bottom">
               <OuiButtonIcon
                 iconType="editorPositionBottomLeft"
