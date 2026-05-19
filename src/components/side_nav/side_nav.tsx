@@ -100,6 +100,11 @@ export type OuiSideNavProps<T = {}> = T &
      * Truncates the text of all items to stick to a single line
      */
     truncate?: boolean;
+    /**
+     * If `true`, root-level items with children can be collapsed/expanded.
+     * By default, root items are always open.
+     */
+    rootItemsCollapsible?: boolean;
   };
 
 export class OuiSideNav<T> extends Component<OuiSideNavProps<T>> {
@@ -128,7 +133,7 @@ export class OuiSideNav<T> extends Component<OuiSideNavProps<T>> {
   };
 
   renderTree = (items: Array<OuiSideNavItemType<T>>, depth = 0) => {
-    const { renderItem, truncate } = this.props;
+    const { renderItem, truncate, rootItemsCollapsible } = this.props;
 
     return items.map((item) => {
       const {
@@ -143,8 +148,8 @@ export class OuiSideNav<T> extends Component<OuiSideNavProps<T>> {
         ...rest
       } = item;
 
-      // Root items are always open.
-      const isOpen = depth === 0 ? true : this.isItemOpen(item);
+      // Root items are always open unless rootItemsCollapsible is true.
+      const isOpen = (depth === 0 && !rootItemsCollapsible) ? true : this.isItemOpen(item);
 
       let renderedItems;
 
@@ -152,8 +157,8 @@ export class OuiSideNav<T> extends Component<OuiSideNavProps<T>> {
         renderedItems = this.renderTree(childItems, depth + 1);
       }
 
-      // Act as an accordion only if item is not linked but has children (and not the root)
-      const childrenOnly = depth > 0 && !onClick && !href && !!childItems;
+      // Act as an accordion only if item is not linked but has children (and not the root, unless collapsible)
+      const childrenOnly = (depth > 0 || rootItemsCollapsible) && !onClick && !href && !!childItems;
 
       return (
         <OuiSideNavItem
@@ -189,6 +194,7 @@ export class OuiSideNav<T> extends Component<OuiSideNavProps<T>> {
       truncate,
       heading,
       headingProps = {},
+      rootItemsCollapsible,
       ...rest
     } = this.props;
 

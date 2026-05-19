@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import imageIcons from '../../images/icons.svg';
 import imageButtons from '../../images/buttons.svg';
@@ -19,6 +19,8 @@ import imageFlexgrid from '../../images/flexgrid.svg';
 import imageCards from '../../images/cards.svg';
 import imagePages from '../../images/page.svg';
 import imageText from '../../images/text.svg';
+import { HeroBackground } from './hero_background';
+import { ThemeContext } from '../../components';
 import {
   OuiCard,
   OuiFlexGroup,
@@ -27,63 +29,58 @@ import {
   OuiSpacer,
   OuiText,
   OuiTitle,
-  OuiPanel,
   OuiIcon,
   OuiPageContent,
   OuiPageContentBody,
 } from '../../../../src/components';
 
-export const HomeView = () => (
-  <OuiPageContent
-    hasShadow={false}
-    hasBorder={false}
-    paddingSize="none"
-    color="transparent"
-    borderRadius="none">
-    <OuiPageContentBody restrictWidth>
-      <OuiPanel color="subdued" hasShadow={false} paddingSize="none">
-        <OuiFlexGroup
-          alignItems="center"
-          gutterSize="none"
-          className="guideHome__hero">
-          <OuiFlexItem>
-            <OuiTitle size="l">
-              <h1>OpenSearch UI</h1>
-            </OuiTitle>
-            <OuiSpacer />
-            <OuiSpacer />
-            <OuiTitle size="s">
-              <h2>The framework powering OpenSearch</h2>
-            </OuiTitle>
-            <OuiSpacer size="s" />
-            <OuiText grow={false}>
-              <p>
-                The OpenSearch UI framework (OUI) is the design library we use
-                at the OpenSearch Project to build projects that share our
-                aesthetics. It distributes UI React components and static assets
-                for use in building web layouts.
-              </p>
-              <OuiFlexGroup gutterSize="xl" wrap responsive={false}>
-                <OuiFlexItem grow={false}>
-                  <OuiLink href="https://github.com/opensearch-project/oui/blob/main/wiki/consuming.md">
-                    <strong>Getting started</strong>
-                  </OuiLink>
-                </OuiFlexItem>
-                <OuiFlexItem grow={false}>
-                  <Link to="/package/changelog">
-                    <strong>What&apos;s new</strong>
-                  </Link>
-                </OuiFlexItem>
-                <OuiFlexItem grow={false}>
-                  <OuiLink href="https://github.com/opensearch-project/oui/blob/main/CONTRIBUTING.md">
-                    <strong>Contributing</strong>
-                  </OuiLink>
-                </OuiFlexItem>
-              </OuiFlexGroup>
-            </OuiText>
-          </OuiFlexItem>
-        </OuiFlexGroup>
-      </OuiPanel>
+export const HomeView = () => {
+  const { theme } = useContext(ThemeContext);
+  const isDarkMode = theme.includes('dark');
+  
+  return (
+    <OuiPageContent
+      hasShadow={false}
+      hasBorder={false}
+      paddingSize="none"
+      color="transparent"
+      borderRadius="none">
+      <div className="guideHome__hero">
+        <HeroBackground isDarkMode={isDarkMode} />
+        <div className="guideHome__heroContent">
+          <h1 className="guideHome__heroTitle">OpenSearch AUI</h1>
+          <OuiSpacer size="m" />
+          <OuiTitle size="s">
+            <h2>The framework powering Agentic OpenSearch</h2>
+          </OuiTitle>
+          <OuiSpacer size="m" />
+          <OuiText grow={false}>
+            <p>
+              The OpenSearch AUI framework (OUI) is the design library we use
+              at the OpenSearch Project to build projects that share our
+              aesthetics.
+            </p>
+            <OuiFlexGroup gutterSize="xl" wrap responsive={false}>
+              <OuiFlexItem grow={false}>
+                <OuiLink href="https://github.com/opensearch-project/oui/blob/main/wiki/consuming.md">
+                  <strong>Getting started</strong>
+                </OuiLink>
+              </OuiFlexItem>
+              <OuiFlexItem grow={false}>
+                <Link to="/package/changelog">
+                  <strong>What&apos;s new</strong>
+                </Link>
+              </OuiFlexItem>
+              <OuiFlexItem grow={false}>
+                <OuiLink href="https://github.com/opensearch-project/oui/blob/main/CONTRIBUTING.md">
+                  <strong>Contributing</strong>
+                </OuiLink>
+              </OuiFlexItem>
+            </OuiFlexGroup>
+          </OuiText>
+        </div>
+      </div>
+      <OuiPageContentBody restrictWidth>
       <OuiSpacer size="xl" />
       <div className="guideHomePage__benefitsContainer">
         <OuiCard
@@ -192,6 +189,7 @@ export const HomeView = () => (
           </p>
         </OuiText>
       </div>
-    </OuiPageContentBody>
-  </OuiPageContent>
-);
+      </OuiPageContentBody>
+    </OuiPageContent>
+  );
+};

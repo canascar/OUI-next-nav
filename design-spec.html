@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OUI v9 Design Spec — Agentic OSD Utility</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#F4F6FB;--surface:#FFFFFF;--border:#D4DCE8;
+    --text:#0E1525;--text-sub:#5A6D8A;--text-title:#060D1A;
+    --primary:#2E4A8F;--accent:#4168B8;--secondary:#5CB198;
+    --warning:#CDA849;--danger:#ED6F73;
+    --lightest:#E4EAF2;--light:#D4DCE8;--medium:#5A6D8A;
+    --dark:#1E2A4A;--darkest:#0E1525;--full:#060D1A;
+    --highlight:#EDF1F8;
+  }
+  [data-theme="dark"] {
+    --bg:#060D1A;--surface:#121C30;--border:#1E2E50;
+    --text:#D8E4F0;--text-sub:#6B7F9E;--text-title:#FFFFFF;
+    --primary:#7A9FD4;--accent:#B8D4F0;--secondary:#4DC9A8;
+    --warning:#CDA849;--danger:#ED6F73;
+    --lightest:#182640;--light:#1E2E50;--medium:#6B7F9E;
+    --dark:#B8D4F0;--darkest:#D8E4F0;--full:#FFFFFF;
+    --highlight:#182640;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;transition:background .2s,color .2s}
+  .page{max-width:1200px;margin:0 auto;padding:48px 32px}
+  h1{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:500;color:var(--text-title);margin-bottom:8px}
+  h2{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--text-title);margin:48px 0 20px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+  h3{font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;color:var(--text-sub);text-transform:uppercase;letter-spacing:.06em;margin:24px 0 12px}
+  .subtitle{color:var(--text-sub);font-size:14px;margin-bottom:32px}
+  .theme-toggle{position:fixed;top:20px;right:24px;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:8px 16px;border-radius:9999px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;z-index:100;transition:all .15s}
+  .theme-toggle:hover{background:var(--lightest)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+  .swatch{border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+  .swatch__color{height:56px}
+  .swatch__info{padding:8px 10px;background:var(--surface)}
+  .swatch__name{font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px}
+  .swatch__token{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text-sub);margin-bottom:2px}
+  .swatch__hex{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub)}
+  .font-row{padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;display:flex;flex-direction:column;gap:6px}
+  .font-meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);margin-top:4px}
+  .radius-row{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-end;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:8px}
+  .radius-box{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .radius-demo{background:var(--primary);opacity:.8;width:64px;height:64px}
+  .radius-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);text-align:center;line-height:1.4}
+  .shadow-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+  .shadow-box{background:var(--surface);border-radius:10px;padding:24px 16px;text-align:center}
+  .shadow-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);margin-top:10px;line-height:1.5}
+  .btn-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding:24px;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+  .btn{font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;padding:8px 20px;border-radius:9999px;cursor:pointer;border:1px solid transparent;transition:transform 250ms cubic-bezier(.22,.61,.36,1),box-shadow 250ms cubic-bezier(.22,.61,.36,1),background-color 150ms ease-in-out}
+  .btn--primary{background:#2E4A8F;color:#fff;border-color:#2E4A8F}
+  .btn--primary:hover{background:#4168B8;border-color:#4168B8;transform:translateY(-2px);box-shadow:0 8px 24px rgba(65,104,184,.45),0 4px 8px rgba(65,104,184,.25)}
+  .btn--outline{background:transparent;color:var(--text);border-color:var(--border)}
+  .btn--outline:hover{background:rgba(46,74,143,.06);transform:translateY(-2px);box-shadow:0 4px 16px rgba(46,74,143,.15)}
+  .btn--success{background:#5CB198;color:#fff;border-color:#5CB198}
+  .btn--success:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(65,104,184,.45)}
+  .btn--danger{background:#ED6F73;color:#fff;border-color:#ED6F73}
+  .btn--danger:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(65,104,184,.45)}
+  .btn--warning{background:#CDA849;color:#fff;border-color:#CDA849}
+  .btn--disabled{background:#E4EAF2;color:#5A6D8A;border-color:transparent;opacity:.5;cursor:not-allowed}
+</style>
+</head>
+<body>
+<button class="theme-toggle" onclick="toggleTheme()">🌙 Dark</button>
+<div class="page">
+  <h1>OUI v9 Design Spec</h1>
+  <p class="subtitle">Agentic OSD Utility — all tokens, colors, typography, spacing, shadows, and components</p>
+
+  <!-- COLORS LIGHT -->
+  <h2>Colors — Light (v9-light)</h2>
+  <h3>Brand</h3>
+  <div class="grid">
+    <div class="swatch"><div class="swatch__color" style="background:#2E4A8F"></div><div class="swatch__info"><div class="swatch__name">Deep Blue</div><div class="swatch__token">$ouiColorPrimary</div><div class="swatch__hex">#2E4A8F</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#4168B8"></div><div class="swatch__info"><div class="swatch__name">Azure</div><div class="swatch__token">$ouiColorAccent</div><div class="swatch__hex">#4168B8</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#5CB198"></div><div class="swatch__info"><div class="swatch__name">Jade</div><div class="swatch__token">$ouiColorSecondary</div><div class="swatch__hex">#5CB198</div></div></div>
+  </div>
+  <h3>Status</h3>
+  <div class="grid">
+    <div class="swatch"><div class="swatch__color" style="background:#5CB198"></div><div class="swatch__info"><div class="swatch__name">Success</div><div class="swatch__token">$ouiColorSuccess</div><div class="swatch__hex">#5CB198</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#CDA849"></div><div class="swatch__info"><div class="swatch__name">Citrine</div><div class="swatch__token">$ouiColorWarning</div><div class="swatch__hex">#CDA849</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#ED6F73"></div><div class="swatch__info"><div class="swatch__name">Coral</div><div class="swatch__token">$ouiColorDanger</div><div class="swatch__hex">#ED6F73</div></div></div>
+  </div>
+  <h3>Neutral Scale</h3>
+  <div class="grid">
+    <div class="swatch"><div class="swatch__color" style="background:#FFFFFF;border-bottom:1px solid #D4DCE8"></div><div class="swatch__info"><div class="swatch__name">Empty Shade</div><div class="swatch__token">$ouiColorEmptyShade</div><div class="swatch__hex">#FFFFFF</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#E4EAF2"></div><div class="swatch__info"><div class="swatch__name">Lightest Shade</div><div class="swatch__token">$ouiColorLightestShade</div><div class="swatch__hex">#E4EAF2</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#D4DCE8"></div><div class="swatch__info"><div class="swatch__name">Light Shade</div><div class="swatch__token">$ouiColorLightShade</div><div class="swatch__hex">#D4DCE8</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#5A6D8A"></div><div class="swatch__info"><div class="swatch__name">Medium Shade</div><div class="swatch__token">$ouiColorMediumShade</div><div class="swatch__hex">#5A6D8A</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#1E2A4A"></div><div class="swatch__info"><div class="swatch__name">Dark Shade</div><div class="swatch__token">$ouiColorDarkShade</div><div class="swatch__hex">#1E2A4A</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#0E1525"></div><div class="swatch__info"><div class="swatch__name">Darkest Shade</div><div class="swatch__token">$ouiColorDarkestShade</div><div class="swatch__hex">#0E1525</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#060D1A"></div><div class="swatch__info"><div class="swatch__name">Full Shade</div><div class="swatch__token">$ouiColorFullShade</div><div class="swatch__hex">#060D1A</div></div></div>
+  </div>
+  <h3>Backgrounds</h3>
+  <div class="grid">
+    <div class="swatch"><div class="swatch__color" style="background:#F4F6FB"></div><div class="swatch__info"><div class="swatch__name">Opal (Page)</div><div class="swatch__token">$ouiPageBackgroundColor</div><div class="swatch__hex">#F4F6FB</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#EDF1F8"></div><div class="swatch__info"><div class="swatch__name">Highlight</div><div class="swatch__token">$ouiColorHighlight</div><div class="swatch__hex">#EDF1F8</div></div></div>
+  </div>
+
+  <!-- COLORS DARK -->
+  <h2>Colors — Dark (v9-dark)</h2>
+  <h3>Brand</h3>
+  <div class="grid">
+    <div class="swatch"><div class="swatch__color" style="background:#7A9FD4"></div><div class="swatch__info"><div class="swatch__name">Sky</div><div class="swatch__token">$ouiColorPrimary</div><div class="swatch__hex">#7A9FD4</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#B8D4F0"></div><div class="swatch__info"><div class="swatch__name">Ice</div><div class="swatch__token">$ouiColorAccent</div><div class="swatch__hex">#B8D4F0</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#4DC9A8"></div><div class="swatch__info"><div class="swatch__name">Jade</div><div class="swatch__token">$ouiColorSecondary</div><div class="swatch__hex">#4DC9A8</div></div></div>
+  </div>
+  <h3>Neutral Scale</h3>
+  <div class="grid">
+    <div class="swatch"><div class="swatch__color" style="background:#121C30"></div><div class="swatch__info"><div class="swatch__name">Empty Shade</div><div class="swatch__token">$ouiColorEmptyShade</div><div class="swatch__hex">#121C30</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#182640"></div><div class="swatch__info"><div class="swatch__name">Lightest Shade</div><div class="swatch__token">$ouiColorLightestShade</div><div class="swatch__hex">#182640</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#1E2E50"></div><div class="swatch__info"><div class="swatch__name">Light Shade</div><div class="swatch__token">$ouiColorLightShade</div><div class="swatch__hex">#1E2E50</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#6B7F9E"></div><div class="swatch__info"><div class="swatch__name">Medium Shade</div><div class="swatch__token">$ouiColorMediumShade</div><div class="swatch__hex">#6B7F9E</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#B8D4F0"></div><div class="swatch__info"><div class="swatch__name">Dark Shade</div><div class="swatch__token">$ouiColorDarkShade</div><div class="swatch__hex">#B8D4F0</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#D8E4F0"></div><div class="swatch__info"><div class="swatch__name">Darkest Shade</div><div class="swatch__token">$ouiColorDarkestShade</div><div class="swatch__hex">#D8E4F0</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#FFFFFF;border:1px solid #1E2E50"></div><div class="swatch__info"><div class="swatch__name">Full Shade</div><div class="swatch__token">$ouiColorFullShade</div><div class="swatch__hex">#FFFFFF</div></div></div>
+  </div>
+  <h3>Backgrounds &amp; Text</h3>
+  <div class="grid">
+    <div class="swatch"><div class="swatch__color" style="background:#060D1A"></div><div class="swatch__info"><div class="swatch__name">Obsidian (Page)</div><div class="swatch__token">$ouiPageBackgroundColor</div><div class="swatch__hex">#060D1A</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#182640"></div><div class="swatch__info"><div class="swatch__name">Highlight / Form BG</div><div class="swatch__token">$ouiColorHighlight</div><div class="swatch__hex">#182640</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#1E2E50"></div><div class="swatch__info"><div class="swatch__name">Border</div><div class="swatch__token">$ouiBorderColor</div><div class="swatch__hex">#1E2E50</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#D8E4F0"></div><div class="swatch__info"><div class="swatch__name">Text</div><div class="swatch__token">$ouiTextColor</div><div class="swatch__hex">#D8E4F0</div></div></div>
+    <div class="swatch"><div class="swatch__color" style="background:#FFFFFF;border:1px solid #1E2E50"></div><div class="swatch__info"><div class="swatch__name">Title</div><div class="swatch__token">$ouiTitleColor</div><div class="swatch__hex">#FFFFFF</div></div></div>
+  </div>
+
+  <!-- VIS COLORS -->
+  <h2>Visualization Colors</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px">
+    <div style="height:48px;border-radius:6px;background:#54B399;display:flex;align-items:flex-end;padding:4px 6px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.9);font-weight:600">Vis0 #54B399</span></div>
+    <div style="height:48px;border-radius:6px;background:#6092C0;display:flex;align-items:flex-end;padding:4px 6px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.9);font-weight:600">Vis1 #6092C0</span></div>
+    <div style="height:48px;border-radius:6px;background:#D36086;display:flex;align-items:flex-end;padding:4px 6px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.9);font-weight:600">Vis2 #D36086</span></div>
+    <div style="height:48px;border-radius:6px;background:#9170B8;display:flex;align-items:flex-end;padding:4px 6px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.9);font-weight:600">Vis3 #9170B8</span></div>
+    <div style="height:48px;border-radius:6px;background:#CA8EAE;display:flex;align-items:flex-end;padding:4px 6px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.9);font-weight:600">Vis4 #CA8EAE</span></div>
+    <div style="height:48px;border-radius:6px;background:#D6BF57;display:flex;align-items:flex-end;padding:4px 6px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.9);font-weight:600">Vis5 #D6BF57</span></div>
+    <div style="height:48px;border-radius:6px;background:#B9A888;display:flex;align-items:flex-end;padding:4px 6px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.9);font-weight:600">Vis6 #B9A888</span></div>
+    <div style="height:48px;border-radius:6px;background:#DA8B45;display:flex;align-items:flex-end;padding:4px 6px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.9);font-weight:600">Vis7 #DA8B45</span></div>
+    <div style="height:48px;border-radius:6px;background:#AA6556;display:flex;align-items:flex-end;padding:4px 6px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.9);font-weight:600">Vis8 #AA6556</span></div>
+    <div style="height:48px;border-radius:6px;background:#E7664C;display:flex;align-items:flex-end;padding:4px 6px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.9);font-weight:600">Vis9 #E7664C</span></div>
+    <div style="height:48px;border-radius:6px;background:#9C9DA0;display:flex;align-items:flex-end;padding:4px 6px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.9);font-weight:600">Vis10 #9C9DA0</span></div>
+    <div style="height:48px;border-radius:6px;background:#D74987;display:flex;align-items:flex-end;padding:4px 6px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.9);font-weight:600">Vis11 #D74987</span></div>
+    <div style="height:48px;border-radius:6px;background:#0D70CA;display:flex;align-items:flex-end;padding:4px 6px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.9);font-weight:600">Vis12 #0D70CA</span></div>
+    <div style="height:48px;border-radius:6px;background:#0C8967;display:flex;align-items:flex-end;padding:4px 6px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.9);font-weight:600">Vis13 #0C8967</span></div>
+    <div style="height:48px;border-radius:6px;background:#6E28C3;display:flex;align-items:flex-end;padding:4px 6px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.9);font-weight:600">Vis14 #6E28C3</span></div>
+    <div style="height:48px;border-radius:6px;background:#D76813;display:flex;align-items:flex-end;padding:4px 6px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:rgba(255,255,255,.9);font-weight:600">Vis15 #D76813</span></div>
+  </div>
+
+  <!-- TYPOGRAPHY -->
+  <h2>Typography</h2>
+  <h3>Font Families</h3>
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <div class="font-row">
+      <div style="font-family:'Outfit',sans-serif;font-size:20px;font-weight:500;color:var(--text-title)">Outfit — Body &amp; UI</div>
+      <div style="font-family:'Outfit',sans-serif;font-size:14px;color:var(--text)">The quick brown fox jumps over the lazy dog. 0123456789</div>
+      <div class="font-meta">$ouiFontFamily · weights: 300 400 500 600 700</div>
+    </div>
+    <div class="font-row">
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:500;color:var(--text-title)">Space Grotesk — Display &amp; Headings</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:14px;color:var(--text)">The quick brown fox jumps over the lazy dog. 0123456789</div>
+      <div class="font-meta">$ouiFontFamilyDisplay · weights: 300 400 500 600 700</div>
+    </div>
+    <div class="font-row">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--text-title)">JetBrains Mono — Code &amp; Tokens</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--primary)">const token = '#2E4A8F'; // $ouiColorPrimary</div>
+      <div class="font-meta">$ouiCodeFontFamily · weights: 400 700</div>
+    </div>
+  </div>
+  <h3>Type Scale</h3>
+  <div style="display:flex;flex-direction:column;gap:10px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:8px">
+    <div style="font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:500;color:var(--text-title)">28px Medium — h1 · $ouiFontSizeXXL</div>
+    <div style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:500;color:var(--text-title)">24px Medium — h2 · $ouiFontSizeXL</div>
+    <div style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:var(--text-title)">18px SemiBold — h3 · $ouiFontSizeL</div>
+    <div style="font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:600;color:var(--text-title)">16px SemiBold — h4 · $ouiFontSizeM</div>
+    <div style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;color:var(--text-title)">14px SemiBold — h5/h6 · $ouiFontSizeS</div>
+    <div style="font-size:14px;color:var(--text)">14px Regular — Body · $ouiFontSize · line-height 1.6</div>
+    <div style="font-size:12px;color:var(--text-sub)">12px Regular — Small · $ouiFontSizeXS · subdued</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--primary)">13px Mono — Code · $ouiCodeFontFamily</div>
+  </div>
+  <h3>Font Weights</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:13px;background:var(--surface);border-radius:8px;overflow:hidden;border:1px solid var(--border)">
+    <thead><tr style="background:var(--lightest)"><th style="text-align:left;padding:8px 12px;color:var(--text-sub);font-size:11px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)">Token</th><th style="text-align:left;padding:8px 12px;color:var(--text-sub);font-size:11px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)">Value</th><th style="text-align:left;padding:8px 12px;color:var(--text-sub);font-size:11px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)">Sample</th></tr></thead>
+    <tbody>
+      <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--lightest);padding:2px 5px;border-radius:3px;color:var(--primary)">$ouiFontWeightLight</code></td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-sub)">300</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:300;font-family:'Outfit',sans-serif;color:var(--text)">Light text sample</td></tr>
+      <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--lightest);padding:2px 5px;border-radius:3px;color:var(--primary)">$ouiFontWeightRegular</code></td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-sub)">400</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:400;font-family:'Outfit',sans-serif;color:var(--text)">Regular text sample</td></tr>
+      <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--lightest);padding:2px 5px;border-radius:3px;color:var(--primary)">$ouiFontWeightMedium</code></td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-sub)">500</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:500;font-family:'Outfit',sans-serif;color:var(--text)">Medium text sample</td></tr>
+      <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--lightest);padding:2px 5px;border-radius:3px;color:var(--primary)">$ouiFontWeightSemiBold</code></td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-sub)">600</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);font-weight:600;font-family:'Outfit',sans-serif;color:var(--text)">SemiBold text sample</td></tr>
+      <tr><td style="padding:8px 12px"><code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--lightest);padding:2px 5px;border-radius:3px;color:var(--primary)">$ouiFontWeightBold</code></td><td style="padding:8px 12px;color:var(--text-sub)">700</td><td style="padding:8px 12px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--text)">Bold text sample</td></tr>
+    </tbody>
+  </table>
+
+  <!-- BORDERS & RADIUS -->
+  <h2>Borders &amp; Border Radius</h2>
+  <h3>Radius Scale</h3>
+  <div class="radius-row">
+    <div class="radius-box"><div class="radius-demo" style="border-radius:4px"></div><div class="radius-label">4px<br>$ouiBorderRadiusSmall</div></div>
+    <div class="radius-box"><div class="radius-demo" style="border-radius:6px"></div><div class="radius-label">6px<br>$ouiBorderRadius</div></div>
+    <div class="radius-box"><div class="radius-demo" style="border-radius:10px"></div><div class="radius-label">10px<br>Panel override</div></div>
+    <div class="radius-box"><div class="radius-demo" style="border-radius:16px"></div><div class="radius-label">16px<br>$ouiBorderRadiusLarge</div></div>
+    <div class="radius-box"><div class="radius-demo" style="border-radius:9999px;width:80px;height:36px"></div><div class="radius-label">9999px<br>$ouiButtonBorderRadius<br>pill</div></div>
+  </div>
+  <h3>Nested Radius Rule</h3>
+  <div style="padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-sub);margin-top:8px">
+    Inner element radius = outer container radius − container padding.<br>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--primary)">Example: container 6px + padding 4px → tab border-radius 2px</span>
+  </div>
+  <h3>Border Tokens</h3>
+  <table style="width:100%;border-collapse:collapse;font-size:13px;background:var(--surface);border-radius:8px;overflow:hidden;border:1px solid var(--border);margin-top:8px">
+    <thead><tr style="background:var(--lightest)"><th style="text-align:left;padding:8px 12px;color:var(--text-sub);font-size:11px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)">Token</th><th style="text-align:left;padding:8px 12px;color:var(--text-sub);font-size:11px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)">Light</th><th style="text-align:left;padding:8px 12px;color:var(--text-sub);font-size:11px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)">Dark</th></tr></thead>
+    <tbody>
+      <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--lightest);padding:2px 5px;border-radius:3px;color:var(--primary)">$ouiBorderColor</code></td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-sub)"><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#D4DCE8;border:1px solid rgba(0,0,0,.1);vertical-align:middle;margin-right:6px"></span>#D4DCE8</td><td style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-sub)"><span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#1E2E50;border:1px solid rgba(0,0,0,.1);vertical-align:middle;margin-right:6px"></span>#1E2E50</td></tr>
+      <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--lightest);padding:2px 5px;border-radius:3px;color:var(--primary)">$ouiBorderWidthThin</code></td><td colspan="2" style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-sub)">1px</td></tr>
+      <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--lightest);padding:2px 5px;border-radius:3px;color:var(--primary)">$ouiBorderWidthThick</code></td><td colspan="2" style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-sub)">2px</td></tr>
+      <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--lightest);padding:2px 5px;border-radius:3px;color:var(--primary)">$ouiBorderRadius</code></td><td colspan="2" style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-sub)">6px</td></tr>
+      <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--lightest);padding:2px 5px;border-radius:3px;color:var(--primary)">$ouiBorderRadiusSmall</code></td><td colspan="2" style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-sub)">4px</td></tr>
+      <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--lightest);padding:2px 5px;border-radius:3px;color:var(--primary)">$ouiBorderRadiusLarge</code></td><td colspan="2" style="padding:8px 12px;border-bottom:1px solid var(--border);color:var(--text-sub)">16px</td></tr>
+      <tr><td style="padding:8px 12px"><code style="font-family:'JetBrains Mono',monospace;font-size:11px;background:var(--lightest);padding:2px 5px;border-radius:3px;color:var(--primary)">$ouiButtonBorderRadius</code></td><td colspan="2" style="padding:8px 12px;color:var(--text-sub)">9999px (pill)</td></tr>
+    </tbody>
+  </table>
+
+  <!-- SHADOWS -->
+  <h2>Shadows</h2>
+  <div class="shadow-grid">
+    <div class="shadow-box" style="box-shadow:0 1px 3px rgba(0,0,0,.08)"><div style="font-size:13px;font-weight:600;color:var(--text)">Shadow Base</div><div class="shadow-label">0 1px 3px rgba(0,0,0,.08)</div></div>
+    <div class="shadow-box" style="box-shadow:0 2px 8px rgba(0,0,0,.1)"><div style="font-size:13px;font-weight:600;color:var(--text)">Shadow 1</div><div class="shadow-label">0 2px 8px rgba(0,0,0,.1)</div></div>
+    <div class="shadow-box" style="box-shadow:0 4px 12px rgba(0,0,0,.12)"><div style="font-size:13px;font-weight:600;color:var(--text)">Shadow 2</div><div class="shadow-label">0 4px 12px rgba(0,0,0,.12)</div></div>
+    <div class="shadow-box" style="box-shadow:0 8px 24px rgba(0,0,0,.15)"><div style="font-size:13px;font-weight:600;color:var(--text)">Shadow 3</div><div class="shadow-label">0 8px 24px rgba(0,0,0,.15)</div></div>
+    <div class="shadow-box" style="box-shadow:0 8px 24px rgba(65,104,184,.45),0 4px 8px rgba(65,104,184,.25)"><div style="font-size:13px;font-weight:600;color:var(--text)">Button Glow</div><div class="shadow-label">Primary hover glow<br>0 8px 24px rgba(65,104,184,.45)</div></div>
+    <div class="shadow-box" style="box-shadow:0 4px 16px rgba(46,74,143,.15)"><div style="font-size:13px;font-weight:600;color:var(--text)">Outline Hover</div><div class="shadow-label">0 4px 16px rgba(46,74,143,.15)</div></div>
+  </div>
+  <h3>Dark Mode Shadows</h3>
+  <div style="padding:16px;background:#060D1A;border-radius:8px;display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px">
+    <div style="background:#121C30;border-radius:10px;padding:24px 16px;text-align:center;box-shadow:0 0 0 1px rgba(30,46,80,.5),0 2px 8px rgba(0,0,0,.4)"><div style="font-size:13px;font-weight:600;color:#D8E4F0">Shadow Base</div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#6B7F9E;margin-top:10px">rgba(30,46,80,.5) ring<br>+ 0 2px 8px rgba(0,0,0,.4)</div></div>
+    <div style="background:#121C30;border-radius:10px;padding:24px 16px;text-align:center;box-shadow:0 0 0 1px rgba(30,46,80,.5),0 8px 24px rgba(0,0,0,.45)"><div style="font-size:13px;font-weight:600;color:#D8E4F0">Shadow 3</div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#6B7F9E;margin-top:10px">rgba(30,46,80,.5) ring<br>+ 0 8px 24px rgba(0,0,0,.45)</div></div>
+    <div style="background:#121C30;border-radius:10px;padding:24px 16px;text-align:center;box-shadow:0 0 0 1px rgba(30,46,80,.5),0 24px 48px rgba(0,0,0,.5)"><div style="font-size:13px;font-weight:600;color:#D8E4F0">Shadow 5/6</div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#6B7F9E;margin-top:10px">rgba(30,46,80,.5) ring<br>+ 0 24px 48px rgba(0,0,0,.5)</div></div>
+  </div>
+
+  <!-- BUTTONS -->
+  <h2>Buttons</h2>
+  <div class="btn-row">
+    <button class="btn btn--primary">Primary Fill</button>
+    <button class="btn btn--outline">Outline</button>
+    <button class="btn btn--success">Success</button>
+    <button class="btn btn--danger">Danger</button>
+    <button class="btn btn--warning">Warning</button>
+    <button class="btn btn--disabled" disabled>Disabled</button>
+  </div>
+  <div style="margin-top:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text-sub);line-height:1.8">
+    border-radius: 9999px (pill)<br>
+    transition: transform 250ms cubic-bezier(.22,.61,.36,1), box-shadow 250ms, background-color 150ms<br>
+    hover: translateY(-2px) · active: translateY(0) scale(.98)<br>
+    filled hover glow: 0 8px 24px rgba(65,104,184,.45), 0 4px 8px rgba(65,104,184,.25)<br>
+    outline hover glow: 0 4px 16px rgba(46,74,143,.15)<br>
+    disabled: opacity .5, no transform, no shadow
+  </div>
+
+  <!-- TABS -->
+  <h2>Tabs (OuiTabs — v9 pill track)</h2>
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div>
+      <h3>Default</h3>
+      <div style="display:inline-flex;background:var(--lightest);border-radius:6px;padding:4px;gap:4px;border:1px solid var(--border)">
+        <button style="font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;padding:6px 16px;border-radius:2px;border:none;background:var(--surface);color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.1);cursor:pointer">Active Tab</button>
+        <button style="font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;padding:6px 16px;border-radius:2px;border:none;background:transparent;color:var(--text-sub);cursor:pointer">Inactive Tab</button>
+        <button style="font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;padding:6px 16px;border-radius:2px;border:none;background:transparent;color:var(--text-sub);cursor:pointer">Another Tab</button>
+      </div>
+      <div style="margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-sub)">container: border-radius 6px, padding 4px → tab radius 2px (6-4)</div>
+    </div>
+    <div>
+      <h3>Condensed</h3>
+      <div style="display:inline-flex;background:var(--lightest);border-radius:6px;padding:3px;gap:3px;border:1px solid var(--border)">
+        <button style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;padding:4px 12px;border-radius:3px;border:none;background:var(--surface);color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.06),0 1px 3px rgba(0,0,0,.1);cursor:pointer">Active</button>
+        <button style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;padding:4px 12px;border-radius:3px;border:none;background:transparent;color:var(--text-sub);cursor:pointer">Inactive</button>
+      </div>
+      <div style="margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-sub)">container: border-radius 6px, padding 3px → tab radius 3px (6-3)</div>
+    </div>
+  </div>
+
+  <!-- PANELS -->
+  <h2>Panels &amp; Cards</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
+    <div style="background:rgba(255,255,255,.92);border-radius:10px;padding:20px;border:1px solid var(--border)">
+      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px">Panel — Plain</div>
+      <div style="font-size:12px;color:var(--text-sub);font-family:'JetBrains Mono',monospace">rgba(255,255,255,.92)<br>border-radius: 10px</div>
+    </div>
+    <div style="background:rgba(255,255,255,.92);border-radius:10px;padding:20px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,.08)">
+      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px">Panel — Raised</div>
+      <div style="font-size:12px;color:var(--text-sub);font-family:'JetBrains Mono',monospace">+ box-shadow: 0 2px 8px rgba(0,0,0,.08)</div>
+    </div>
+    <div style="background:var(--lightest);border-radius:10px;padding:20px;border:1px solid var(--border)">
+      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px">Panel — Subdued</div>
+      <div style="font-size:12px;color:var(--text-sub);font-family:'JetBrains Mono',monospace">background: $ouiColorLightestShade</div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <h2>Navigation</h2>
+  <div style="display:flex;gap:24px;flex-wrap:wrap">
+    <div>
+      <h3>Collapsed Nav (48px)</h3>
+      <div style="display:flex;flex-direction:column;width:48px;background:rgba(255,255,255,.75);backdrop-filter:blur(12px);border-right:1px solid #D4DCE8;padding:12px 8px;gap:4px;border-radius:8px;min-height:200px">
+        <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:rgba(46,74,143,.1)">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="#2E4A8F"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+        </div>
+        <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:4px">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="#5A6D8A"><circle cx="8" cy="8" r="5" fill="none" stroke="#5A6D8A" stroke-width="1.5"/><line x1="8" y1="3" x2="8" y2="13" stroke="#5A6D8A" stroke-width="1.5"/><line x1="3" y1="8" x2="13" y2="8" stroke="#5A6D8A" stroke-width="1.5"/></svg>
+        </div>
+        <div style="width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:4px">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#5A6D8A" stroke-width="1.5"><rect x="2" y="3" width="12" height="10" rx="1"/><line x1="2" y1="6" x2="14" y2="6"/></svg>
+        </div>
+      </div>
+      <div style="margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub)">light: rgba(255,255,255,.75)<br>dark: rgba(14,21,37,.80)<br>backdrop-filter: blur(12px)</div>
+    </div>
+    <div>
+      <h3>Nav Item States</h3>
+      <div style="display:flex;flex-direction:column;gap:4px;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:8px;width:200px">
+        <div style="display:flex;align-items:center;gap:8px;height:32px;padding:0 8px;border-radius:4px;background:rgba(46,74,143,.1)">
+          <div style="width:16px;height:16px;background:var(--primary);border-radius:2px;opacity:.6"></div>
+          <span style="font-size:13px;color:var(--text);font-weight:500">Active item</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;height:32px;padding:0 8px;border-radius:4px">
+          <div style="width:16px;height:16px;background:var(--text-sub);border-radius:2px;opacity:.4"></div>
+          <span style="font-size:13px;color:var(--text-sub)">Default item</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;height:32px;padding:0 8px;border-radius:4px;background:rgba(14,21,37,.07)">
+          <div style="width:16px;height:16px;background:var(--text-sub);border-radius:2px;opacity:.4"></div>
+          <span style="font-size:13px;color:var(--text-sub)">Hover item</span>
+        </div>
+      </div>
+      <div style="margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub)">active: rgba($primary,.10)<br>hover: rgba($darkest,.07)<br>active+hover: rgba($primary,.15)</div>
+    </div>
+  </div>
+
+  <!-- SPACING -->
+  <h2>Spacing Scale</h2>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:8px">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div style="background:var(--primary);opacity:.7;width:4px;height:4px;border-radius:1px"></div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);text-align:center">4px<br>$ouiSizeXS</div></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div style="background:var(--primary);opacity:.7;width:8px;height:8px;border-radius:1px"></div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);text-align:center">8px<br>$ouiSizeS</div></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div style="background:var(--primary);opacity:.7;width:12px;height:12px;border-radius:1px"></div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);text-align:center">12px<br>$ouiSizeM</div></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div style="background:var(--primary);opacity:.7;width:16px;height:16px;border-radius:1px"></div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);text-align:center">16px<br>$ouiSize</div></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div style="background:var(--primary);opacity:.7;width:24px;height:24px;border-radius:1px"></div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);text-align:center">24px<br>$ouiSizeL</div></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div style="background:var(--primary);opacity:.7;width:32px;height:32px;border-radius:1px"></div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);text-align:center">32px<br>$ouiSizeXL</div></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div style="background:var(--primary);opacity:.7;width:40px;height:40px;border-radius:1px"></div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-sub);text-align:center">40px<br>$ouiSizeXXL</div></div>
+  </div>
+
+  <!-- COMPLETE TOKEN TABLE -->
+  <h2>Complete Token Reference</h2>
+  <table style="width:100%;border-collapse:collapse;font-size:12px;background:var(--surface);border-radius:8px;overflow:hidden;border:1px solid var(--border)">
+    <thead><tr style="background:var(--lightest)">
+      <th style="text-align:left;padding:8px 12px;color:var(--text-sub);font-size:11px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)">Token</th>
+      <th style="text-align:left;padding:8px 12px;color:var(--text-sub);font-size:11px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)">Light</th>
+      <th style="text-align:left;padding:8px 12px;color:var(--text-sub);font-size:11px;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border)">Dark</th>
+    </tr></thead>
+    <tbody id="tokenTableBody"></tbody>
+  </table>
+
+  <div style="height:64px"></div>
+</div>
+
+<script>
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.querySelector('.theme-toggle').textContent = isDark ? '🌙 Dark' : '☀ Light';
+}
+
+const tokens = [
+  ['$ouiColorPrimary','#2E4A8F','#7A9FD4'],
+  ['$ouiColorAccent','#4168B8','#B8D4F0'],
+  ['$ouiColorSecondary','#5CB198','#4DC9A8'],
+  ['$ouiColorSuccess','#5CB198','#4DC9A8'],
+  ['$ouiColorWarning','#CDA849','#CDA849'],
+  ['$ouiColorDanger','#ED6F73','#ED6F73'],
+  ['$ouiColorEmptyShade','#FFFFFF','#121C30'],
+  ['$ouiColorLightestShade','#E4EAF2','#182640'],
+  ['$ouiColorLightShade','#D4DCE8','#1E2E50'],
+  ['$ouiColorMediumShade','#5A6D8A','#6B7F9E'],
+  ['$ouiColorDarkShade','#1E2A4A','#B8D4F0'],
+  ['$ouiColorDarkestShade','#0E1525','#D8E4F0'],
+  ['$ouiColorFullShade','#060D1A','#FFFFFF'],
+  ['$ouiPageBackgroundColor','#F4F6FB','#060D1A'],
+  ['$ouiColorHighlight','#EDF1F8','#182640'],
+  ['$ouiBorderColor','#D4DCE8','#1E2E50'],
+  ['$ouiTextColor','#0E1525','#D8E4F0'],
+  ['$ouiTitleColor','#060D1A','#FFFFFF'],
+  ['$ouiTextSubduedColor','#5A6D8A','#6B7F9E'],
+  ['$ouiFormBackgroundColor','#FFFFFF','#182640'],
+  ['$ouiFontFamily','Outfit','Outfit'],
+  ['$ouiFontFamilyDisplay','Space Grotesk','Space Grotesk'],
+  ['$ouiCodeFontFamily','JetBrains Mono','JetBrains Mono'],
+  ['$ouiFontSize','14px','14px'],
+  ['$ouiBorderRadius','6px','6px'],
+  ['$ouiBorderRadiusSmall','4px','4px'],
+  ['$ouiBorderRadiusLarge','16px','16px'],
+  ['$ouiButtonBorderRadius','9999px','9999px'],
+];
+
+const tbody = document.getElementById('tokenTableBody');
+tokens.forEach(([token, light, dark], i) => {
+  const isColor = light.startsWith('#');
+  const dot = (hex) => isColor ? `<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:${hex};border:1px solid rgba(0,0,0,.15);vertical-align:middle;margin-right:6px"></span>` : '';
+  const border = i < tokens.length - 1 ? 'border-bottom:1px solid var(--border)' : '';
+  tbody.innerHTML += `<tr>
+    <td style="padding:7px 12px;${border};font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--primary)">${token}</td>
+    <td style="padding:7px 12px;${border};color:var(--text-sub)">${dot(light)}${light}</td>
+    <td style="padding:7px 12px;${border};color:var(--text-sub)">${dot(dark)}${dark}</td>
+  </tr>`;
+});
+</script>
+</body>
+</html>

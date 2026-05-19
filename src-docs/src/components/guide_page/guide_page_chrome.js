@@ -203,10 +203,15 @@ export class GuidePageChrome extends Component {
         return;
       }
 
+      // Check if any item in this section is currently selected
+      const hasSelectedItem = items.some(item => item.isSelected);
+
       sideNavSections.push({
         name: section.name,
         id: section.type,
         items,
+        // Force open if searching or if section contains selected item
+        forceOpen: !!(searchTerm || hasSelectedItem),
       });
     });
 
@@ -226,6 +231,7 @@ export class GuidePageChrome extends Component {
           isOpenOnMobile={this.state.isSideNavOpenOnMobile}
           items={sideNav}
           aria-label="OUI"
+          rootItemsCollapsible
         />
       );
     } else {

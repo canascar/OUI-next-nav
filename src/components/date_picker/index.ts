@@ -33,6 +33,11 @@ export * from './super_date_picker';
 export { OuiDatePicker, OuiDatePickerProps } from './date_picker';
 
 export {
+  OuiDatePickerUnified,
+  OuiDatePickerUnifiedProps,
+} from './oui_date_picker';
+
+export {
   OuiDatePickerRange,
   OuiDatePickerRangeProps,
 } from './date_picker_range';

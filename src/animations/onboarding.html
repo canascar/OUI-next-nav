@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenSearch onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root {
+--bg:       #F7F6F3;
+--surface:  #FFFFFF;
+--surface2: #F0EEE9;
+--border:   rgba(0,0,0,0.08);
+--border2:  rgba(0,0,0,0.14);
+--text:     #1A1917;
+--muted:    #6B6860;
+--hint:     #9E9B94;
+--blue-bg:  #EBF3FD;
+--blue:     #185FA5;
+--blue-mid: #378ADD;
+--blue-text:#0C447C;
+--green-bg: #EAF3DE;
+--green:    #3B6D11;
+--purple-bg:#EEEDFE;
+--purple:   #3C3489;
+--amber-bg: #FAEEDA;
+--amber:    #633806;
+--radius-sm:6px;
+--radius:   10px;
+--radius-lg:14px;
+--font: 'DM Sans', sans-serif;
+--mono: 'DM Mono', monospace;
+--shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+font-family: var(--font);
+background: var(--bg);
+min-height: 100vh;
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 2rem 1rem;
+}
+/* ── Shell ─────────────────────────────────────── */
+.shell {
+display: flex;
+width: 780px;
+height: 680px;
+background: var(--surface);
+border-radius: var(--radius-lg);
+border: 0.5px solid var(--border2);
+box-shadow: var(--shadow);
+overflow: hidden;
+}
+/* ── Chat pane ──────────────────────────────────── */
+.chat { flex: 1; display: flex; flex-direction: column; min-width: 0; border-right: 0.5px solid var(--border); }
+.chat-header {
+padding: 14px 18px;
+border-bottom: 0.5px solid var(--border);
+display: flex;
+align-items: center;
+gap: 10px;
+flex-shrink: 0;
+background: var(--surface);
+}
+.av {
+width: 30px; height: 30px;
+border-radius: 50%;
+background: var(--blue-bg);
+display: flex; align-items: center; justify-content: center;
+font-size: 11px; font-weight: 500; color: var(--blue-text);
+flex-shrink: 0;
+}
+.av.u { background: var(--green-bg); color: var(--green); }
+.chat-title { font-size: 13px; font-weight: 500; color: var(--text); }
+.chat-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.messages {
+flex: 1;
+overflow-y: auto;
+padding: 18px;
+display: flex;
+flex-direction: column;
+gap: 14px;
+scroll-behavior: smooth;
+}
+.messages::-webkit-scrollbar { width: 4px; }
+.messages::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+.msg { display: flex; gap: 8px; align-items: flex-start; }
+.msg.user { flex-direction: row-reverse; }
+.bubble {
+max-width: 87%;
+padding: 9px 13px;
+font-size: 13px;
+line-height: 1.58;
+color: var(--text);
+}
+.bubble.ai {
+background: var(--surface2);
+border-radius: 4px var(--radius) var(--radius) var(--radius);
+}
+.bubble.user {
+background: var(--blue-bg);
+color: var(--blue-text);
+border-radius: var(--radius) 4px var(--radius) var(--radius);
+}
+.bubble p { margin-bottom: 5px; }
+.bubble p:last-child { margin-bottom: 0; }
+.bubble strong { font-weight: 500; }
+.bubble em { font-style: italic; color: var(--muted); }
+/* chips */
+.chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
+.chip {
+font-size: 12px;
+padding: 5px 11px;
+border-radius: 20px;
+border: 0.5px solid var(--border2);
+color: var(--text);
+cursor: pointer;
+background: var(--surface);
+transition: background .12s, border-color .12s;
+font-family: var(--font);
+user-select: none;
+}
+.chip:hover { background: var(--surface2); border-color: var(--blue-mid); }
+.chip.sel { background: var(--blue-bg); border-color: #85B7EB; color: var(--blue-text); }
+.chip.purple { background: var(--purple-bg); border-color: #AFA9EC; color: var(--purple); }
+.chip:disabled, .chip.done { pointer-events: none; opacity: .5; }
+/* confirm card */
+.confirm-card {
+margin-top: 10px;
+border: 0.5px solid var(--border2);
+border-radius: var(--radius);
+overflow: hidden;
+}
+.cc-head {
+padding: 9px 13px;
+background: var(--surface2);
+border-bottom: 0.5px solid var(--border);
+font-size: 12px; font-weight: 500; color: var(--text);
+display: flex; align-items: center; gap: 6px;
+}
+.cc-rows { padding: 5px 0; }
+.cc-row {
+display: flex; justify-content: space-between;
+padding: 4px 13px; font-size: 12px;
+}
+.cc-row .k { color: var(--muted); }
+.cc-row .v { font-weight: 500; color: var(--text); text-align: right; max-width: 58%; font-size: 11px; }
+.cc-foot {
+padding: 9px 13px;
+border-top: 0.5px solid var(--border);
+display: flex; gap: 7px;
+}
+.btn-go {
+flex: 1; padding: 7px;
+font-size: 13px;
+background: var(--blue);
+color: #fff;
+border: none; border-radius: var(--radius-sm);
+cursor: pointer; font-weight: 500;
+font-family: var(--font);
+transition: opacity .15s;
+}
+.btn-go:hover { opacity: .88; }
+.btn-go:disabled { opacity: .45; cursor: default; }
+.btn-skip {
+padding: 7px 13px; font-size: 13px;
+border-radius: var(--radius-sm);
+cursor: pointer;
+font-family: var(--font);
+color: var(--muted);
+background: transparent;
+border: 0.5px solid var(--border2);
+transition: background .12s;
+}
+.btn-skip:hover { background: var(--surface2); }
+/* input row */
+.input-row {
+padding: 10px 13px;
+border-top: 0.5px solid var(--border);
+display: flex; gap: 8px; align-items: center;
+flex-shrink: 0;
+background: var(--surface);
+}
+.input-row input {
+flex: 1;
+font-size: 13px; font-family: var(--font);
+padding: 7px 11px;
+border-radius: var(--radius-sm);
+border: 0.5px solid var(--border2);
+background: var(--surface);
+color: var(--text);
+outline: none;
+transition: border-color .15s;
+}
+.input-row input:focus { border-color: var(--blue); }
+.send-btn {
+width: 32px; height: 32px;
+border-radius: var(--radius-sm);
+background: var(--blue);
+border: none; cursor: pointer;
+display: flex; align-items: center; justify-content: center;
+color: #fff; flex-shrink: 0;
+transition: opacity .15s;
+}
+.send-btn:hover { opacity: .85; }
+/* typing */
+.typing { display: flex; gap: 3px; align-items: center; padding: 2px 0; }
+.typing span {
+width: 5px; height: 5px; border-radius: 50%;
+background: var(--hint);
+animation: bl 1.2s infinite;
+}
+.typing span:nth-child(2) { animation-delay: .2s; }
+.typing span:nth-child(3) { animation-delay: .4s; }
+@keyframes bl { 0%,80%,100%{opacity:.2} 40%{opacity:1} }
+/* ── Task panel ─────────────────────────────────── */
+.panel { width: 215px; flex-shrink: 0; display: flex; flex-direction: column; background: var(--surface); }
+.ph {
+padding: 14px 13px 11px;
+border-bottom: 0.5px solid var(--border);
+flex-shrink: 0;
+}
+.ph-title {
+font-size: 12px; font-weight: 500; color: var(--text);
+display: flex; align-items: center; gap: 5px;
+}
+.ph-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.tscroll { flex: 1; overflow-y: auto; padding: 5px 0; }
+.tscroll::-webkit-scrollbar { width: 3px; }
+.tscroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+.tg { margin-bottom: 2px; }
+.tg-lbl {
+font-size: 10px; font-weight: 500; color: var(--hint);
+padding: 8px 13px 3px;
+text-transform: uppercase; letter-spacing: .06em;
+display: flex; align-items: center; gap: 5px;
+font-family: var(--mono);
+}
+.tg-lbl .ln { flex: 1; height: 0.5px; background: var(--border); }
+.trow { display: flex; gap: 7px; align-items: flex-start; padding: 4px 13px; }
+.trow.in { animation: tin .35s ease; }
+@keyframes tin { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:none} }
+.tl { display: flex; flex-direction: column; align-items: center; padding-top: 1px; }
+.tck {
+width: 14px; height: 14px; border-radius: 50%;
+border: 1.5px solid var(--border2);
+display: flex; align-items: center; justify-content: center;
+font-size: 8px; flex-shrink: 0;
+transition: all .25s;
+}
+.tck.done { background: var(--green); border-color: var(--green); color: #fff; }
+.tck.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+.tck.skip { background: var(--surface2); border-color: var(--border); }
+.tconn { width: 1px; height: 10px; background: var(--border); margin: 2px auto 0; }
+.tb { flex: 1; min-width: 0; }
+.tn { font-size: 11px; font-weight: 500; line-height: 1.3; color: var(--text); }
+.tn.dim { color: var(--muted); }
+.tbadge {
+display: inline-block; font-size: 9px;
+padding: 1px 5px; border-radius: 8px; margin-top: 2px;
+font-family: var(--mono);
+}
+.tbadge.new { background: var(--purple-bg); color: var(--purple); }
+.tbadge.active { background: var(--blue-bg); color: var(--blue-text); }
+.tbadge.skip { background: var(--surface2); color: var(--muted); }
+.tbadge.pulse { animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
+.pbar { height: 2px; background: var(--border); margin: 8px 13px 3px; border-radius: 1px; overflow: hidden; }
+.pfill { height: 100%; background: var(--blue); border-radius: 1px; transition: width .5s; }
+.plbl { font-size: 10px; color: var(--hint); padding: 0 13px 9px; text-align: right; font-family: var(--mono); }
+</style>
+</head>
+<body>
+<div class="shell">
+<!-- Chat -->
+<div class="chat">
+<div class="chat-header">
+<div class="av">OS</div>
+<div>
+<div class="chat-title">OpenSearch setup</div>
+<div class="chat-sub" id="chat-sub">Let's get your data flowing</div>
+</div>
+</div>
+<div class="messages" id="messages"></div>
+<div class="input-row">
+<input type="text" id="uinput" placeholder="Type a reply…" onkeydown="if(event.key==='Enter')userSend()">
+<button class="send-btn" onclick="userSend()" aria-label="Send">
+<i class="ti ti-arrow-up" style="font-size:14px"></i>
+</button>
+</div>
+</div>
+<!-- Panel -->
+<div class="panel">
+<div class="ph">
+<div class="ph-title"><i class="ti ti-list-check" aria-hidden="true" style="font-size:13px"></i> Setup plan</div>
+<div class="ph-sub" id="ph-sub">Waiting to start…</div>
+</div>
+<div class="tscroll" id="tscroll"></div>
+<div class="pbar"><div class="pfill" id="pfill" style="width:0%"></div></div>
+<div class="plbl" id="plbl">0 of 0 steps</div>
+</div>
+</div>
+<script>
+const GROUPS = {
+data:    { label:'1 · Data source', tasks:[{id:'dtype',   name:'Choose data type',       s:'pending'},{id:'sample',  name:'Connect sample data',    s:'pending'},]},
+collect: { label:'2 · Collector', tasks:[{id:'intent',  name:'Describe data intent',   s:'pending'},{id:'dest',    name:'Set destination',        s:'pending'},{id:'transform',name:'Configure transformer', s:'pending'},]},
+ingest:  { label:'3 · Ingestion', tasks:[{id:'collect', name:'Collecting live data',   s:'pending'},{id:'validate',name:'Validate schema',        s:'pending'},]},
+insights:{ label:'4 · Insights', tasks:[{id:'suggest', name:'Generate dashboards',    s:'pending'},{id:'queries', name:'Suggest starter queries',s:'pending'},]},
+migrate: { label:'5 · Migration', tasks:[{id:'artifacts',name:'Import Splunk artifacts',s:'pending'},]},
+};
+function findGroup(id){ for(const[k,g]of Object.entries(GROUPS)){if(g.tasks.find(t=>t.id===id))return k;} }
+function setTask(id,s,anim){ for(const g of Object.values(GROUPS)){const t=g.tasks.find(x=>x.id===id);if(t){t.s=s;t._anim=!!anim;}} }
+function showTask(id,s){ setTask(id,s,true); const g=GROUPS[findGroup(id)]; g.tasks.find(t=>t.id===id)._visible=true; renderPanel(); }
+function doneTask(id){ setTask(id,'done'); renderPanel(); }
+function skipTask(id){ setTask(id,'skipped'); GROUPS[findGroup(id)].tasks.find(t=>t.id===id)._visible=true; renderPanel(); }
+function renderPanel(){const ts=document.getElementById('tscroll'); ts.innerHTML='';let total=0,done=0;for(const[,g]of Object.entries(GROUPS)){if(g.tasks.every(t=>t.s==='pending'&&!t._visible)) continue;const wrap=document.createElement('div'); wrap.className='tg';wrap.innerHTML=`<div class="tg-lbl"><span>${g.label}</span><div class="ln"></div></div>`;g.tasks.forEach((t,i)=>{if(t.s==='pending'&&!t._visible) return;total++; if(t.s==='done'||t.s==='skipped') done++;const row=document.createElement('div');row.className='trow'+(t._anim?' in':''); t._anim=false;const isLast=i===g.tasks.length-1||g.tasks.slice(i+1).every(x=>x.s==='pending'&&!x._visible);let ck='tck',icon='';if(t.s==='done'){ck+=' done';icon='<i class="ti ti-check" style="font-size:8px"></i>';}else if(t.s==='active'||t.s==='collecting'){ck+=' active';icon='<i class="ti ti-point" style="font-size:8px"></i>';}else if(t.s==='skipped'){ck+=' skip';icon='<i class="ti ti-minus" style="font-size:8px"></i>';}const badge=t.s==='active'?'<span class="tbadge active">in progress</span>':t.s==='collecting'?'<span class="tbadge active pulse">collecting…</span>':t.s==='skipped'?'<span class="tbadge skip">skipped</span>':t._new?'<span class="tbadge new">+ added</span>':'';row.innerHTML=`<div class="tl"><div class="${ck}">${icon}</div>${!isLast?'<div class="tconn"></div>':''}</div><div class="tb"><div class="tn${t.s==='ready'?' dim':''}">${t.name}</div>${badge}</div>`;wrap.appendChild(row);});ts.appendChild(wrap);}const pct=total?Math.round(done/total*100):0;document.getElementById('pfill').style.width=pct+'%';document.getElementById('ph-sub').textContent=`${total} steps · ${done} done`;document.getElementById('plbl').textContent=`${done} of ${total} steps`;}
+const ms=document.getElementById('messages');
+function addBubble(role,html,extras){const div=document.createElement('div'); div.className='msg '+role;const av=document.createElement('div'); av.className='av'+(role==='user'?' u':''); av.textContent=role==='user'?'You':'OS';const bub=document.createElement('div'); bub.className='bubble '+role; bub.innerHTML=html;if(extras) extras(bub);div.appendChild(av); div.appendChild(bub);ms.appendChild(div); ms.scrollTop=ms.scrollHeight;return bub;}
+function addTyping(){const div=document.createElement('div'); div.className='msg ai'; div.id='typing';div.innerHTML=`<div class="av">OS</div><div class="bubble ai"><div class="typing"><span></span><span></span><span></span></div></div>`;ms.appendChild(div); ms.scrollTop=ms.scrollHeight;}
+function removeTyping(){ const t=document.getElementById('typing'); if(t) t.remove(); }
+function chips(items,cb){return bub=>{const row=document.createElement('div'); row.className='chips';items.forEach(({label,cls,val})=>{const c=document.createElement('span'); c.className='chip'+(cls?' '+cls:''); c.textContent=label;c.onclick=()=>{row.querySelectorAll('.chip').forEach(x=>x.classList.add('done'));c.classList.add('sel'); c.classList.remove('done');if(cb) cb(val||label,row);};row.appendChild(c);});bub.appendChild(row);};}
+function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
+let waitingForUser=false,userResolve=null;
+function waitForUser(){ waitingForUser=true; return new Promise(r=>{userResolve=r;}); }
+function userSend(){const inp=document.getElementById('uinput'); const val=inp.value.trim(); if(!val) return;inp.value='';if(waitingForUser){waitingForUser=false;addBubble('user',`<p>${val}</p>`);if(userResolve){userResolve(val);userResolve=null;}}}
+
+async function run(){
+await wait(1000);addTyping(); await wait(2200); removeTyping();
+addBubble('ai',`<p>Welcome! Let's get your data into OpenSearch.</p><p>First — what kind of data do you want to work with?</p>`,chips([{label:'Application logs',val:'logs'},{label:'Metrics / traces',val:'metrics'},{label:'Security events',val:'security'},{label:'Upload sample data',val:'sample'},],async(val)=>{showTask('dtype','active');await wait(300);addBubble('user',`<p>${val}</p>`);await wait(400); doneTask('dtype');if(val==='Upload sample data'||val==='sample'){ showTask('sample','active'); step2_sample(); }else { skipTask('sample'); step2_collector(val); }}));showTask('dtype','ready');}
+
+async function step2_sample(){addTyping(); await wait(2200); removeTyping();addBubble('ai',`<p>Great — I'll load a sample log dataset so you can explore right away.</p>`);await wait(1400); doneTask('sample');step2_collector('application logs (sample)');}
+
+async function step2_collector(dtype){addTyping(); await wait(2400); removeTyping();showTask('intent','active');addBubble('ai',`<p>Nice. Now let's set up your collector for <strong>${dtype}</strong>.</p><p>What are you trying to understand from this data? This helps me figure out the right transformer and field mappings.</p>`,chips([{label:'Debug errors & exceptions',val:'errors'},{label:'Monitor latency & performance',val:'latency'},{label:'Track user behaviour',val:'behaviour'},{label:'Detect security anomalies',val:'security'},],async(val)=>{addBubble('user',`<p>${val}</p>`);doneTask('intent'); await wait(400);step2_destination(dtype,val);}));}
+
+async function step2_destination(dtype,intent){addTyping(); await wait(2200); removeTyping();showTask('dest','active');addBubble('ai',`<p>Got it — <em>${intent}</em>. Where is this data coming from?</p>`,chips([{label:'CloudWatch Logs',val:'cloudwatch'},{label:'Kinesis Data Streams',val:'kinesis'},{label:'S3 bucket',val:'s3'},{label:'Direct API / SDK',val:'api'},{label:'Fluent Bit / agent',val:'fluentbit'},],async(val)=>{addBubble('user',`<p>${val}</p>`);doneTask('dest'); await wait(400);step2_transform(dtype,intent,val);}));}
+
+async function step2_transform(dtype,intent,source){addTyping(); await wait(2400); removeTyping();showTask('transform','active');const needsSemantic=intent==='errors'||intent==='security'||intent==='Detect security anomalies'||intent==='Debug errors & exceptions';addBubble('ai',`<p>I'll pull from <strong>${source}</strong> and map the fields automatically.</p><p>One option: I can enrich your logs with <strong>semantic embeddings</strong> — this lets you search by meaning, not just keywords. Useful for error messages and anomaly detection.</p>`,chips([{label:'Yes, enable semantic search',cls:needsSemantic?'purple':'',val:'semantic'},{label:'No, keyword search is fine',val:'keyword'},],async(val)=>{addBubble('user',`<p>${val}</p>`);doneTask('transform'); await wait(400);step3_collect(dtype,source,val==='semantic');}));}
+
+async function step3_collect(dtype,source,semantic){addTyping(); await wait(2000); removeTyping();showTask('collect','collecting');document.getElementById('chat-sub').textContent='Collecting data…';addBubble('ai',`<p>Collector is live. Data is flowing from <strong>${source}</strong>${semantic?' with semantic embeddings enabled':''}.</p><p>I'll validate the schema once I have enough events…</p>`);await wait(4000); doneTask('collect');showTask('validate','active');addTyping(); await wait(2000); removeTyping();addBubble('ai',`<p>Schema looks clean — 14 fields mapped, 0 errors. Timestamps normalised to ISO 8601.</p>`);await wait(600); doneTask('validate');step4_insights(dtype,semantic);}
+
+async function step4_insights(dtype,semantic){addTyping(); await wait(2400); removeTyping();document.getElementById('chat-sub').textContent='Generating insights…';showTask('suggest','active'); showTask('queries','active');addBubble('ai',`<p>Data is flowing. I've generated a starter dashboard and some queries to help you validate what you're seeing:</p>`,bub=>{const card=document.createElement('div'); card.className='confirm-card';const rows=[['Dashboard','Error rate over time + top exceptions'],['Dashboard','P95 / P99 latency by service'],['Query','Last 100 errors with stack trace'],['Query',semantic?'Semantic: "authentication failed"':'Top log levels by hour'],];card.innerHTML=`<div class="cc-head"><i class="ti ti-chart-bar" aria-hidden="true" style="font-size:13px"></i> Suggested for you</div><div class="cc-rows">${rows.map(([k,v])=>`<div class="cc-row"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('')}</div><div class="cc-foot"><button class="btn-go" id="trust-btn" onclick="confirmTrust()"><i class="ti ti-check" style="font-size:12px;vertical-align:-1px;margin-right:3px"></i>Looks good — I trust the data</button></div>`;bub.appendChild(card);});await wait(500); doneTask('suggest'); doneTask('queries');}
+
+async function confirmTrust(){const btn=document.getElementById('trust-btn');btn.disabled=true; btn.textContent='Confirmed ✓';addBubble('user',`<p>Looks good — I trust the data.</p>`);await wait(700); step5_migrate();}
+
+async function step5_migrate(){addTyping(); await wait(2600); removeTyping();showTask('artifacts','active');addBubble('ai',`<p>Your OpenSearch setup is working. One last optional step — if you have existing Splunk saved searches, dashboards, or alerts, I can import them.</p>`,chips([{label:'Yes, import from Splunk',val:'import'},{label:'Skip for now',val:'skip'},],async(val)=>{addBubble('user',`<p>${val}</p>`);if(val==='Skip for now'||val==='skip'){skipTask('artifacts');addTyping(); await wait(2000); removeTyping();addBubble('ai',`<p>No problem — you can import artifacts any time from Settings.</p><p>You're all set. OpenSearch is live, data is flowing, and your first dashboards are ready. Welcome aboard.</p>`);} else {doneTask('artifacts');addTyping(); await wait(2000); removeTyping();addBubble('ai',`<p>Importing your Splunk artifacts now. I'll flag anything that needs manual review.</p><p>You're all set. OpenSearch is live, data is flowing, and your first dashboards are ready.</p>`);}document.getElementById('chat-sub').textContent='Setup complete';}));}
+
+run();
+</script>
+</body>
+</html>

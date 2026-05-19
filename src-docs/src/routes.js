@@ -49,6 +49,8 @@ import { BeaconExample } from './views/beacon/beacon_example';
 
 import { BottomBarExample } from './views/bottom_bar/bottom_bar_example';
 
+import { BrandGradientExample } from './views/brand_gradient/brand_gradient_example';
+
 import { BreadcrumbsExample } from './views/breadcrumbs/breadcrumbs_example';
 
 import { ButtonExample } from './views/button/button_example';
@@ -137,6 +139,8 @@ import { InnerTextExample } from './views/inner_text/inner_text_example';
 
 import { KeyPadMenuExample } from './views/key_pad_menu/key_pad_menu_example';
 
+import { LeftNavExample } from './views/left_nav/left_nav_example';
+
 import { LinkExample } from './views/link/link_example';
 
 import { ListGroupExample } from './views/list_group/list_group_example';
@@ -203,6 +207,8 @@ import { SuggestExample } from './views/suggest/suggest_example';
 
 import { SuperDatePickerExample } from './views/super_date_picker/super_date_picker_example';
 
+import { DatePickerUnifiedExample } from './views/date_picker/date_picker_unified_example';
+
 import { TableExample } from './views/tables/tables_example';
 
 import { TableInMemoryExample } from './views/tables/tables_in_memory_example';
@@ -213,6 +219,10 @@ import { TextDiffExample } from './views/text_diff/text_diff_example';
 
 import { TextExample } from './views/text/text_example';
 
+import { ThreadInputExample } from './views/thread_input/thread_input_example';
+
+import { ThreadListExample } from './views/thread_list/thread_list_example';
+
 import { TitleExample } from './views/title/title_example';
 
 import { ToastExample } from './views/toast/toast_example';
@@ -220,6 +230,8 @@ import { ToastExample } from './views/toast/toast_example';
 import { ToolTipExample } from './views/tool_tip/tool_tip_example';
 
 import { TourExample } from './views/tour/tour_example';
+
+import { VisualizationCardExample } from './views/visualization_card/visualization_card_example';
 
 import { WindowEventExample } from './views/window_event/window_event_example';
 
@@ -357,6 +369,7 @@ const navigation = [
       ControlBarExample,
       FacetExample,
       KeyPadMenuExample,
+      LeftNavExample,
       LinkExample,
       PaginationExample,
       TreeViewExample,
@@ -387,6 +400,7 @@ const navigation = [
       AspectRatioExample,
       AvatarExample,
       BadgeExample,
+      BrandGradientExample,
       CallOutExample,
       CardExample,
       CommentListExample,
@@ -403,10 +417,12 @@ const navigation = [
       SchemaExample,
       StatExample,
       TextExample,
+      ThreadListExample,
       TitleExample,
       ToastExample,
       ToolTipExample,
       TourExample,
+      VisualizationCardExample,
     ].map((example) => createExample(example)),
   },
   {
@@ -427,6 +443,8 @@ const navigation = [
       SelectableExample,
       SuggestExample,
       SuperDatePickerExample,
+      DatePickerUnifiedExample,
+      ThreadInputExample,
     ].map((example) => createExample(example)),
   },
   {

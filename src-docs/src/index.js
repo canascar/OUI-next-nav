@@ -35,7 +35,9 @@ import {
   SamplePagesView,
   SessionPagesView,
 } from './views/sample_pages/sample_pages_view';
+import { LoginPage } from './views/sample_pages/login_page';
 import { OnboardingPage } from './views/sample_pages/onboarding_page';
+import { OnboardingWizardPage } from './views/sample_pages/onboarding_wizard_page';
 
 registerTheme('light', [themeLight]);
 registerTheme('dark', [themeDark]);
@@ -59,7 +61,7 @@ const routes = [
   {
     path: '/',
     component: HomeView,
-    name: 'OpenSearch UI',
+    name: 'OpenSearch AUI',
   },
   ...childRoutes,
 ];
@@ -70,6 +72,26 @@ render(
       <Router history={history}>
         <ScrollToHash />
         <Switch>
+          <Route
+            path="/onboarding-wizard"
+            render={() => (
+              <LinkWrapper>
+                <OnboardingWizardPage />
+              </LinkWrapper>
+            )}
+          />
+          <Route
+            path="/login"
+            render={() => (
+              <LinkWrapper>
+                <LoginPage
+                  onLogin={() => {
+                    history.push('/sample-pages');
+                  }}
+                />
+              </LinkWrapper>
+            )}
+          />
           <Route
             path="/onboarding"
             render={() => (
