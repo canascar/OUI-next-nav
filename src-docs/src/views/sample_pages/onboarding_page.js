@@ -20,6 +20,7 @@ import {
   OuiFlexItem,
   OuiIcon,
   OuiLoadingSpinner,
+  OuiStat,
   OuiTab,
   OuiTabs,
   OuiText,
@@ -95,7 +96,6 @@ const UserMessage = ({ content }) => (
 // Link preview attachment card (Tool UI style)
 const LinkPreviewAttachment = ({
   href,
-  rel = 'noopener noreferrer',
   title,
   description,
   onAddToCanvas,
@@ -128,7 +128,7 @@ const LinkPreviewAttachment = ({
         <a
           href={href}
           target="_blank"
-          rel={rel}
+          rel="noopener noreferrer"
           className="threadPage__attachment threadPage__attachment--linkPreview">
           <div className="threadPage__linkPreviewBody">
             <OuiText size="xs">
@@ -434,10 +434,10 @@ spec:
     ],
   },
   {
-    // Step 3: User says "Start use" — navigate to sample-pages
+    // Step 3: User says "Start use" — navigate to session-pages
     tasks: null,
     responses: [],
-    navigate: '/sample-pages',
+    navigate: '/session-pages',
   },
 ];
 
@@ -495,8 +495,7 @@ export const OnboardingPage = () => {
 
   // Clean up timers on unmount
   useEffect(() => {
-    const timers = streamTimers.current;
-    return () => timers.forEach(clearTimeout);
+    return () => streamTimers.current.forEach(clearTimeout);
   }, []);
 
   // Auto-scroll to bottom when messages change
@@ -979,7 +978,6 @@ export const OnboardingPage = () => {
               }`}
               style={isCanvasOpen ? { width: canvasWidth } : undefined}>
               <div className="threadPage__canvasFlyoutInner">
-                {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
                 <div
                   className="threadPage__canvasResizeHandle"
                   onMouseDown={handleDragStart}

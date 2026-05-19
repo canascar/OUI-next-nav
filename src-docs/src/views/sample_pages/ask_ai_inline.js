@@ -22,8 +22,16 @@ import {
 
 // Related threads shown per page context (randomly picked 1-3)
 const RELATED_THREADS = [
-  { key: 'latency-spike', title: 'Latency spike investigation', subtitle: 'Use for investigation demo · 2 hours ago' },
-  { key: 'checkout-error', title: 'Checkout error rate alert', subtitle: 'Placeholder only · 5 hours ago' },
+  {
+    key: 'latency-spike',
+    title: 'Latency spike investigation',
+    subtitle: 'Use for investigation demo · 2 hours ago',
+  },
+  {
+    key: 'checkout-error',
+    title: 'Checkout error rate alert',
+    subtitle: 'Placeholder only · 5 hours ago',
+  },
 ];
 
 // Mock AI responses cycled through on each prompt
@@ -182,10 +190,7 @@ export const AskAiInline = ({
   // Click outside to dismiss
   const handleClickOutside = useCallback(
     (e) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target)
-      ) {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
         onClose();
       }
     },
@@ -285,7 +290,7 @@ export const AskAiInline = ({
                     size="xs"
                     onClick={() => {
                       onContinueAsThread(
-                        conversation.prompt || 'What\'s causing these errors?',
+                        conversation.prompt || "What's causing these errors?",
                         conversation.response
                       );
                       onClose();
@@ -300,7 +305,10 @@ export const AskAiInline = ({
       )}
 
       {/* Input field */}
-      <div className={`askAiInline__input${isClosing ? ' askAiInline__input--closing' : ''}`}>
+      <div
+        className={`askAiInline__input${
+          isClosing ? ' askAiInline__input--closing' : ''
+        }`}>
         <div className="askAiInline__inputWrapper">
           <OuiPopover
             button={

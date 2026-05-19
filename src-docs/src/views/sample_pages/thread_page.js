@@ -98,7 +98,7 @@ const THREADS = {
       {
         role: 'assistant',
         content:
-          '**Hypothesis 2: Connection pool exhaustion**\n\nThe payment service\'s outbound connection pool is at 98% utilization. Requests are queuing rather than failing fast, which inflates P99 without raising error rates. This would explain why error rates look normal while latency is spiking.',
+          "**Hypothesis 2: Connection pool exhaustion**\n\nThe payment service's outbound connection pool is at 98% utilization. Requests are queuing rather than failing fast, which inflates P99 without raising error rates. This would explain why error rates look normal while latency is spiking.",
         attachment: {
           type: 'link-preview',
           title: 'Payment service connection pool metrics',
@@ -178,8 +178,7 @@ echo "Done. Monitoring P99 latency for recovery..."`,
       {
         role: 'user',
         author: 'You',
-        content:
-          'I see errors in the logs for payments-db. What\'s going on?',
+        content: "I see errors in the logs for payments-db. What's going on?",
       },
       {
         role: 'assistant',
@@ -214,12 +213,12 @@ echo "Done. Monitoring P99 latency for recovery..."`,
       {
         role: 'user',
         author: 'Emily Zhang',
-        content: 'What about the route configuration? Show me the current setup.',
+        content:
+          'What about the route configuration? Show me the current setup.',
       },
       {
         role: 'assistant',
-        content:
-          'Here is the active route configuration for the API gateway:',
+        content: 'Here is the active route configuration for the API gateway:',
         attachment: {
           type: 'code-block',
           title: 'gateway-routes.yaml',
@@ -246,8 +245,7 @@ echo "Done. Monitoring P99 latency for recovery..."`,
       },
       {
         role: 'assistant',
-        content:
-          'Here is the traffic breakdown by route over the last hour:',
+        content: 'Here is the traffic breakdown by route over the last hour:',
         attachment: {
           type: 'chart',
           title: 'Traffic by Route (last 1h)',
@@ -267,8 +265,7 @@ echo "Done. Monitoring P99 latency for recovery..."`,
       },
       {
         role: 'assistant',
-        content:
-          'I found several rate limiting events in the last 24 hours:',
+        content: 'I found several rate limiting events in the last 24 hours:',
         attachment: {
           type: 'data-table',
           title: 'Rate Limit Events (last 24h)',
@@ -305,7 +302,8 @@ echo "Done. Monitoring P99 latency for recovery..."`,
       {
         role: 'user',
         author: 'Carlos Rivera',
-        content: 'We need to investigate the database replication lag. What do you see?',
+        content:
+          'We need to investigate the database replication lag. What do you see?',
       },
       {
         role: 'assistant',
@@ -357,7 +355,12 @@ echo "Done. Monitoring P99 latency for recovery..."`,
         attachment: {
           type: 'data-table',
           title: 'Top Write Queries (last 1h)',
-          columns: ['Query Pattern', 'Calls/min', 'Avg Duration', 'Rows Affected'],
+          columns: [
+            'Query Pattern',
+            'Calls/min',
+            'Avg Duration',
+            'Rows Affected',
+          ],
           rows: [
             ['INSERT INTO order_events', '2,340', '4.2ms', '2,340'],
             ['UPDATE inventory SET stock=', '1,890', '12.8ms', '3,780'],
@@ -416,7 +419,8 @@ primary_conninfo = 'host=primary port=5432 user=replicator'`,
       {
         role: 'user',
         author: 'Aisha Patel',
-        content: 'The CI/CD pipeline has been failing intermittently. What is going on?',
+        content:
+          'The CI/CD pipeline has been failing intermittently. What is going on?',
       },
       {
         role: 'assistant',
@@ -440,8 +444,7 @@ primary_conninfo = 'host=primary port=5432 user=replicator'`,
       },
       {
         role: 'assistant',
-        content:
-          'Here is the failure count by pipeline stage:',
+        content: 'Here is the failure count by pipeline stage:',
         attachment: {
           type: 'chart',
           title: 'Failures by Stage (48h)',
@@ -461,8 +464,7 @@ primary_conninfo = 'host=primary port=5432 user=replicator'`,
       },
       {
         role: 'assistant',
-        content:
-          'These are the most frequently failing tests across all runs:',
+        content: 'These are the most frequently failing tests across all runs:',
         attachment: {
           type: 'data-table',
           title: 'Flaky Test Report',
@@ -478,7 +480,8 @@ primary_conninfo = 'host=primary port=5432 user=replicator'`,
       {
         role: 'user',
         author: 'Aisha Patel',
-        content: 'What does the pipeline config look like for the integration stage?',
+        content:
+          'What does the pipeline config look like for the integration stage?',
       },
       {
         role: 'assistant',
@@ -616,9 +619,7 @@ const ViewAsPageButton = ({ onClick }) => (
       View
     </button>
     <span className="threadPage__addToCanvasDivider" />
-    <button
-      type="button"
-      className="threadPage__addToCanvasBtn">
+    <button type="button" className="threadPage__addToCanvasBtn">
       Add as context
     </button>
   </div>
@@ -626,15 +627,19 @@ const ViewAsPageButton = ({ onClick }) => (
 
 // Floating "Save as object" button for non-link-preview attachments
 const SaveAsObjectButton = () => (
-  <button
-    type="button"
-    className="threadPage__saveAsObject">
+  <button type="button" className="threadPage__saveAsObject">
     Save as object
   </button>
 );
 
 // Attachment card: link preview (Tool UI style — image + title + description + URL)
-const LinkPreviewAttachment = ({ href, title, description, image, onViewAsPage }) => {
+const LinkPreviewAttachment = ({
+  href,
+  title,
+  description,
+  image,
+  onViewAsPage,
+}) => {
   return (
     <div className="threadPage__attachmentWrap">
       <ViewAsPageButton onClick={onViewAsPage} />
@@ -675,7 +680,11 @@ const StatsDisplayAttachment = ({ title, stats }) => {
             <strong>{title}</strong>
           </OuiText>
         )}
-        <OuiFlexGroup gutterSize="l" wrap responsive={false} className="threadPage__statsGrid">
+        <OuiFlexGroup
+          gutterSize="l"
+          wrap
+          responsive={false}
+          className="threadPage__statsGrid">
           {stats.map((stat, i) => (
             <OuiFlexItem key={i} grow={false}>
               <OuiStat
@@ -740,7 +749,11 @@ const CodeBlockAttachment = ({ title, language, code }) => {
             <strong>{title}</strong>
           </OuiText>
         )}
-        <OuiCodeBlock language={language} fontSize="s" paddingSize="s" isCopyable>
+        <OuiCodeBlock
+          language={language}
+          fontSize="s"
+          paddingSize="s"
+          isCopyable>
           {code}
         </OuiCodeBlock>
       </div>
@@ -802,13 +815,7 @@ const renderSingleAttachment = (att, idx, onViewAsPage) => {
     );
   }
   if (att.type === 'chart') {
-    return (
-      <ChartAttachment
-        key={idx}
-        title={att.title}
-        data={att.data}
-      />
-    );
+    return <ChartAttachment key={idx} title={att.title} data={att.data} />;
   }
   if (att.type === 'data-table') {
     return (
@@ -822,11 +829,7 @@ const renderSingleAttachment = (att, idx, onViewAsPage) => {
   }
   if (att.type === 'stats-display') {
     return (
-      <StatsDisplayAttachment
-        key={idx}
-        title={att.title}
-        stats={att.stats}
-      />
+      <StatsDisplayAttachment key={idx} title={att.title} stats={att.stats} />
     );
   }
   return null;
@@ -845,7 +848,10 @@ const AssistantMessage = ({
     <div className="threadPage__message threadPage__message--assistant">
       <div className="threadPage__bubble threadPage__bubble--assistant">
         {content && <OuiText size="s">{parseContent(content)}</OuiText>}
-        {!streaming && allAttachments.map((att, idx) => renderSingleAttachment(att, idx, onViewAsPage))}
+        {!streaming &&
+          allAttachments.map((att, idx) =>
+            renderSingleAttachment(att, idx, onViewAsPage)
+          )}
         {!streaming && (
           <div className="threadPage__feedback">
             <OuiButtonIcon
@@ -870,26 +876,51 @@ const AssistantMessage = ({
 // Mock task pairs for each response
 const MOCK_TASKS = [
   [
-    { label: 'Searching service logs', description: 'Querying last 30 minutes of structured logs' },
-    { label: 'Analyzing error patterns', description: 'Correlating error codes with service dependencies' },
+    {
+      label: 'Searching service logs',
+      description: 'Querying last 30 minutes of structured logs',
+    },
+    {
+      label: 'Analyzing error patterns',
+      description: 'Correlating error codes with service dependencies',
+    },
   ],
   [
-    { label: 'Querying connection metrics', description: 'Fetching pool utilization and acquire wait times' },
-    { label: 'Evaluating pool utilization', description: 'Comparing current usage against configured limits' },
+    {
+      label: 'Querying connection metrics',
+      description: 'Fetching pool utilization and acquire wait times',
+    },
+    {
+      label: 'Evaluating pool utilization',
+      description: 'Comparing current usage against configured limits',
+    },
   ],
   [
-    { label: 'Correlating traffic data', description: 'Matching latency spikes with request volume changes' },
-    { label: 'Checking cache performance', description: 'Analyzing hit ratios and eviction rates' },
+    {
+      label: 'Correlating traffic data',
+      description: 'Matching latency spikes with request volume changes',
+    },
+    {
+      label: 'Checking cache performance',
+      description: 'Analyzing hit ratios and eviction rates',
+    },
   ],
   [
-    { label: 'Fetching service health', description: 'Polling health endpoints across all instances' },
-    { label: 'Comparing baseline metrics', description: 'Diffing current values against 7-day averages' },
+    {
+      label: 'Fetching service health',
+      description: 'Polling health endpoints across all instances',
+    },
+    {
+      label: 'Comparing baseline metrics',
+      description: 'Diffing current values against 7-day averages',
+    },
   ],
 ];
 
 // Progress Tracker (Tool UI style — shows task steps with status indicators)
 const TaskListMessage = ({ tasks, statuses, collapsed, onToggleCollapse }) => {
-  const allDone = statuses.length >= tasks.length && statuses.every((s) => s === 'done');
+  const allDone =
+    statuses.length >= tasks.length && statuses.every((s) => s === 'done');
   const steps = tasks.map((task, i) => ({
     id: `step-${i}`,
     label: typeof task === 'string' ? task : task.label,
@@ -922,9 +953,24 @@ const TaskListMessage = ({ tasks, statuses, collapsed, onToggleCollapse }) => {
         tabIndex={0}>
         <div className="progressTracker__toggleHeader">
           <span className="progressTracker__toggleIcon">
-            <OuiIcon type="checkInCircleEmpty" size="m" color="success" className="progressTracker__toggleCheck" />
-            <OuiIcon type="arrowDown" size="s" color="subdued" className="progressTracker__toggleArrowDown" />
-            <OuiIcon type="arrowUp" size="s" color="subdued" className="progressTracker__toggleArrowUp" />
+            <OuiIcon
+              type="checkInCircleEmpty"
+              size="m"
+              color="success"
+              className="progressTracker__toggleCheck"
+            />
+            <OuiIcon
+              type="arrowDown"
+              size="s"
+              color="subdued"
+              className="progressTracker__toggleArrowDown"
+            />
+            <OuiIcon
+              type="arrowUp"
+              size="s"
+              color="subdued"
+              className="progressTracker__toggleArrowUp"
+            />
           </span>
           <OuiText size="xs" color="subdued">
             <span>{steps.length} steps completed</span>
@@ -959,7 +1005,8 @@ const MOCK_RESPONSES = [
       type: 'code-block',
       title: 'Pool utilization query',
       language: 'sql',
-      code: 'source=opensearch_dashboards_sample_data_logs | where pool_utilization > 80 | stats max(pool_utilization) by service',
+      code:
+        'source=opensearch_dashboards_sample_data_logs | where pool_utilization > 80 | stats max(pool_utilization) by service',
     },
   },
   {
@@ -979,7 +1026,8 @@ const MOCK_RESPONSES = [
       type: 'code-block',
       title: 'Service latency query',
       language: 'sql',
-      code: 'source=opensearch_dashboards_sample_data_logs | stats avg(latency) as avg_latency, avg(error_rate) as avg_errors by service | sort -avg_errors',
+      code:
+        'source=opensearch_dashboards_sample_data_logs | stats avg(latency) as avg_latency, avg(error_rate) as avg_errors by service | sort -avg_errors',
     },
   },
 ];
@@ -993,8 +1041,14 @@ const SCRIPTED_RESPONSES = {
       id: 'traces',
       match: /yes|trace|check/i,
       tasks: [
-        { label: 'Querying trace data', description: 'Sampling traces for payments-db dependency' },
-        { label: 'Analyzing latency patterns', description: 'Correlating with historical incidents' },
+        {
+          label: 'Querying trace data',
+          description: 'Sampling traces for payments-db dependency',
+        },
+        {
+          label: 'Analyzing latency patterns',
+          description: 'Correlating with historical incidents',
+        },
       ],
       content:
         'The trace data shows payments-db latency spiked from 12ms to 8,400ms at 14:29:58, correlating with a connection pool exhaustion event. This matches a pattern from 3 previous incidents.\n\nWant me to create an alert so you catch this earlier next time?',
@@ -1009,8 +1063,15 @@ const SCRIPTED_RESPONSES = {
       id: 'alert',
       match: /create alert|alert/i,
       tasks: [
-        { label: 'Creating alert rule', description: 'Configuring threshold: payments-db latency > 500ms for 30s' },
-        { label: 'Configuring notification channel', description: 'Setting up #platform-alerts notification' },
+        {
+          label: 'Creating alert rule',
+          description:
+            'Configuring threshold: payments-db latency > 500ms for 30s',
+        },
+        {
+          label: 'Configuring notification channel',
+          description: 'Setting up #platform-alerts notification',
+        },
       ],
       content:
         'Alert created — "payments-db latency spike" will notify #platform-alerts when payments-db latency exceeds 500ms for 30 seconds. I\'ve also added this pattern to memory so I can flag it proactively next time.',
@@ -1027,8 +1088,14 @@ const SCRIPTED_RESPONSES = {
       id: 'logs',
       match: /log/i,
       tasks: [
-        { label: 'Querying payment service logs', description: 'Filtering last 30 minutes by service=payment' },
-        { label: 'Analyzing slow-log entries', description: 'Grouping entries by message pattern and severity' },
+        {
+          label: 'Querying payment service logs',
+          description: 'Filtering last 30 minutes by service=payment',
+        },
+        {
+          label: 'Analyzing slow-log entries',
+          description: 'Grouping entries by message pattern and severity',
+        },
       ],
       content:
         'I analyzed the last 30 minutes of payment service logs. I created a query to filter for timeout events:\n\n- No 5xx errors from the payment service itself — error rates are clean.\n- 847 slow-log entries (>1s) all show "connection acquire timeout" as the bottleneck.\n- No upstream dependency errors from inventory service.\n\nThe logs point toward connection pool starvation rather than a downstream failure.',
@@ -1037,7 +1104,8 @@ const SCRIPTED_RESPONSES = {
           type: 'code-block',
           title: 'Payment service timeout query',
           language: 'sql',
-          code: 'source=opensearch_metrics_payment_service | where level="WARN" OR message LIKE "%timeout%" | sort -timestamp | head 25',
+          code:
+            'source=opensearch_metrics_payment_service | where level="WARN" OR message LIKE "%timeout%" | sort -timestamp | head 25',
         },
         {
           type: 'link-preview',
@@ -1062,8 +1130,14 @@ const SCRIPTED_RESPONSES = {
       id: 'traces',
       match: /trace|span/i,
       tasks: [
-        { label: 'Sampling recent traces', description: 'Collecting 200 traces from the last 15 minutes' },
-        { label: 'Analyzing span durations', description: 'Breaking down latency by span across the call chain' },
+        {
+          label: 'Sampling recent traces',
+          description: 'Collecting 200 traces from the last 15 minutes',
+        },
+        {
+          label: 'Analyzing span durations',
+          description: 'Breaking down latency by span across the call chain',
+        },
       ],
       content:
         'I sampled 200 traces from the last 15 minutes. Here is the span breakdown:\n\n- Average span duration for payment→inventory calls is 45ms (normal).\n- However, the acquire_connection span preceding it averages 1,840ms — this is where the latency is hiding.',
@@ -1091,8 +1165,14 @@ const SCRIPTED_RESPONSES = {
       id: 'fix',
       match: /fix|suggest/i,
       tasks: [
-        { label: 'Generating fix script', description: 'Building kubectl patch commands for connection pool' },
-        { label: 'Validating configuration', description: 'Checking values against cluster resource limits' },
+        {
+          label: 'Generating fix script',
+          description: 'Building kubectl patch commands for connection pool',
+        },
+        {
+          label: 'Validating configuration',
+          description: 'Checking values against cluster resource limits',
+        },
       ],
       content:
         'I have updated the fix to target the confirmed root cause. The script increases the connection pool ceiling, adds acquire timeout protection, and enables a circuit breaker to prevent future queue buildup:',
@@ -1131,8 +1211,15 @@ kubectl exec -n production deploy/payment-service -- \\
       id: 'dashboard',
       match: /dashboard/i,
       tasks: [
-        { label: 'Creating dashboard', description: 'Generating panels for connection pool and latency metrics' },
-        { label: 'Configuring data sources', description: 'Linking payment service metrics and alert thresholds' },
+        {
+          label: 'Creating dashboard',
+          description:
+            'Generating panels for connection pool and latency metrics',
+        },
+        {
+          label: 'Configuring data sources',
+          description: 'Linking payment service metrics and alert thresholds',
+        },
       ],
       content:
         'I have created a monitoring dashboard for the payment service connection pool. It includes panels for pool utilization, acquire wait time, active connections, and P99 latency with alert thresholds configured:',
@@ -1166,8 +1253,8 @@ export const ThreadPage = ({
   onPageChange,
   onNavigate,
 }) => {
-  const threadKey = selectedItem || 'latency-spike';
-  const thread = THREADS[threadKey] || NEW_THREAD;
+  const threadKey = selectedItem || (onNavigate ? null : 'latency-spike');
+  const thread = (threadKey && THREADS[threadKey]) || NEW_THREAD;
   const initialMessages = pendingMessages || thread.messages;
 
   // Determine effective scripted response key — detect connection-timeout pattern from pending messages
@@ -1175,7 +1262,8 @@ export const ThreadPage = ({
     if (SCRIPTED_RESPONSES[threadKey]) return threadKey;
     if (pendingMessages) {
       const hasConnectionTimeout = pendingMessages.some(
-        (m) => m.content && /847 connection timeout|payments-db/i.test(m.content)
+        (m) =>
+          m.content && /847 connection timeout|payments-db/i.test(m.content)
       );
       if (hasConnectionTimeout) return 'connection-timeout';
     }
@@ -1230,26 +1318,62 @@ export const ThreadPage = ({
     };
   }, []);
 
-  const handleViewAsPage = useCallback((item) => {
-    // Find the tab index for this attachment, or re-add it if it was closed
-    const idx = canvasItems.findIndex(
-      (existing) =>
-        existing.type === item.type &&
-        (item.type === 'code-block'
-          ? existing.code === item.code
-          : existing.title === item.title)
-    );
-    if (idx >= 0) {
-      setActiveCanvasTab(idx);
-    } else {
-      setCanvasItems((prev) => {
-        const newItems = [...prev, item];
-        setActiveCanvasTab(newItems.length - 1);
-        return newItems;
-      });
-    }
-    setIsCanvasOpen(true);
-  }, [canvasItems]);
+  const handleViewAsPage = useCallback(
+    (item) => {
+      // In session mode (onNavigate provided), delegate to parent to open as Page_Panel tab
+      if (onNavigate && item.type === 'link-preview') {
+        // Resolve page key: use explicit key, or map title to a known page key
+        let pageKey = item.key;
+        if (!pageKey) {
+          const title = (item.title || '').toLowerCase();
+          if (title.includes('alert') || title.includes('latency breach')) {
+            pageKey = 'alerts';
+          } else if (title.includes('log')) {
+            pageKey = 'logs';
+          } else if (title.includes('dashboard')) {
+            pageKey = 'dashboards';
+          } else if (
+            title.includes('inventory') ||
+            title.includes('dependency analysis')
+          ) {
+            pageKey = 'notebooks';
+          } else if (
+            title.includes('connection pool') ||
+            title.includes('metrics')
+          ) {
+            pageKey = 'metrics';
+          } else if (title.includes('trace')) {
+            pageKey = 'traces';
+          } else {
+            pageKey = 'alerts';
+          }
+        }
+        const displayTitle = item.title || pageKey;
+        onNavigate(pageKey, displayTitle);
+        return;
+      }
+
+      // Legacy mode: open in internal canvas flyout
+      const idx = canvasItems.findIndex(
+        (existing) =>
+          existing.type === item.type &&
+          (item.type === 'code-block'
+            ? existing.code === item.code
+            : existing.title === item.title)
+      );
+      if (idx >= 0) {
+        setActiveCanvasTab(idx);
+      } else {
+        setCanvasItems((prev) => {
+          const newItems = [...prev, item];
+          setActiveCanvasTab(newItems.length - 1);
+          return newItems;
+        });
+      }
+      setIsCanvasOpen(true);
+    },
+    [canvasItems, onNavigate]
+  );
 
   // Reset messages and canvas when switching threads
   useEffect(() => {
@@ -1266,7 +1390,9 @@ export const ThreadPage = ({
     const items = [];
     msgs.forEach((msg) => {
       if (msg.attachments) {
-        msg.attachments.filter((a) => a.type === 'link-preview').forEach((a) => items.push(a));
+        msg.attachments
+          .filter((a) => a.type === 'link-preview')
+          .forEach((a) => items.push(a));
       } else if (msg.attachment && msg.attachment.type === 'link-preview') {
         items.push(msg.attachment);
       }
@@ -1291,7 +1417,82 @@ export const ThreadPage = ({
       setActiveCanvasTab(0);
       setIsCanvasOpen(true);
     }
-  }, [threadKey, thread.messages, pendingMessages, sourcePage, sourcePageTitle]);
+
+    // Auto-trigger mock response when starting a new thread with a user message
+    if (
+      pendingMessages &&
+      pendingMessages.length > 0 &&
+      pendingMessages[pendingMessages.length - 1].role === 'user' &&
+      !pendingMessages.some((m) => m.role === 'assistant')
+    ) {
+      hasInteracted.current = true;
+      const idx = responseIndex.current % MOCK_RESPONSES.length;
+      const mockResponse = MOCK_RESPONSES[idx];
+      const tasks = MOCK_TASKS[idx % MOCK_TASKS.length];
+      responseIndex.current += 1;
+      const fullContent = mockResponse.content;
+      const attachment = mockResponse.attachment;
+      const attachments = mockResponse.attachments;
+
+      setIsTyping(true);
+      const taskMsg = { role: 'tasks', tasks, statuses: ['running'], collapsed: false };
+      const t0 = setTimeout(() => {
+        setMessages((prev) => [...prev, taskMsg]);
+      }, 500);
+      streamTimers.current.push(t0);
+
+      const t1 = setTimeout(() => {
+        setMessages((prev) => {
+          const updated = [...prev];
+          const ti = updated.findLastIndex((m) => m.role === 'tasks');
+          if (ti >= 0) updated[ti] = { ...updated[ti], statuses: ['done', 'running'] };
+          return updated;
+        });
+      }, 3000);
+      streamTimers.current.push(t1);
+
+      const t2 = setTimeout(() => {
+        setMessages((prev) => {
+          const updated = [...prev];
+          const ti = updated.findLastIndex((m) => m.role === 'tasks');
+          if (ti >= 0) updated[ti] = { ...updated[ti], statuses: ['done', 'done'] };
+          return updated;
+        });
+      }, 5500);
+      streamTimers.current.push(t2);
+
+      const t3 = setTimeout(() => {
+        setMessages((prev) => {
+          const updated = [...prev];
+          const ti = updated.findLastIndex((m) => m.role === 'tasks');
+          if (ti >= 0) updated[ti] = { ...updated[ti], collapsed: true };
+          return updated;
+        });
+        setIsTyping(false);
+        const tokens = fullContent.split(/(\s+)/);
+        setMessages((prev) => [...prev, { role: 'assistant', content: '', streaming: true, attachment, attachments }]);
+        let built = '';
+        tokens.forEach((token, i) => {
+          const timer = setTimeout(() => {
+            built += token;
+            setMessages((prev) => {
+              const updated = [...prev];
+              updated[updated.length - 1] = { role: 'assistant', content: built, streaming: i < tokens.length - 1, attachment, attachments };
+              return updated;
+            });
+          }, i * 30);
+          streamTimers.current.push(timer);
+        });
+      }, 6000);
+      streamTimers.current.push(t3);
+    }
+  }, [
+    threadKey,
+    thread.messages,
+    pendingMessages,
+    sourcePage,
+    sourcePageTitle,
+  ]);
 
   // Clean up timers on unmount
   useEffect(() => {
@@ -1329,7 +1530,9 @@ export const ThreadPage = ({
       );
       if (matched) {
         mockResponse = matched;
-        tasks = matched.tasks || MOCK_TASKS[responseIndex.current % MOCK_TASKS.length];
+        tasks =
+          matched.tasks ||
+          MOCK_TASKS[responseIndex.current % MOCK_TASKS.length];
       } else {
         const idx = responseIndex.current % MOCK_RESPONSES.length;
         mockResponse = MOCK_RESPONSES[idx];
@@ -1395,7 +1598,13 @@ export const ThreadPage = ({
 
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: '', streaming: true, attachment, attachments },
+        {
+          role: 'assistant',
+          content: '',
+          streaming: true,
+          attachment,
+          attachments,
+        },
       ]);
 
       let built = '';
@@ -1416,17 +1625,25 @@ export const ThreadPage = ({
           // After last token, add follow-up if both logs and traces are done
           if (i === tokens.length - 1) {
             // Add link-preview attachments to canvas
-            const newAtts = (attachments || (attachment ? [attachment] : [])).filter((a) => a.type === 'link-preview');
+            const newAtts = (
+              attachments || (attachment ? [attachment] : [])
+            ).filter((a) => a.type === 'link-preview');
             if (newAtts.length > 0) {
               setCanvasItems((prev) => [...prev, ...newAtts]);
             }
             if (mockResponse.id) {
-              setCompletedScriptedIds((prev) => new Set([...prev, mockResponse.id]));
+              setCompletedScriptedIds(
+                (prev) => new Set([...prev, mockResponse.id])
+              );
             }
             setCompletedScriptedIds((prev) => {
               const next = new Set([...prev]);
               if (mockResponse.id) next.add(mockResponse.id);
-              if (next.has('logs') && next.has('traces') && !next.has('conclusion')) {
+              if (
+                next.has('logs') &&
+                next.has('traces') &&
+                !next.has('conclusion')
+              ) {
                 next.add('conclusion');
                 const conclusionContent = CONCLUSION_MESSAGE.content;
                 const conclusionTokens = conclusionContent.split(/(\s+)/);
@@ -1479,61 +1696,83 @@ export const ThreadPage = ({
         flexDirection: 'column',
         overflow: 'hidden',
       }}>
-      {/* Header — using DetailPageHeader with custom children */}
-      <DetailPageHeader
-        title={thread.title}
-        isPanelOpen={isPanelOpen}
-        onTogglePanel={onTogglePanel}
-        firstActionIcon="dockedRight"
-        firstActionLabel="Related Assets"
-        firstActionActive={isCanvasOpen}
-        onFirstAction={() => setIsCanvasOpen((open) => !open)}
-        extraActions={[
-          {
-            label: 'Settings',
-            render: () => (
-              <OuiPopover
-                button={
-                  <OuiToolTip content="Settings" position="bottom">
-                    <OuiButtonIcon
-                      iconType="controlsHorizontal"
-                      aria-label="Settings"
-                      size="s"
-                      color="text"
-                      display="empty"
-                      onClick={() => setIsSettingsOpen((open) => !open)}
-                    />
-                  </OuiToolTip>
-                }
-                isOpen={isSettingsOpen}
-                closePopover={() => setIsSettingsOpen(false)}
-                panelPaddingSize="none"
-                anchorPosition="downRight"
-                ownFocus={false}>
-                <OuiContextMenuPanel
-                  hasFocus={false}
-                  items={[
-                    <OuiContextMenuItem key="skills" onClick={() => { setIsSettingsOpen(false); onPageChange && onPageChange('ai-skills'); }}>
-                      Skills
-                    </OuiContextMenuItem>,
-                    <OuiContextMenuItem key="memories" onClick={() => { setIsSettingsOpen(false); onPageChange && onPageChange('ai-memories'); }}>
-                      Memories
-                    </OuiContextMenuItem>,
-                    <OuiContextMenuItem key="automations" onClick={() => { setIsSettingsOpen(false); onPageChange && onPageChange('ai-automations'); }}>
-                      Automations
-                    </OuiContextMenuItem>,
-                    <OuiContextMenuItem key="mcp" onClick={() => { setIsSettingsOpen(false); onPageChange && onPageChange('ai-mcp-servers'); }}>
-                      MCP Servers
-                    </OuiContextMenuItem>,
-                  ]}
-                />
-              </OuiPopover>
-            ),
-          },
-        ]}
-        hideAskAi>
-        {thread.title}
-      </DetailPageHeader>
+      {/* Header — only shown in legacy mode (not session-based navigation) */}
+      {!onNavigate && (
+        <DetailPageHeader
+          title={thread.title}
+          isPanelOpen={isPanelOpen}
+          onTogglePanel={onTogglePanel}
+          firstActionIcon="dockedRight"
+          firstActionLabel="Related Assets"
+          firstActionActive={isCanvasOpen}
+          onFirstAction={() => setIsCanvasOpen((open) => !open)}
+          extraActions={[
+            {
+              label: 'Settings',
+              render: () => (
+                <OuiPopover
+                  button={
+                    <OuiToolTip content="Settings" position="bottom">
+                      <OuiButtonIcon
+                        iconType="controlsHorizontal"
+                        aria-label="Settings"
+                        size="s"
+                        color="text"
+                        display="empty"
+                        onClick={() => setIsSettingsOpen((open) => !open)}
+                      />
+                    </OuiToolTip>
+                  }
+                  isOpen={isSettingsOpen}
+                  closePopover={() => setIsSettingsOpen(false)}
+                  panelPaddingSize="none"
+                  anchorPosition="downRight"
+                  ownFocus={false}>
+                  <OuiContextMenuPanel
+                    hasFocus={false}
+                    items={[
+                      <OuiContextMenuItem
+                        key="skills"
+                        onClick={() => {
+                          setIsSettingsOpen(false);
+                          onPageChange && onPageChange('ai-skills');
+                        }}>
+                        Skills
+                      </OuiContextMenuItem>,
+                      <OuiContextMenuItem
+                        key="memories"
+                        onClick={() => {
+                          setIsSettingsOpen(false);
+                          onPageChange && onPageChange('ai-memories');
+                        }}>
+                        Memories
+                      </OuiContextMenuItem>,
+                      <OuiContextMenuItem
+                        key="automations"
+                        onClick={() => {
+                          setIsSettingsOpen(false);
+                          onPageChange && onPageChange('ai-automations');
+                        }}>
+                        Automations
+                      </OuiContextMenuItem>,
+                      <OuiContextMenuItem
+                        key="mcp"
+                        onClick={() => {
+                          setIsSettingsOpen(false);
+                          onPageChange && onPageChange('ai-mcp-servers');
+                        }}>
+                        MCP Servers
+                      </OuiContextMenuItem>,
+                    ]}
+                  />
+                </OuiPopover>
+              ),
+            },
+          ]}
+          hideAskAi>
+          {thread.title}
+        </DetailPageHeader>
+      )}
 
       {/* Body: feed + optional canvas flyout */}
       <div className="threadPage__body">
@@ -1562,7 +1801,10 @@ export const ThreadPage = ({
                     onToggleCollapse={() => {
                       setMessages((prev) => {
                         const updated = [...prev];
-                        updated[i] = { ...updated[i], collapsed: !updated[i].collapsed };
+                        updated[i] = {
+                          ...updated[i],
+                          collapsed: !updated[i].collapsed,
+                        };
                         return updated;
                       });
                     }}
@@ -1586,8 +1828,17 @@ export const ThreadPage = ({
           {/* Input area — textarea with buttons inside at bottom */}
           <div className="threadPage__inputArea">
             {(() => {
-              if (message.trim() || isTyping || messages.some((m) => m.streaming)) return null;
-              if (effectiveScriptedKey !== 'latency-spike' && effectiveScriptedKey !== 'connection-timeout') return null;
+              if (
+                message.trim() ||
+                isTyping ||
+                messages.some((m) => m.streaming)
+              )
+                return null;
+              if (
+                effectiveScriptedKey !== 'latency-spike' &&
+                effectiveScriptedKey !== 'connection-timeout'
+              )
+                return null;
               const done = completedScriptedIds;
               let prompts = [];
               if (effectiveScriptedKey === 'connection-timeout') {
@@ -1605,11 +1856,20 @@ export const ThreadPage = ({
               } else if (done.has('conclusion')) {
                 prompts = ['Suggest a fix for this issue'];
               } else if (done.has('logs') && !done.has('traces')) {
-                prompts = ['Analyze the trace spans for the payment service', 'Suggest a fix for this issue'];
+                prompts = [
+                  'Analyze the trace spans for the payment service',
+                  'Suggest a fix for this issue',
+                ];
               } else if (done.has('traces') && !done.has('logs')) {
-                prompts = ['Show me the recent logs for the payment service', 'Suggest a fix for this issue'];
+                prompts = [
+                  'Show me the recent logs for the payment service',
+                  'Suggest a fix for this issue',
+                ];
               } else if (!done.has('logs') && !done.has('traces')) {
-                prompts = ['Show me the recent logs for the payment service', 'Analyze the trace spans for the payment service'];
+                prompts = [
+                  'Show me the recent logs for the payment service',
+                  'Analyze the trace spans for the payment service',
+                ];
               }
               if (prompts.length === 0) return null;
               return (
@@ -1626,10 +1886,15 @@ export const ThreadPage = ({
                         hasInteracted.current = true;
                         setTimeout(() => {
                           setMessage('');
-                          const userMsg = { role: 'user', author: 'You', content: prompt };
+                          const userMsg = {
+                            role: 'user',
+                            author: 'You',
+                            content: prompt,
+                          };
                           setMessages((prev) => [...prev, userMsg]);
                           setIsTyping(true);
-                          const scripted = SCRIPTED_RESPONSES[effectiveScriptedKey];
+                          const scripted =
+                            SCRIPTED_RESPONSES[effectiveScriptedKey];
                           let mockResponse;
                           let tasks;
                           if (scripted) {
@@ -1638,14 +1903,20 @@ export const ThreadPage = ({
                             );
                             if (matched) {
                               mockResponse = matched;
-                              tasks = matched.tasks || MOCK_TASKS[responseIndex.current % MOCK_TASKS.length];
+                              tasks =
+                                matched.tasks ||
+                                MOCK_TASKS[
+                                  responseIndex.current % MOCK_TASKS.length
+                                ];
                             } else {
-                              const idx = responseIndex.current % MOCK_RESPONSES.length;
+                              const idx =
+                                responseIndex.current % MOCK_RESPONSES.length;
                               mockResponse = MOCK_RESPONSES[idx];
                               tasks = MOCK_TASKS[idx % MOCK_TASKS.length];
                             }
                           } else {
-                            const idx = responseIndex.current % MOCK_RESPONSES.length;
+                            const idx =
+                              responseIndex.current % MOCK_RESPONSES.length;
                             mockResponse = MOCK_RESPONSES[idx];
                             tasks = MOCK_TASKS[idx % MOCK_TASKS.length];
                           }
@@ -1653,13 +1924,24 @@ export const ThreadPage = ({
                           const fullContent = mockResponse.content;
                           const attachment = mockResponse.attachment;
                           const attachments = mockResponse.attachments;
-                          const taskMsg = { role: 'tasks', tasks, statuses: ['running'], collapsed: false };
+                          const taskMsg = {
+                            role: 'tasks',
+                            tasks,
+                            statuses: ['running'],
+                            collapsed: false,
+                          };
                           setMessages((prev) => [...prev, taskMsg]);
                           const t1 = setTimeout(() => {
                             setMessages((prev) => {
                               const updated = [...prev];
-                              const ti = updated.findLastIndex((m) => m.role === 'tasks');
-                              if (ti >= 0) updated[ti] = { ...updated[ti], statuses: ['done', 'running'] };
+                              const ti = updated.findLastIndex(
+                                (m) => m.role === 'tasks'
+                              );
+                              if (ti >= 0)
+                                updated[ti] = {
+                                  ...updated[ti],
+                                  statuses: ['done', 'running'],
+                                };
                               return updated;
                             });
                           }, 3000);
@@ -1667,8 +1949,14 @@ export const ThreadPage = ({
                           const t2 = setTimeout(() => {
                             setMessages((prev) => {
                               const updated = [...prev];
-                              const ti = updated.findLastIndex((m) => m.role === 'tasks');
-                              if (ti >= 0) updated[ti] = { ...updated[ti], statuses: ['done', 'done'] };
+                              const ti = updated.findLastIndex(
+                                (m) => m.role === 'tasks'
+                              );
+                              if (ti >= 0)
+                                updated[ti] = {
+                                  ...updated[ti],
+                                  statuses: ['done', 'done'],
+                                };
                               return updated;
                             });
                           }, 6000);
@@ -1676,54 +1964,111 @@ export const ThreadPage = ({
                           const t3 = setTimeout(() => {
                             setMessages((prev) => {
                               const updated = [...prev];
-                              const ti = updated.findLastIndex((m) => m.role === 'tasks');
-                              if (ti >= 0) updated[ti] = { ...updated[ti], collapsed: true };
+                              const ti = updated.findLastIndex(
+                                (m) => m.role === 'tasks'
+                              );
+                              if (ti >= 0)
+                                updated[ti] = {
+                                  ...updated[ti],
+                                  collapsed: true,
+                                };
                               return updated;
                             });
                             setIsTyping(false);
                             const tokens = fullContent.split(/(\s+)/);
-                            setMessages((prev) => [...prev, { role: 'assistant', content: '', streaming: true, attachment, attachments }]);
+                            setMessages((prev) => [
+                              ...prev,
+                              {
+                                role: 'assistant',
+                                content: '',
+                                streaming: true,
+                                attachment,
+                                attachments,
+                              },
+                            ]);
                             let built = '';
                             tokens.forEach((token, i) => {
                               const timer = setTimeout(() => {
                                 built += token;
                                 setMessages((prev) => {
                                   const updated = [...prev];
-                                  updated[updated.length - 1] = { role: 'assistant', content: built, streaming: i < tokens.length - 1, attachment, attachments };
+                                  updated[updated.length - 1] = {
+                                    role: 'assistant',
+                                    content: built,
+                                    streaming: i < tokens.length - 1,
+                                    attachment,
+                                    attachments,
+                                  };
                                   return updated;
                                 });
                                 if (i === tokens.length - 1) {
                                   // Add link-preview attachments to canvas
-                                  const newAtts = (attachments || (attachment ? [attachment] : [])).filter((a) => a.type === 'link-preview');
+                                  const newAtts = (
+                                    attachments ||
+                                    (attachment ? [attachment] : [])
+                                  ).filter((a) => a.type === 'link-preview');
                                   if (newAtts.length > 0) {
-                                    setCanvasItems((prev) => [...prev, ...newAtts]);
+                                    setCanvasItems((prev) => [
+                                      ...prev,
+                                      ...newAtts,
+                                    ]);
                                   }
                                   if (mockResponse.id) {
-                                    setCompletedScriptedIds((prev) => new Set([...prev, mockResponse.id]));
+                                    setCompletedScriptedIds(
+                                      (prev) =>
+                                        new Set([...prev, mockResponse.id])
+                                    );
                                   }
                                   setCompletedScriptedIds((prev) => {
                                     const next = new Set([...prev]);
-                                    if (mockResponse.id) next.add(mockResponse.id);
-                                    if (next.has('logs') && next.has('traces') && !next.has('conclusion')) {
+                                    if (mockResponse.id)
+                                      next.add(mockResponse.id);
+                                    if (
+                                      next.has('logs') &&
+                                      next.has('traces') &&
+                                      !next.has('conclusion')
+                                    ) {
                                       next.add('conclusion');
-                                      const conclusionContent = CONCLUSION_MESSAGE.content;
-                                      const conclusionTokens = conclusionContent.split(/(\s+)/);
+                                      const conclusionContent =
+                                        CONCLUSION_MESSAGE.content;
+                                      const conclusionTokens = conclusionContent.split(
+                                        /(\s+)/
+                                      );
                                       const conclusionTimer = setTimeout(() => {
-                                        setMessages((prev2) => [...prev2, { role: 'assistant', content: '', streaming: true }]);
+                                        setMessages((prev2) => [
+                                          ...prev2,
+                                          {
+                                            role: 'assistant',
+                                            content: '',
+                                            streaming: true,
+                                          },
+                                        ]);
                                         let conclusionBuilt = '';
-                                        conclusionTokens.forEach((token2, ci) => {
-                                          const cTimer = setTimeout(() => {
-                                            conclusionBuilt += token2;
-                                            setMessages((prev2) => {
-                                              const updated2 = [...prev2];
-                                              updated2[updated2.length - 1] = { role: 'assistant', content: conclusionBuilt, streaming: ci < conclusionTokens.length - 1 };
-                                              return updated2;
-                                            });
-                                          }, ci * 30);
-                                          streamTimers.current.push(cTimer);
-                                        });
+                                        conclusionTokens.forEach(
+                                          (token2, ci) => {
+                                            const cTimer = setTimeout(() => {
+                                              conclusionBuilt += token2;
+                                              setMessages((prev2) => {
+                                                const updated2 = [...prev2];
+                                                updated2[
+                                                  updated2.length - 1
+                                                ] = {
+                                                  role: 'assistant',
+                                                  content: conclusionBuilt,
+                                                  streaming:
+                                                    ci <
+                                                    conclusionTokens.length - 1,
+                                                };
+                                                return updated2;
+                                              });
+                                            }, ci * 30);
+                                            streamTimers.current.push(cTimer);
+                                          }
+                                        );
                                       }, 300);
-                                      streamTimers.current.push(conclusionTimer);
+                                      streamTimers.current.push(
+                                        conclusionTimer
+                                      );
                                     }
                                     return next;
                                   });
@@ -1776,173 +2121,226 @@ export const ThreadPage = ({
           </div>
         </div>
 
-        {/* Canvas flyout (push panel) */}
-        <div
-          className={`threadPage__canvasFlyout${
-            isCanvasOpen ? ' threadPage__canvasFlyout--open' : ''
-          }${isCanvasDragging ? ' threadPage__canvasFlyout--dragging' : ''}${isCanvasExpanding ? ' threadPage__canvasFlyout--expanding' : ''}`}
-          style={isCanvasOpen ? { width: canvasWidth } : undefined}>
-          <div className="threadPage__canvasFlyoutInner">
-            {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
-            <div
-              className="threadPage__canvasResizeHandle"
-              onMouseDown={handleDragStart}
-              role="separator"
-              aria-orientation="vertical"
-              aria-label="Resize canvas"
-              tabIndex={0}>
-              <span className="threadPage__canvasResizeGrip">
-                <OuiIcon type="grab" size="s" />
-              </span>
-            </div>
-            <OuiFlyoutHeader>
-              {canvasItems.length > 0 && (
-                <OuiTabs size="s" className="threadPage__canvasTabs">
-                  {canvasItems.map((item, i) => (
-                    <OuiToolTip key={i} content={item.title || `Asset ${i + 1}`} position="bottom">
-                      <OuiTab
-                        isSelected={activeCanvasTab === i}
-                        onClick={() => setActiveCanvasTab(i)}>
-                        {item.title || `Asset ${i + 1}`}
-                      </OuiTab>
-                    </OuiToolTip>
-                  ))}
-                </OuiTabs>
-              )}
-            </OuiFlyoutHeader>
-            <OuiFlyoutBody>
-              {canvasItems.length === 0 ? (
-                <OuiText size="s" color="subdued">
-                  <p>
-                    Items added to the canvas will appear here. Hover over
-                    attachments in the conversation and click &ldquo;Add to
-                    canvas&rdquo; to collect them.
-                  </p>
-                </OuiText>
-              ) : (
-                <div className="threadPage__canvasTabContent">
-                  <div className="threadPage__canvasPageHeader">
-                    <OuiText size="s">
-                      <strong>{canvasItems[activeCanvasTab]?.title || `Asset ${activeCanvasTab + 1}`}</strong>
-                    </OuiText>
-                    <div className="threadPage__canvasPageHeaderActions">
-                      <OuiToolTip content="Open page" position="bottom">
-                        <OuiButtonIcon
-                          iconType="symlink"
-                          aria-label="Open page"
-                          size="s"
-                          color="text"
-                          onClick={() => {
-                            const item = canvasItems[activeCanvasTab];
-                            if (!item || !onNavigate) return;
-                            setIsCanvasExpanding(true);
-                            setTimeout(() => {
-                              const title = item.title || '';
-                              if (title.includes('alert') || title.includes('Alert')) {
-                                onNavigate('alerts-detail', 'alert-payment-p99');
-                              } else if (title.includes('logs') || title.includes('Logs')) {
-                                onNavigate('logs', 'payment-timeout-logs');
-                              } else if (title.includes('dashboard') || title.includes('Dashboard')) {
-                                onNavigate('dashboards', 'payment-pool-dashboard');
-                              } else if (title.includes('Inventory')) {
-                                onNavigate('notebooks', 'notebook-inventory-analysis');
-                              } else if (title.includes('connection pool') || title.includes('Connection pool')) {
-                                onNavigate('notebooks', 'notebook-connection-pool');
-                              } else {
-                                onNavigate('notebooks', 'notebook-runbook');
-                              }
-                              setIsCanvasExpanding(false);
-                            }, 350);
-                          }}
-                        />
+        {/* Canvas flyout (push panel) — hidden in session mode */}
+        {!onNavigate && (
+          <div
+            className={`threadPage__canvasFlyout${
+              isCanvasOpen ? ' threadPage__canvasFlyout--open' : ''
+            }${isCanvasDragging ? ' threadPage__canvasFlyout--dragging' : ''}${
+              isCanvasExpanding ? ' threadPage__canvasFlyout--expanding' : ''
+            }`}
+            style={isCanvasOpen ? { width: canvasWidth } : undefined}>
+            <div className="threadPage__canvasFlyoutInner">
+              {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+              <div
+                className="threadPage__canvasResizeHandle"
+                onMouseDown={handleDragStart}
+                role="separator"
+                aria-orientation="vertical"
+                aria-label="Resize canvas"
+                tabIndex={0}>
+                <span className="threadPage__canvasResizeGrip">
+                  <OuiIcon type="grab" size="s" />
+                </span>
+              </div>
+              <OuiFlyoutHeader>
+                {canvasItems.length > 0 && (
+                  <OuiTabs size="s" className="threadPage__canvasTabs">
+                    {canvasItems.map((item, i) => (
+                      <OuiToolTip
+                        key={i}
+                        content={item.title || `Asset ${i + 1}`}
+                        position="bottom">
+                        <OuiTab
+                          isSelected={activeCanvasTab === i}
+                          onClick={() => setActiveCanvasTab(i)}>
+                          {item.title || `Asset ${i + 1}`}
+                        </OuiTab>
                       </OuiToolTip>
-                      <OuiToolTip content="Close" position="bottom">
-                        <OuiButtonIcon
-                          iconType="cross"
-                          aria-label="Close tab"
-                          size="s"
-                          color="text"
-                          onClick={() => {
-                            setCanvasItems((prev) => {
-                              const next = prev.filter((_, idx) => idx !== activeCanvasTab);
-                              if (next.length === 0) {
-                                setIsCanvasOpen(false);
-                              } else if (activeCanvasTab >= next.length) {
-                                setActiveCanvasTab(next.length - 1);
-                              }
-                              return next;
-                            });
-                          }}
-                        />
-                      </OuiToolTip>
+                    ))}
+                  </OuiTabs>
+                )}
+              </OuiFlyoutHeader>
+              <OuiFlyoutBody>
+                {canvasItems.length === 0 ? (
+                  <OuiText size="s" color="subdued">
+                    <p>
+                      Items added to the canvas will appear here. Hover over
+                      attachments in the conversation and click &ldquo;Add to
+                      canvas&rdquo; to collect them.
+                    </p>
+                  </OuiText>
+                ) : (
+                  <div className="threadPage__canvasTabContent">
+                    <div className="threadPage__canvasPageHeader">
+                      <OuiText size="s">
+                        <strong>
+                          {canvasItems[activeCanvasTab]?.title ||
+                            `Asset ${activeCanvasTab + 1}`}
+                        </strong>
+                      </OuiText>
+                      <div className="threadPage__canvasPageHeaderActions">
+                        <OuiToolTip content="Open page" position="bottom">
+                          <OuiButtonIcon
+                            iconType="symlink"
+                            aria-label="Open page"
+                            size="s"
+                            color="text"
+                            onClick={() => {
+                              const item = canvasItems[activeCanvasTab];
+                              if (!item || !onNavigate) return;
+                              setIsCanvasExpanding(true);
+                              setTimeout(() => {
+                                const title = item.title || '';
+                                if (
+                                  title.includes('alert') ||
+                                  title.includes('Alert')
+                                ) {
+                                  onNavigate(
+                                    'alerts-detail',
+                                    'alert-payment-p99'
+                                  );
+                                } else if (
+                                  title.includes('logs') ||
+                                  title.includes('Logs')
+                                ) {
+                                  onNavigate('logs', 'payment-timeout-logs');
+                                } else if (
+                                  title.includes('dashboard') ||
+                                  title.includes('Dashboard')
+                                ) {
+                                  onNavigate(
+                                    'dashboards',
+                                    'payment-pool-dashboard'
+                                  );
+                                } else if (title.includes('Inventory')) {
+                                  onNavigate(
+                                    'notebooks',
+                                    'notebook-inventory-analysis'
+                                  );
+                                } else if (
+                                  title.includes('connection pool') ||
+                                  title.includes('Connection pool')
+                                ) {
+                                  onNavigate(
+                                    'notebooks',
+                                    'notebook-connection-pool'
+                                  );
+                                } else {
+                                  onNavigate('notebooks', 'notebook-runbook');
+                                }
+                                setIsCanvasExpanding(false);
+                              }, 350);
+                            }}
+                          />
+                        </OuiToolTip>
+                        <OuiToolTip content="Close" position="bottom">
+                          <OuiButtonIcon
+                            iconType="cross"
+                            aria-label="Close tab"
+                            size="s"
+                            color="text"
+                            onClick={() => {
+                              setCanvasItems((prev) => {
+                                const next = prev.filter(
+                                  (_, idx) => idx !== activeCanvasTab
+                                );
+                                if (next.length === 0) {
+                                  setIsCanvasOpen(false);
+                                } else if (activeCanvasTab >= next.length) {
+                                  setActiveCanvasTab(next.length - 1);
+                                }
+                                return next;
+                              });
+                            }}
+                          />
+                        </OuiToolTip>
+                      </div>
                     </div>
-                  </div>
-                  {(() => {
-                    const item = canvasItems[activeCanvasTab];
-                    if (!item) return null;
+                    {(() => {
+                      const item = canvasItems[activeCanvasTab];
+                      if (!item) return null;
 
-                    // Render source page for "Continue as thread" flow using existing mocks
-                    if (item.type === 'source-page') {
-                      const mock = SOURCE_PAGE_MOCK[item.page];
-                      if (mock) {
-                        const MockComponent = mock.component;
-                        return <MockComponent />;
-                      }
-                      return (
-                        <div style={{ padding: 16 }}>
-                          <OuiText size="s" color="subdued">
-                            <p>Continued from <strong>{item.title}</strong></p>
-                          </OuiText>
-                        </div>
-                      );
-                    }
-
-                    // Render custom mock pages for known attachments
-                    if (item.title === 'Payment service alert — P99 latency breach') {
-                      return <AlertPageMock />;
-                    }
-                    if (item.title === 'Inventory service dependency analysis') {
-                      return <InventoryAnalysisPageMock />;
-                    }
-                    if (item.title === 'Payment service connection pool metrics') {
-                      return <ConnectionPoolPageMock />;
-                    }
-                    if (item.title === 'Payment service logs — last 30 minutes') {
-                      return <LogsPageMock />;
-                    }
-                    if (item.title === 'Payment service — connection pool dashboard') {
-                      return <DashboardPageMock />;
-                    }
-                    if (item.title === 'payments-db trace analysis') {
-                      return <TraceAnalysisPageMock />;
-                    }
-
-                    // Default: generic link-preview rendering
-                    return (
-                      <>
-                        {item.image && (
-                          <div className="threadPage__canvasDetailImage">
-                            <img src={item.image} alt="" />
+                      // Render source page for "Continue as thread" flow using existing mocks
+                      if (item.type === 'source-page') {
+                        const mock = SOURCE_PAGE_MOCK[item.page];
+                        if (mock) {
+                          const MockComponent = mock.component;
+                          return <MockComponent />;
+                        }
+                        return (
+                          <div style={{ padding: 16 }}>
+                            <OuiText size="s" color="subdued">
+                              <p>
+                                Continued from <strong>{item.title}</strong>
+                              </p>
+                            </OuiText>
                           </div>
-                        )}
-                        <OuiText size="s">
-                          {item.description && <p>{item.description}</p>}
-                          {item.href && (
-                            <p>
-                              <a href={item.href} target="_blank" rel="noopener noreferrer">
-                                {item.href}
-                              </a>
-                            </p>
+                        );
+                      }
+
+                      // Render custom mock pages for known attachments
+                      if (
+                        item.title ===
+                        'Payment service alert — P99 latency breach'
+                      ) {
+                        return <AlertPageMock />;
+                      }
+                      if (
+                        item.title === 'Inventory service dependency analysis'
+                      ) {
+                        return <InventoryAnalysisPageMock />;
+                      }
+                      if (
+                        item.title === 'Payment service connection pool metrics'
+                      ) {
+                        return <ConnectionPoolPageMock />;
+                      }
+                      if (
+                        item.title === 'Payment service logs — last 30 minutes'
+                      ) {
+                        return <LogsPageMock />;
+                      }
+                      if (
+                        item.title ===
+                        'Payment service — connection pool dashboard'
+                      ) {
+                        return <DashboardPageMock />;
+                      }
+                      if (item.title === 'payments-db trace analysis') {
+                        return <TraceAnalysisPageMock />;
+                      }
+
+                      // Default: generic link-preview rendering
+                      return (
+                        <>
+                          {item.image && (
+                            <div className="threadPage__canvasDetailImage">
+                              <img src={item.image} alt="" />
+                            </div>
                           )}
-                        </OuiText>
-                      </>
-                    );
-                  })()}
-                </div>
-              )}
-            </OuiFlyoutBody>
+                          <OuiText size="s">
+                            {item.description && <p>{item.description}</p>}
+                            {item.href && (
+                              <p>
+                                <a
+                                  href={item.href}
+                                  target="_blank"
+                                  rel="noopener noreferrer">
+                                  {item.href}
+                                </a>
+                              </p>
+                            )}
+                          </OuiText>
+                        </>
+                      );
+                    })()}
+                  </div>
+                )}
+              </OuiFlyoutBody>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

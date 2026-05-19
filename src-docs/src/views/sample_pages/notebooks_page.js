@@ -4,7 +4,10 @@
 import React from 'react';
 import { PlaceholderPage } from './placeholder_page';
 import { DetailPageHeader } from './detail_page_header';
-import { InventoryAnalysisPageMock, ConnectionPoolPageMock } from './mock_canvas_pages';
+import {
+  InventoryAnalysisPageMock,
+  ConnectionPoolPageMock,
+} from './mock_canvas_pages';
 
 const ITEMS_MAP = {
   'notebook-runbook': 'Runbook checklist',
@@ -43,7 +46,13 @@ export const NotebooksPage = ({
 }) => {
   if (selectedItem === 'notebook-inventory-analysis') {
     return (
-      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div
+        style={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        }}>
         <DetailPageHeader
           title="Inventory service dependency analysis"
           onContinueAsThread={onContinueAsThread}
@@ -61,7 +70,13 @@ export const NotebooksPage = ({
 
   if (selectedItem === 'notebook-connection-pool') {
     return (
-      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+      <div
+        style={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        }}>
         <DetailPageHeader
           title="Payment service connection pool metrics"
           onContinueAsThread={onContinueAsThread}

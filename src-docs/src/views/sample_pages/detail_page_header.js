@@ -10,11 +10,7 @@
  */
 
 import React from 'react';
-import {
-  OuiButtonIcon,
-  OuiIcon,
-  OuiToolTip,
-} from '../../../../src/components';
+import { OuiButtonIcon, OuiIcon, OuiToolTip } from '../../../../src/components';
 import { AskAiInline } from './ask_ai_inline';
 
 export const DetailPageHeader = ({
@@ -35,6 +31,7 @@ export const DetailPageHeader = ({
   mockAiResponses,
   highlightAskAi,
   autoOpenAskAi,
+  onAskAiOpen,
 }) => {
   // Detached popover state (only used when user clicks "detach" from the panel)
   const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
@@ -53,6 +50,10 @@ export const DetailPageHeader = ({
       }, 250);
     } else {
       setIsPopoverOpen(true);
+      // Clear proactive highlight when popover opens
+      if (onAskAiOpen) {
+        onAskAiOpen();
+      }
     }
   };
 
@@ -69,8 +70,6 @@ export const DetailPageHeader = ({
   const handlePopoverMinimize = () => {
     setIsPopoverOpen(false);
   };
-
-
 
   return (
     <div className="detailPageHeader">
@@ -89,7 +88,9 @@ export const DetailPageHeader = ({
       )}
       <div className="detailPageHeader__title">
         {onTogglePanel && (
-          <OuiToolTip content={isPanelOpen ? 'Close panel' : 'Open panel'} position="bottom">
+          <OuiToolTip
+            content={isPanelOpen ? 'Close panel' : 'Open panel'}
+            position="bottom">
             <OuiButtonIcon
               iconType={isPanelOpen ? 'folderOpen' : 'folderClosed'}
               aria-label={isPanelOpen ? 'Close panel' : 'Open panel'}
@@ -121,7 +122,10 @@ export const DetailPageHeader = ({
               {action.render()}
             </React.Fragment>
           ) : (
-            <OuiToolTip key={`extra-${index}`} content={action.label} position="bottom">
+            <OuiToolTip
+              key={`extra-${index}`}
+              content={action.label}
+              position="bottom">
               <OuiButtonIcon
                 iconType={action.iconType}
                 aria-label={action.label}
@@ -148,13 +152,20 @@ export const DetailPageHeader = ({
           {!isPopoverOpen && (
             <div className="askAiFloating__buttonWrap">
               <button
-                className={`askAiFloating__button${highlightAskAi === 'loading' ? ' askAiFloating__button--loading' : ''}${highlightAskAi === 'pulse' ? ' askAiFloating__button--pulse' : ''}`}
+                className={`askAiFloating__button${
+                  highlightAskAi === 'loading'
+                    ? ' askAiFloating__button--loading'
+                    : ''
+                }${
+                  highlightAskAi === 'pulse'
+                    ? ' askAiFloating__button--pulse'
+                    : ''
+                }`}
                 onClick={() => {
                   setHighlightPrompt(null);
                   handleAskAiToggle();
                 }}
-                aria-label="Ask AI"
-              >
+                aria-label="Ask AI">
                 Ask anything...
               </button>
             </div>
@@ -164,7 +175,12 @@ export const DetailPageHeader = ({
               isOpen={isPopoverOpen}
               isClosing={isPopoverClosing}
               onClose={handlePopoverClose}
-              onContinueAsThread={onContinueAsThread ? (prompt, response) => onContinueAsThread(prompt, response, null, title) : undefined}
+              onContinueAsThread={
+                onContinueAsThread
+                  ? (prompt, response) =>
+                      onContinueAsThread(prompt, response, null, title)
+                  : undefined
+              }
               initialPrompt={highlightPrompt}
               mockResponses={mockAiResponses}
               autoRespond={autoOpenAskAi}

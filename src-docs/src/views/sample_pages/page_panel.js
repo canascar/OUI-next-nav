@@ -1,0 +1,277 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+import React, { useRef, useState } from 'react';
+import {
+  OuiButtonIcon,
+  OuiIcon,
+  OuiPopover,
+  OuiToolTip,
+} from '../../../../src/components';
+import { SOURCE_PAGE_MOCK } from './session_models';
+import { DetailPageHeader } from './detail_page_header';
+import { NewTabPage } from './new_tab_page';
+
+/**
+ * Icon mapping for page keys.
+ */
+export const PAGE_TAB_ICONS = {
+  logs: 'navDiscover',
+  alerts: 'navAlerting',
+  'alerts-detail': 'navAlerting',
+  dashboards: 'navDashboards',
+  notebooks: 'navNotebooks',
+  metrics: 'visArea',
+  discover: 'navDiscover',
+  'discover-log': 'navDiscover',
+  'discover-metric': 'visArea',
+  'app-map': 'navServiceMap',
+  'app-traces': 'apmTrace',
+  'app-services': 'navDashboards',
+  traces: 'navServices',
+  'new-tab': 'folderClosed',
+};
+
+/**
+ * TabBar — Renders the horizontal tab bar with individual tabs and an add-tab button.
+ *
+ * @param {Object} props
+ * @param {import('./session_models').PageTab[]} props.tabs - Open tabs
+ * @param {string|null} props.activeTabId - Currently active tab ID
+ * @param {(tabId: string) => void} props.onTabSelect - Tab selection handler
+ * @param {(tabId: string) => void} props.onTabClose - Tab close handler
+ * @param {() => void} props.onAddTab - Add new tab handler
+ */
+const TabBar = ({ tabs, activeTabId, onTabSelect, onTabClose, onAddTab, onExpandChat, aiButtonHighlight }) => {
+  const tabListRef = useRef(null);
+  const [isListOpen, setIsListOpen] = useState(false);
+
+  const handleKeyDown = (e, tabId, index) => {
+    const tabElements = tabListRef.current?.querySelectorAll('[role="tab"]');
+    if (!tabElements) return;
+
+    let targetIndex = -1;
+
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      targetIndex = index < tabElements.length - 1 ? index + 1 : 0;
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      targetIndex = index > 0 ? index - 1 : tabElements.length - 1;
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onTabSelect(tabId);
+      return;
+    }
+
+    if (targetIndex >= 0 && tabElements[targetIndex]) {
+      tabElements[targetIndex].focus();
+    }
+  };
+
+  return (
+    <div className="pagePanel__tabBar">
+      {onExpandChat && (
+        <div className={`pagePanel__aiButton${aiButtonHighlight ? ' pagePanel__aiButton--highlight' : ''}`} onClick={onExpandChat}>
+          <OuiButtonIcon
+            iconType="generate"
+            aria-label="Open AI chat"
+            size="s"
+            color={aiButtonHighlight ? 'primary' : 'text'}
+            display="empty"
+          />
+        </div>
+      )}
+      <div
+        className="pagePanel__tabList"
+        role="tablist"
+        aria-label="Open pages"
+        ref={tabListRef}>
+        {tabs.map((tab, index) => {
+          const isActive = tab.id === activeTabId;
+          return (
+            <React.Fragment key={tab.id}>
+              {index > 0 && <div className="pagePanel__tabSeparator" />}
+              <div
+                role="tab"
+                aria-selected={isActive}
+                aria-label={tab.title}
+                tabIndex={isActive ? 0 : -1}
+                className={`pagePanel__tab${
+                  isActive ? ' pagePanel__tab--active' : ''
+                }`}
+                onClick={() => onTabSelect(tab.id)}
+                onKeyDown={(e) => handleKeyDown(e, tab.id, index)}>
+                <OuiIcon type={PAGE_TAB_ICONS[tab.pageKey] || 'folderClosed'} size="s" />
+                <span className="pagePanel__tabTitle">{tab.title}</span>
+                {isActive && (
+                  <button
+                    className="pagePanel__tabClose"
+                    aria-label={`Close ${tab.title}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onTabClose(tab.id);
+                    }}
+                    tabIndex={-1}>
+                    <OuiButtonIcon
+                      iconType="cross"
+                      aria-label={`Close ${tab.title}`}
+                      size="xs"
+                      color="text"
+                      display="empty"
+                    />
+                  </button>
+                )}
+              </div>
+            </React.Fragment>
+          );
+        })}
+        {tabs.length > 0 && <div className="pagePanel__tabSeparator" />}
+        <OuiButtonIcon
+          iconType="plus"
+          aria-label="Add new tab"
+          size="s"
+          color="text"
+          display="empty"
+          onClick={onAddTab}
+          className="pagePanel__addTabButton"
+        />
+      </div>
+
+      {/* List icon — far right, shows popover with all tabs */}
+      <div className="pagePanel__tabListAction">
+        <OuiPopover
+          button={
+            <OuiButtonIcon
+              iconType="list"
+              aria-label="Browse all tabs"
+              size="s"
+              color="text"
+              display="empty"
+              onClick={() => setIsListOpen((open) => !open)}
+            />
+          }
+          isOpen={isListOpen}
+          closePopover={() => setIsListOpen(false)}
+          anchorPosition="downRight"
+          panelPaddingSize="s">
+          <div className="pagePanel__tabListPopover">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                className={`pagePanel__tabListItem${
+                  tab.id === activeTabId
+                    ? ' pagePanel__tabListItem--active'
+                    : ''
+                }`}
+                onClick={() => {
+                  onTabSelect(tab.id);
+                  setIsListOpen(false);
+                }}>
+                {tab.title}
+              </button>
+            ))}
+          </div>
+        </OuiPopover>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * PagePanel — Manages browser-like tabs and renders page content.
+ *
+ * Renders a TabBar at the top showing all open tabs with close buttons and an add-tab button.
+ * Below the tab bar, renders the active tab's content:
+ * - If the active tab's pageKey is 'new-tab', renders NewTabPage
+ * - Otherwise, looks up the component from SOURCE_PAGE_MOCK and renders it
+ *
+ * @param {Object} props
+ * @param {import('./session_models').PageTab[]} props.tabs - Open page tabs
+ * @param {string|null} props.activeTabId - Currently active tab ID
+ * @param {(tabId: string) => void} props.onTabSelect - Tab selection handler
+ * @param {(tabId: string) => void} props.onTabClose - Tab close handler
+ * @param {() => void} props.onAddTab - Add new tab handler
+ * @param {(pageKey: string, title: string) => void} props.onSelectPage - Loads a page in the current active tab (from NewTabPage)
+ */
+export const PagePanel = ({
+  tabs,
+  activeTabId,
+  onTabSelect,
+  onTabClose,
+  onAddTab,
+  onSelectPage,
+  onExpandChat,
+  aiButtonHighlight,
+  onQueryExecute,
+}) => {
+  const activeTab = tabs.find((tab) => tab.id === activeTabId);
+
+  /** Render the content for the active tab */
+  const renderTabContent = () => {
+    if (!activeTab) {
+      return (
+        <div className="pagePanel__empty">
+          <p>No tabs open. Click + to open a new tab.</p>
+        </div>
+      );
+    }
+
+    if (activeTab.pageKey === 'new-tab') {
+      return <NewTabPage onSelectPage={onSelectPage} />;
+    }
+
+    const pageEntry = SOURCE_PAGE_MOCK[activeTab.pageKey];
+    if (!pageEntry) {
+      return (
+        <div className="pagePanel__empty">
+          <p>Page not found: {activeTab.pageKey}</p>
+        </div>
+      );
+    }
+
+    const PageComponent = pageEntry.component;
+
+    // Pages that have their own header — skip DetailPageHeader
+    const PAGES_WITH_OWN_HEADER = new Set(['discover-log', 'discover-metric']);
+    const skipHeader = PAGES_WITH_OWN_HEADER.has(activeTab.pageKey);
+
+    return (
+      <div className="pagePanel__canvasWrapper">
+        {!skipHeader && <DetailPageHeader title={activeTab.title} hideAskAi />}
+        <div className="pagePanel__canvasContent">
+          <PageComponent onQueryExecute={skipHeader ? onQueryExecute : undefined} />
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="pagePanel" role="region" aria-label="Page panel">
+      <TabBar
+        tabs={tabs}
+        activeTabId={activeTabId}
+        onTabSelect={onTabSelect}
+        onTabClose={onTabClose}
+        onAddTab={onAddTab}
+        onExpandChat={onExpandChat}
+        aiButtonHighlight={aiButtonHighlight}
+      />
+      <div
+        className="pagePanel__content"
+        role="tabpanel"
+        aria-label={activeTab ? activeTab.title : 'No tab selected'}>
+        {renderTabContent()}
+      </div>
+    </div>
+  );
+};

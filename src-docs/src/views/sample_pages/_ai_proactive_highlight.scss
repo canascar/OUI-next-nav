@@ -1,0 +1,90 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+// sass-lint:disable no-misspelled-properties, no-color-literals
+
+// =============================================================================
+// AI Proactive Highlight Styles
+// =============================================================================
+// Two-phase animation on the Ask_AI_Button:
+// 1. Loading phase: animated border snake (conic gradient rotation)
+// 2. Pulse phase: persistent pulsing box-shadow to attract attention
+//
+// These styles use OUI design tokens ($ouiColorPrimary) and render correctly
+// under both v9-light and v9-dark themes since the token resolves per-theme.
+// =============================================================================
+
+// --- Phase 1: Loading animation (border snake) ---
+// A conic-gradient border that rotates around the button to indicate
+// the AI is processing/loading a proactive insight.
+.askAiFloating__button--loading {
+  position: relative;
+  border-color: transparent;
+  overflow: visible;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 7px;
+    padding: 1px;
+    background: conic-gradient(
+      from var(--angle),
+      $ouiColorPrimary 0%,
+      rgba($ouiColorPrimary, 0) 30%,
+      rgba($ouiColorPrimary, 0) 100%
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: askAiProactiveLoading 3s ease-in-out infinite;
+  }
+}
+
+// --- Phase 2: Persistent pulse animation ---
+// A gentle pulsing box-shadow that persists until the user clicks the button.
+.askAiFloating__button--pulse {
+  animation: askAiProactivePulse 1.5s ease-in-out infinite;
+  box-shadow: 0 0 0 2px rgba($ouiColorPrimary, 0.2);
+}
+
+// --- Keyframes ---
+
+// Loading phase: rotates the conic-gradient angle
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes askAiProactiveLoading {
+  0% {
+    --angle: 0deg;
+  }
+
+  100% {
+    --angle: 360deg;
+  }
+}
+
+// Pulse phase: expands and contracts the box-shadow
+@keyframes askAiProactivePulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2px rgba($ouiColorPrimary, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 0 0 5px rgba($ouiColorPrimary, 0.1);
+  }
+}

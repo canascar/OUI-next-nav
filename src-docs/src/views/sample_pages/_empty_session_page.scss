@@ -1,0 +1,383 @@
+/*!
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+.emptySessionPage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  padding: 8px 8px 8px 0;
+  background-color: $ouiPageBackgroundColor;
+}
+
+.emptySessionPage__panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  height: 100%;
+  border: 1px solid $ouiBorderColor;
+  border-radius: 8px;
+  padding: 80px 24px 24px;
+  overflow: hidden;
+}
+
+// Header / Title
+.emptySessionPage__header {
+  text-align: center;
+}
+
+// Content container — constrains width
+.emptySessionPage__content {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 24px;
+  width: 100%;
+  max-width: 832px;
+  flex: 1;
+  min-height: 0;
+}
+
+// System Callout
+.emptySessionPage__callout {
+  display: flex;
+  width: 100%;
+  max-width: 848px;
+}
+
+.emptySessionPage__calloutBorder {
+  width: 2px;
+  flex-shrink: 0;
+  background-color: $ouiColorDanger;
+}
+
+.emptySessionPage__calloutContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  padding: 16px;
+  background-color: #f8e9e9;
+}
+
+.emptySessionPage__calloutText {
+  font-size: $ouiFontSizeXS;
+  color: $ouiTextColor;
+  margin: 0;
+}
+
+.emptySessionPage__calloutCta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 4px 6px;
+  border: 1px solid $ouiColorDanger;
+  border-radius: 4px;
+  background: none;
+  color: $ouiColorDanger;
+  font-size: $ouiFontSizeS;
+  cursor: pointer;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.05), 0 1px 5px rgba(0, 0, 0, 0.05);
+  align-self: flex-start;
+
+  &:hover {
+    background-color: rgba($ouiColorDanger, 0.05);
+  }
+}
+
+// Dual-purpose input
+.emptySessionPage__inputWrap {
+  position: relative;
+  width: 100%;
+}
+
+.emptySessionPage__inputField {
+  position: relative;
+}
+
+// Extra bottom padding for the textarea to make room for action buttons
+.emptySessionPage__textarea textarea {
+  padding-bottom: 36px;
+}
+
+// Plus (bottom-left) and send (bottom-right) inside the textarea
+.emptySessionPage__inputActions {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+  }
+}
+
+.emptySessionPage__suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background-color: $ouiColorEmptyShade;
+  border: 1px solid $ouiBorderColor;
+  border-top: none;
+  border-radius: 0 0 2px 2px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.emptySessionPage__suggestionItem {
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeS;
+  width: 100%;
+  padding: $ouiSizeS $ouiSize;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: $ouiFontSizeS;
+  color: $ouiTextColor;
+
+  &:hover {
+    background-color: $ouiFocusBackgroundColor;
+  }
+}
+
+// Quick Access Row
+.emptySessionPage__quickAccess {
+  width: 100%;
+}
+
+.emptySessionPage__quickAccessRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 64px;
+}
+
+.emptySessionPage__quickAccessItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 64px;
+  cursor: pointer;
+}
+
+.emptySessionPage__quickAccessButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: none;
+  background-color: $ouiColorEmptyShade;
+  cursor: pointer;
+  padding: 24px;
+  transition: background-color 150ms ease-in-out;
+
+  &:hover {
+    background-color: $ouiColorLightShade;
+  }
+}
+
+.emptySessionPage__quickAccessLabel {
+  font-size: $ouiFontSizeXS;
+  line-height: 18px;
+  color: $ouiTitleColor;
+  text-align: center;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+// More options dropdown
+.emptySessionPage__moreOptions {
+  margin-top: $ouiSizeS;
+  background-color: $ouiColorEmptyShade;
+  border: 1px solid $ouiBorderColor;
+  border-radius: 2px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: $ouiSizeXS 0;
+}
+
+.emptySessionPage__moreOptionItem {
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeS;
+  width: 100%;
+  padding: $ouiSizeS $ouiSize;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: $ouiFontSizeS;
+  color: $ouiTextColor;
+
+  &:hover {
+    background-color: $ouiFocusBackgroundColor;
+  }
+}
+
+// Tabs section
+.emptySessionPage__tabs {
+  width: 100%;
+  max-width: 848px;
+}
+
+.emptySessionPage__tabHeaders {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 10px;
+}
+
+.emptySessionPage__tabHeader {
+  padding: 8px 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: $ouiFontSizeS;
+  font-weight: 700;
+  color: $ouiTextColor;
+  border-bottom: 2px solid transparent;
+
+  &:hover {
+    color: $ouiColorPrimary;
+  }
+
+  &--active {
+    color: $ouiColorPrimary;
+    border-bottom-color: $ouiColorPrimary;
+  }
+}
+
+.emptySessionPage__tabContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.emptySessionPage__tabs .ouiTabs--condensed {
+  margin-bottom: 12px;
+}
+
+.emptySessionPage__sectionTitle {
+  font-size: $ouiFontSizeS;
+  font-weight: 700;
+  color: $ouiTitleColor;
+  padding: 8px 0;
+  margin-bottom: 12px;
+}
+
+.emptySessionPage__emptyList {
+  text-align: center;
+  padding: $ouiSizeL 0;
+}
+
+.emptySessionPage__placeholderRow {
+  height: 60px;
+  background-color: #d9d9d9;
+  border-radius: 4px;
+}
+
+.emptySessionPage__itemList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.emptySessionPage__listItem {
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeS;
+  width: 100%;
+  padding: $ouiSizeS $ouiSizeS;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: $ouiFontSizeS;
+  color: $ouiTextColor;
+  border-radius: 2px;
+
+  &:hover {
+    background-color: $ouiFocusBackgroundColor;
+  }
+}
+
+.emptySessionPage__listItemTitle {
+  flex: 1;
+}
+
+.emptySessionPage__listItemTime {
+  color: $ouiColorMediumShade;
+  font-size: $ouiFontSizeXS;
+}
+
+// Filter chips row
+.emptySessionPage__chips {
+  display: flex;
+  gap: 36px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.emptySessionPage__chip {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background-color: $ouiColorEmptyShade;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: $ouiFontSizeXS;
+  color: $ouiTitleColor;
+  white-space: nowrap;
+  transition: background-color 150ms ease-in-out;
+
+  &:hover {
+    background-color: $ouiColorLightShade;
+  }
+
+  &--active {
+    background-color: $ouiColorLightShade;
+    font-weight: 600;
+
+    &:hover {
+      background-color: darken($ouiColorLightShade, 3%);
+    }
+  }
+}
+
+.emptySessionPage__searchLabel {
+  font-size: $ouiFontSizeXS;
+  color: $ouiColorMediumShade;
+  text-align: left;
+  padding-left: 8px;
+}
