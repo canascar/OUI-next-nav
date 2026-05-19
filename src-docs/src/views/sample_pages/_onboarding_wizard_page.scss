@@ -1,8 +1,8 @@
-// Onboarding Wizard — step-by-step split layout
+// Onboarding Wizard — 8-step split-panel layout for OpenSearch Observability
 // sass-lint:disable no-color-literals
 
 .onboardWizard {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -10,6 +10,10 @@
   display: flex;
   background: linear-gradient(135deg, #f0fafa 0%, #f7f9fc 50%, #ffffff 100%);
 }
+
+// ─────────────────────────────────────────────
+// LEFT PANEL
+// ─────────────────────────────────────────────
 
 .onboardWizard__left {
   width: 38%;
@@ -26,6 +30,10 @@
   display: flex;
   flex-direction: column;
 }
+
+// ─────────────────────────────────────────────
+// RIGHT PANEL
+// ─────────────────────────────────────────────
 
 .onboardWizard__right {
   flex: 1;
@@ -46,12 +54,49 @@
   min-height: 400px;
 }
 
-// Step indicator
+// ─────────────────────────────────────────────
+// STEP INDICATOR & TIMELINE
+// ─────────────────────────────────────────────
+
 .onboardWizard__stepIndicator {
   padding: 4px 0;
 }
 
-// Question area
+.onboardWizard__timeline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0 0;
+}
+
+.onboardWizard__timelineDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  cursor: default;
+  transition: transform 150ms ease, background-color 150ms ease;
+
+  &--done {
+    background: $ouiColorSuccess;
+    cursor: pointer;
+
+    &:hover {
+      transform: scale(1.3);
+    }
+  }
+
+  &--current {
+    background: $ouiColorPrimary;
+    box-shadow: 0 0 0 3px rgba($ouiColorPrimary, 0.2);
+  }
+}
+
+// ─────────────────────────────────────────────
+// QUESTION AREA
+// ─────────────────────────────────────────────
+
 .onboardWizard__question {
   padding: 12px 16px;
   background: $ouiColorEmptyShade;
@@ -59,7 +104,10 @@
   border: 1px solid $ouiBorderColor;
 }
 
-// Chip options
+// ─────────────────────────────────────────────
+// CHIP OPTIONS
+// ─────────────────────────────────────────────
+
 .onboardWizard__chips {
   display: flex;
   flex-wrap: wrap;
@@ -117,44 +165,59 @@
   }
 }
 
-// Card options
-.onboardWizard__optionCards {
+// ─────────────────────────────────────────────
+// MULTI-SELECT (Step 5: Transformations)
+// ─────────────────────────────────────────────
+
+.onboardWizard__multiSelect {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.onboardWizard__optionCard {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 16px;
+.onboardWizard__multiOption {
+  padding: 12px 16px;
   border: 1px solid $ouiBorderColor;
   border-radius: $ouiBorderRadius;
   background: $ouiColorEmptyShade;
-  cursor: pointer;
-  text-align: left;
+}
+
+.onboardWizard__multiDesc {
+  padding-left: 24px;
+  margin-top: 4px;
+}
+
+.onboardWizard__multiActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-top: 4px;
+}
+
+.onboardWizard__skipLink {
+  background: none;
+  border: none;
+  color: $ouiTextSubduedColor;
+  font-size: $ouiFontSizeS;
   font-family: inherit;
-  width: 100%;
-  transition: background-color 150ms ease, border-color 150ms ease;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 
   &:hover:not(:disabled) {
-    background: rgba($ouiColorPrimary, 0.04);
-    border-color: $ouiColorPrimary;
-  }
-
-  &--selected {
-    border-color: $ouiColorPrimary;
-    background: rgba($ouiColorPrimary, 0.08);
+    color: $ouiTextColor;
   }
 
   &:disabled {
-    opacity: 0.6;
-    cursor: default;
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 }
 
-// Processing indicator
+// ─────────────────────────────────────────────
+// PROCESSING INDICATOR
+// ─────────────────────────────────────────────
+
 .onboardWizard__processing {
   display: flex;
   align-items: center;
@@ -162,7 +225,10 @@
   padding: 8px 0;
 }
 
-// Progress dots (timeline between question and confirmation)
+// ─────────────────────────────────────────────
+// PROGRESS DOTS (timeline between question and confirmation)
+// ─────────────────────────────────────────────
+
 .onboardWizard__progressDots {
   display: flex;
   flex-direction: column;
@@ -191,7 +257,10 @@
   }
 }
 
-// Confirmation card
+// ─────────────────────────────────────────────
+// CONFIRMATION CARD
+// ─────────────────────────────────────────────
+
 .onboardWizard__confirmation {
   padding: 12px 16px;
   border: 1px solid $ouiBorderColor;
@@ -206,7 +275,10 @@
   margin-bottom: 6px;
 }
 
-// Next button
+// ─────────────────────────────────────────────
+// NEXT BUTTON
+// ─────────────────────────────────────────────
+
 .onboardWizard__nextBtn {
   display: inline-flex;
   align-items: center;
@@ -226,7 +298,10 @@
   }
 }
 
-// Input area at bottom of left panel
+// ─────────────────────────────────────────────
+// INPUT AREA (bottom of left panel)
+// ─────────────────────────────────────────────
+
 .onboardWizard__inputArea {
   margin-top: auto;
   padding-top: 16px;
@@ -239,7 +314,10 @@
   background: $ouiColorEmptyShade;
 }
 
-// Footer
+// ─────────────────────────────────────────────
+// FOOTER
+// ─────────────────────────────────────────────
+
 .onboardWizard__footer {
   position: fixed;
   bottom: 0;
@@ -267,7 +345,9 @@
   }
 }
 
-// --- Right Panel Content Styles ---
+// ─────────────────────────────────────────────
+// RIGHT PANEL CONTENT — SHARED
+// ─────────────────────────────────────────────
 
 .onboardWizard__rightContent {
   min-height: 340px;
@@ -279,7 +359,165 @@
   gap: 12px;
 }
 
-// Provider cards grid (data sources step)
+// ─────────────────────────────────────────────
+// GETTING STARTED — Card Grid (Step 1)
+// ─────────────────────────────────────────────
+
+.onboardWizard__cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.onboardWizard__previewCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 24px 16px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorEmptyShade;
+  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+
+  &--active {
+    border-color: $ouiColorPrimary;
+    box-shadow: 0 0 0 2px rgba($ouiColorPrimary, 0.15), 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+}
+
+// ─────────────────────────────────────────────
+// ENVIRONMENT — Grid (Step 2)
+// ─────────────────────────────────────────────
+
+.onboardWizard__envGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.onboardWizard__envCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 20px 12px 14px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorEmptyShade;
+  text-align: center;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+
+  &--selected {
+    border-color: $ouiColorPrimary;
+    box-shadow: 0 0 0 1px $ouiColorPrimary;
+  }
+}
+
+.onboardWizard__envBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  background: $ouiColorLightestShade;
+  border-radius: 10px;
+  color: $ouiTextSubduedColor;
+}
+
+.onboardWizard__envSignals {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.onboardWizard__envSignal {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  color: $ouiTextSubduedColor;
+  text-transform: capitalize;
+}
+
+.onboardWizard__envDetail {
+  padding: 16px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorLightestShade;
+}
+
+.onboardWizard__envDetailList {
+  list-style: disc;
+  padding-left: 20px;
+  margin: 4px 0;
+  font-size: $ouiFontSizeXS;
+  color: $ouiTextSubduedColor;
+
+  li {
+    margin-bottom: 2px;
+  }
+}
+
+// ─────────────────────────────────────────────
+// COLLECTOR SETUP — Code Block (Step 3)
+// ─────────────────────────────────────────────
+
+.onboardWizard__codeBlock {
+  position: relative;
+  background: $ouiColorDarkestShade;
+  border-radius: $ouiBorderRadius;
+  padding: 16px;
+  overflow-x: auto;
+}
+
+.onboardWizard__code {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-size: $ouiFontSizeXS;
+  background: transparent !important; // sass-lint:disable-line no-important
+  color: $ouiColorEmptyShade !important; // sass-lint:disable-line no-important
+  border: none !important; // sass-lint:disable-line no-important
+  padding: 0 !important; // sass-lint:disable-line no-important
+}
+
+.onboardWizard__copyBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: $ouiBorderRadius;
+  background: rgba(255, 255, 255, 0.1);
+  color: $ouiColorEmptyShade;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 150ms ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+.onboardWizard__verifiedStatus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid $ouiColorSuccess;
+  border-radius: $ouiBorderRadius;
+  background: rgba($ouiColorSuccess, 0.06);
+}
+
+// ─────────────────────────────────────────────
+// DATA SOURCES — Provider Grid (Step 4)
+// ─────────────────────────────────────────────
+
 .onboardWizard__providerGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -341,7 +579,7 @@
   50% { opacity: 0.4; }
 }
 
-// Live ingest panel
+// LIVE INGEST panel (shared between Step 4 and Step 7)
 .onboardWizard__ingestPanel {
   padding: 16px;
   border: 1px solid $ouiBorderColor;
@@ -390,57 +628,55 @@
 
 .onboardWizard__sparkDot {
   display: inline-block;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
 }
 
-.onboardWizard__ingestToggle {
-  flex-shrink: 0;
-}
+// ─────────────────────────────────────────────
+// TRANSFORMATIONS — Before/After (Step 5)
+// ─────────────────────────────────────────────
 
-// Signal cards (choose signals step)
-.onboardWizard__signalList {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.onboardWizard__signalCard {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 16px;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  background: $ouiColorEmptyShade;
-  transition: border-color 150ms ease, background-color 150ms ease;
-
-  &--active {
-    border-color: $ouiColorSuccess;
-    background: rgba($ouiColorSuccess, 0.04);
-  }
-}
-
-.onboardWizard__signalCheck {
-  margin-left: auto;
-  flex-shrink: 0;
-}
-
-// Retention stats
-.onboardWizard__retentionStats {
+.onboardWizard__transformCompare {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
 
-.onboardWizard__statCard {
-  padding: 20px;
+.onboardWizard__transformBlock {
+  display: flex;
+  flex-direction: column;
+}
+
+.onboardWizard__logPreview {
+  background: $ouiColorLightestShade;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  padding: 12px;
+  font-size: 11px;
+  font-family: monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+  overflow-x: auto;
+  max-height: 240px;
+  overflow-y: auto;
+  margin: 0;
+}
+
+.onboardWizard__pipelineStatus {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
   border: 1px solid $ouiBorderColor;
   border-radius: $ouiBorderRadius;
   background: $ouiColorEmptyShade;
-  text-align: center;
 }
 
-// Summary
+// ─────────────────────────────────────────────
+// SUMMARY (Step 6)
+// ─────────────────────────────────────────────
+
 .onboardWizard__summaryList {
   display: flex;
   flex-direction: column;
@@ -457,7 +693,162 @@
   background: $ouiColorEmptyShade;
 }
 
-// Info placeholder
+.onboardWizard__estimatedResources {
+  padding: 16px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorLightestShade;
+}
+
+.onboardWizard__resourceGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.onboardWizard__resourceItem {
+  text-align: center;
+}
+
+// ─────────────────────────────────────────────
+// LIVE COUNTERS (Step 7)
+// ─────────────────────────────────────────────
+
+.onboardWizard__liveCounters {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.onboardWizard__counterRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorEmptyShade;
+}
+
+.onboardWizard__counterIcon {
+  flex-shrink: 0;
+}
+
+.onboardWizard__counterInfo {
+  flex: 1;
+}
+
+.onboardWizard__counterValue {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.onboardWizard__counterNumber {
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.onboardWizard__counterRate {
+  font-size: $ouiFontSizeXS;
+  font-weight: 500;
+}
+
+.onboardWizard__counterDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: onboardWizardPulse 1.5s infinite;
+}
+
+.onboardWizard__miniSparkline {
+  width: 70px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.onboardWizard__collectionHealth {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorLightestShade;
+}
+
+// ─────────────────────────────────────────────
+// COMPLETION DASHBOARD (Step 8)
+// ─────────────────────────────────────────────
+
+.onboardWizard__completionStatus {
+  display: flex;
+  align-items: center;
+}
+
+.onboardWizard__healthBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  background: rgba($ouiColorSuccess, 0.1);
+  color: $ouiColorSuccess;
+  font-size: $ouiFontSizeS;
+  font-weight: 500;
+}
+
+.onboardWizard__completionStats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.onboardWizard__completionStat {
+  padding: 16px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorEmptyShade;
+  text-align: center;
+}
+
+.onboardWizard__quickLinks {
+  padding: 16px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorLightestShade;
+}
+
+.onboardWizard__quickLinkRow {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.onboardWizard__quickLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorEmptyShade;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 150ms ease;
+
+  &:hover {
+    border-color: $ouiColorPrimary;
+  }
+}
+
+// ─────────────────────────────────────────────
+// INFO PLACEHOLDER (fallback)
+// ─────────────────────────────────────────────
+
 .onboardWizard__infoPlaceholder {
   display: flex;
   align-items: center;
