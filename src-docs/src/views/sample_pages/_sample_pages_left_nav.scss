@@ -295,7 +295,7 @@
 .samplePagesLeftNav {
   width: 48px;
   min-width: 48px;
-  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .2);
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.75), rgba(14, 21, 37, 0.80)); // sass-lint:disable-line no-color-literals
   border-right: none;
   display: flex;
   flex-direction: column;
@@ -488,7 +488,7 @@
 .samplePagesLeftNav__expandedPanel {
   width: 320px;
   min-width: 320px;
-  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), 0);
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.80), rgba(14, 21, 37, 0.75)); // sass-lint:disable-line no-color-literals
   backdrop-filter: blur(60px);
   -webkit-backdrop-filter: blur(60px);
   border-right: none;
@@ -750,7 +750,7 @@
 .samplePagesLeftNav__expandedPanel {
   width: 280px;
   min-width: 280px;
-  background-color: $ouiColorEmptyShade;
+  background-color: lightOrDarkTheme($ouiColorEmptyShade, $ouiColorEmptyShade);
   border-right: 1px solid $ouiBorderColor;
   border-top-right-radius: 24px;
   border-bottom-right-radius: 0;
@@ -793,11 +793,11 @@
   left: 60px;
   width: 320px;
   max-height: 400px;
-  background-color: rgba(red($ouiColorEmptyShade), green($ouiColorEmptyShade), blue($ouiColorEmptyShade), .35); // sass-lint:disable-line no-color-literals
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.60), rgba(14, 21, 37, 0.85)); // sass-lint:disable-line no-color-literals
   backdrop-filter: blur(16px);
-  border: 1px solid transparentize($ouiColorLightShade, .3);
+  border: 1px solid lightOrDarkTheme(rgba(212, 220, 232, 0.7), $ouiColorLightShade); // sass-lint:disable-line no-color-literals
   border-radius: $ouiBorderRadius;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1); // sass-lint:disable-line no-color-literals
+  box-shadow: lightOrDarkTheme(#{0 8px 32px rgba(0, 0, 0, 0.15)}, #{0 8px 32px rgba(0, 0, 0, 0.5)}); // sass-lint:disable-line no-color-literals
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -825,7 +825,7 @@
 // ============================================================
 .samplePagesContentPanel {
   height: 100%;
-  background-color: $ouiColorEmptyShade;
+  background-color: lightOrDarkTheme($ouiColorEmptyShade, $ouiPageBackgroundColor);
   border-radius: 8px;
   overflow: hidden;
 }

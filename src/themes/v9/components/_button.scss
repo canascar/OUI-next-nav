@@ -272,3 +272,12 @@
   }
 }
 // sass-lint:enable no-important, no-color-literals
+
+// sass-lint:disable no-important
+// Compressed button group — make container pill-shaped to match pill buttons inside
+.ouiButtonGroup--compressed {
+  .ouiButtonGroup__buttons {
+    border-radius: $ouiButtonBorderRadius !important;
+  }
+}
+// sass-lint:enable no-important
