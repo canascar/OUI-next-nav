@@ -14,8 +14,6 @@ import React, { useState } from 'react';
 import {
   OuiCompressedFieldSearch,
   OuiIcon,
-  OuiTabs,
-  OuiTab,
   OuiTitle,
 } from '../../../../src/components';
 
@@ -49,11 +47,11 @@ const LIBRARY_OBJECTS = [
 ];
 
 const TABS = [
-  { id: 'all', label: 'All' },
-  { id: 'dashboard', label: 'Dashboards' },
-  { id: 'log', label: 'Logs' },
-  { id: 'metric', label: 'Metrics' },
-  { id: 'query', label: 'Queries' },
+  { id: 'all', label: 'All', icon: 'apps' },
+  { id: 'dashboard', label: 'Dashboards', icon: 'navDashboards' },
+  { id: 'log', label: 'Logs', icon: 'navDiscover' },
+  { id: 'metric', label: 'Metrics', icon: 'visArea' },
+  { id: 'query', label: 'Queries', icon: 'search' },
 ];
 
 /**
@@ -94,16 +92,18 @@ export const LibraryPage = ({ onSelectPage }) => {
         </div>
 
         <div className="libraryPage__tabs">
-          <OuiTabs size="s" display="condensed">
+          <div className="emptySessionPage__chips">
             {TABS.map((tab) => (
-              <OuiTab
+              <button
                 key={tab.id}
-                isSelected={activeTab === tab.id}
+                type="button"
+                className={`emptySessionPage__chip${activeTab === tab.id ? ' emptySessionPage__chip--active' : ''}`}
                 onClick={() => setActiveTab(tab.id)}>
-                {tab.label}
-              </OuiTab>
+                <OuiIcon type={tab.icon} size="m" />
+                <span>{tab.label}</span>
+              </button>
             ))}
-          </OuiTabs>
+          </div>
         </div>
 
         <div className="libraryPage__items">
@@ -113,13 +113,12 @@ export const LibraryPage = ({ onSelectPage }) => {
             filteredItems.map((item) => (
               <button
                 key={item.key}
-                className="libraryPage__item"
+                className="emptySessionPage__listItem"
                 onClick={() => onSelectPage(item.pageKey, item.title)}>
-                <OuiIcon type={item.icon} size="m" />
-                <div className="libraryPage__itemContent">
-                  <span className="libraryPage__itemTitle">{item.title}</span>
-                  <span className="libraryPage__itemSubtitle">{item.subtitle}</span>
-                </div>
+                <span className="emptySessionPage__listItemContent">
+                  <span className="emptySessionPage__listItemTitle">{item.title}</span>
+                  <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
+                </span>
               </button>
             ))
           )}

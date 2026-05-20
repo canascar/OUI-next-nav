@@ -70,18 +70,24 @@ const QUICK_ACCESS_ITEMS = [
     action: 'page',
     pageKey: 'app-services',
   },
-  { key: 'more', label: 'More', icon: 'apps', action: 'more' },
+];
+
+const MORE_ACCESS_ITEMS = [
+  { key: 'agent-traces', label: 'Agent traces', icon: 'apmTrace', pageKey: 'app-traces' },
+  { key: 'agent-spans', label: 'Agent spans', icon: 'navServices', pageKey: 'traces' },
+  { key: 'forecasting', label: 'Forecasting', icon: 'visLine', pageKey: 'metrics' },
 ];
 
 /**
  * Filter chips for the bottom section.
  */
 const FILTER_CHIPS = [
-  { key: 'insights', label: 'Insights', icon: 'inspect' },
+  { key: 'insights', label: 'Active', icon: 'inspect' },
   { key: 'alerts', label: 'Alerts', icon: 'navAlerting' },
   { key: 'dashboards', label: 'Dashboards', icon: 'navDashboards' },
   { key: 'saved-logs', label: 'Saved logs', icon: 'navDiscover' },
   { key: 'saved-metric', label: 'Saved metric', icon: 'visArea' },
+  { key: 'others', label: 'Others', icon: 'apps' },
 ];
 
 /**
@@ -121,6 +127,11 @@ const CHIP_DATA = {
     { key: 'alert-2', title: 'Disk usage warning', subtitle: 'Warning · 1 hour ago' },
     { key: 'alert-3', title: 'Error rate spike', subtitle: 'Critical · 3 hours ago' },
     { key: 'alert-4', title: 'Payment service P99 latency breach', subtitle: 'Critical · 15 min ago', meta: 'Active', icon: 'alert' },
+  ],
+  others: [
+    { key: 'other-1', title: 'Inventory service dependency map', subtitle: 'Notebook · Updated 2 hours ago' },
+    { key: 'other-2', title: 'Weekly capacity report', subtitle: 'Notebook · Updated 1 day ago' },
+    { key: 'other-3', title: 'Deployment rollback runbook', subtitle: 'Notebook · Updated 3 days ago' },
   ],
 };
 
@@ -316,8 +327,6 @@ const QuickAccessRow = ({ onStartThread, onOpenPage }) => {
       onStartThread('');
     } else if (item.action === 'page') {
       onOpenPage(item.pageKey);
-    } else if (item.action === 'more') {
-      setShowMore(!showMore);
     }
   };
 
@@ -337,20 +346,31 @@ const QuickAccessRow = ({ onStartThread, onOpenPage }) => {
             <span className="emptySessionPage__quickAccessLabel">{item.label}</span>
           </div>
         ))}
+        <div
+          className="emptySessionPage__quickAccessItem"
+          onClick={() => setShowMore(!showMore)}>
+          <button
+            className="emptySessionPage__quickAccessButton"
+            aria-label={showMore ? 'Show less' : 'More'}>
+            <OuiIcon type={showMore ? 'minimize' : 'apps'} size="m" />
+          </button>
+          <span className="emptySessionPage__quickAccessLabel">{showMore ? 'Show less' : 'More'}</span>
+        </div>
       </div>
       {showMore && (
-        <div className="emptySessionPage__moreOptions">
-          {Object.entries(SOURCE_PAGE_MOCK).map(([pageKey, { title }]) => (
-            <button
-              key={pageKey}
-              className="emptySessionPage__moreOptionItem"
-              onClick={() => {
-                onOpenPage(pageKey);
-                setShowMore(false);
-              }}>
-              <OuiIcon type="document" size="s" />
-              <span>{title}</span>
-            </button>
+        <div className="emptySessionPage__quickAccessRow emptySessionPage__quickAccessRow--expandable">
+          {MORE_ACCESS_ITEMS.map((item) => (
+            <div
+              key={item.key}
+              className="emptySessionPage__quickAccessItem"
+              onClick={() => onOpenPage(item.pageKey)}>
+              <button
+                className="emptySessionPage__quickAccessButton"
+                aria-label={item.label}>
+                <OuiIcon type={item.icon} size="m" />
+              </button>
+              <span className="emptySessionPage__quickAccessLabel">{item.label}</span>
+            </div>
           ))}
         </div>
       )}

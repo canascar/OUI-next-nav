@@ -26,7 +26,12 @@ const TAB_QUICK_ACCESS = [
   { key: 'app-map', label: 'Application Map', icon: 'navServiceMap', pageKey: 'app-map' },
   { key: 'app-traces', label: 'Application Traces', icon: 'apmTrace', pageKey: 'app-traces' },
   { key: 'app-services', label: 'Application Services', icon: 'navDashboards', pageKey: 'app-services' },
-  { key: 'more', label: 'More', icon: 'apps', pageKey: null },
+];
+
+const TAB_MORE_ACCESS = [
+  { key: 'agent-traces', label: 'Agent traces', icon: 'apmTrace', pageKey: 'app-traces' },
+  { key: 'agent-spans', label: 'Agent spans', icon: 'navServices', pageKey: 'traces' },
+  { key: 'forecasting', label: 'Forecasting', icon: 'visLine', pageKey: 'metrics' },
 ];
 
 /**
@@ -37,6 +42,7 @@ const TAB_FILTER_CHIPS = [
   { key: 'dashboards', label: 'Dashboards', icon: 'navDashboards' },
   { key: 'saved-logs', label: 'Saved logs', icon: 'navDiscover' },
   { key: 'saved-metric', label: 'Saved metric', icon: 'visArea' },
+  { key: 'others', label: 'Others', icon: 'apps' },
 ];
 
 /**
@@ -63,11 +69,17 @@ const TAB_CHIP_DATA = {
     { key: 'alert-3', title: 'Error rate spike', subtitle: 'Critical · 3 hours ago', pageKey: 'alerts' },
     { key: 'alert-4', title: 'Payment service P99 latency breach', subtitle: 'Critical · 15 min ago', meta: 'Active', icon: 'alert', pageKey: 'alerts' },
   ],
+  others: [
+    { key: 'other-1', title: 'Inventory service dependency map', subtitle: 'Notebook · Updated 2 hours ago', pageKey: 'notebooks' },
+    { key: 'other-2', title: 'Weekly capacity report', subtitle: 'Notebook · Updated 1 day ago', pageKey: 'notebooks' },
+    { key: 'other-3', title: 'Deployment rollback runbook', subtitle: 'Notebook · Updated 3 days ago', pageKey: 'notebooks' },
+  ],
 };
 
 export const NewTabPage = ({ onSelectPage }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeChip, setActiveChip] = useState('alerts');
+  const [showMore, setShowMore] = useState(false);
 
   // Build searchable items
   const allItems = useMemo(() => {
@@ -127,14 +139,39 @@ export const NewTabPage = ({ onSelectPage }) => {
                 <div
                   key={item.key}
                   className="emptySessionPage__quickAccessItem"
-                  onClick={() => item.pageKey && onSelectPage(item.pageKey, item.label)}>
+                  onClick={() => onSelectPage(item.pageKey, item.label)}>
                   <button className="emptySessionPage__quickAccessButton" aria-label={item.label}>
                     <OuiIcon type={item.icon} size="m" />
                   </button>
                   <span className="emptySessionPage__quickAccessLabel">{item.label}</span>
                 </div>
               ))}
+              <div
+                className="emptySessionPage__quickAccessItem"
+                onClick={() => setShowMore(!showMore)}>
+                <button
+                  className="emptySessionPage__quickAccessButton"
+                  aria-label={showMore ? 'Show less' : 'More'}>
+                  <OuiIcon type={showMore ? 'minimize' : 'apps'} size="m" />
+                </button>
+                <span className="emptySessionPage__quickAccessLabel">{showMore ? 'Show less' : 'More'}</span>
+              </div>
             </div>
+            {showMore && (
+              <div className="emptySessionPage__quickAccessRow emptySessionPage__quickAccessRow--expandable">
+                {TAB_MORE_ACCESS.map((item) => (
+                  <div
+                    key={item.key}
+                    className="emptySessionPage__quickAccessItem"
+                    onClick={() => onSelectPage(item.pageKey, item.label)}>
+                    <button className="emptySessionPage__quickAccessButton" aria-label={item.label}>
+                      <OuiIcon type={item.icon} size="m" />
+                    </button>
+                    <span className="emptySessionPage__quickAccessLabel">{item.label}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <OuiSpacer size="m" />

@@ -54,52 +54,6 @@
   padding-right: $ouiSizeL;
 }
 
-.libraryPage__item {
-  display: flex;
-  align-items: center;
-  gap: $ouiSize;
-  width: 100%;
-  padding: $ouiSize;
-  border: $ouiBorderThin;
-  border-radius: $ouiBorderRadius;
-  background-color: $ouiColorEmptyShade;
-  cursor: pointer;
-  text-align: left;
-  transition: background-color $ouiAnimSpeedFast ease-in-out,
-              box-shadow $ouiAnimSpeedFast ease-in-out;
-
-  &:hover {
-    background-color: $ouiFocusBackgroundColor;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px $ouiFocusRingColor;
-  }
-}
-
-.libraryPage__itemContent {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.libraryPage__itemTitle {
-  font-size: $ouiFontSizeS;
-  font-weight: $ouiFontWeightMedium;
-  color: $ouiTextColor;
-}
-
-.libraryPage__itemSubtitle {
-  font-size: $ouiFontSizeXS;
-  color: $ouiColorMediumShade;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .libraryPage__empty {
   text-align: center;
   padding: $ouiSizeXL 0;
