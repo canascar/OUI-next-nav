@@ -772,6 +772,31 @@
   border: 1px solid $ouiBorderColor;
   border-radius: $ouiBorderRadius;
   background: $ouiColorEmptyShade;
+
+  &--withChart {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 16px 16px 8px;
+  }
+}
+
+.onboardWizard__counterMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.onboardWizard__counterChart {
+  width: 100%;
+  height: 72px;
+  margin-top: 4px;
+}
+
+.onboardWizard__areaChart {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .onboardWizard__counterIcon {
@@ -805,12 +830,6 @@
   border-radius: 50%;
   flex-shrink: 0;
   animation: onboardWizardPulse 1.5s infinite;
-}
-
-.onboardWizard__miniSparkline {
-  width: 70px;
-  height: 28px;
-  flex-shrink: 0;
 }
 
 .onboardWizard__collectionHealth {

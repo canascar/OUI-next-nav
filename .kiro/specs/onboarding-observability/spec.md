@@ -108,6 +108,9 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 | Dynamic behavior | None — the checklist is purely informational, showing the user the full journey ahead. Items are not clickable or checkable. |
 | Secondary section | None |
 
+| Content details | A structured summary card showing all selections: (1) Observation goal, (2) Environment, (3) Data source / provider, (4) Signals enabled (metrics, logs, traces), (5) Estimated data volume, (6) Index patterns to be created. Each row shows the step title, selected value, and an edit icon. |
+| Dynamic behavior | If user selects "I want to make changes," the right panel highlights the editable fields and the left panel navigates back to the relevant step. If user confirms, a deployment progress indicator appears showing: creating indices → configuring pipeline → starting collection → verifying data flow. |
+
 ---
 
 ### Step 1 of 6 — Sub-step 1b
@@ -299,10 +302,10 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 | System message | *Your observability pipeline is live! Data is flowing into OpenSearch. Here are some next steps to explore.* |
 | Option type | Chips (pill buttons) |
 | Options | |
-| | Option 1: `Go to Dashboards` — View your pre-built observability dashboards |
-| | Option 2: `Explore in Discover` — Query your data in the Discover interface |
-| | Option 3: `Set up Alerts` — Configure alerting rules for your signals |
-| | Option 4: `Add more data sources` — Connect additional providers or applications |
+| | Option 1: `Start using OpenSearch` — View your pre-built observability dashboards | Primary button for option 1 |
+| | Option 2: `Set up Alerts` — Configure alerting rules for your signals |
+| | Option 3: `Collect data sources` — Connect additional providers or applications |
+| | Option 4: `Import dashboards and queries` — Import objects from other platforms such as Splunk, Elastic, and Datadog |
 | Default selection | None |
 | Confirmation message | *(No confirmation needed — selections navigate to the chosen destination)* |
 

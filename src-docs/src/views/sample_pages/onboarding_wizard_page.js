@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
 import {
   OuiButtonIcon,
@@ -655,11 +655,87 @@ const SummaryPanel = ({ allSelections }) => {
   );
 };
 
+// Generates initial data points for the streaming area chart
+const generateInitialData = (points, baseValue, variance) =>
+  Array.from({ length: points }, () =>
+    baseValue + Math.floor(Math.random() * variance)
+  );
+
+// Attempt a smooth cubic bezier path through points (mimics monotone interpolation)
+const buildSmoothPath = (points, width, height, padding) => {
+  if (points.length < 2) return '';
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const range = max - min || 1;
+
+  const coords = points.map((val, i) => ({
+    x: (i / (points.length - 1)) * width,
+    y: padding + (1 - (val - min) / range) * (height - padding * 2),
+  }));
+
+  // Build a smooth cubic bezier path
+  let path = `M ${coords[0].x},${coords[0].y}`;
+  for (let i = 1; i < coords.length; i++) {
+    const prev = coords[i - 1];
+    const curr = coords[i];
+    const cpx = (prev.x + curr.x) / 2;
+    path += ` C ${cpx},${prev.y} ${cpx},${curr.y} ${curr.x},${curr.y}`;
+  }
+  return path;
+};
+
+// A single streaming area chart using pure SVG — gradient fill like shadcn's area chart
+const LiveStreamAreaChart = ({ color, data }) => {
+  const width = 280;
+  const height = 72;
+  const padding = 4;
+  const gradientId = useMemo(
+    () => `area-grad-${color.replace('#', '')}`,
+    [color]
+  );
+
+  const linePath = buildSmoothPath(data, width, height, padding);
+  // Close the path to form a filled area
+  const areaPath = `${linePath} L ${width},${height} L 0,${height} Z`;
+
+  return (
+    <svg
+      className="onboardWizard__areaChart"
+      viewBox={`0 0 ${width} ${height}`}
+      preserveAspectRatio="none"
+      aria-hidden="true">
+      <defs>
+        <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.3" />
+          <stop offset="95%" stopColor={color} stopOpacity="0.02" />
+        </linearGradient>
+      </defs>
+      <path d={areaPath} fill={`url(#${gradientId})`} />
+      <path
+        d={linePath}
+        fill="none"
+        stroke={color}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
 const LiveCountersPanel = () => {
+  const MAX_POINTS = 30;
+
   const [counts, setCounts] = useState({
     logs: 1204,
     metrics: 8491,
     traces: 342,
+  });
+
+  const [chartData, setChartData] = useState({
+    logs: generateInitialData(MAX_POINTS, 12, 8),
+    metrics: generateInitialData(MAX_POINTS, 18, 12),
+    traces: generateInitialData(MAX_POINTS, 6, 4),
   });
 
   useEffect(() => {
@@ -669,7 +745,13 @@ const LiveCountersPanel = () => {
         metrics: prev.metrics + Math.floor(Math.random() * 25) + 10,
         traces: prev.traces + Math.floor(Math.random() * 8) + 3,
       }));
-    }, 1500);
+
+      setChartData((prev) => ({
+        logs: [...prev.logs.slice(1), 8 + Math.floor(Math.random() * 12)],
+        metrics: [...prev.metrics.slice(1), 12 + Math.floor(Math.random() * 18)],
+        traces: [...prev.traces.slice(1), 3 + Math.floor(Math.random() * 8)],
+      }));
+    }, 1200);
     return () => clearInterval(interval);
   }, []);
 
@@ -710,30 +792,37 @@ const LiveCountersPanel = () => {
       <OuiSpacer size="l" />
       <div className="onboardWizard__liveCounters">
         {counters.map((c) => (
-          <div key={c.key} className="onboardWizard__counterRow">
-            <div className="onboardWizard__counterIcon">
-              <OuiIcon type={c.icon} size="l" color={c.color} />
-            </div>
-            <div className="onboardWizard__counterInfo">
-              <OuiText size="xs" color="subdued">
-                {c.label}
-              </OuiText>
-              <div className="onboardWizard__counterValue">
-                <span className="onboardWizard__counterNumber">
-                  {c.count.toLocaleString()}
-                </span>
-                <span
-                  className="onboardWizard__counterRate"
-                  style={{ color: c.color }}>
-                  {c.rate}
-                </span>
+          <div key={c.key} className="onboardWizard__counterRow onboardWizard__counterRow--withChart">
+            <div className="onboardWizard__counterMeta">
+              <div className="onboardWizard__counterIcon">
+                <OuiIcon type={c.icon} size="l" color={c.color} />
               </div>
+              <div className="onboardWizard__counterInfo">
+                <OuiText size="xs" color="subdued">
+                  {c.label}
+                </OuiText>
+                <div className="onboardWizard__counterValue">
+                  <span className="onboardWizard__counterNumber">
+                    {c.count.toLocaleString()}
+                  </span>
+                  <span
+                    className="onboardWizard__counterRate"
+                    style={{ color: c.color }}>
+                    {c.rate}
+                  </span>
+                </div>
+              </div>
+              <span
+                className="onboardWizard__counterDot"
+                style={{ backgroundColor: c.color }}
+              />
             </div>
-            <span
-              className="onboardWizard__counterDot"
-              style={{ backgroundColor: c.color }}
-            />
-            <MiniSparkline color={c.color} />
+            <div className="onboardWizard__counterChart">
+              <LiveStreamAreaChart
+                color={c.color}
+                data={chartData[c.key]}
+              />
+            </div>
           </div>
         ))}
       </div>
@@ -864,23 +953,6 @@ const IngestRow = ({ label, rate, color }) => {
       </span>
       <div className="onboardWizard__sparkline">{dots}</div>
     </div>
-  );
-};
-
-const MiniSparkline = ({ color }) => {
-  const points = Array.from({ length: 8 }, () => Math.random() * 24 + 4);
-  const path = points
-    .map((y, i) => `${i === 0 ? 'M' : 'L'} ${i * 10} ${28 - y}`)
-    .join(' ');
-
-  return (
-    <svg
-      className="onboardWizard__miniSparkline"
-      viewBox="0 0 70 28"
-      fill="none"
-      aria-hidden="true">
-      <path d={path} stroke={color} strokeWidth="2" strokeLinecap="round" />
-    </svg>
   );
 };
 
