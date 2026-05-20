@@ -46,9 +46,10 @@
 .onboardWizard__right {
   flex: 1;
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 40px 40px 80px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 40px 40px 24px;
   overflow-y: auto;
 }
 
@@ -60,6 +61,14 @@
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.04);
   padding: 32px;
   min-height: 400px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 800ms ease, transform 800ms ease;
+
+  &--fadeIn {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 // ─────────────────────────────────────────────
@@ -99,6 +108,10 @@
     background: $ouiColorPrimary;
     box-shadow: 0 0 0 3px rgba($ouiColorPrimary, 0.2);
   }
+
+  &--inactive {
+    background: $ouiBorderColor;
+  }
 }
 
 // ─────────────────────────────────────────────
@@ -121,11 +134,18 @@
   flex-wrap: wrap;
   gap: 8px;
   justify-content: flex-start;
+
+  // When chips have descriptions, stack them vertically
+  &:has(.onboardWizard__chipDescription) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 .onboardWizard__chip {
   display: inline-flex;
   align-items: center;
+  flex-direction: column;
   padding: 6px 16px;
   border-radius: 20px;
   border: 1px solid $ouiBorderColor;
@@ -134,6 +154,13 @@
   font-family: inherit;
   cursor: pointer;
   transition: all 150ms ease;
+  text-align: left;
+  align-items: flex-start;
+
+  &:has(.onboardWizard__chipDescription) {
+    padding: 10px 16px;
+    border-radius: $ouiBorderRadius;
+  }
 
   &:hover:not(:disabled) {
     border-color: $ouiColorPrimary;
@@ -173,6 +200,13 @@
   }
 }
 
+.onboardWizard__chipDescription {
+  font-size: $ouiFontSizeXS;
+  opacity: 0.8;
+  font-weight: 400;
+  margin-top: 2px;
+  text-align: left;
+}
 // ─────────────────────────────────────────────
 // MULTI-SELECT (Step 5: Transformations)
 // ─────────────────────────────────────────────
@@ -326,19 +360,13 @@
 // FOOTER
 // ─────────────────────────────────────────────
 
-.onboardWizard__footer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+.onboardWizard__finishLaterWrapper {
   display: flex;
   justify-content: center;
-  padding: 12px;
-  pointer-events: none;
+  padding: 16px 0;
 }
 
 .onboardWizard__finishLater {
-  pointer-events: all;
   background: none;
   border: none;
   color: $ouiTextSubduedColor;
@@ -374,7 +402,7 @@
 .onboardWizard__checklist {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0;
 }
 
 .onboardWizard__checklistItem {
@@ -382,9 +410,22 @@
   align-items: flex-start;
   gap: 12px;
   padding: 16px 20px;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  background: $ouiColorEmptyShade;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  border-image: linear-gradient(
+    to right,
+    transparent,
+    $ouiBorderColor 20%,
+    $ouiBorderColor 80%,
+    transparent
+  ) 1;
+
+  &:last-child {
+    border-bottom: none;
+    border-image: none;
+  }
 }
 
 .onboardWizard__checklistCircle {

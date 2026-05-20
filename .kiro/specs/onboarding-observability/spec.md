@@ -102,14 +102,14 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 | Field | Content |
 |-------|---------|
 | Panel title | `Getting Started` |
-| Panel subtitle | `Choose your observability path` |
+| Panel subtitle | `Set up your data` |
 | Content type | Readonly checklist |
-| Content details | A vertical list of 6 items representing the main onboarding steps. Each item is a card with: (1) an empty circle indicator (non-interactive), (2) the step title in bold, (3) a subdued description. Steps: "What do you want to observe?", "Connect your data source", "Transform your data", "Review and confirm", "Collecting your data", "You're all set!" |
+<!-- | Content details | A vertical list of 6 items representing the main onboarding steps. Each item is a card with: (1) an empty circle indicator (non-interactive), (2) the step title in bold, (3) a subdued description. Steps: "What do you want to observe?", "Connect your data source", "Transform your data", "Review and confirm", "Collecting your data", "You're all set!" | -->
+| Content details | A structured summary list showing the major pieces users will be configuring: (1) Set observability goal, (2) Collect data from environment, (3) Connect data source, (4) Data transformations  |
 | Dynamic behavior | None — the checklist is purely informational, showing the user the full journey ahead. Items are not clickable or checkable. |
 | Secondary section | None |
 
-| Content details | A structured summary card showing all selections: (1) Observation goal, (2) Environment, (3) Data source / provider, (4) Signals enabled (metrics, logs, traces), (5) Estimated data volume, (6) Index patterns to be created. Each row shows the step title, selected value, and an edit icon. |
-| Dynamic behavior | If user selects "I want to make changes," the right panel highlights the editable fields and the left panel navigates back to the relevant step. If user confirms, a deployment progress indicator appears showing: creating indices → configuring pipeline → starting collection → verifying data flow. |
+
 
 ---
 
@@ -137,7 +137,7 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 | Panel title | `Environment` |
 | Panel subtitle | `Supported collection environments` |
 | Content type | Card grid |
-| Content details | Grid of 4 environment cards, each showing the environment logo, name, and supported signal types (metrics ✓, logs ✓, traces ✓). Cards show compatibility badges (e.g., "Native integration" for OpenTelemetry, "Managed service" for EKS). |
+| Content details | Grid of 4 environment cards, each showing the environment logo, name. Cards show compatibility badges (e.g., "Native integration" for OpenTelemetry, "Managed service" for EKS). |
 | Dynamic behavior | When an environment card is selected on the left, the right panel highlights that card and reveals a detail section below showing: recommended collector setup, supported signals, and estimated setup time for that environment. |
 | Secondary section | A "What's included" summary listing: collector configuration, pre-built dashboards, and alerting templates available for the selected environment. |
 
