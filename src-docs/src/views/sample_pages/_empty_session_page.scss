@@ -252,14 +252,14 @@
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  border: none;
+  border: $ouiBorderThin;
   background-color: $ouiColorEmptyShade;
   cursor: pointer;
   padding: 24px;
   transition: background-color 150ms ease-in-out;
 
   &:hover {
-    background-color: $ouiColorLightShade;
+    background-color: $ouiColorLightestShade;
   }
 }
 
@@ -374,20 +374,55 @@
 .emptySessionPage__listItem {
   display: flex;
   align-items: center;
-  gap: $ouiSizeS;
+  gap: $ouiSize;
   width: 100%;
-  padding: $ouiSizeS $ouiSizeS;
-  border: none;
-  background: none;
+  padding: $ouiSize;
+  border: $ouiBorderThin;
+  border-radius: $ouiBorderRadius;
+  background-color: $ouiColorEmptyShade;
   cursor: pointer;
   text-align: left;
   font-size: $ouiFontSizeS;
   color: $ouiTextColor;
-  border-radius: 2px;
+  transition: background-color $ouiAnimSpeedFast ease-in-out,
+              box-shadow $ouiAnimSpeedFast ease-in-out;
 
   &:hover {
     background-color: $ouiFocusBackgroundColor;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px $ouiFocusRingColor;
+  }
+
+  &--warning {
+    border-color: $ouiColorWarning;
+    background-color: tintOrShade($ouiColorWarning, 95%, 85%);
+  }
+}
+
+.emptySessionPage__listItemContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.emptySessionPage__listItemIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.emptySessionPage__listItemRight {
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeS;
+  flex-shrink: 0;
 }
 
 .emptySessionPage__listItemTitle {
@@ -397,12 +432,21 @@
 .emptySessionPage__listItemTime {
   color: $ouiColorMediumShade;
   font-size: $ouiFontSizeXS;
+  white-space: normal;
+  line-height: 1.4;
+}
+
+.emptySessionPage__listItemMeta {
+  color: $ouiColorMediumShade;
+  font-size: $ouiFontSizeXS;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 // Filter chips row
 .emptySessionPage__chips {
   display: flex;
-  gap: 36px;
+  gap: 24px;
   align-items: center;
   justify-content: center;
   width: 100%;
@@ -415,7 +459,7 @@
   gap: 16px;
   padding: 16px;
   background-color: $ouiColorEmptyShade;
-  border: none;
+  border: $ouiBorderThin;
   border-radius: 8px;
   cursor: pointer;
   font-size: $ouiFontSizeXS;
@@ -424,15 +468,15 @@
   transition: background-color 150ms ease-in-out;
 
   &:hover {
-    background-color: $ouiColorLightShade;
+    background-color: $ouiColorLightestShade;
   }
 
   &--active {
-    background-color: $ouiColorLightShade;
+    background-color: $ouiColorLightestShade;
     font-weight: 600;
 
     &:hover {
-      background-color: darken($ouiColorLightShade, 3%);
+      background-color: $ouiColorLightShade;
     }
   }
 }

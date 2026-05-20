@@ -108,8 +108,10 @@ export function openCanvasPage(state, sessionId, pageKey, title) {
     sessions: state.sessions.map((session) => {
       if (session.id !== sessionId) return session;
 
-      // Deduplicate: if a tab with the same pageKey exists, just activate it
-      const existingTab = session.tabs.find((tab) => tab.pageKey === pageKey);
+      // Deduplicate: if a tab with the same pageKey and title exists, just activate it
+      const existingTab = session.tabs.find(
+        (tab) => tab.pageKey === pageKey && tab.title === title
+      );
       if (existingTab) {
         return {
           ...session,

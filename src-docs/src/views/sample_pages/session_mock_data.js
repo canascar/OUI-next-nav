@@ -153,7 +153,7 @@ echo "Done. Monitoring P99 latency for recovery..."`,
         },
         {
           type: 'link-preview',
-          key: 'metrics',
+          key: 'notebooks',
           title: 'Payment service connection pool metrics',
           description:
             'Live dashboard with pool utilization, acquire wait time, active connections, and P99 latency for the payment service.',
@@ -197,7 +197,7 @@ export const LATENCY_SPIKE_SESSION = {
     },
     {
       id: 'tab-metrics-1',
-      pageKey: 'metrics',
+      pageKey: 'notebooks',
       title: 'Payment service connection pool metrics',
     },
   ],

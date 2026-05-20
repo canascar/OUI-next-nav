@@ -62,16 +62,30 @@ export const SessionContainer = ({
 
   /** Called when a page executes a query that should trigger AI insight */
   const handleQueryExecute = useCallback((queryText) => {
-    // After 1s delay, highlight the generate icon blue
     if (highlightTimerRef.current) clearTimeout(highlightTimerRef.current);
-    highlightTimerRef.current = setTimeout(() => {
-      setAiButtonHighlight(true);
-      setPendingAiResponse({
-        prompt: queryText,
-        response: 'I see 847 connection timeout errors to payments-db starting at 14:30. Want me to check the trace data for this dependency?',
-      });
-    }, 1000);
-  }, []);
+    const mockResponse = 'I see 847 connection timeout errors to payments-db starting at 14:30. Want me to check the trace data for this dependency?';
+
+    if (threadPanelState !== 'minimized') {
+      // Chat pane is already open — show the message directly after 1s
+      highlightTimerRef.current = setTimeout(() => {
+        const threadKey = `thread-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+        const pendingThread = {
+          key: threadKey,
+          messages: [
+            { role: 'assistant', content: mockResponse, streaming: false },
+          ],
+          sourcePageTitle: 'Discover (log)',
+        };
+        onUpdateSession({ threadKey, pendingThread });
+      }, 1000);
+    } else {
+      // Chat pane is minimized — highlight the generate icon after 1s
+      highlightTimerRef.current = setTimeout(() => {
+        setAiButtonHighlight(true);
+        setPendingAiResponse({ prompt: queryText, response: mockResponse });
+      }, 1000);
+    }
+  }, [threadPanelState, onUpdateSession]);
 
   /** Handle expand chat — if AI highlight is active, create thread with mock response */
   const handleExpandChat = useCallback(() => {
@@ -79,12 +93,11 @@ export const SessionContainer = ({
     if (aiButtonHighlight && pendingAiResponse) {
       // Clear highlight state
       setAiButtonHighlight(false);
-      // Expand chat and create pending thread with the mock response
+      // Expand chat and create pending thread with the mock response (no user message)
       const threadKey = `thread-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
       const pendingThread = {
         key: threadKey,
         messages: [
-          { role: 'user', author: 'You', content: pendingAiResponse.prompt },
           { role: 'assistant', content: pendingAiResponse.response, streaming: false },
         ],
         sourcePageTitle: 'Discover (log)',
@@ -257,6 +270,7 @@ export const SessionContainer = ({
                   size="s"
                   color="text"
                   display="empty"
+                  isDisabled={session.tabs.length === 0}
                   onClick={() => setIsCollapsedListOpen((open) => !open)}
                 />
               }

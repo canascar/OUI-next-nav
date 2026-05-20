@@ -19,4 +19,11 @@
   max-width: 832px;
   margin: 0 auto;
   width: 100%;
+  overflow-y: auto;
+}
+
+// Active/warning list item highlight
+.newTabPage .emptySessionPage__listItem--warning {
+  border-color: $ouiColorWarning;
+  background-color: tintOrShade($ouiColorWarning, 95%, 85%);
 }

@@ -156,6 +156,7 @@ const TabBar = ({ tabs, activeTabId, onTabSelect, onTabClose, onAddTab, onExpand
               size="s"
               color="text"
               display="empty"
+              isDisabled={tabs.length === 0}
               onClick={() => setIsListOpen((open) => !open)}
             />
           }

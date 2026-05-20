@@ -1511,11 +1511,21 @@ export const SessionPagesView = () => {
 
   // --- Left Nav handlers ---
 
-  /** Plus_Button: create a new session and navigate into it */
+  /** Plus_Button: navigate to empty session, or create one if none exists */
   const handleCreateSession = useCallback(() => {
     setSessionState((prev) => {
-      const next = createSession(prev);
-      return next;
+      // If the active session is already empty, just stay on it
+      const active = prev.sessions.find((s) => s.id === prev.activeSessionId);
+      if (
+        active &&
+        !active.threadKey &&
+        !active.pendingThread &&
+        active.tabs.length === 0
+      ) {
+        return prev;
+      }
+      // Otherwise create a new session
+      return createSession(prev);
     });
     setActiveView('session');
   }, []);
@@ -1604,9 +1614,13 @@ export const SessionPagesView = () => {
 
   const renderMainContent = () => {
     if (activeView === 'session-list') {
+      // Filter out empty sessions (not yet "created")
+      const existingSessions = sessionState.sessions.filter(
+        (s) => s.threadKey || s.pendingThread || s.tabs.length > 0
+      );
       return (
         <SessionList
-          sessions={sessionState.sessions}
+          sessions={existingSessions}
           activeSessionId={sessionState.activeSessionId}
           onSelectSession={handleSelectSession}
           onCreateSession={handleCreateSession}
@@ -1696,11 +1710,14 @@ export const SessionPagesView = () => {
         bottom: 0,
       }}>
       <SessionLeftNav
-        sessionCount={sessionState.sessions.length}
+        sessionCount={sessionState.sessions.filter(
+          (s) => s.threadKey || s.pendingThread || s.tabs.length > 0
+        ).length}
         onCreateSession={handleCreateSession}
         onBrowseSessions={handleBrowseSessions}
         onBrowseLibrary={handleBrowseLibrary}
         activeView={activeView}
+        isEmptySession={isEmptySession}
       />
       <div
         style={{

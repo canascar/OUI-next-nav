@@ -35,6 +35,7 @@ export const SessionLeftNav = ({
   onBrowseSessions,
   onBrowseLibrary,
   activeView,
+  isEmptySession,
 }) => {
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
@@ -62,18 +63,22 @@ export const SessionLeftNav = ({
 
       {/* Primary actions */}
       <div className="sessionLeftNav__actions">
-        <OuiToolTip content="Create new session" position="right">
+        <OuiToolTip content="New session" position="right">
           <OuiButtonIcon
-            className="sessionLeftNav__actionButton"
+            className={`sessionLeftNav__actionButton${
+              isEmptySession && activeView === 'session'
+                ? ' sessionLeftNav__actionButton--active'
+                : ''
+            }`}
             iconType="plusInCircle"
-            aria-label="Create new session"
+            aria-label="New session"
             color="text"
             display="empty"
             onClick={onCreateSession}
           />
         </OuiToolTip>
 
-        <OuiToolTip content="Browse all sessions" position="right">
+        <OuiToolTip content="All sessions" position="right">
           <div className="sessionLeftNav__sessionsButtonWrap">
             <OuiButtonIcon
               className={`sessionLeftNav__actionButton${
@@ -82,7 +87,7 @@ export const SessionLeftNav = ({
                   : ''
               }`}
               iconType="navQuerySets"
-              aria-label="Browse all sessions"
+              aria-label="All sessions"
               color="text"
               display="empty"
               onClick={onBrowseSessions}
@@ -102,7 +107,7 @@ export const SessionLeftNav = ({
                 ? ' sessionLeftNav__actionButton--active'
                 : ''
             }`}
-            iconType="apps"
+            iconType="navSecurityCases"
             aria-label="Library"
             color="text"
             display="empty"

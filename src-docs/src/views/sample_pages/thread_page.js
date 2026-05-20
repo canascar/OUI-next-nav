@@ -90,6 +90,7 @@ const THREADS = {
           'Based on the timing and pattern, I have two hypotheses:\n\n**Hypothesis 1: Downstream dependency bottleneck**\n\nThe latency spike correlates with elevated connection wait times to the inventory service, which started returning slower responses around 14:20 UTC.',
         attachment: {
           type: 'link-preview',
+          key: 'notebooks',
           title: 'Inventory service dependency analysis',
           description:
             'Connection pool saturation, response time degradation, and queue depth trends for the inventory service over the last 4 hours.',
@@ -101,6 +102,7 @@ const THREADS = {
           "**Hypothesis 2: Connection pool exhaustion**\n\nThe payment service's outbound connection pool is at 98% utilization. Requests are queuing rather than failing fast, which inflates P99 without raising error rates. This would explain why error rates look normal while latency is spiking.",
         attachment: {
           type: 'link-preview',
+          key: 'notebooks',
           title: 'Payment service connection pool metrics',
           description:
             'Pool utilization, acquire wait time, and active connection count for the payment service over the last 4 hours.',
@@ -1804,6 +1806,31 @@ export const ThreadPage = ({
         <div className="threadPage__conversationCol">
           {/* Conversation feed — scrollable */}
           <div className="threadPage__feed" ref={feedRef}>
+            {messages.length === 0 && !isTyping && (
+              <div className="threadPage__emptyState">
+                <h3 className="threadPage__emptyTitle">How can I help?</h3>
+                <div className="threadPage__emptySuggestions">
+                  <button
+                    type="button"
+                    className="threadPage__emptySuggestion"
+                    onClick={() => { setMessage('Summarize this page'); }}>
+                    Summarize this page
+                  </button>
+                  <button
+                    type="button"
+                    className="threadPage__emptySuggestion"
+                    onClick={() => { setMessage('Find anomalies'); }}>
+                    Find anomalies
+                  </button>
+                  <button
+                    type="button"
+                    className="threadPage__emptySuggestion"
+                    onClick={() => { setMessage('Explain the data'); }}>
+                    Explain the data
+                  </button>
+                </div>
+              </div>
+            )}
             {messages.map((msg, i) => {
               if (msg.role === 'user') {
                 return (

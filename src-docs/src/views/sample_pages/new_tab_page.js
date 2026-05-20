@@ -12,8 +12,8 @@
 import React, { useState, useMemo } from 'react';
 import {
   OuiCompressedFieldSearch,
-  OuiHorizontalRule,
   OuiIcon,
+  OuiSpacer,
 } from '../../../../src/components';
 import { SOURCE_PAGE_MOCK } from './session_models';
 
@@ -33,22 +33,16 @@ const TAB_QUICK_ACCESS = [
  * Filter chips for the new tab page.
  */
 const TAB_FILTER_CHIPS = [
-  { key: 'favorites', label: 'Favorites', icon: 'starEmpty' },
+  { key: 'alerts', label: 'Alerts', icon: 'navAlerting' },
   { key: 'dashboards', label: 'Dashboards', icon: 'navDashboards' },
   { key: 'saved-logs', label: 'Saved logs', icon: 'navDiscover' },
   { key: 'saved-metric', label: 'Saved metric', icon: 'visArea' },
-  { key: 'alerts', label: 'Alerts', icon: 'navAlerting' },
 ];
 
 /**
  * Mock data for each chip.
  */
 const TAB_CHIP_DATA = {
-  favorites: [
-    { key: 'fav-1', title: 'System overview', subtitle: 'Dashboard', pageKey: 'dashboards' },
-    { key: 'fav-2', title: 'Error rate by service', subtitle: 'Saved log', pageKey: 'logs' },
-    { key: 'fav-3', title: 'CPU utilization', subtitle: 'Saved metric', pageKey: 'metrics' },
-  ],
   dashboards: [
     { key: 'dash-1', title: 'System overview', subtitle: 'Updated 5 min ago', pageKey: 'dashboards' },
     { key: 'dash-2', title: 'Web traffic analytics', subtitle: 'Updated 15 min ago', pageKey: 'dashboards' },
@@ -66,12 +60,14 @@ const TAB_CHIP_DATA = {
   alerts: [
     { key: 'alert-1', title: 'CPU threshold exceeded', subtitle: 'Critical · 10 min ago', pageKey: 'alerts' },
     { key: 'alert-2', title: 'Disk usage warning', subtitle: 'Warning · 1 hour ago', pageKey: 'alerts' },
+    { key: 'alert-3', title: 'Error rate spike', subtitle: 'Critical · 3 hours ago', pageKey: 'alerts' },
+    { key: 'alert-4', title: 'Payment service P99 latency breach', subtitle: 'Critical · 15 min ago', meta: 'Active', icon: 'alert', pageKey: 'alerts' },
   ],
 };
 
 export const NewTabPage = ({ onSelectPage }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeChip, setActiveChip] = useState('favorites');
+  const [activeChip, setActiveChip] = useState('alerts');
 
   // Build searchable items
   const allItems = useMemo(() => {
@@ -141,7 +137,7 @@ export const NewTabPage = ({ onSelectPage }) => {
             </div>
           </div>
 
-          <OuiHorizontalRule margin="m" />
+          <OuiSpacer size="m" />
 
           <div className="emptySessionPage__chips">
             {TAB_FILTER_CHIPS.map((chip) => (
@@ -161,10 +157,18 @@ export const NewTabPage = ({ onSelectPage }) => {
               <button
                 key={item.key}
                 type="button"
-                className="emptySessionPage__listItem"
+                className={`emptySessionPage__listItem${item.icon ? ' emptySessionPage__listItem--warning' : ''}`}
                 onClick={() => onSelectPage(item.pageKey, item.title)}>
-                <span className="emptySessionPage__listItemTitle">{item.title}</span>
-                <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
+                <span className="emptySessionPage__listItemContent">
+                  <span className="emptySessionPage__listItemTitle">{item.title}</span>
+                  <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
+                </span>
+                {item.meta && (
+                  <span className="emptySessionPage__listItemRight">
+                    <span className="emptySessionPage__listItemMeta">{item.meta}</span>
+                    {item.icon && <OuiIcon type={item.icon} size="m" color="warning" />}
+                  </span>
+                )}
               </button>
             ))}
           </div>

@@ -14,7 +14,7 @@ import React, { useState, useMemo } from 'react';
 import {
   OuiButtonIcon,
   OuiCompressedTextArea,
-  OuiHorizontalRule,
+  OuiSpacer,
   OuiIcon,
   OuiTab,
   OuiTabs,
@@ -77,23 +77,25 @@ const QUICK_ACCESS_ITEMS = [
  * Filter chips for the bottom section.
  */
 const FILTER_CHIPS = [
-  { key: 'favorites', label: 'Favorites', icon: 'starEmpty' },
+  { key: 'insights', label: 'Insights', icon: 'inspect' },
+  { key: 'alerts', label: 'Alerts', icon: 'navAlerting' },
   { key: 'dashboards', label: 'Dashboards', icon: 'navDashboards' },
   { key: 'saved-logs', label: 'Saved logs', icon: 'navDiscover' },
   { key: 'saved-metric', label: 'Saved metric', icon: 'visArea' },
-  { key: 'alerts', label: 'Alerts', icon: 'navAlerting' },
 ];
 
 /**
  * Mock data for each filter chip.
  */
 const CHIP_DATA = {
-  favorites: [
-    { key: 'fav-1', title: 'System overview', subtitle: 'Dashboard · Updated 5 min ago' },
-    { key: 'fav-2', title: 'Error rate by service', subtitle: 'Saved log · source=logs | where level="ERROR"' },
-    { key: 'fav-3', title: 'CPU utilization', subtitle: 'Saved metric · source=metrics | stats avg(cpu) by host' },
-    { key: 'fav-4', title: 'Payment service P99 latency breach', subtitle: 'Alert · Critical · 15 min ago' },
-    { key: 'fav-5', title: 'API performance', subtitle: 'Dashboard · Updated 30 min ago' },
+  insights: [
+    {
+      key: 'insight-1',
+      title: 'Latency Spike Investigation',
+      subtitle: 'Created by AI · 15 min ago',
+      meta: 'Alert: Payment service P99 latency breach',
+      icon: 'alert',
+    },
   ],
   dashboards: [
     { key: 'dash-1', title: 'System overview', subtitle: 'Updated 5 min ago' },
@@ -118,7 +120,7 @@ const CHIP_DATA = {
     { key: 'alert-1', title: 'CPU threshold exceeded', subtitle: 'Critical · 10 min ago' },
     { key: 'alert-2', title: 'Disk usage warning', subtitle: 'Warning · 1 hour ago' },
     { key: 'alert-3', title: 'Error rate spike', subtitle: 'Critical · 3 hours ago' },
-    { key: 'alert-4', title: 'Payment service P99 latency breach', subtitle: 'Critical · 15 min ago' },
+    { key: 'alert-4', title: 'Payment service P99 latency breach', subtitle: 'Critical · 15 min ago', meta: 'Active', icon: 'alert' },
   ],
 };
 
@@ -255,7 +257,7 @@ const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange }) => {
     <div className="emptySessionPage__inputWrap">
       <div className="emptySessionPage__inputField">
         <OuiCompressedTextArea
-          placeholder="Ask anything. Type / for actions."
+          placeholder="Ask AI anything, or type to search a page"
           value={inputValue}
           onChange={handleChange}
           onKeyDown={handleSubmit}
@@ -549,7 +551,7 @@ export const EmptySessionPage = ({
   favoriteItems = [],
   systemAlert = null,
 }) => {
-  const [activeChip, setActiveChip] = useState('favorites');
+  const [activeChip, setActiveChip] = useState('insights');
   const [searchQuery, setSearchQuery] = useState('');
   const [alertDismissed, setAlertDismissed] = useState(false);
 
@@ -590,28 +592,6 @@ export const EmptySessionPage = ({
 
         {/* Content container — max 832px */}
         <div className="emptySessionPage__content">
-          {/* Alert callout */}
-          {!alertDismissed && (
-          <div className="emptySessionPage__alertCallout">
-            <div className="emptySessionPage__alertCalloutIcon">
-              <OuiIcon type="alert" color="warning" size="m" />
-            </div>
-            <div className="emptySessionPage__alertCalloutBody">
-              <p className="emptySessionPage__alertCalloutText">
-                <strong>Alert: payment-service P99 latency exceeded 2,000ms</strong> — Triggered May 13 at 02:32 PM UTC. The P99 response time for payment-service breached the configured threshold on 3 of 4 pods, with no recent deployments in the past 6 hours.
-              </p>
-              <p className="emptySessionPage__alertCalloutSubtext">
-                An AI investigation session is already in progress analyzing correlated traces and connection pool metrics.
-              </p>
-              <div className="emptySessionPage__alertCalloutActions">
-                <button type="button" className="emptySessionPage__alertCalloutAction emptySessionPage__alertCalloutAction--primary" onClick={onViewSession}>View ongoing session</button>
-                <button type="button" className="emptySessionPage__alertCalloutAction" onClick={onStartInvestigation}>Start new investigation</button>
-                <button type="button" className="emptySessionPage__alertCalloutAction" onClick={() => setAlertDismissed(true)}>Acknowledge alert</button>
-              </div>
-            </div>
-          </div>
-          )}
-
           {/* Textarea input */}
           <DualPurposeInput
             onStartThread={onStartThread}
@@ -648,8 +628,8 @@ export const EmptySessionPage = ({
                 onOpenPage={onOpenPage}
               />
 
-              {/* Horizontal rule */}
-              <OuiHorizontalRule margin="m" />
+              {/* Spacer */}
+              <OuiSpacer size="m" />
 
               {/* Filter chips */}
               <div className="emptySessionPage__chips">
@@ -672,9 +652,17 @@ export const EmptySessionPage = ({
                     key={item.key}
                     type="button"
                     className="emptySessionPage__listItem"
-                    onClick={() => onOpenPage(activeChip === 'dashboards' ? 'dashboards' : activeChip === 'saved-logs' ? 'logs' : activeChip === 'saved-metric' ? 'metrics' : 'alerts')}>
-                    <span className="emptySessionPage__listItemTitle">{item.title}</span>
-                    <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
+                    onClick={() => onOpenPage(activeChip === 'dashboards' ? 'dashboards' : activeChip === 'saved-logs' ? 'logs' : activeChip === 'saved-metric' ? 'metrics' : activeChip === 'insights' ? 'alerts' : 'alerts')}>
+                    <span className="emptySessionPage__listItemContent">
+                      <span className="emptySessionPage__listItemTitle">{item.title}</span>
+                      <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
+                    </span>
+                    {item.meta && (
+                      <span className="emptySessionPage__listItemRight">
+                        <span className="emptySessionPage__listItemMeta">{item.meta}</span>
+                        {item.icon && <OuiIcon type={item.icon} size="m" color="warning" />}
+                      </span>
+                    )}
                   </button>
                 ))}
               </div>
