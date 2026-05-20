@@ -12,7 +12,6 @@
 import React, { useState } from 'react';
 
 import {
-  OuiButton,
   OuiCompressedFieldSearch,
   OuiText,
   OuiTitle,
@@ -67,13 +66,6 @@ export const SessionList = ({
           <OuiTitle size="s">
             <h2>All sessions</h2>
           </OuiTitle>
-          <OuiButton
-            size="s"
-            iconType="plusInCircle"
-            onClick={onCreateSession}
-            aria-label="Create new session">
-            New session
-          </OuiButton>
         </div>
 
         {/* Search */}

@@ -37,8 +37,11 @@ export const SessionContainer = ({
   const [isCollapsedListOpen, setIsCollapsedListOpen] = useState(false);
   const [aiButtonHighlight, setAiButtonHighlight] = useState(false);
   const [pendingAiResponse, setPendingAiResponse] = useState(null);
+  const [aiPopoverVisible, setAiPopoverVisible] = useState(false);
+  const [aiPopoverText, setAiPopoverText] = useState('');
   const animTimerRef = useRef(null);
   const highlightTimerRef = useRef(null);
+  const streamTimersRef = useRef([]);
 
   // Clear entrance animation after it plays
   useEffect(() => {
@@ -57,16 +60,19 @@ export const SessionContainer = ({
     return () => {
       if (animTimerRef.current) clearTimeout(animTimerRef.current);
       if (highlightTimerRef.current) clearTimeout(highlightTimerRef.current);
+      streamTimersRef.current.forEach(clearTimeout);
     };
   }, []);
 
   /** Called when a page executes a query that should trigger AI insight */
   const handleQueryExecute = useCallback((queryText) => {
     if (highlightTimerRef.current) clearTimeout(highlightTimerRef.current);
+    streamTimersRef.current.forEach(clearTimeout);
+    streamTimersRef.current = [];
     const mockResponse = 'I see 847 connection timeout errors to payments-db starting at 14:30. Want me to check the trace data for this dependency?';
 
     if (threadPanelState !== 'minimized') {
-      // Chat pane is already open — show the message directly after 1s
+      // Chat pane is already open — show the message directly after 1s with streaming
       highlightTimerRef.current = setTimeout(() => {
         const threadKey = `thread-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
         const pendingThread = {
@@ -79,10 +85,23 @@ export const SessionContainer = ({
         onUpdateSession({ threadKey, pendingThread });
       }, 1000);
     } else {
-      // Chat pane is minimized — highlight the generate icon after 1s
+      // Chat pane is minimized — highlight icon and stream text in popover
       highlightTimerRef.current = setTimeout(() => {
         setAiButtonHighlight(true);
+        setAiPopoverVisible(true);
+        setAiPopoverText('');
         setPendingAiResponse({ prompt: queryText, response: mockResponse });
+
+        // Stream word by word
+        const words = mockResponse.split(' ');
+        let built = '';
+        words.forEach((word, i) => {
+          const timer = setTimeout(() => {
+            built += (i === 0 ? '' : ' ') + word;
+            setAiPopoverText(built);
+          }, i * 40);
+          streamTimersRef.current.push(timer);
+        });
       }, 1000);
     }
   }, [threadPanelState, onUpdateSession]);
@@ -93,6 +112,9 @@ export const SessionContainer = ({
     if (aiButtonHighlight && pendingAiResponse) {
       // Clear highlight state
       setAiButtonHighlight(false);
+      setAiPopoverVisible(false);
+      streamTimersRef.current.forEach(clearTimeout);
+      streamTimersRef.current = [];
       // Expand chat and create pending thread with the mock response (no user message)
       const threadKey = `thread-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
       const pendingThread = {
@@ -112,6 +134,12 @@ export const SessionContainer = ({
       onUpdateSession({ threadPanelState: 'side-by-side' });
     }
   }, [triggerAnimation, onUpdateSession, aiButtonHighlight, pendingAiResponse]);
+
+  const handleDismissAiPopover = useCallback(() => {
+    setAiPopoverVisible(false);
+    streamTimersRef.current.forEach(clearTimeout);
+    streamTimersRef.current = [];
+  }, []);
 
   const handleResize = useCallback((leftWidthPercent) => {
     if (threadPanelRef.current) {
@@ -255,6 +283,8 @@ export const SessionContainer = ({
             onSelectPage={handleSelectPage}
             onExpandChat={isMinimized ? handleExpandChat : undefined}
             aiButtonHighlight={aiButtonHighlight}
+            aiButtonMessage={aiPopoverVisible ? aiPopoverText : null}
+            onDismissAiPopover={handleDismissAiPopover}
             onQueryExecute={handleQueryExecute}
           />
         </div>
