@@ -189,6 +189,30 @@ echo "Done. Monitoring P99 latency for recovery..."`,
       },
     ],
   },
+  'error-rate-spike': {
+    title: 'Error Rate Spike — Checkout Service',
+    messages: [
+      {
+        role: 'assistant',
+        content:
+          'The checkout service error rate climbed from 0.3% to 12.4% starting at 09:15 UTC. 94% of failures are 503s from the auth-service dependency. Root cause: auth-service v2.5.0 deployed at 09:12 introduced a synchronous OIDC token validation call that is timing out against the external provider.\n\nThe auth-service has been rolled back to v2.4.1 and error rates are recovering. Sharing this summary with the team for visibility.',
+        attachments: [
+          {
+            type: 'link-preview',
+            title: 'Alert: Checkout error rate > 10%',
+            description:
+              'Triggered at 09:18 UTC. 503 errors from auth-service dependency accounting for 94% of failures.',
+          },
+          {
+            type: 'link-preview',
+            title: 'Checkout service health dashboard',
+            description:
+              'Real-time error rate, latency, and throughput for the checkout service and its dependencies.',
+          },
+        ],
+      },
+    ],
+  },
   'tool-demo-1': {
     title: 'Thread tool demo 1',
     messages: [

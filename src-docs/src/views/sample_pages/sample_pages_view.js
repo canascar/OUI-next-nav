@@ -67,7 +67,7 @@ import {
   setActiveSession,
   openCanvasPage,
 } from './session_state_manager';
-import { LATENCY_SPIKE_SESSION } from './session_mock_data';
+import { LATENCY_SPIKE_SESSION, ERROR_RATE_SPIKE_SESSION } from './session_mock_data';
 
 const renderPage = (
   activePage,
@@ -1485,7 +1485,7 @@ function initializeSessionState() {
   };
 
   return {
-    sessions: [emptySession, LATENCY_SPIKE_SESSION],
+    sessions: [emptySession, LATENCY_SPIKE_SESSION, ERROR_RATE_SPIKE_SESSION],
     activeSessionId: emptySession.id,
     version: 1,
   };
@@ -1544,7 +1544,16 @@ export const SessionPagesView = () => {
 
   /** Select a session from the list */
   const handleSelectSession = useCallback((sessionId) => {
-    setSessionState((prev) => setActiveSession(prev, sessionId));
+    setSessionState((prev) => {
+      const updated = setActiveSession(prev, sessionId);
+      // Unhide the session when selected
+      return {
+        ...updated,
+        sessions: updated.sessions.map((s) =>
+          s.id === sessionId ? { ...s, hidden: false } : s
+        ),
+      };
+    });
     setActiveView('session');
   }, []);
 

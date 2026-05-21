@@ -207,6 +207,68 @@ export const LATENCY_SPIKE_SESSION = {
 };
 
 // ---------------------------------------------------------------------------
+// Mock Flow 3: Error Rate Spike — Thread Data
+// ---------------------------------------------------------------------------
+
+/**
+ * Thread conversation for an error rate spike on the checkout service.
+ */
+export const ERROR_RATE_SPIKE_THREAD_DATA = {
+  threadKey: 'error-rate-spike',
+  title: 'Error Rate Spike — Checkout Service',
+  messages: [
+    {
+      role: 'assistant',
+      content:
+        'The checkout service error rate climbed from 0.3% to 12.4% starting at 09:15 UTC. 94% of failures are 503s from the auth-service dependency. Root cause: auth-service v2.5.0 deployed at 09:12 introduced a synchronous OIDC token validation call that is timing out against the external provider.\n\nThe auth-service has been rolled back to v2.4.1 and error rates are recovering. Sharing this summary with the team for visibility.',
+      attachments: [
+        {
+          type: 'link-preview',
+          key: 'alerts',
+          title: 'Alert: Checkout error rate > 10%',
+          description:
+            'Triggered at 09:18 UTC. 503 errors from auth-service dependency accounting for 94% of failures.',
+          viewAction: true,
+        },
+        {
+          type: 'link-preview',
+          key: 'dashboards',
+          title: 'Checkout service health dashboard',
+          description:
+            'Real-time error rate, latency, and throughput for the checkout service and its dependencies.',
+          viewAction: true,
+        },
+      ],
+    },
+  ],
+};
+
+// ---------------------------------------------------------------------------
+// Mock Flow 3: Error Rate Spike — Session Object
+// ---------------------------------------------------------------------------
+
+/**
+ * Pre-built session for the error rate spike investigation.
+ * Has one tab open (dashboard) and the thread in side-by-side.
+ */
+export const ERROR_RATE_SPIKE_SESSION = {
+  id: 'error-rate-spike-session',
+  threadKey: 'error-rate-spike',
+  pendingThread: null,
+  title: 'Error Rate Spike — Checkout Service',
+  summary: 'Checkout error rate jumped to 12.4%. Auth-service deployment regression identified — OIDC token validation timing out.',
+  threadPanelState: 'side-by-side',
+  threadPanelWidth: 30,
+  tabs: [
+    { id: 'tab-alert-err-1', pageKey: 'alerts', title: 'Alert: Checkout error rate > 10%' },
+    { id: 'tab-dash-err-1', pageKey: 'dashboards', title: 'Checkout service health dashboard' },
+  ],
+  activeTabId: 'tab-alert-err-1',
+  createdAt: Date.now() - 7200000, // 2 hours ago
+  hidden: true,
+};
+
+// ---------------------------------------------------------------------------
 // Mock Flow 2: Page-First Flow — Session Object
 // ---------------------------------------------------------------------------
 

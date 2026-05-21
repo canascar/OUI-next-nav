@@ -251,6 +251,8 @@ export const SessionContainer = ({
         width={leftWidth}
         title={session.title}
         isAnimating={isAnimating}
+        sessionSummary={session.summary}
+        sessionTabs={session.tabs}
       />
 
       {/* Resize handle — only in side-by-side */}

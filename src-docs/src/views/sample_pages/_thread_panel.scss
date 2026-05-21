@@ -60,3 +60,10 @@
   min-height: 0;
   overflow-y: auto;
 }
+
+// Share modal summary section
+.threadPanel__shareSummary {
+  padding: $ouiSize;
+  background-color: $ouiPageBackgroundColor;
+  border-radius: $ouiBorderRadius;
+}

@@ -52,6 +52,16 @@ const CHIP_DATA = {
       summary: 'Payment-service P99 crossed 2,000ms. Connection pool exhaustion identified on 3 of 4 pods with no recent deployments.',
       meta: 'Alert: Payment service P99 latency breach',
       icon: 'alert',
+      sessionId: 'latency-spike-session',
+    },
+    {
+      key: 'insight-2',
+      title: 'Error Rate Spike — Checkout Service',
+      subtitle: 'Shared by team · 2 hours ago',
+      summary: 'Checkout error rate jumped to 12.4%. Auth-service deployment regression identified — OIDC token validation timing out.',
+      meta: 'Shared from Sichenl',
+      icon: 'user',
+      sessionId: 'error-rate-spike-session',
     },
   ],
   recent: [
@@ -461,7 +471,8 @@ export const EmptySessionPage = ({
 }) => {
   const [activeChip, setActiveChip] = useState('activity');
   const [searchQuery, setSearchQuery] = useState('');
-  const [alertDismissed, setAlertDismissed] = useState(false);
+  const [dismissedItems, setDismissedItems] = useState(new Set());
+  const [dismissingItems, setDismissingItems] = useState(new Set());
 
   // Build a flat searchable list from all chip data + SOURCE_PAGE_MOCK
   const allSearchableItems = useMemo(() => {
@@ -545,9 +556,9 @@ export const EmptySessionPage = ({
 
               {/* List items based on active chip */}
               <div className="emptySessionPage__tabContent">
-                {activeChip === 'activity' && alertDismissed && (
+                {activeChip === 'activity' && CHIP_DATA.activity.every((item) => dismissedItems.has(item.key)) && (
                   <div className="emptySessionPage__listItemEmpty">
-                    No ongoing activity. Start a session or wait for AI to surface insights.
+                    All caught up, no ongoing activity
                   </div>
                 )}
                 {activeChip === 'discover' && (
@@ -611,7 +622,7 @@ export const EmptySessionPage = ({
                   </div>
                 )}
                 {activeChip !== 'discover' && activeChip !== 'monitor' && activeChip !== 'more' && (activeChip === 'recent' ? (
-                  sessions.slice(0, 5).map((session) => (
+                  sessions.filter((s) => !s.hidden).slice(0, 5).map((session) => (
                     <div key={session.id} className="emptySessionPage__listItem">
                       <button
                         type="button"
@@ -637,16 +648,16 @@ export const EmptySessionPage = ({
                   ))
                 ) : (
                   (CHIP_DATA[activeChip] || []).filter((item) => {
-                    if (activeChip === 'activity' && alertDismissed) return false;
+                    if (activeChip === 'activity' && dismissedItems.has(item.key)) return false;
                     return true;
                   }).map((item) => (
                     <div
                       key={item.key}
-                      className={`emptySessionPage__listItem${activeChip === 'activity' ? ' emptySessionPage__listItem--activity' : ''}`}>
+                      className={`emptySessionPage__listItem${activeChip === 'activity' ? ' emptySessionPage__listItem--activityLayout' : ''}${activeChip === 'activity' && item.icon === 'alert' ? ' emptySessionPage__listItem--activity' : ''}${dismissingItems.has(item.key) ? ' emptySessionPage__listItem--dismissing' : ''}`}>
                       <button
                         type="button"
                         className="emptySessionPage__listItemClickable"
-                        onClick={() => activeChip === 'activity' ? onViewSession() : onOpenPage(activeChip === 'discover' ? 'logs' : activeChip === 'monitor' ? 'alerts' : activeChip === 'favorite' ? (item.pageKey || 'dashboards') : 'notebooks')}>
+                        onClick={() => activeChip === 'activity' ? onSelectSession(item.sessionId) : onOpenPage(activeChip === 'discover' ? 'logs' : activeChip === 'monitor' ? 'alerts' : activeChip === 'favorite' ? (item.pageKey || 'dashboards') : 'notebooks')}>
                         {activeChip === 'activity' ? (
                           <span className="emptySessionPage__activityCard">
                             <span className="emptySessionPage__activityCardHeader">
@@ -663,7 +674,7 @@ export const EmptySessionPage = ({
                               )}
                               {item.meta && (
                                 <span className="emptySessionPage__activityPill">
-                                  {item.icon && <OuiIcon type={item.icon} size="m" color="warning" />}
+                                  {item.icon && <OuiIcon type={item.icon} size="m" color={item.icon === 'alert' ? 'warning' : 'subdued'} />}
                                   <span className="emptySessionPage__activityPillText">{item.meta}</span>
                                 </span>
                               )}
@@ -686,7 +697,14 @@ export const EmptySessionPage = ({
                           type="button"
                           className="emptySessionPage__listItemDismiss"
                           aria-label="Dismiss"
-                          onClick={(e) => { e.stopPropagation(); setAlertDismissed(true); }}>
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setDismissingItems((prev) => new Set([...prev, item.key]));
+                            setTimeout(() => {
+                              setDismissedItems((prev) => new Set([...prev, item.key]));
+                              setDismissingItems((prev) => { const next = new Set(prev); next.delete(item.key); return next; });
+                            }, 500);
+                          }}>
                           Dismiss
                         </button>
                       )}

@@ -431,7 +431,11 @@
   font-size: $ouiFontSizeS;
   color: $ouiTextColor;
   transition: background-color $ouiAnimSpeedFast ease-in-out,
-              box-shadow $ouiAnimSpeedFast ease-in-out;
+              box-shadow $ouiAnimSpeedFast ease-in-out,
+              opacity 300ms ease-out,
+              max-height 300ms ease-out,
+              margin 300ms ease-out,
+              padding 300ms ease-out;
 
   &:hover {
     background-color: $ouiFocusBackgroundColor;
@@ -453,6 +457,26 @@
     position: relative;
     flex-direction: column;
     align-items: stretch;
+  }
+
+  &--activityLayout {
+    position: relative;
+    flex-direction: column;
+    align-items: stretch;
+    max-height: 500px;
+    overflow: hidden;
+  }
+
+  &--dismissing {
+    opacity: 0;
+    transform: translateX(-100%);
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-color: transparent;
+    transition: transform 300ms ease-in, opacity 200ms ease-in, max-height 200ms 250ms ease-out, padding 200ms 250ms, margin 200ms 250ms, border-color 200ms 250ms;
   }
 }
 
@@ -568,8 +592,11 @@
 .emptySessionPage__listItemTitle {
   flex: 1;
   font-size: $ouiFontSizeS;
-  font-weight: $ouiFontWeightMedium;
   color: $ouiTextColor;
+}
+
+.emptySessionPage__activityCard .emptySessionPage__listItemTitle {
+  font-weight: $ouiFontWeightMedium;
 }
 
 .emptySessionPage__listItemTime {
