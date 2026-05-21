@@ -21,6 +21,10 @@ import { OuiToolTip } from '../../../../src/components/tool_tip';
 import { OuiPopover } from '../../../../src/components/popover';
 import { useIsWithinBreakpoints } from '../../../../src/services/hooks';
 import { OuiButton, OuiButtonEmpty, OuiButtonIcon } from '../../../../src/components/button';
+import {
+  OuiContextMenuPanel,
+  OuiContextMenuItem,
+} from '../../../../src/components/context_menu';
 import { OuiBetaBadge } from '../../../../src/components/badge/beta_badge';
 
 import { GuideThemeSelector } from '../guide_theme_selector';
@@ -98,20 +102,54 @@ export const GuidePageHeader: React.FunctionComponent<{}> = () => {
     );
   }
 
+  const [samplePagesPopoverOpen, setSamplePagesPopoverOpen] = useState(false);
+
   function renderSamplePages() {
-    const label = 'Sample Pages';
-    const handleClick = () => {
-      window.open(`${window.location.origin}${window.location.pathname}#/login`, '_blank');
-    };
-    return (
+    const button = (
       <OuiButton
         size="s"
-        onClick={handleClick}
+        iconType="arrowDown"
+        iconSide="right"
         color="ghost"
         minWidth={0}
-        style={{ marginRight: 16 }}>
-        {label}
+        onClick={() => setSamplePagesPopoverOpen((isOpen) => !isOpen)}>
+        Sample Pages
       </OuiButton>
+    );
+
+    return (
+      <OuiPopover
+        id="samplePagesSelector"
+        repositionOnScroll
+        button={button}
+        isOpen={samplePagesPopoverOpen}
+        closePopover={() => setSamplePagesPopoverOpen(false)}
+        panelPaddingSize="none"
+        anchorPosition="downRight">
+        <OuiContextMenuPanel
+          size="s"
+          items={[
+            <OuiContextMenuItem
+              key="onboarding"
+              icon="empty"
+              onClick={() => {
+                setSamplePagesPopoverOpen(false);
+                window.location.hash = '/onboarding-wizard';
+              }}>
+              Onboarding
+            </OuiContextMenuItem>,
+            <OuiContextMenuItem
+              key="day-n"
+              icon="empty"
+              onClick={() => {
+                setSamplePagesPopoverOpen(false);
+                window.location.hash = '/login';
+              }}>
+              Day N experience
+            </OuiContextMenuItem>,
+          ]}
+        />
+      </OuiPopover>
     );
   }
 
