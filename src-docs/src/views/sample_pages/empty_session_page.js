@@ -620,8 +620,8 @@ export const EmptySessionPage = ({
                         <span className="emptySessionPage__activityCard">
                           <span className="emptySessionPage__listItemTitle">{session.title}</span>
                           <span className="emptySessionPage__listItemTime">{formatRelativeTime(session.createdAt)}</span>
-                          <span className="emptySessionPage__activityCardPills">
-                            {session.summary && (
+                          {session.summary && (
+                            <span className="emptySessionPage__activityCardPills">
                               <span className="emptySessionPage__activityPill">
                                 <OuiIcon type="generate" size="m" />
                                 <span className="emptySessionPage__activityPillText">{session.summary}</span>
@@ -629,8 +629,8 @@ export const EmptySessionPage = ({
                                   {session.tabs.length > 0 ? `${session.tabs.length} ${session.tabs.length === 1 ? 'tab' : 'tabs'}` : 'No tabs'}
                                 </span>
                               </span>
-                            )}
-                          </span>
+                            </span>
+                          )}
                         </span>
                       </button>
                     </div>

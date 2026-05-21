@@ -13,6 +13,7 @@ import React, { useState } from 'react';
 
 import {
   OuiCompressedFieldSearch,
+  OuiIcon,
   OuiText,
   OuiTitle,
 } from '../../../../src/components';
@@ -107,14 +108,21 @@ export const SessionList = ({
                     </span>
                     <span className="sessionList__cardMeta">
                       {formatSessionTime(session.createdAt)}
-                      {session.tabs.length > 0 && (
-                        <span className="sessionList__cardTabs">
-                          {' · '}
-                          {session.tabs.length}{' '}
-                          {session.tabs.length === 1 ? 'tab' : 'tabs'}
-                        </span>
-                      )}
                     </span>
+                    {session.summary && (
+                      <div className="sessionList__cardPills">
+                        <span className="sessionList__cardPill">
+                          <OuiIcon type="generate" size="m" />
+                          <span className="sessionList__cardPillText">{session.summary}</span>
+                          {session.tabs.length > 0 && (
+                            <span className="sessionList__cardPillMeta">
+                              {session.tabs.length}{' '}
+                              {session.tabs.length === 1 ? 'tab' : 'tabs'}
+                            </span>
+                          )}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </button>
               );

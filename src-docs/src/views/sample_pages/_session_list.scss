@@ -145,3 +145,36 @@
   background-color: $ouiColorPrimary;
   flex-shrink: 0;
 }
+
+// Pills container
+.sessionList__cardPills {
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+  width: 100%;
+}
+
+// Individual pill row
+.sessionList__cardPill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  font-size: $ouiFontSizeXS;
+  color: $ouiColorDarkShade;
+  line-height: 1.5;
+  width: 100%;
+}
+
+.sessionList__cardPillText {
+  flex: 1;
+  min-width: 0;
+}
+
+.sessionList__cardPillMeta {
+  flex-shrink: 0;
+  color: $ouiColorMediumShade;
+  font-size: $ouiFontSizeXS;
+  white-space: nowrap;
+}
