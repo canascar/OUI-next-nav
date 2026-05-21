@@ -451,6 +451,8 @@
     border-color: $ouiColorWarning;
     background-color: tintOrShade($ouiColorWarning, 94%, 85%);
     position: relative;
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 
@@ -460,6 +462,7 @@
   gap: $ouiSize;
   flex: 1;
   min-width: 0;
+  width: 100%;
   background: none;
   border: none;
   padding: 0;
@@ -471,16 +474,20 @@
 
 .emptySessionPage__listItemDismiss {
   font-size: $ouiFontSizeXS;
-  color: $ouiColorMediumShade;
+  color: $ouiColorPrimary;
   background: none;
-  border: none;
-  padding: 4px 8px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: 999px;
+  padding: 4px 12px;
   cursor: pointer;
   flex-shrink: 0;
+  position: absolute;
+  top: $ouiSize;
+  right: $ouiSize;
 
   &:hover {
-    color: $ouiTextColor;
-    text-decoration: underline;
+    background-color: $ouiFocusBackgroundColor;
+    border-color: $ouiColorPrimary;
   }
 }
 
@@ -529,7 +536,6 @@
 
   &--disabled {
     cursor: default;
-    opacity: 0.5;
 
     &:hover {
       background-color: $ouiColorEmptyShade;
@@ -568,6 +574,17 @@
   font-size: $ouiFontSizeXS;
   white-space: normal;
   line-height: 1.4;
+}
+
+.emptySessionPage__listItemSummary {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 4px;
+  font-size: $ouiFontSizeXS;
+  color: $ouiColorMediumShade;
+  line-height: 1.5;
+  margin-top: 4px;
+  white-space: normal;
 }
 
 .emptySessionPage__listItemMeta {
@@ -621,4 +638,70 @@
   color: $ouiColorMediumShade;
   text-align: left;
   padding-left: 8px;
+}
+
+// Meta pill (e.g. alert source) — inline pill above summary
+.emptySessionPage__listItemMetaPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  margin-top: 4px;
+  background-color: tintOrShade($ouiColorWarning, 85%, 75%);
+  border: 1px solid tintOrShade($ouiColorWarning, 60%, 50%);
+  border-radius: 999px;
+  font-size: $ouiFontSizeXS;
+  color: $ouiColorDarkShade;
+  line-height: 1.4;
+  width: fit-content;
+}
+
+// Activity card layout
+.emptySessionPage__activityCard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+}
+
+.emptySessionPage__activityCardHeader {
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeS;
+}
+
+.emptySessionPage__activityCardPills {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.emptySessionPage__activityPill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background-color: $ouiPageBackgroundColor;
+  border: none;
+  border-radius: $ouiBorderRadius;
+  font-size: $ouiFontSizeXS;
+  color: $ouiColorDarkShade;
+  line-height: 1.5;
+  width: 100%;
+}
+
+.emptySessionPage__activityPillText {
+  flex: 1;
+  min-width: 0;
+}
+
+.emptySessionPage__activityPillMeta {
+  flex-shrink: 0;
+  color: $ouiColorMediumShade;
+  font-size: $ouiFontSizeXS;
+  white-space: nowrap;
 }

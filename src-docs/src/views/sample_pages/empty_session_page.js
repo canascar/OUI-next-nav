@@ -49,6 +49,7 @@ const CHIP_DATA = {
       key: 'insight-1',
       title: 'Latency Spike Investigation',
       subtitle: 'Created by AI · 15 min ago',
+      summary: 'Payment-service P99 crossed 2,000ms. Connection pool exhaustion identified on 3 of 4 pods with no recent deployments.',
       meta: 'Alert: Payment service P99 latency breach',
       icon: 'alert',
     },
@@ -616,10 +617,19 @@ export const EmptySessionPage = ({
                         type="button"
                         className="emptySessionPage__listItemClickable"
                         onClick={() => onSelectSession(session.id)}>
-                        <span className="emptySessionPage__listItemContent">
+                        <span className="emptySessionPage__activityCard">
                           <span className="emptySessionPage__listItemTitle">{session.title}</span>
-                          <span className="emptySessionPage__listItemTime">
-                            {session.tabs.length > 0 ? `${session.tabs.length} ${session.tabs.length === 1 ? 'tab' : 'tabs'}` : 'No tabs'}
+                          <span className="emptySessionPage__listItemTime">{formatRelativeTime(session.createdAt)}</span>
+                          <span className="emptySessionPage__activityCardPills">
+                            {session.summary && (
+                              <span className="emptySessionPage__activityPill">
+                                <OuiIcon type="generate" size="m" />
+                                <span className="emptySessionPage__activityPillText">{session.summary}</span>
+                                <span className="emptySessionPage__activityPillMeta">
+                                  {session.tabs.length > 0 ? `${session.tabs.length} ${session.tabs.length === 1 ? 'tab' : 'tabs'}` : 'No tabs'}
+                                </span>
+                              </span>
+                            )}
                           </span>
                         </span>
                       </button>
@@ -637,17 +647,35 @@ export const EmptySessionPage = ({
                         type="button"
                         className="emptySessionPage__listItemClickable"
                         onClick={() => activeChip === 'activity' ? onViewSession() : onOpenPage(activeChip === 'discover' ? 'logs' : activeChip === 'monitor' ? 'alerts' : activeChip === 'favorite' ? (item.pageKey || 'dashboards') : 'notebooks')}>
-                        <span className="emptySessionPage__listItemContent">
-                          <span className="emptySessionPage__listItemTitle">{item.title}</span>
-                          <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
-                        </span>
-                        {item.meta && (
-                          <span className="emptySessionPage__listItemRight">
-                            <span className="emptySessionPage__listItemMeta">{item.meta}</span>
-                            {item.icon && <OuiIcon type={item.icon} size="m" color="warning" />}
+                        {activeChip === 'activity' ? (
+                          <span className="emptySessionPage__activityCard">
+                            <span className="emptySessionPage__activityCardHeader">
+                              <span className="emptySessionPage__listItemTitle">{item.title}</span>
+                            </span>
+                            <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
+                            <span className="emptySessionPage__activityCardPills">
+                              {item.summary && (
+                                <span className="emptySessionPage__activityPill">
+                                  <OuiIcon type="generate" size="m" />
+                                  <span className="emptySessionPage__activityPillText">{item.summary}</span>
+                                  <span className="emptySessionPage__activityPillMeta">3 tabs</span>
+                                </span>
+                              )}
+                              {item.meta && (
+                                <span className="emptySessionPage__activityPill">
+                                  {item.icon && <OuiIcon type={item.icon} size="m" color="warning" />}
+                                  <span className="emptySessionPage__activityPillText">{item.meta}</span>
+                                </span>
+                              )}
+                            </span>
+                          </span>
+                        ) : (
+                          <span className="emptySessionPage__listItemContent">
+                            <span className="emptySessionPage__listItemTitle">{item.title}</span>
+                            <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
                           </span>
                         )}
-                        {item.typeIcon && !item.meta && (
+                        {item.typeIcon && !item.meta && activeChip !== 'activity' && (
                           <span className="emptySessionPage__listItemRight">
                             <OuiIcon type={item.typeIcon} size="m" color="subdued" />
                           </span>

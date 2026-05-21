@@ -186,6 +186,7 @@ export const LATENCY_SPIKE_SESSION = {
   threadKey: 'latency-spike',
   pendingThread: null,
   title: 'Latency Spike Investigation',
+  summary: 'Payment-service P99 crossed 2,000ms. Connection pool exhaustion identified on 3 of 4 pods with no recent deployments.',
   threadPanelState: 'side-by-side',
   threadPanelWidth: 30,
   tabs: [
