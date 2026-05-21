@@ -591,7 +591,7 @@ export const EmptySessionPage = ({
                       <OuiIcon type="apmTrace" size="m" />
                       <span>Application Traces</span>
                     </button>
-                    <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onOpenPage('app-services')}>
+                    <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onOpenPage('app-perf-services')}>
                       <OuiIcon type="navDashboards" size="m" />
                       <span>Application Services</span>
                     </button>

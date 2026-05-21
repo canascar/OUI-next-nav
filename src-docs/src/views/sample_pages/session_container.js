@@ -283,6 +283,7 @@ export const SessionContainer = ({
             onTabClose={handleTabClose}
             onAddTab={handleAddTab}
             onSelectPage={handleSelectPage}
+            onOpenCanvasPage={onOpenCanvasPage}
             onExpandChat={isMinimized ? handleExpandChat : undefined}
             aiButtonHighlight={aiButtonHighlight}
             aiButtonMessage={aiPopoverVisible ? aiPopoverText : null}

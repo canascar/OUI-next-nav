@@ -342,12 +342,12 @@ const FilterSidebar = () => {
 
 // --- Summary Panels ---
 
-const faultServiceColumns = [
+const getFaultServiceColumns = (onSelectService) => [
   {
     field: 'service',
     name: 'Service',
     render: (name) => (
-      <OuiLink href="#" onClick={(e) => e.preventDefault()}>
+      <OuiLink href="#" onClick={(e) => { e.preventDefault(); if (onSelectService) onSelectService(name); }}>
         {name}
       </OuiLink>
     ),
@@ -359,7 +359,7 @@ const faultServiceColumns = [
   },
 ];
 
-const TopFaultServicesPanel = () => (
+const TopFaultServicesPanel = ({ onSelectService }) => (
   <OuiPanel paddingSize="m">
     <OuiTitle size="xs">
       <h3>Top services by fault rate</h3>
@@ -367,19 +367,19 @@ const TopFaultServicesPanel = () => (
     <OuiSpacer size="s" />
     <OuiBasicTable
       items={TOP_FAULT_SERVICES}
-      columns={faultServiceColumns}
+      columns={getFaultServiceColumns(onSelectService)}
       tableLayout="auto"
       compressed
     />
   </OuiPanel>
 );
 
-const depPathColumns = [
+const getDepPathColumns = (onSelectService) => [
   {
     field: 'depService',
     name: 'Dependency service',
     render: (name) => (
-      <OuiLink href="#" onClick={(e) => e.preventDefault()}>
+      <OuiLink href="#" onClick={(e) => { e.preventDefault(); if (onSelectService) onSelectService(name); }}>
         {name}
       </OuiLink>
     ),
@@ -388,7 +388,7 @@ const depPathColumns = [
     field: 'service',
     name: 'Service',
     render: (name) => (
-      <OuiLink href="#" onClick={(e) => e.preventDefault()}>
+      <OuiLink href="#" onClick={(e) => { e.preventDefault(); if (onSelectService) onSelectService(name); }}>
         {name}
       </OuiLink>
     ),
@@ -400,7 +400,7 @@ const depPathColumns = [
   },
 ];
 
-const TopDependencyPathsPanel = () => (
+const TopDependencyPathsPanel = ({ onSelectService }) => (
   <OuiPanel paddingSize="m">
     <OuiTitle size="xs">
       <h3>Top dependency paths by fault rate</h3>
@@ -408,7 +408,7 @@ const TopDependencyPathsPanel = () => (
     <OuiSpacer size="s" />
     <OuiBasicTable
       items={TOP_DEPENDENCY_PATHS}
-      columns={depPathColumns}
+      columns={getDepPathColumns(onSelectService)}
       tableLayout="auto"
       compressed
     />
@@ -417,7 +417,7 @@ const TopDependencyPathsPanel = () => (
 
 // --- Service Catalog Table ---
 
-const catalogColumns = [
+const getCatalogColumns = (onSelectService) => [
   {
     field: 'name',
     name: 'Service',
@@ -437,7 +437,7 @@ const catalogColumns = [
           />
         </OuiFlexItem>
         <OuiFlexItem grow={false}>
-          <OuiLink href="#" onClick={(e) => e.preventDefault()}>
+          <OuiLink href="#" onClick={(e) => { e.preventDefault(); if (onSelectService) onSelectService(name); }}>
             {name}
           </OuiLink>
         </OuiFlexItem>
@@ -578,6 +578,8 @@ export const ServicePage = ({
   onContinueAsThread,
   isAskAiPanelOpen,
   onAskAiToggle,
+  onSelectPage,
+  onOpenCanvasPage,
 }) => {
   const [latencyTab, setLatencyTab] = useState('p99');
   const [filterWidth, setFilterWidth] = useState(240);
@@ -631,31 +633,10 @@ export const ServicePage = ({
         onContinueAsThread={onContinueAsThread}
         isAskAiPanelOpen={isAskAiPanelOpen}
         onAskAiToggle={onAskAiToggle}
+        hideAskAi
       />
 
       {/* Tab bar */}
-      <div className="servicePage__tabBar">
-        <div className="servicePage__tabBarLeft">
-          <OuiButtonGroup
-            legend="APM view toggle"
-            options={[
-              { id: 'services', label: 'Services' },
-              { id: 'application-map', label: 'Application map' },
-            ]}
-            idSelected={activeTab}
-            onChange={(id) => setActiveTab(id)}
-            buttonSize="compressed"
-            isFullWidth
-            style={{ width: 320 }}
-          />
-        </div>
-        <div className="servicePage__tabActions">
-          <OuiButtonEmpty size="s" iconType="popout" iconSide="right">
-            View documentation
-          </OuiButtonEmpty>
-        </div>
-      </div>
-
       {/* Body: filter panel (left) + resize handle + main content */}
       <div className="servicePage__body" ref={bodyRef}>
         {/* Filter panel (left sidebar) */}
@@ -709,10 +690,10 @@ export const ServicePage = ({
             {/* Top summary panels */}
             <OuiFlexGroup gutterSize="m">
               <OuiFlexItem>
-                <TopFaultServicesPanel />
+                <TopFaultServicesPanel onSelectService={onOpenCanvasPage ? (name) => onOpenCanvasPage('service-detail', `Service: ${name}`) : undefined} />
               </OuiFlexItem>
               <OuiFlexItem>
-                <TopDependencyPathsPanel />
+                <TopDependencyPathsPanel onSelectService={onOpenCanvasPage ? (name) => onOpenCanvasPage('service-detail', `Service: ${name}`) : undefined} />
               </OuiFlexItem>
             </OuiFlexGroup>
 
@@ -750,7 +731,7 @@ export const ServicePage = ({
 
               <OuiBasicTable
                 items={SERVICES}
-                columns={catalogColumns}
+                columns={getCatalogColumns(onOpenCanvasPage ? (name) => onOpenCanvasPage('service-detail', `Service: ${name}`) : undefined)}
                 rowHeader="name"
                 tableLayout="fixed"
               />

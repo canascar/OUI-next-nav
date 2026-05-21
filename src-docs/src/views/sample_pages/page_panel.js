@@ -28,16 +28,20 @@ export const PAGE_TAB_ICONS = {
   alerts: 'navAlerting',
   'alerts-list': 'navAlerting',
   'alerts-detail': 'navAlerting',
+  'alert-rule': 'navAlerting',
   dashboards: 'navDashboards',
   'dashboards-list': 'navDashboards',
   notebooks: 'document',
   metrics: 'visArea',
   discover: 'navDiscover',
   'discover-log': 'navDiscover',
+  'discover-log-correlated': 'navDiscover',
   'discover-metric': 'visArea',
   'app-map': 'navServiceMap',
   'app-traces': 'apmTrace',
   'app-services': 'navDashboards',
+  'app-perf-services': 'navServices',
+  'service-detail': 'navServices',
   traces: 'navServices',
   'new-tab': 'folderClosed',
 };
@@ -222,6 +226,7 @@ export const PagePanel = ({
   onTabClose,
   onAddTab,
   onSelectPage,
+  onOpenCanvasPage,
   onExpandChat,
   aiButtonHighlight,
   aiButtonMessage,
@@ -256,11 +261,11 @@ export const PagePanel = ({
     const PageComponent = pageEntry.component;
 
     // Pages that have their own header — skip DetailPageHeader
-    const PAGES_WITH_OWN_HEADER = new Set(['discover-log', 'discover-metric']);
+    const PAGES_WITH_OWN_HEADER = new Set(['discover-log', 'discover-log-correlated', 'discover-metric', 'app-perf-services', 'service-detail', 'alert-rule']);
     const skipHeader = PAGES_WITH_OWN_HEADER.has(activeTab.pageKey);
 
     // List pages that need onSelectPage callback
-    const LIST_PAGES = new Set(['dashboards-list', 'alerts-list']);
+    const LIST_PAGES = new Set(['dashboards-list', 'alerts-list', 'app-perf-services', 'service-detail']);
     const isListPage = LIST_PAGES.has(activeTab.pageKey);
 
     return (
@@ -268,8 +273,9 @@ export const PagePanel = ({
         {!skipHeader && <DetailPageHeader title={activeTab.title} hideAskAi />}
         <div className="pagePanel__canvasContent">
           <PageComponent
-            onQueryExecute={skipHeader ? onQueryExecute : undefined}
+            onQueryExecute={(skipHeader || isListPage) ? onQueryExecute : undefined}
             onSelectPage={isListPage ? onSelectPage : undefined}
+            onOpenCanvasPage={isListPage ? onOpenCanvasPage : undefined}
           />
         </div>
       </div>

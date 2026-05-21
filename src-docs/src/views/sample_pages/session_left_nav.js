@@ -93,15 +93,12 @@ export const SessionLeftNav = ({
                       ? ' sessionLeftNav__actionButton--active'
                       : ''
                   }`}
-                  iconType="navQuerySets"
+                  iconType="navTicketing"
                   aria-label="All sessions"
                   color="text"
                   display="empty"
                   onClick={onBrowseSessions}
                 />
-                {sessionCount > 0 && (
-                  <span className="sessionLeftNav__badge">{sessionCount}</span>
-                )}
               </div>
             }
             isOpen={navPopover === 'sessions'}
@@ -145,8 +142,6 @@ export const SessionLeftNav = ({
           </OuiPopover>
         </div>
 
-        <div className="sessionLeftNav__divider" />
-
         <OuiToolTip content="Library" position="right">
           <OuiButtonIcon
             className={`sessionLeftNav__actionButton${
@@ -154,7 +149,7 @@ export const SessionLeftNav = ({
                 ? ' sessionLeftNav__actionButton--active'
                 : ''
             }`}
-            iconType="navSecurityCases"
+            iconType={activeView === 'library' ? 'folderOpen' : 'folderClosed'}
             aria-label="Library"
             color="text"
             display="empty"

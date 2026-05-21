@@ -1073,13 +1073,27 @@ const SCRIPTED_RESPONSES = {
         },
       ],
       content:
-        'The trace data shows payments-db latency spiked from 12ms to 8,400ms at 14:29:58, correlating with a connection pool exhaustion event. This matches a pattern from 3 previous incidents.\n\nWant me to create an alert so you catch this earlier next time?',
+        'The trace data shows payments-db latency spiked from 12ms to 8,400ms at 14:29:58, correlating with a connection pool exhaustion event. This matches a pattern from 3 previous incidents.',
       attachment: {
         type: 'link-preview',
         title: 'payments-db trace analysis',
         description:
           'Trace waterfall showing latency spike from 12ms to 8,400ms starting at 14:29:58, with connection pool exhaustion as root cause.',
       },
+      followUps: [
+        {
+          content: 'Here\'s a suggested fix — increase the connection pool max and add a circuit breaker:',
+          attachment: {
+            type: 'code-block',
+            title: 'Suggested fix',
+            language: 'bash',
+            code: 'kubectl patch configmap payments-db-config \\\n  -n production \\\n  --type merge \\\n  -p \'{"data":{"POOL_MAX_CONNECTIONS":"150","POOL_ACQUIRE_TIMEOUT":"5s"}}\'\n\nkubectl rollout restart deployment/payments-db -n production',
+          },
+        },
+        {
+          content: 'Want me to create an alert rule so you catch this earlier next time?',
+        },
+      ],
     },
     alert: {
       id: 'alert',
@@ -1096,12 +1110,13 @@ const SCRIPTED_RESPONSES = {
         },
       ],
       content:
-        'Alert created — "payments-db latency spike" will notify #platform-alerts when payments-db latency exceeds 500ms for 30 seconds. I\'ve also added this pattern to memory so I can flag it proactively next time.',
+        'Alert rule created — "payments-db-latency-monitor" will notify #platform-alerts when payments-db latency exceeds 500ms for 30 seconds. I\'ve also added this pattern to memory so I can flag it proactively next time.',
       attachment: {
         type: 'link-preview',
-        title: 'Payment service alert — P99 latency breach',
+        key: 'alert-rule',
+        title: 'payments-db-latency-monitor',
         description:
-          'Triggered at 14:32 UTC. P99 latency crossed the 2,000ms threshold on 3 of 4 pods. No recent deploys in the last 6 hours.',
+          'Per cluster metrics monitor · Schedule: every 1 minute · Trigger: payments-db latency > 500ms for 30s · Channel: #platform-alerts',
       },
     },
   },
@@ -1723,6 +1738,39 @@ export const ThreadPage = ({
               }
               return next;
             });
+
+            // Stream follow-up messages if defined
+            if (mockResponse.followUps && mockResponse.followUps.length > 0) {
+              let followUpDelay = 800;
+              mockResponse.followUps.forEach((followUp) => {
+                const fuTimer = setTimeout(() => {
+                  const fuTokens = followUp.content.split(/(\s+)/);
+                  setMessages((prev2) => [
+                    ...prev2,
+                    { role: 'assistant', content: '', streaming: true, attachment: followUp.attachment },
+                  ]);
+                  let fuBuilt = '';
+                  fuTokens.forEach((fuToken, fi) => {
+                    const fTimer = setTimeout(() => {
+                      fuBuilt += fuToken;
+                      setMessages((prev2) => {
+                        const updated = [...prev2];
+                        updated[updated.length - 1] = {
+                          role: 'assistant',
+                          content: fuBuilt,
+                          streaming: fi < fuTokens.length - 1,
+                          attachment: followUp.attachment,
+                        };
+                        return updated;
+                      });
+                    }, fi * 30);
+                    streamTimers.current.push(fTimer);
+                  });
+                }, followUpDelay);
+                streamTimers.current.push(fuTimer);
+                followUpDelay += 1500;
+              });
+            }
           }
         }, i * 30);
         streamTimers.current.push(timer);
@@ -1920,7 +1968,7 @@ export const ThreadPage = ({
                 if (done.has('alert')) {
                   prompts = [];
                 } else if (done.has('traces')) {
-                  prompts = ['Create an alert for this'];
+                  prompts = ['Create an alert rule for this'];
                 } else {
                   prompts = ['Yes, check the trace data'];
                 }
@@ -2147,6 +2195,39 @@ export const ThreadPage = ({
                                     }
                                     return next;
                                   });
+
+                                  // Stream follow-up messages if defined
+                                  if (mockResponse.followUps && mockResponse.followUps.length > 0) {
+                                    let followUpDelay = 800;
+                                    mockResponse.followUps.forEach((followUp) => {
+                                      const fuTimer = setTimeout(() => {
+                                        const fuTokens = followUp.content.split(/(\s+)/);
+                                        setMessages((prev2) => [
+                                          ...prev2,
+                                          { role: 'assistant', content: '', streaming: true, attachment: followUp.attachment },
+                                        ]);
+                                        let fuBuilt = '';
+                                        fuTokens.forEach((fuToken, fi) => {
+                                          const fTimer = setTimeout(() => {
+                                            fuBuilt += fuToken;
+                                            setMessages((prev2) => {
+                                              const updated2 = [...prev2];
+                                              updated2[updated2.length - 1] = {
+                                                role: 'assistant',
+                                                content: fuBuilt,
+                                                streaming: fi < fuTokens.length - 1,
+                                                attachment: followUp.attachment,
+                                              };
+                                              return updated2;
+                                            });
+                                          }, fi * 30);
+                                          streamTimers.current.push(fTimer);
+                                        });
+                                      }, followUpDelay);
+                                      streamTimers.current.push(fuTimer);
+                                      followUpDelay += 1500;
+                                    });
+                                  }
                                 }
                               }, i * 30);
                               streamTimers.current.push(timer);
