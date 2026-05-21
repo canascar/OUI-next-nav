@@ -24,13 +24,40 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: 48px;
   width: 100%;
   height: 100%;
-  border: 1px solid $ouiBorderColor;
   border-radius: 8px;
-  padding: 80px 24px 24px;
+  padding: 200px 24px 24px;
   overflow: hidden;
+  position: relative;
+  background-image:
+    linear-gradient(to right, rgba(46, 74, 143, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(46, 74, 143, 0.04) 1px, transparent 1px),
+    linear-gradient(to right, rgba(46, 74, 143, 0.015) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(46, 74, 143, 0.015) 1px, transparent 1px);
+  background-size:
+    24px 24px,
+    24px 24px,
+    6px 6px,
+    6px 6px;
+  background-position: 0 0;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(to right, $ouiPageBackgroundColor 0px, transparent 40px),
+      linear-gradient(to left, $ouiPageBackgroundColor 0px, transparent 40px),
+      linear-gradient(to bottom, $ouiPageBackgroundColor 0px, transparent 40px),
+      linear-gradient(to top, $ouiPageBackgroundColor 0px, transparent 40px);
+    z-index: 0;
+  }
 }
 
 // Header / Title
@@ -397,7 +424,7 @@
   width: 100%;
   padding: $ouiSize;
   border: $ouiBorderThin;
-  border-radius: $ouiBorderRadius;
+  border-radius: 8px;
   background-color: $ouiColorEmptyShade;
   cursor: pointer;
   text-align: left;
@@ -418,6 +445,95 @@
 
   &--warning {
     // no special styling, just uses the icon/meta to indicate status
+  }
+
+  &--activity {
+    border-color: $ouiColorWarning;
+    background-color: tintOrShade($ouiColorWarning, 94%, 85%);
+    position: relative;
+  }
+}
+
+.emptySessionPage__listItemClickable {
+  display: flex;
+  align-items: center;
+  gap: $ouiSize;
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  font-size: $ouiFontSizeS;
+  color: $ouiTextColor;
+}
+
+.emptySessionPage__listItemDismiss {
+  font-size: $ouiFontSizeXS;
+  color: $ouiColorMediumShade;
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &:hover {
+    color: $ouiTextColor;
+    text-decoration: underline;
+  }
+}
+
+.emptySessionPage__listItemEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: $ouiSizeXL $ouiSize;
+  border: 1px dashed $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  color: $ouiColorMediumShade;
+  font-size: $ouiFontSizeS;
+  background-color: $ouiPageBackgroundColor;
+}
+
+.emptySessionPage__discoverGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: $ouiSize;
+
+  &--3col {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+.emptySessionPage__discoverGridItem {
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeS;
+  padding: $ouiSize;
+  height: 64px;
+  border: $ouiBorderThin;
+  border-radius: 8px;
+  background-color: $ouiColorEmptyShade;
+  cursor: pointer;
+  font-size: $ouiFontSizeS;
+  color: $ouiTextColor;
+  transition: background-color $ouiAnimSpeedFast ease-in-out;
+
+  &:hover {
+    background-color: $ouiFocusBackgroundColor;
+  }
+
+  &--disabled {
+    cursor: default;
+    opacity: 0.5;
+
+    &:hover {
+      background-color: $ouiColorEmptyShade;
+    }
   }
 }
 
@@ -474,11 +590,12 @@
   display: flex;
   flex: 1 1 0;
   align-items: center;
+  justify-content: center;
   gap: 12px;
   padding: 12px;
   background-color: $ouiColorEmptyShade;
   border: $ouiBorderThin;
-  border-radius: 8px;
+  border-radius: 999px;
   cursor: pointer;
   font-size: $ouiFontSizeXS;
   color: $ouiTitleColor;

@@ -26,8 +26,10 @@ import { NewTabPage } from './new_tab_page';
 export const PAGE_TAB_ICONS = {
   logs: 'navDiscover',
   alerts: 'navAlerting',
+  'alerts-list': 'navAlerting',
   'alerts-detail': 'navAlerting',
   dashboards: 'navDashboards',
+  'dashboards-list': 'navDashboards',
   notebooks: 'document',
   metrics: 'visArea',
   discover: 'navDiscover',
@@ -257,11 +259,18 @@ export const PagePanel = ({
     const PAGES_WITH_OWN_HEADER = new Set(['discover-log', 'discover-metric']);
     const skipHeader = PAGES_WITH_OWN_HEADER.has(activeTab.pageKey);
 
+    // List pages that need onSelectPage callback
+    const LIST_PAGES = new Set(['dashboards-list', 'alerts-list']);
+    const isListPage = LIST_PAGES.has(activeTab.pageKey);
+
     return (
       <div className="pagePanel__canvasWrapper">
         {!skipHeader && <DetailPageHeader title={activeTab.title} hideAskAi />}
         <div className="pagePanel__canvasContent">
-          <PageComponent onQueryExecute={skipHeader ? onQueryExecute : undefined} />
+          <PageComponent
+            onQueryExecute={skipHeader ? onQueryExecute : undefined}
+            onSelectPage={isListPage ? onSelectPage : undefined}
+          />
         </div>
       </div>
     );

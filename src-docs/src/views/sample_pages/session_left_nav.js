@@ -13,6 +13,7 @@ import React, { useState, useCallback, useRef, useContext } from 'react';
 
 import {
   OuiAvatar,
+  OuiButtonEmpty,
   OuiButtonIcon,
   OuiIcon,
   OuiPopover,
@@ -34,6 +35,8 @@ export const SessionLeftNav = ({
   onCreateSession,
   onBrowseSessions,
   onBrowseLibrary,
+  onSelectSession,
+  sessions = [],
   activeView,
   isEmptySession,
 }) => {
@@ -78,25 +81,69 @@ export const SessionLeftNav = ({
           />
         </OuiToolTip>
 
-        <OuiToolTip content="All sessions" position="right">
-          <div className="sessionLeftNav__sessionsButtonWrap">
-            <OuiButtonIcon
-              className={`sessionLeftNav__actionButton${
-                activeView === 'session-list'
-                  ? ' sessionLeftNav__actionButton--active'
-                  : ''
-              }`}
-              iconType="navQuerySets"
-              aria-label="All sessions"
-              color="text"
-              display="empty"
-              onClick={onBrowseSessions}
-            />
-            {sessionCount > 0 && (
-              <span className="sessionLeftNav__badge">{sessionCount}</span>
-            )}
-          </div>
-        </OuiToolTip>
+        <div
+          onMouseEnter={() => openNavPopover('sessions')}
+          onMouseLeave={() => closeNavPopover()}>
+          <OuiPopover
+            button={
+              <div className="sessionLeftNav__sessionsButtonWrap">
+                <OuiButtonIcon
+                  className={`sessionLeftNav__actionButton${
+                    activeView === 'session-list'
+                      ? ' sessionLeftNav__actionButton--active'
+                      : ''
+                  }`}
+                  iconType="navQuerySets"
+                  aria-label="All sessions"
+                  color="text"
+                  display="empty"
+                  onClick={onBrowseSessions}
+                />
+                {sessionCount > 0 && (
+                  <span className="sessionLeftNav__badge">{sessionCount}</span>
+                )}
+              </div>
+            }
+            isOpen={navPopover === 'sessions'}
+            closePopover={() => setNavPopover(null)}
+            anchorPosition="rightUp"
+            panelPaddingSize="s"
+            panelClassName="samplePagesLeftNav__popoverPanel">
+            <div
+              onMouseEnter={() => openNavPopover('sessions')}
+              onMouseLeave={() => closeNavPopover()}>
+              <div className="samplePagesLeftNav__threadPopover">
+                <div className="samplePagesLeftNav__threadPopoverHeader">
+                  <span>Recent sessions</span>
+                </div>
+                <div className="samplePagesLeftNav__threadPopoverContent">
+                  {sessions.slice(0, 5).map((session) => (
+                    <button
+                      key={session.id}
+                      type="button"
+                      className="samplePagesLeftNav__threadPopoverItem"
+                      onClick={() => {
+                        setNavPopover(null);
+                        onSelectSession(session.id);
+                      }}>
+                      <span className="samplePagesLeftNav__threadPopoverTitle">
+                        {session.title}
+                      </span>
+                      <span className="samplePagesLeftNav__threadPopoverSubtitle">
+                        {session.tabs.length > 0 ? `${session.tabs.length} ${session.tabs.length === 1 ? 'tab' : 'tabs'}` : 'No tabs'}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+                <div className="samplePagesLeftNav__threadPopoverFooter">
+                  <OuiButtonEmpty size="xs" onClick={() => { setNavPopover(null); onBrowseSessions(); }}>
+                    View all
+                  </OuiButtonEmpty>
+                </div>
+              </div>
+            </div>
+          </OuiPopover>
+        </div>
 
         <div className="sessionLeftNav__divider" />
 

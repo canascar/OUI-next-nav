@@ -11,12 +11,14 @@
 
 import {
   AlertPageMock,
+  AlertListPageMock,
   LogsPageMock,
   EmptyDiscoverPageMock,
   AppMapPageMock,
   AppTracesPageMock,
   AppServicesPageMock,
   DashboardPageMock,
+  DashboardListPageMock,
   InventoryAnalysisPageMock,
   ConnectionPoolPageMock,
   TraceAnalysisPageMock,
@@ -95,8 +97,10 @@ export const SESSION_STATE_VERSION = 1;
 export const SOURCE_PAGE_MOCK = {
   logs: { component: LogsPageMock, title: 'Logs' },
   alerts: { component: AlertPageMock, title: 'Alerts' },
+  'alerts-list': { component: AlertListPageMock, title: 'Alerts' },
   'alerts-detail': { component: AlertPageMock, title: 'Alerts Detail' },
   dashboards: { component: DashboardPageMock, title: 'Dashboards' },
+  'dashboards-list': { component: DashboardListPageMock, title: 'Dashboards' },
   notebooks: { component: InventoryAnalysisPageMock, title: 'Notebooks' },
   metrics: { component: ConnectionPoolPageMock, title: 'Metrics' },
   discover: { component: LogsPageMock, title: 'Discover' },

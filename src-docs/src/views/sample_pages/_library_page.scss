@@ -41,6 +41,22 @@
 
 .libraryPage__tabs {
   margin-bottom: $ouiSize;
+
+  .emptySessionPage__chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .emptySessionPage__chip {
+    flex: 0 0 auto;
+  }
 }
 
 .libraryPage__items {

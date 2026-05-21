@@ -44,14 +44,25 @@ const LIBRARY_OBJECTS = [
   { key: 'query-disk-io', title: 'Disk I/O by volume', type: 'query', icon: 'search', subtitle: 'source=metrics | stats avg(disk_io) by volume', pageKey: 'discover-metric' },
   { key: 'query-network-errors', title: 'Network error rate', type: 'query', icon: 'search', subtitle: 'source=metrics | where net_errors > 0', pageKey: 'discover-metric' },
   { key: 'query-gc-pauses', title: 'GC pause duration', type: 'query', icon: 'search', subtitle: 'source=metrics | stats max(gc_pause_ms) by service', pageKey: 'discover-metric' },
+  // Alerts
+  { key: 'alert-cpu', title: 'CPU threshold exceeded', type: 'alert', icon: 'navAlerting', subtitle: 'Critical · 10 min ago', pageKey: 'alerts' },
+  { key: 'alert-disk', title: 'Disk usage warning', type: 'alert', icon: 'navAlerting', subtitle: 'Warning · 1 hour ago', pageKey: 'alerts' },
+  { key: 'alert-error-rate', title: 'Error rate spike', type: 'alert', icon: 'navAlerting', subtitle: 'Critical · 3 hours ago', pageKey: 'alerts' },
+  { key: 'alert-p99', title: 'Payment service P99 latency breach', type: 'alert', icon: 'navAlerting', subtitle: 'Critical · 15 min ago', pageKey: 'alerts' },
+  // Notebooks
+  { key: 'notebook-inventory', title: 'Inventory service dependency map', type: 'notebook', icon: 'document', subtitle: 'Updated 2 hours ago', pageKey: 'notebooks' },
+  { key: 'notebook-capacity', title: 'Weekly capacity report', type: 'notebook', icon: 'document', subtitle: 'Updated 1 day ago', pageKey: 'notebooks' },
+  { key: 'notebook-rollback', title: 'Deployment rollback runbook', type: 'notebook', icon: 'document', subtitle: 'Updated 3 days ago', pageKey: 'notebooks' },
 ];
 
 const TABS = [
   { id: 'all', label: 'All', icon: 'apps' },
   { id: 'dashboard', label: 'Dashboards', icon: 'navDashboards' },
-  { id: 'log', label: 'Logs', icon: 'navDiscover' },
-  { id: 'metric', label: 'Metrics', icon: 'visArea' },
-  { id: 'query', label: 'Queries', icon: 'search' },
+  { id: 'query', label: 'Saved queries', icon: 'search' },
+  { id: 'log', label: 'Saved logs', icon: 'navDiscover' },
+  { id: 'metric', label: 'Saved metrics', icon: 'visArea' },
+  { id: 'alert', label: 'Alerts', icon: 'navAlerting' },
+  { id: 'notebook', label: 'Notebooks', icon: 'document' },
 ];
 
 /**
@@ -83,11 +94,11 @@ export const LibraryPage = ({ onSelectPage }) => {
 
         <div className="libraryPage__search">
           <OuiCompressedFieldSearch
-            placeholder="Search objects..."
+            placeholder="Search assets..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             fullWidth
-            aria-label="Search objects"
+            aria-label="Search assets"
           />
         </div>
 
@@ -119,6 +130,11 @@ export const LibraryPage = ({ onSelectPage }) => {
                   <span className="emptySessionPage__listItemTitle">{item.title}</span>
                   <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
                 </span>
+                {activeTab === 'all' && (
+                  <span className="emptySessionPage__listItemRight">
+                    <OuiIcon type={item.icon} size="m" color="subdued" />
+                  </span>
+                )}
               </button>
             ))
           )}

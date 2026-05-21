@@ -1683,6 +1683,10 @@ export const SessionPagesView = () => {
               pendingThread,
             });
           }}
+          sessions={sessionState.sessions.filter(
+            (s) => s.threadKey || s.pendingThread || s.tabs.length > 0
+          )}
+          onSelectSession={handleSelectSession}
           recentItems={[]}
           favoriteItems={[]}
           systemAlert={null}
@@ -1713,9 +1717,13 @@ export const SessionPagesView = () => {
         sessionCount={sessionState.sessions.filter(
           (s) => s.threadKey || s.pendingThread || s.tabs.length > 0
         ).length}
+        sessions={sessionState.sessions.filter(
+          (s) => s.threadKey || s.pendingThread || s.tabs.length > 0
+        )}
         onCreateSession={handleCreateSession}
         onBrowseSessions={handleBrowseSessions}
         onBrowseLibrary={handleBrowseLibrary}
+        onSelectSession={handleSelectSession}
         activeView={activeView}
         isEmptySession={isEmptySession}
       />

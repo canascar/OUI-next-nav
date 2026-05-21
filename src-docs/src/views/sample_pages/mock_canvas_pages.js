@@ -22,6 +22,8 @@ import {
 } from '@elastic/charts';
 import {
   OuiBasicTable,
+  OuiButton,
+  OuiButtonIcon,
   OuiFlexGroup,
   OuiFlexItem,
   OuiHealth,
@@ -824,5 +826,78 @@ export const DashboardPageMock = () => (
         compressed
       />
     </OuiPanel>
+  </div>
+);
+
+// Dashboard list page mock
+const DASHBOARD_LIST_ITEMS = [
+  { id: 'dash-1', title: 'System overview', updated: '5 min ago', pageKey: 'dashboards' },
+  { id: 'dash-2', title: 'Web traffic analytics', updated: '15 min ago', pageKey: 'dashboards' },
+  { id: 'dash-3', title: 'API performance', updated: '30 min ago', pageKey: 'dashboards' },
+  { id: 'dash-4', title: 'Payment service — connection pool', updated: 'Just now', pageKey: 'dashboards' },
+  { id: 'dash-5', title: 'Infrastructure health', updated: '2 hours ago', pageKey: 'dashboards' },
+  { id: 'dash-6', title: 'Network throughput', updated: '1 day ago', pageKey: 'dashboards' },
+];
+
+export const DashboardListPageMock = ({ onSelectPage }) => (
+  <div className="mockCanvasPage mockCanvasPage--fullBody" style={{ padding: 24 }}>
+    <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
+      <OuiButton iconType="plusInCircle" size="s">
+        Create dashboard
+      </OuiButton>
+    </div>
+    <OuiBasicTable
+      items={DASHBOARD_LIST_ITEMS}
+      columns={[
+        {
+          field: 'title',
+          name: 'Name',
+          render: (title, item) => (
+            <OuiLink onClick={() => onSelectPage && onSelectPage(item.pageKey, title)}>
+              {title}
+            </OuiLink>
+          ),
+        },
+        { field: 'updated', name: 'Last updated' },
+      ]}
+      compressed
+    />
+  </div>
+);
+
+// Alert list page mock
+const ALERT_LIST_ITEMS = [
+  { id: 'alert-1', title: 'CPU threshold exceeded', severity: 'Critical', triggered: '10 min ago', pageKey: 'alerts' },
+  { id: 'alert-2', title: 'Disk usage warning', severity: 'Warning', triggered: '1 hour ago', pageKey: 'alerts' },
+  { id: 'alert-3', title: 'Error rate spike', severity: 'Critical', triggered: '3 hours ago', pageKey: 'alerts' },
+  { id: 'alert-4', title: 'Payment service P99 latency breach', severity: 'Critical', triggered: '15 min ago', pageKey: 'alerts' },
+  { id: 'alert-5', title: 'Memory pressure warning', severity: 'Warning', triggered: '6 hours ago', pageKey: 'alerts' },
+  { id: 'alert-6', title: 'Connection pool exhaustion', severity: 'Critical', triggered: '20 min ago', pageKey: 'alerts' },
+];
+
+export const AlertListPageMock = ({ onSelectPage }) => (
+  <div className="mockCanvasPage mockCanvasPage--fullBody" style={{ padding: 24 }}>
+    <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
+      <OuiButton iconType="plusInCircle" size="s">
+        Create monitor
+      </OuiButton>
+    </div>
+    <OuiBasicTable
+      items={ALERT_LIST_ITEMS}
+      columns={[
+        {
+          field: 'title',
+          name: 'Alert',
+          render: (title, item) => (
+            <OuiLink onClick={() => onSelectPage && onSelectPage(item.pageKey, title)}>
+              {title}
+            </OuiLink>
+          ),
+        },
+        { field: 'severity', name: 'Severity' },
+        { field: 'triggered', name: 'Triggered' },
+      ]}
+      compressed
+    />
   </div>
 );
