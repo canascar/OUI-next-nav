@@ -8,7 +8,13 @@
   right: 0;
   bottom: 0;
   display: flex;
-  background: linear-gradient(135deg, #f0fafa 0%, #f7f9fc 50%, #ffffff 100%);
+  background-color: $ouiPageBackgroundColor;
+  background-image:
+    linear-gradient(to right, rgba($ouiColorPrimary, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba($ouiColorPrimary, 0.04) 1px, transparent 1px),
+    linear-gradient(to right, rgba($ouiColorPrimary, 0.015) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba($ouiColorPrimary, 0.015) 1px, transparent 1px);
+  background-size: 24px 24px, 24px 24px, 6px 6px, 6px 6px;
 }
 
 // ─────────────────────────────────────────────
