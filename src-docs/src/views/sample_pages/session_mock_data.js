@@ -121,8 +121,8 @@ export const LATENCY_SPIKE_THREAD_DATA = {
       attachments: [
         {
           type: 'link-preview',
-          key: 'traces',
-          title: 'Trace Analysis — Payment Service Spans',
+          key: 'notebooks',
+          title: 'Inventory service dependency analysis',
           description:
             'Trace waterfall showing acquire_connection bottleneck averaging 1,840ms across sampled requests.',
           viewAction: true,
@@ -153,8 +153,8 @@ echo "Done. Monitoring P99 latency for recovery..."`,
         },
         {
           type: 'link-preview',
-          key: 'dashboards',
-          title: 'Connection Pool Dashboard',
+          key: 'notebooks',
+          title: 'Payment service connection pool metrics',
           description:
             'Live dashboard with pool utilization, acquire wait time, active connections, and P99 latency for the payment service.',
           viewAction: true,
@@ -186,23 +186,86 @@ export const LATENCY_SPIKE_SESSION = {
   threadKey: 'latency-spike',
   pendingThread: null,
   title: 'Latency Spike Investigation',
+  summary: 'Payment-service P99 crossed 2,000ms. Connection pool exhaustion identified on 3 of 4 pods with no recent deployments.',
   threadPanelState: 'side-by-side',
   threadPanelWidth: 30,
   tabs: [
     { id: 'tab-alerts-1', pageKey: 'alerts', title: 'Alert: P95 Latency > 2s' },
     {
-      id: 'tab-logs-1',
-      pageKey: 'logs',
-      title: 'Payment Service Logs — Last 30 Minutes',
+      id: 'tab-app-map-1',
+      pageKey: 'notebooks',
+      title: 'Inventory service dependency analysis',
     },
     {
-      id: 'tab-traces-1',
-      pageKey: 'traces',
-      title: 'Trace Analysis — Payment Service Spans',
+      id: 'tab-metrics-1',
+      pageKey: 'notebooks',
+      title: 'Payment service connection pool metrics',
     },
   ],
   activeTabId: 'tab-alerts-1',
   createdAt: Date.now() - 3600000, // 1 hour ago
+};
+
+// ---------------------------------------------------------------------------
+// Mock Flow 3: Error Rate Spike — Thread Data
+// ---------------------------------------------------------------------------
+
+/**
+ * Thread conversation for an error rate spike on the checkout service.
+ */
+export const ERROR_RATE_SPIKE_THREAD_DATA = {
+  threadKey: 'error-rate-spike',
+  title: 'Error Rate Spike — Checkout Service',
+  messages: [
+    {
+      role: 'assistant',
+      content:
+        'The checkout service error rate climbed from 0.3% to 12.4% starting at 09:15 UTC. 94% of failures are 503s from the auth-service dependency. Root cause: auth-service v2.5.0 deployed at 09:12 introduced a synchronous OIDC token validation call that is timing out against the external provider.\n\nThe auth-service has been rolled back to v2.4.1 and error rates are recovering. Sharing this summary with the team for visibility.',
+      attachments: [
+        {
+          type: 'link-preview',
+          key: 'alerts',
+          title: 'Alert: Checkout error rate > 10%',
+          description:
+            'Triggered at 09:18 UTC. 503 errors from auth-service dependency accounting for 94% of failures.',
+          viewAction: true,
+        },
+        {
+          type: 'link-preview',
+          key: 'dashboards',
+          title: 'Checkout service health dashboard',
+          description:
+            'Real-time error rate, latency, and throughput for the checkout service and its dependencies.',
+          viewAction: true,
+        },
+      ],
+    },
+  ],
+};
+
+// ---------------------------------------------------------------------------
+// Mock Flow 3: Error Rate Spike — Session Object
+// ---------------------------------------------------------------------------
+
+/**
+ * Pre-built session for the error rate spike investigation.
+ * Has one tab open (dashboard) and the thread in side-by-side.
+ */
+export const ERROR_RATE_SPIKE_SESSION = {
+  id: 'error-rate-spike-session',
+  threadKey: 'error-rate-spike',
+  pendingThread: null,
+  title: 'Error Rate Spike — Checkout Service',
+  summary: 'Checkout error rate jumped to 12.4%. Auth-service deployment regression identified — OIDC token validation timing out.',
+  threadPanelState: 'side-by-side',
+  threadPanelWidth: 30,
+  tabs: [
+    { id: 'tab-alert-err-1', pageKey: 'alerts', title: 'Alert: Checkout error rate > 10%' },
+    { id: 'tab-dash-err-1', pageKey: 'dashboards', title: 'Checkout service health dashboard' },
+  ],
+  activeTabId: 'tab-alert-err-1',
+  createdAt: Date.now() - 7200000, // 2 hours ago
+  hidden: true,
 };
 
 // ---------------------------------------------------------------------------

@@ -58,6 +58,7 @@ import {
 import { SessionLeftNav } from './session_left_nav';
 import { SessionContainer } from './session_container';
 import { SessionList } from './session_list';
+import { LibraryPage } from './library_page';
 import { EmptySessionPage } from './empty_session_page';
 import { SOURCE_PAGE_MOCK } from './session_models';
 import {
@@ -66,7 +67,7 @@ import {
   setActiveSession,
   openCanvasPage,
 } from './session_state_manager';
-import { LATENCY_SPIKE_SESSION } from './session_mock_data';
+import { LATENCY_SPIKE_SESSION, ERROR_RATE_SPIKE_SESSION } from './session_mock_data';
 
 const renderPage = (
   activePage,
@@ -1484,7 +1485,7 @@ function initializeSessionState() {
   };
 
   return {
-    sessions: [emptySession, LATENCY_SPIKE_SESSION],
+    sessions: [emptySession, LATENCY_SPIKE_SESSION, ERROR_RATE_SPIKE_SESSION],
     activeSessionId: emptySession.id,
     version: 1,
   };
@@ -1510,11 +1511,21 @@ export const SessionPagesView = () => {
 
   // --- Left Nav handlers ---
 
-  /** Plus_Button: create a new session and navigate into it */
+  /** Plus_Button: navigate to empty session, or create one if none exists */
   const handleCreateSession = useCallback(() => {
     setSessionState((prev) => {
-      const next = createSession(prev);
-      return next;
+      // If the active session is already empty, just stay on it
+      const active = prev.sessions.find((s) => s.id === prev.activeSessionId);
+      if (
+        active &&
+        !active.threadKey &&
+        !active.pendingThread &&
+        active.tabs.length === 0
+      ) {
+        return prev;
+      }
+      // Otherwise create a new session
+      return createSession(prev);
     });
     setActiveView('session');
   }, []);
@@ -1524,11 +1535,25 @@ export const SessionPagesView = () => {
     setActiveView('session-list');
   }, []);
 
+  /** Library_Button: show the library page */
+  const handleBrowseLibrary = useCallback(() => {
+    setActiveView('library');
+  }, []);
+
   // --- Session List handlers ---
 
   /** Select a session from the list */
   const handleSelectSession = useCallback((sessionId) => {
-    setSessionState((prev) => setActiveSession(prev, sessionId));
+    setSessionState((prev) => {
+      const updated = setActiveSession(prev, sessionId);
+      // Unhide the session when selected
+      return {
+        ...updated,
+        sessions: updated.sessions.map((s) =>
+          s.id === sessionId ? { ...s, hidden: false } : s
+        ),
+      };
+    });
     setActiveView('session');
   }, []);
 
@@ -1598,12 +1623,42 @@ export const SessionPagesView = () => {
 
   const renderMainContent = () => {
     if (activeView === 'session-list') {
+      // Filter out empty sessions (not yet "created")
+      const existingSessions = sessionState.sessions.filter(
+        (s) => s.threadKey || s.pendingThread || s.tabs.length > 0
+      );
       return (
         <SessionList
-          sessions={sessionState.sessions}
+          sessions={existingSessions}
           activeSessionId={sessionState.activeSessionId}
           onSelectSession={handleSelectSession}
           onCreateSession={handleCreateSession}
+        />
+      );
+    }
+
+    if (activeView === 'library') {
+      return (
+        <LibraryPage
+          onSelectPage={(pageKey, title) => {
+            // Create a new session with the page open and chat minimized
+            setSessionState((prev) => {
+              const next = createSession(prev);
+              const newSessionId = next.activeSessionId;
+              const tab = {
+                id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+                pageKey,
+                title,
+              };
+              return updateSession(next, newSessionId, {
+                tabs: [tab],
+                activeTabId: tab.id,
+                threadPanelState: 'minimized',
+                title,
+              });
+            });
+            setActiveView('session');
+          }}
         />
       );
     }
@@ -1617,6 +1672,30 @@ export const SessionPagesView = () => {
         <EmptySessionPage
           onStartThread={handleStartThread}
           onOpenPage={handleOpenPage}
+          onViewSession={() => {
+            handleSelectSession('latency-spike-session');
+          }}
+          onStartInvestigation={() => {
+            // Open alert page in the right pane, expand chat pane with investigation prompt
+            handleOpenCanvasPage('alerts', 'Alert: P95 Latency > 2s');
+            const threadKey = `thread-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+            const pendingThread = {
+              key: threadKey,
+              messages: [
+                { role: 'user', author: 'You', content: 'Investigate the alert: payment-service P99 latency exceeded 2,000ms threshold on 3 of 4 pods.' },
+              ],
+              sourcePageTitle: 'Alert: P95 Latency > 2s',
+            };
+            handleUpdateSession({
+              threadPanelState: 'side-by-side',
+              threadKey,
+              pendingThread,
+            });
+          }}
+          sessions={sessionState.sessions.filter(
+            (s) => s.threadKey || s.pendingThread || s.tabs.length > 0
+          )}
+          onSelectSession={handleSelectSession}
           recentItems={[]}
           favoriteItems={[]}
           systemAlert={null}
@@ -1644,10 +1723,18 @@ export const SessionPagesView = () => {
         bottom: 0,
       }}>
       <SessionLeftNav
-        sessionCount={sessionState.sessions.length}
+        sessionCount={sessionState.sessions.filter(
+          (s) => s.threadKey || s.pendingThread || s.tabs.length > 0
+        ).length}
+        sessions={sessionState.sessions.filter(
+          (s) => s.threadKey || s.pendingThread || s.tabs.length > 0
+        )}
         onCreateSession={handleCreateSession}
         onBrowseSessions={handleBrowseSessions}
+        onBrowseLibrary={handleBrowseLibrary}
+        onSelectSession={handleSelectSession}
         activeView={activeView}
+        isEmptySession={isEmptySession}
       />
       <div
         style={{

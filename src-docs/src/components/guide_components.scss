@@ -349,6 +349,7 @@ body {
 @import '../views/sample_pages/thread_panel';
 @import '../views/sample_pages/resize_handle';
 @import '../views/sample_pages/page_panel';
+@import '../views/sample_pages/library_page';
 
 @include ouiBreakpoint('xs', 's') {
   .guideSideNav {

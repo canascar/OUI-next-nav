@@ -26,9 +26,11 @@ import { NewTabPage } from './new_tab_page';
 export const PAGE_TAB_ICONS = {
   logs: 'navDiscover',
   alerts: 'navAlerting',
+  'alerts-list': 'navAlerting',
   'alerts-detail': 'navAlerting',
   dashboards: 'navDashboards',
-  notebooks: 'navNotebooks',
+  'dashboards-list': 'navDashboards',
+  notebooks: 'document',
   metrics: 'visArea',
   discover: 'navDiscover',
   'discover-log': 'navDiscover',
@@ -50,7 +52,7 @@ export const PAGE_TAB_ICONS = {
  * @param {(tabId: string) => void} props.onTabClose - Tab close handler
  * @param {() => void} props.onAddTab - Add new tab handler
  */
-const TabBar = ({ tabs, activeTabId, onTabSelect, onTabClose, onAddTab, onExpandChat, aiButtonHighlight }) => {
+const TabBar = ({ tabs, activeTabId, onTabSelect, onTabClose, onAddTab, onExpandChat, aiButtonHighlight, aiButtonMessage, onDismissAiPopover }) => {
   const tabListRef = useRef(null);
   const [isListOpen, setIsListOpen] = useState(false);
 
@@ -88,6 +90,15 @@ const TabBar = ({ tabs, activeTabId, onTabSelect, onTabClose, onAddTab, onExpand
             color={aiButtonHighlight ? 'primary' : 'text'}
             display="empty"
           />
+          {aiButtonHighlight && aiButtonMessage && (
+            <>
+              {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
+              <div className="pagePanel__aiPopoverOverlay" onClick={(e) => { e.stopPropagation(); onDismissAiPopover(); }} />
+              <div className="pagePanel__aiPopover" onClick={onExpandChat}>
+                <p className="pagePanel__aiPopoverText">{aiButtonMessage}</p>
+              </div>
+            </>
+          )}
         </div>
       )}
       <div
@@ -156,6 +167,7 @@ const TabBar = ({ tabs, activeTabId, onTabSelect, onTabClose, onAddTab, onExpand
               size="s"
               color="text"
               display="empty"
+              isDisabled={tabs.length === 0}
               onClick={() => setIsListOpen((open) => !open)}
             />
           }
@@ -212,6 +224,8 @@ export const PagePanel = ({
   onSelectPage,
   onExpandChat,
   aiButtonHighlight,
+  aiButtonMessage,
+  onDismissAiPopover,
   onQueryExecute,
 }) => {
   const activeTab = tabs.find((tab) => tab.id === activeTabId);
@@ -245,11 +259,18 @@ export const PagePanel = ({
     const PAGES_WITH_OWN_HEADER = new Set(['discover-log', 'discover-metric']);
     const skipHeader = PAGES_WITH_OWN_HEADER.has(activeTab.pageKey);
 
+    // List pages that need onSelectPage callback
+    const LIST_PAGES = new Set(['dashboards-list', 'alerts-list']);
+    const isListPage = LIST_PAGES.has(activeTab.pageKey);
+
     return (
       <div className="pagePanel__canvasWrapper">
         {!skipHeader && <DetailPageHeader title={activeTab.title} hideAskAi />}
         <div className="pagePanel__canvasContent">
-          <PageComponent onQueryExecute={skipHeader ? onQueryExecute : undefined} />
+          <PageComponent
+            onQueryExecute={skipHeader ? onQueryExecute : undefined}
+            onSelectPage={isListPage ? onSelectPage : undefined}
+          />
         </div>
       </div>
     );
@@ -265,6 +286,8 @@ export const PagePanel = ({
         onAddTab={onAddTab}
         onExpandChat={onExpandChat}
         aiButtonHighlight={aiButtonHighlight}
+        aiButtonMessage={aiButtonMessage}
+        onDismissAiPopover={onDismissAiPopover}
       />
       <div
         className="pagePanel__content"

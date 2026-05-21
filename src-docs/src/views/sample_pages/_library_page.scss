@@ -1,0 +1,78 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+// sass-lint:disable no-misspelled-properties
+
+.libraryPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: $ouiSizeL $ouiSizeL $ouiSizeL $ouiSizeL;
+  overflow: hidden;
+  background-color: $ouiPageBackgroundColor;
+}
+
+.libraryPage__content {
+  width: 100%;
+  max-width: 832px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.libraryPage__header {
+  margin-bottom: $ouiSizeL;
+}
+
+.libraryPage__search {
+  margin-bottom: $ouiSize;
+}
+
+.libraryPage__tabs {
+  margin-bottom: $ouiSize;
+
+  .emptySessionPage__chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .emptySessionPage__chip {
+    flex: 0 0 auto;
+  }
+}
+
+.libraryPage__items {
+  display: flex;
+  flex-direction: column;
+  gap: $ouiSizeS;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  margin-right: -#{$ouiSizeL};
+  padding-right: $ouiSizeL;
+}
+
+.libraryPage__empty {
+  text-align: center;
+  padding: $ouiSizeXL 0;
+  color: $ouiColorMediumShade;
+  font-size: $ouiFontSizeS;
+}

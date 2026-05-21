@@ -52,6 +52,46 @@
   }
 }
 
+// Empty state
+.threadPage__emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: $ouiSize;
+}
+
+.threadPage__emptyTitle {
+  font-size: $ouiFontSizeL;
+  font-weight: $ouiFontWeightMedium;
+  color: $ouiTextColor;
+}
+
+.threadPage__emptySuggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $ouiSizeS;
+  justify-content: center;
+}
+
+.threadPage__emptySuggestion {
+  font-size: $ouiFontSizeXS;
+  color: $ouiColorMediumShade;
+  background: none;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  padding: 6px $ouiSize;
+  cursor: pointer;
+  transition: background-color $ouiAnimSpeedFast ease-in-out,
+              border-color $ouiAnimSpeedFast ease-in-out;
+
+  &:hover {
+    background-color: $ouiFocusBackgroundColor;
+    border-color: $ouiColorMediumShade;
+  }
+}
+
 // Message row
 .threadPage__message {
   display: flex;

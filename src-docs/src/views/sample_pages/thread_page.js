@@ -90,6 +90,7 @@ const THREADS = {
           'Based on the timing and pattern, I have two hypotheses:\n\n**Hypothesis 1: Downstream dependency bottleneck**\n\nThe latency spike correlates with elevated connection wait times to the inventory service, which started returning slower responses around 14:20 UTC.',
         attachment: {
           type: 'link-preview',
+          key: 'notebooks',
           title: 'Inventory service dependency analysis',
           description:
             'Connection pool saturation, response time degradation, and queue depth trends for the inventory service over the last 4 hours.',
@@ -101,6 +102,7 @@ const THREADS = {
           "**Hypothesis 2: Connection pool exhaustion**\n\nThe payment service's outbound connection pool is at 98% utilization. Requests are queuing rather than failing fast, which inflates P99 without raising error rates. This would explain why error rates look normal while latency is spiking.",
         attachment: {
           type: 'link-preview',
+          key: 'notebooks',
           title: 'Payment service connection pool metrics',
           description:
             'Pool utilization, acquire wait time, and active connection count for the payment service over the last 4 hours.',
@@ -184,6 +186,30 @@ echo "Done. Monitoring P99 latency for recovery..."`,
         role: 'assistant',
         content:
           'I see 847 connection timeout errors to payments-db starting at 14:30. Want me to check the trace data for this dependency?',
+      },
+    ],
+  },
+  'error-rate-spike': {
+    title: 'Error Rate Spike — Checkout Service',
+    messages: [
+      {
+        role: 'assistant',
+        content:
+          'The checkout service error rate climbed from 0.3% to 12.4% starting at 09:15 UTC. 94% of failures are 503s from the auth-service dependency. Root cause: auth-service v2.5.0 deployed at 09:12 introduced a synchronous OIDC token validation call that is timing out against the external provider.\n\nThe auth-service has been rolled back to v2.4.1 and error rates are recovering. Sharing this summary with the team for visibility.',
+        attachments: [
+          {
+            type: 'link-preview',
+            title: 'Alert: Checkout error rate > 10%',
+            description:
+              'Triggered at 09:18 UTC. 503 errors from auth-service dependency accounting for 94% of failures.',
+          },
+          {
+            type: 'link-preview',
+            title: 'Checkout service health dashboard',
+            description:
+              'Real-time error rate, latency, and throughput for the checkout service and its dependencies.',
+          },
+        ],
       },
     ],
   },
@@ -673,7 +699,6 @@ const LinkPreviewAttachment = ({
 const StatsDisplayAttachment = ({ title, stats }) => {
   return (
     <div className="threadPage__attachmentWrap">
-      <SaveAsObjectButton />
       <div className="threadPage__attachment threadPage__attachment--statsDisplay">
         {title && (
           <OuiText size="xs">
@@ -706,7 +731,6 @@ const StatsDisplayAttachment = ({ title, stats }) => {
 const DataTableAttachment = ({ title, columns, rows }) => {
   return (
     <div className="threadPage__attachmentWrap">
-      <SaveAsObjectButton />
       <div className="threadPage__attachment threadPage__attachment--dataTable">
         {title && (
           <OuiText size="xs" style={{ marginBottom: 12 }}>
@@ -742,7 +766,6 @@ const DataTableAttachment = ({ title, columns, rows }) => {
 const CodeBlockAttachment = ({ title, language, code }) => {
   return (
     <div className="threadPage__attachmentWrap">
-      <SaveAsObjectButton />
       <div className="threadPage__attachment threadPage__attachment--codeBlock">
         {title && (
           <OuiText size="xs" style={{ marginBottom: 12 }}>
@@ -766,7 +789,6 @@ const ChartAttachment = ({ title, data }) => {
   const maxVal = Math.max(...data.map((d) => d.value));
   return (
     <div className="threadPage__attachmentWrap">
-      <SaveAsObjectButton />
       <div className="threadPage__attachment threadPage__attachment--chart">
         {title && (
           <OuiText size="xs" style={{ marginBottom: 12 }}>
@@ -1266,6 +1288,11 @@ export const ThreadPage = ({
           m.content && /847 connection timeout|payments-db/i.test(m.content)
       );
       if (hasConnectionTimeout) return 'connection-timeout';
+      const hasInvestigateAlert = pendingMessages.some(
+        (m) =>
+          m.content && /investigate.*alert|P99.*latency/i.test(m.content)
+      );
+      if (hasInvestigateAlert) return 'investigate-alert';
     }
     return threadKey;
   })();
@@ -1426,9 +1453,32 @@ export const ThreadPage = ({
       !pendingMessages.some((m) => m.role === 'assistant')
     ) {
       hasInteracted.current = true;
-      const idx = responseIndex.current % MOCK_RESPONSES.length;
-      const mockResponse = MOCK_RESPONSES[idx];
-      const tasks = MOCK_TASKS[idx % MOCK_TASKS.length];
+
+      // Use specific response for investigate-alert flow
+      const isInvestigateAlert = pendingMessages.some(
+        (m) => m.content && /investigate.*alert|P99.*latency/i.test(m.content)
+      );
+
+      let mockResponse;
+      let tasks;
+      if (isInvestigateAlert) {
+        tasks = [
+          { label: 'Querying payment-service metrics', description: 'Pulling P99 latency and connection pool data for the last hour' },
+          { label: 'Correlating with trace data', description: 'Analyzing spans for payment-service dependencies' },
+        ];
+        mockResponse = {
+          content: 'I\'ve analyzed the payment-service alert. Here\'s what I found:\n\n• The latency spike began at 14:29:58 UTC and correlates with a sudden increase in active connections to payments-db.\n• Connection pool utilization jumped from 40% to 98% across pods 1, 2, and 4. Pod 3 remained healthy due to lower traffic allocation.\n• No deployments or config changes occurred in the 6 hours prior to the incident.\n• Upstream traffic volume remained steady — this doesn\'t appear to be load-driven.\n\nThe most likely root cause is connection pool exhaustion on the database side. Want me to open the trace analysis and connection pool metrics as pages?',
+          attachment: {
+            type: 'link-preview',
+            title: 'Payment service — connection pool metrics',
+            description: 'Connection pool utilization spiked from 40% to 98% on 3 of 4 pods starting at 14:29:58 UTC.',
+          },
+        };
+      } else {
+        const idx = responseIndex.current % MOCK_RESPONSES.length;
+        mockResponse = MOCK_RESPONSES[idx];
+        tasks = MOCK_TASKS[idx % MOCK_TASKS.length];
+      }
       responseIndex.current += 1;
       const fullContent = mockResponse.content;
       const attachment = mockResponse.attachment;
@@ -1780,6 +1830,31 @@ export const ThreadPage = ({
         <div className="threadPage__conversationCol">
           {/* Conversation feed — scrollable */}
           <div className="threadPage__feed" ref={feedRef}>
+            {messages.length === 0 && !isTyping && (
+              <div className="threadPage__emptyState">
+                <h3 className="threadPage__emptyTitle">How can I help?</h3>
+                <div className="threadPage__emptySuggestions">
+                  <button
+                    type="button"
+                    className="threadPage__emptySuggestion"
+                    onClick={() => { setMessage('Summarize this page'); }}>
+                    Summarize this page
+                  </button>
+                  <button
+                    type="button"
+                    className="threadPage__emptySuggestion"
+                    onClick={() => { setMessage('Find anomalies'); }}>
+                    Find anomalies
+                  </button>
+                  <button
+                    type="button"
+                    className="threadPage__emptySuggestion"
+                    onClick={() => { setMessage('Explain the data'); }}>
+                    Explain the data
+                  </button>
+                </div>
+              </div>
+            )}
             {messages.map((msg, i) => {
               if (msg.role === 'user') {
                 return (
