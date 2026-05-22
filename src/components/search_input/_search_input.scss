@@ -1,0 +1,155 @@
+/*!
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+.ouiSearchInput {
+  width: 100%;
+  max-width: 720px;
+}
+
+.ouiSearchInput--fullWidth {
+  max-width: 100%;
+}
+
+.ouiSearchInput__card {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  border: 1px solid $ouiFormBorderColor;
+  border-radius: 16px;
+  background-color: rgba(red($ouiFormBackgroundColor), green($ouiFormBackgroundColor), blue($ouiFormBackgroundColor), 0.55);
+  transition: transform 150ms ease-in-out, box-shadow 150ms ease-in-out, background-color 150ms ease-in-out, border-color 200ms ease;
+  transform: translateY(0);
+  overflow: hidden;
+
+  // Animated bottom border
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: $ouiColorPrimary;
+    border-radius: 1px;
+    transition: width 250ms ease, left 250ms ease;
+  }
+
+  &:hover,
+  &:focus-within {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25));
+    background-color: $ouiFormBackgroundColor;
+    border-color: $ouiColorPrimary;
+  }
+
+  &:focus-within::after {
+    width: 100%;
+    left: 0;
+  }
+}
+
+// Blinking caret placeholder
+.ouiSearchInput__placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: $ouiSizeM;
+  font-family: $ouiFontFamily;
+  font-size: $ouiFontSize;
+  line-height: $ouiLineHeight;
+  color: $ouiColorMediumShade;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ouiSearchInput__caret {
+  display: inline-block;
+  width: 1.5px;
+  height: 1.1em;
+  background-color: $ouiColorPrimary;
+  vertical-align: -3px;
+  margin-right: 1px;
+  animation: ouiSearchInputCaretBlink 1.05s steps(2) infinite;
+}
+
+@keyframes ouiSearchInputCaretBlink {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+
+.ouiSearchInput__highlight {
+  display: inline-block;
+  background-color: lightOrDarkTheme(rgba(46, 74, 143, 0.08), rgba(122, 159, 212, 0.15));
+  color: $ouiColorPrimary;
+  border-radius: 3px;
+  padding: 0 3px;
+  margin: 0 1px;
+  font-weight: 500;
+}
+
+// Textarea
+.ouiSearchInput__textarea {
+  display: block;
+  width: 100%;
+  padding: $ouiSizeM;
+  padding-right: 80px; // Space for actions
+  border: none;
+  background: transparent;
+  resize: none;
+  font-family: $ouiFontFamily;
+  font-size: $ouiFontSize;
+  line-height: $ouiLineHeight;
+  color: $ouiTextColor;
+  outline: none;
+  position: relative;
+  z-index: 1;
+
+  &::placeholder {
+    color: transparent; // We use custom placeholder
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.ouiSearchInput__textarea--empty {
+  color: transparent;
+  caret-color: transparent; // Hide native caret when showing custom one
+}
+
+// Actions
+.ouiSearchInput__actions {
+  position: absolute;
+  right: $ouiSizeM;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeXS;
+  z-index: 2;
+}
+
+.ouiSearchInput__actionsLeft {
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeXS;
+}
+
+.ouiSearchInput__actionsRight {
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeXS;
+}
+
+// Disabled state
+.ouiSearchInput--disabled .ouiSearchInput__card {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
