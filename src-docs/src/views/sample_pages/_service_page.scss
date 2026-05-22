@@ -49,6 +49,10 @@
   stroke: $ouiColorDanger;
 }
 
+.servicePage__sparkline--success {
+  stroke: $ouiColorSuccess;
+}
+
 // Body: flex row holding filter panel + content
 .servicePage__body {
   display: flex;

@@ -14,6 +14,7 @@ import {
   AlertListPageMock,
   LogsPageMock,
   EmptyDiscoverPageMock,
+  CorrelatedLogsDiscoverMock,
   AppMapPageMock,
   AppTracesPageMock,
   AppServicesPageMock,
@@ -23,6 +24,9 @@ import {
   ConnectionPoolPageMock,
   TraceAnalysisPageMock,
 } from './mock_canvas_pages';
+import { ServicePage } from './service_page';
+import { ServiceDetailPage } from './service_detail_page';
+import { AlertRulePage } from './alert_rule_page';
 
 /**
  * @typedef {Object} Session
@@ -105,11 +109,17 @@ export const SOURCE_PAGE_MOCK = {
   metrics: { component: ConnectionPoolPageMock, title: 'Metrics' },
   discover: { component: LogsPageMock, title: 'Discover' },
   'discover-log': { component: EmptyDiscoverPageMock, title: 'Discover (log)' },
+  'discover-log-correlated': { component: CorrelatedLogsDiscoverMock, title: 'Correlated Logs' },
   'discover-metric': { component: EmptyDiscoverPageMock, title: 'Discover (Metric)' },
   'app-map': { component: AppMapPageMock, title: 'Application Map' },
   'app-traces': { component: AppTracesPageMock, title: 'Application Traces' },
   'app-services': { component: AppServicesPageMock, title: 'Application Services' },
+  'app-perf-services': { component: ServicePage, title: 'Application Performance Services' },
+  'service-detail': { component: ServiceDetailPage, title: 'Service Detail' },
+  'alert-rule': { component: AlertRulePage, title: 'Alert Rule' },
   traces: { component: TraceAnalysisPageMock, title: 'Trace Analysis' },
+  forecasting: { component: AppServicesPageMock, title: 'Forecasting' },
+  'agent-spans': { component: AppServicesPageMock, title: 'Agent Spans' },
 };
 
 /**

@@ -380,6 +380,13 @@ export const EmptyDiscoverPageMock = ({ onQueryExecute }) => (
   </div>
 );
 
+// Discover page with correlated logs query pre-filled and results showing
+export const CorrelatedLogsDiscoverMock = ({ onQueryExecute }) => (
+  <div className="mockCanvasPage mockCanvasPage--fullBody">
+    <LogsPage selectedItem="connection-timeout-errors" hideAskAi onQueryExecute={onQueryExecute} />
+  </div>
+);
+
 // Empty placeholder page for pages not yet implemented
 export const EmptyPlaceholderPage = ({ title }) => (
   <div className="mockCanvasPage" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#676e75' }}>

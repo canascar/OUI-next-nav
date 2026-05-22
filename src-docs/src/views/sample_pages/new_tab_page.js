@@ -33,9 +33,6 @@ const TAB_CHIP_DATA = {
   favorite: [
     { key: 'fav-1', title: 'System overview', subtitle: 'Dashboard', pageKey: 'dashboards', typeIcon: 'navDashboards' },
     { key: 'fav-2', title: 'Error rate by service', subtitle: 'Saved log', pageKey: 'logs', typeIcon: 'navDiscover' },
-    { key: 'fav-3', title: 'API performance', subtitle: 'Dashboard', pageKey: 'dashboards', typeIcon: 'navDashboards' },
-    { key: 'fav-4', title: 'CPU utilization', subtitle: 'Saved metric', pageKey: 'metrics', typeIcon: 'visArea' },
-    { key: 'fav-5', title: 'Payment service timeout logs', subtitle: 'Saved log', pageKey: 'logs', typeIcon: 'navDiscover' },
   ],
 };
 
@@ -136,25 +133,25 @@ export const NewTabPage = ({ onSelectPage }) => {
                 <OuiIcon type="navServiceMap" size="m" />
                 <span>Application Map</span>
               </button>
+              <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onSelectPage('app-perf-services', 'Application Services')}>
+                <OuiIcon type="navOverview" size="m" />
+                <span>Application Services</span>
+              </button>
               <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onSelectPage('app-traces', 'Application Traces')}>
                 <OuiIcon type="apmTrace" size="m" />
                 <span>Application Traces</span>
               </button>
-              <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onSelectPage('app-services', 'Application Services')}>
-                <OuiIcon type="navDashboards" size="m" />
-                <span>Application Services</span>
+              <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onSelectPage('forecasting', 'Forecasting')}>
+                <OuiIcon type="visLine" size="m" />
+                <span>Forecasting</span>
               </button>
               <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onSelectPage('app-traces', 'Agent traces')}>
                 <OuiIcon type="apmTrace" size="m" />
                 <span>Agent traces</span>
               </button>
-              <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onSelectPage('traces', 'Agent spans')}>
-                <OuiIcon type="navServices" size="m" />
+              <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onSelectPage('agent-spans', 'Agent spans')}>
+                <OuiIcon type="visTagCloud" size="m" />
                 <span>Agent spans</span>
-              </button>
-              <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onSelectPage('metrics', 'Forecasting')}>
-                <OuiIcon type="visLine" size="m" />
-                <span>Forecasting</span>
               </button>
             </div>
           )}
@@ -168,32 +165,78 @@ export const NewTabPage = ({ onSelectPage }) => {
               </div>
               <div className="emptySessionPage__discoverGridItem emptySessionPage__discoverGridItem--disabled">
                 <OuiIcon type="navAlerting" size="m" />
-                <span>Monitors</span>
+                <span>Alert rules</span>
               </div>
             </div>
           )}
 
-          {/* Favorite list */}
+          {/* Favorite panels + list */}
           {activeChip === 'favorite' && (
-            <div className="emptySessionPage__tabContent">
-              {(TAB_CHIP_DATA.favorite || []).map((item) => (
-                <button
-                  key={item.key}
-                  type="button"
-                  className="emptySessionPage__listItem"
-                  onClick={() => onSelectPage(item.pageKey, item.title)}>
-                  <span className="emptySessionPage__listItemContent">
-                    <span className="emptySessionPage__listItemTitle">{item.title}</span>
-                    <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
-                  </span>
-                  {item.typeIcon && (
-                    <span className="emptySessionPage__listItemRight">
-                      <OuiIcon type={item.typeIcon} size="m" color="subdued" />
-                    </span>
-                  )}
+            <>
+              <div className="emptySessionPage__favoritePanels">
+                <div className="emptySessionPage__favoritePanel">
+                  <div className="emptySessionPage__favoritePanelTitle">Top services by fault rate</div>
+                  <div className="emptySessionPage__favoritePanelTable">
+                    <div className="emptySessionPage__favoritePanelHeader">
+                      <span>Service</span><span>Fault rate</span>
+                    </div>
+                    <div className="emptySessionPage__favoritePanelRow">
+                      <button type="button" className="emptySessionPage__favoritePanelLink" onClick={() => onSelectPage('service-detail', 'Service: checkout')}>checkout</button>
+                      <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '66.67%' }} /></div><span>66.67%</span></div>
+                    </div>
+                    <div className="emptySessionPage__favoritePanelRow">
+                      <span className="emptySessionPage__favoritePanelLink--static">frontend</span>
+                      <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '14.49%' }} /></div><span>14.49%</span></div>
+                    </div>
+                    <div className="emptySessionPage__favoritePanelRow">
+                      <span className="emptySessionPage__favoritePanelLink--static">frontend-proxy</span>
+                      <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '14.29%' }} /></div><span>14.29%</span></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="emptySessionPage__favoritePanel">
+                  <div className="emptySessionPage__favoritePanelTitle">Top dependency paths by fault rate</div>
+                  <div className="emptySessionPage__favoritePanelTable">
+                    <div className="emptySessionPage__favoritePanelHeader emptySessionPage__favoritePanelHeader--3col">
+                      <span>Dependency service</span><span>Service</span><span>Fault rate</span>
+                    </div>
+                    <div className="emptySessionPage__favoritePanelRow emptySessionPage__favoritePanelRow--3col">
+                      <button type="button" className="emptySessionPage__favoritePanelLink" onClick={() => onSelectPage('service-detail', 'Service: checkout')}>checkout</button>
+                      <span className="emptySessionPage__favoritePanelLink--static">frontend</span>
+                      <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '66.67%' }} /></div><span>66.67%</span></div>
+                    </div>
+                    <div className="emptySessionPage__favoritePanelRow emptySessionPage__favoritePanelRow--3col">
+                      <span className="emptySessionPage__favoritePanelLink--static">frontend</span>
+                      <span className="emptySessionPage__favoritePanelLink--static">frontend-proxy</span>
+                      <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '14.29%' }} /></div><span>14.29%</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="emptySessionPage__tabContent">
+                {(TAB_CHIP_DATA.favorite || []).map((item) => (
+                  <div key={item.key} className="emptySessionPage__listItem">
+                    <button
+                      type="button"
+                      className="emptySessionPage__listItemClickable"
+                      onClick={() => onSelectPage(item.pageKey, item.title)}>
+                      <span className="emptySessionPage__listItemContent">
+                        <span className="emptySessionPage__listItemTitle">{item.title}</span>
+                        <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
+                      </span>
+                      {item.typeIcon && (
+                        <span className="emptySessionPage__listItemRight">
+                          <OuiIcon type={item.typeIcon} size="m" color="subdued" />
+                        </span>
+                      )}
+                    </button>
+                  </div>
+                ))}
+                <button type="button" className="emptySessionPage__editButton">
+                  <span>Edit favorites</span>
                 </button>
-              ))}
-            </div>
+              </div>
+            </>
           )}
         </>
       )}

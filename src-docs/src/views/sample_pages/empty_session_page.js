@@ -32,8 +32,8 @@ import { SOURCE_PAGE_MOCK } from './session_models';
  * Filter chips for the bottom section.
  */
 const FILTER_CHIPS = [
-  { key: 'activity', label: 'Activity', icon: 'generate' },
-  { key: 'recent', label: 'Recent', icon: 'clock' },
+  { key: 'activity', label: null, icon: 'bullseye', iconOnly: true },
+  { key: 'recent', label: null, icon: 'history', iconOnly: true },
   { key: 'favorite', label: 'Favorite', icon: 'starEmpty' },
   { key: 'discover', label: 'Discover', icon: 'navDiscover' },
   { key: 'monitor', label: 'Monitor', icon: 'navAlerting' },
@@ -73,9 +73,6 @@ const CHIP_DATA = {
   favorite: [
     { key: 'fav-1', title: 'System overview', subtitle: 'Dashboard', pageKey: 'dashboards', typeIcon: 'navDashboards' },
     { key: 'fav-2', title: 'Error rate by service', subtitle: 'Saved log', pageKey: 'logs', typeIcon: 'navDiscover' },
-    { key: 'fav-3', title: 'API performance', subtitle: 'Dashboard', pageKey: 'dashboards', typeIcon: 'navDashboards' },
-    { key: 'fav-4', title: 'CPU utilization', subtitle: 'Saved metric', pageKey: 'metrics', typeIcon: 'visArea' },
-    { key: 'fav-5', title: 'Payment service timeout logs', subtitle: 'Saved log', pageKey: 'logs', typeIcon: 'navDiscover' },
   ],
   discover: [
     { key: 'log-1', title: 'Error rate by service', subtitle: 'source=logs | where level="ERROR"' },
@@ -543,15 +540,19 @@ export const EmptySessionPage = ({
             <>
               {/* Filter chips */}
               <div className="emptySessionPage__chips">
-                {FILTER_CHIPS.map((chip) => (
-                  <button
-                    key={chip.key}
-                    type="button"
-                    className={`emptySessionPage__chip${activeChip === chip.key ? ' emptySessionPage__chip--active' : ''}`}
-                    onClick={() => setActiveChip(chip.key)}>
-                    {chip.label}
-                  </button>
-                ))}
+                {FILTER_CHIPS.map((chip) => {
+                  const hasActivityItems = chip.key === 'activity' && CHIP_DATA.activity.some((item) => !dismissedItems.has(item.key));
+                  return (
+                    <button
+                      key={chip.key}
+                      type="button"
+                      className={`emptySessionPage__chip${activeChip === chip.key ? ' emptySessionPage__chip--active' : ''}${chip.iconOnly ? ' emptySessionPage__chip--iconOnly' : ''}`}
+                      onClick={() => setActiveChip(chip.key)}>
+                      {chip.iconOnly ? <OuiIcon type={chip.icon} size="m" /> : chip.label}
+                      {hasActivityItems && <span className="emptySessionPage__chipDot" />}
+                    </button>
+                  );
+                })}
               </div>
 
               {/* List items based on active chip */}
@@ -587,25 +588,25 @@ export const EmptySessionPage = ({
                       <OuiIcon type="navServiceMap" size="m" />
                       <span>Application Map</span>
                     </button>
+                    <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onOpenPage('app-perf-services')}>
+                      <OuiIcon type="navOverview" size="m" />
+                      <span>Application Services</span>
+                    </button>
                     <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onOpenPage('app-traces')}>
                       <OuiIcon type="apmTrace" size="m" />
                       <span>Application Traces</span>
                     </button>
-                    <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onOpenPage('app-services')}>
-                      <OuiIcon type="navDashboards" size="m" />
-                      <span>Application Services</span>
+                    <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onOpenPage('forecasting')}>
+                      <OuiIcon type="visLine" size="m" />
+                      <span>Forecasting</span>
                     </button>
                     <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onOpenPage('app-traces')}>
                       <OuiIcon type="apmTrace" size="m" />
                       <span>Agent traces</span>
                     </button>
-                    <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onOpenPage('traces')}>
-                      <OuiIcon type="navServices" size="m" />
+                    <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onOpenPage('agent-spans')}>
+                      <OuiIcon type="visTagCloud" size="m" />
                       <span>Agent spans</span>
-                    </button>
-                    <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onOpenPage('metrics')}>
-                      <OuiIcon type="visLine" size="m" />
-                      <span>Forecasting</span>
                     </button>
                   </div>
                 )}
@@ -617,11 +618,76 @@ export const EmptySessionPage = ({
                     </div>
                     <div className="emptySessionPage__discoverGridItem emptySessionPage__discoverGridItem--disabled">
                       <OuiIcon type="navAlerting" size="m" />
-                      <span>Monitors</span>
+                      <span>Alert rules</span>
                     </div>
                   </div>
                 )}
-                {activeChip !== 'discover' && activeChip !== 'monitor' && activeChip !== 'more' && (activeChip === 'recent' ? (
+                {activeChip === 'favorite' && (
+                  <div className="emptySessionPage__favoritePanels">
+                    <div className="emptySessionPage__favoritePanel">
+                      <div className="emptySessionPage__favoritePanelTitle">Top services by fault rate</div>
+                      <div className="emptySessionPage__favoritePanelTable">
+                        <div className="emptySessionPage__favoritePanelHeader">
+                          <span>Service</span><span>Fault rate</span>
+                        </div>
+                        <div className="emptySessionPage__favoritePanelRow">
+                          <button type="button" className="emptySessionPage__favoritePanelLink" onClick={() => onOpenPage('service-detail', 'Service: checkout')}>checkout</button>
+                          <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '66.67%' }} /></div><span>66.67%</span></div>
+                        </div>
+                        <div className="emptySessionPage__favoritePanelRow">
+                          <span className="emptySessionPage__favoritePanelLink--static">frontend</span>
+                          <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '14.49%' }} /></div><span>14.49%</span></div>
+                        </div>
+                        <div className="emptySessionPage__favoritePanelRow">
+                          <span className="emptySessionPage__favoritePanelLink--static">frontend-proxy</span>
+                          <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '14.29%' }} /></div><span>14.29%</span></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="emptySessionPage__favoritePanel">
+                      <div className="emptySessionPage__favoritePanelTitle">Top dependency paths by fault rate</div>
+                      <div className="emptySessionPage__favoritePanelTable">
+                        <div className="emptySessionPage__favoritePanelHeader emptySessionPage__favoritePanelHeader--3col">
+                          <span>Dependency service</span><span>Service</span><span>Fault rate</span>
+                        </div>
+                        <div className="emptySessionPage__favoritePanelRow emptySessionPage__favoritePanelRow--3col">
+                          <button type="button" className="emptySessionPage__favoritePanelLink" onClick={() => onOpenPage('service-detail', 'Service: checkout')}>checkout</button>
+                          <span className="emptySessionPage__favoritePanelLink--static">frontend</span>
+                          <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '66.67%' }} /></div><span>66.67%</span></div>
+                        </div>
+                        <div className="emptySessionPage__favoritePanelRow emptySessionPage__favoritePanelRow--3col">
+                          <span className="emptySessionPage__favoritePanelLink--static">frontend</span>
+                          <span className="emptySessionPage__favoritePanelLink--static">frontend-proxy</span>
+                          <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '14.29%' }} /></div><span>14.29%</span></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {activeChip === 'favorite' && (CHIP_DATA.favorite || []).map((item) => (
+                  <div key={item.key} className="emptySessionPage__listItem">
+                    <button
+                      type="button"
+                      className="emptySessionPage__listItemClickable"
+                      onClick={() => onOpenPage(item.pageKey || 'dashboards')}>
+                      <span className="emptySessionPage__listItemContent">
+                        <span className="emptySessionPage__listItemTitle">{item.title}</span>
+                        <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
+                      </span>
+                      {item.typeIcon && (
+                        <span className="emptySessionPage__listItemRight">
+                          <OuiIcon type={item.typeIcon} size="m" color="subdued" />
+                        </span>
+                      )}
+                    </button>
+                  </div>
+                ))}
+                {activeChip === 'favorite' && (
+                  <button type="button" className="emptySessionPage__editButton">
+                    <span>Edit favorites</span>
+                  </button>
+                )}
+                {activeChip !== 'discover' && activeChip !== 'monitor' && activeChip !== 'more' && activeChip !== 'favorite' && (activeChip === 'recent' ? (
                   sessions.filter((s) => !s.hidden).slice(0, 5).map((session) => (
                     <div key={session.id} className="emptySessionPage__listItem">
                       <button

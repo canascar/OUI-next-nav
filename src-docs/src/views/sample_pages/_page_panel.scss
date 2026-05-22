@@ -290,16 +290,33 @@
   z-index: 100;
   margin-top: 4px;
   margin-left: 4px;
-  padding: 12px;
-  background-color: rgba($ouiColorEmptyShade, 0.5);
-  backdrop-filter: blur(8px);
-  border: none;
+  padding: 1px; // space for gradient border
+  background: linear-gradient(135deg, rgba($ouiColorPrimary, 0.4), rgba($ouiColorSecondary, 0.4), rgba($ouiColorAccent, 0.4));
+  background-size: 300% 300%;
+  animation: aiPopoverFadeIn 300ms ease-out, aiGradientRotate 4s ease infinite, aiPopoverFloat 1.5s ease-in-out infinite;
   border-radius: $ouiBorderRadius;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
   min-width: 420px;
   max-width: 420px;
   cursor: pointer;
-  animation: aiPopoverFadeIn 300ms ease-out;
+}
+
+@keyframes aiGradientRotate {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes aiPopoverFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.pagePanel__aiPopoverInner {
+  background-color: rgba($ouiColorEmptyShade, 0.95);
+  backdrop-filter: blur(12px);
+  border-radius: $ouiBorderRadius - 1px;
+  padding: 12px;
 }
 
 .pagePanel__aiPopoverText {

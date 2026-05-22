@@ -638,8 +638,9 @@
   flex: 1 1 0;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 12px;
+  gap: 8px;
+  padding: 0 16px;
+  height: 48px;
   background-color: $ouiColorEmptyShade;
   border: $ouiBorderThin;
   border-radius: 999px;
@@ -661,6 +662,23 @@
       background-color: $ouiColorLightShade;
     }
   }
+
+  &--iconOnly {
+    flex: 0 0 48px;
+    width: 48px;
+    padding: 0;
+    position: relative;
+  }
+}
+
+.emptySessionPage__chipDot {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: $ouiColorDanger;
 }
 
 .emptySessionPage__searchLabel {
@@ -736,4 +754,125 @@
   color: $ouiColorMediumShade;
   font-size: $ouiFontSizeXS;
   white-space: nowrap;
+}
+
+// Favorite panels (Top services / Top dependency paths)
+.emptySessionPage__favoritePanels {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
+
+.emptySessionPage__favoritePanel {
+  border: $ouiBorderThin;
+  border-radius: $ouiBorderRadius;
+  background-color: $ouiColorEmptyShade;
+  padding: $ouiSize;
+}
+
+.emptySessionPage__favoritePanelTitle {
+  font-size: $ouiFontSizeS;
+  font-weight: $ouiFontWeightMedium;
+  color: $ouiTitleColor;
+  margin-bottom: 12px;
+}
+
+.emptySessionPage__favoritePanelTable {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.emptySessionPage__favoritePanelHeader {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 8px;
+  font-size: $ouiFontSizeXS;
+  color: $ouiColorMediumShade;
+  padding-bottom: 8px;
+  border-bottom: $ouiBorderThin;
+
+  &--3col {
+    grid-template-columns: 120px 100px 1fr;
+  }
+}
+
+.emptySessionPage__favoritePanelRow {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: $ouiBorderThin;
+
+  &--3col {
+    grid-template-columns: 120px 100px 1fr;
+  }
+}
+
+.emptySessionPage__favoritePanelLink {
+  font-size: $ouiFontSizeXS;
+  color: $ouiColorPrimary;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &--static {
+    font-size: $ouiFontSizeXS;
+    color: $ouiColorPrimary;
+  }
+}
+
+.emptySessionPage__favoritePanelBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+
+  span {
+    font-size: $ouiFontSizeXS;
+    color: $ouiColorMediumShade;
+    white-space: nowrap;
+  }
+}
+
+.emptySessionPage__favoritePanelBarTrack {
+  flex: 1;
+  height: 8px;
+  background-color: $ouiColorLightestShade;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.emptySessionPage__favoritePanelBarFill {
+  height: 100%;
+  background-color: $ouiColorPrimary;
+  border-radius: 4px;
+}
+
+// Edit favorites button
+.emptySessionPage__editButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background-color: $ouiColorLightestShade;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: $ouiFontSizeXS;
+  color: $ouiColorMediumShade;
+  align-self: center;
+
+  &:hover {
+    background-color: $ouiColorLightShade;
+    color: $ouiTextColor;
+  }
 }

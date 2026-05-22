@@ -40,90 +40,87 @@ import { DetailPageHeader } from './detail_page_header';
 const SERVICES = [
   {
     id: '1',
-    name: 'cart',
+    name: 'ad',
     latency: 5,
-    throughput: 50,
+    throughput: 0.004,
     failureRatio: 0.0,
     environment: 'generic',
     status: 'healthy',
   },
   {
     id: '2',
-    name: 'checkout',
-    latency: 443,
-    throughput: 9,
-    failureRatio: 58.8,
+    name: 'cart',
+    latency: 5,
+    throughput: 0.028,
+    failureRatio: 0.0,
     environment: 'generic',
-    status: 'danger',
+    status: 'healthy',
   },
   {
     id: '3',
-    name: 'flagd',
+    name: 'checkout',
     latency: 5,
-    throughput: 42,
-    failureRatio: 24.5,
+    throughput: 0.003,
+    failureRatio: 66.7,
     environment: 'generic',
-    status: 'warning',
+    status: 'danger',
   },
   {
     id: '4',
-    name: 'frontend',
+    name: 'currency',
     latency: 5,
-    throughput: 310,
-    failureRatio: 55.2,
+    throughput: 0.003,
+    failureRatio: 0.0,
     environment: 'generic',
-    status: 'danger',
+    status: 'healthy',
   },
   {
     id: '5',
-    name: 'frontend-proxy',
+    name: 'email',
     latency: 5,
-    throughput: 236,
-    failureRatio: 58.6,
+    throughput: 0.001,
+    failureRatio: 0.0,
     environment: 'generic',
-    status: 'danger',
+    status: 'healthy',
   },
   {
     id: '6',
-    name: 'image-provider',
+    name: 'events-agent',
     latency: 0,
-    throughput: 30,
+    throughput: 0,
     failureRatio: 0.0,
     environment: 'generic',
     status: 'healthy',
   },
   {
     id: '7',
-    name: 'product-reviews',
-    latency: 25,
-    throughput: 9,
-    failureRatio: 0.0,
+    name: 'frontend',
+    latency: 5,
+    throughput: 0.011,
+    failureRatio: 14.49,
     environment: 'generic',
-    status: 'healthy',
+    status: 'warning',
   },
   {
     id: '8',
-    name: 'recommendation',
+    name: 'frontend-proxy',
     latency: 5,
-    throughput: 15,
-    failureRatio: 0.0,
+    throughput: 0.011,
+    failureRatio: 14.29,
     environment: 'generic',
-    status: 'healthy',
+    status: 'warning',
   },
 ];
 
 const TOP_FAULT_SERVICES = [
-  { service: 'frontend-proxy', faultRate: 58.62 },
-  { service: 'checkout', faultRate: 58.45 },
-  { service: 'frontend', faultRate: 55.03 },
-  { service: 'flagd', faultRate: 24.49 },
+  { service: 'checkout', faultRate: 66.67 },
+  { service: 'frontend', faultRate: 14.49 },
+  { service: 'frontend-proxy', faultRate: 14.29 },
 ];
 
 const TOP_DEPENDENCY_PATHS = [
-  { depService: 'checkout', service: 'frontend', faultRate: 100.0 },
-  { depService: 'recommendation', service: 'frontend', faultRate: 100.0 },
-  { depService: 'frontend', service: 'frontend-proxy', faultRate: 57.53 },
-  { depService: 'product-reviews', service: 'frontend', faultRate: 47.06 },
+  { depService: 'checkout', service: 'frontend', faultRate: 66.67 },
+  { depService: 'frontend', service: 'frontend-proxy', faultRate: 14.29 },
 ];
 
 const ENV_OPTIONS = [
@@ -159,22 +156,38 @@ const LATENCY_TABS = [
 const Sparkline = ({
   values,
   className = 'servicePage__sparkline--primary',
+  fillColor,
 }) => {
   const max = Math.max(...values, 1);
-  const width = 60;
-  const height = 20;
+  const width = 80;
+  const height = 24;
   const points = values
     .map(
       (v, i) =>
         `${(i / (values.length - 1)) * width},${height - (v / max) * height}`
     )
     .join(' ');
+  const areaPoints = `0,${height} ${points} ${width},${height}`;
+  const id = `sparkGrad-${Math.random().toString(36).slice(2, 6)}`;
   return (
     <svg width={width} height={height} style={{ verticalAlign: 'middle' }}>
+      <defs>
+        <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={fillColor || 'currentColor'} stopOpacity="0.3" />
+          <stop offset="100%" stopColor={fillColor || 'currentColor'} stopOpacity="0.05" />
+        </linearGradient>
+      </defs>
+      <polygon
+        fill={`url(#${id})`}
+        points={areaPoints}
+        stroke="none"
+      />
       <polyline
         fill="none"
         className={className}
-        strokeWidth="1.5"
+        strokeWidth="1"
+        strokeLinejoin="round"
+        strokeLinecap="round"
         points={points}
       />
     </svg>
@@ -183,19 +196,13 @@ const Sparkline = ({
 
 // Simple bar for fault rate visualization
 const FaultBar = ({ value, max = 100 }) => {
+  const pct = (value / max) * 100;
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <OuiProgress
-        value={value}
-        max={max}
-        size="m"
-        // eslint-disable-next-line no-nested-ternary
-        color={value > 50 ? 'danger' : value > 20 ? 'warning' : 'success'}
-        style={{ width: 120 }}
-      />
-      <OuiText size="xs">
-        <span>{value.toFixed(2)}%</span>
-      </OuiText>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
+      <div style={{ flex: 1, height: 8, background: '#E4EAF2', borderRadius: 4, overflow: 'hidden' }}>
+        <div style={{ width: `${pct}%`, height: '100%', background: '#2E4A8F', borderRadius: 4 }} />
+      </div>
+      <span style={{ fontSize: 12, color: '#5A6D8A', whiteSpace: 'nowrap' }}>{value.toFixed(2)}%</span>
     </div>
   );
 };
@@ -342,12 +349,12 @@ const FilterSidebar = () => {
 
 // --- Summary Panels ---
 
-const faultServiceColumns = [
+const getFaultServiceColumns = (onSelectService) => [
   {
     field: 'service',
     name: 'Service',
     render: (name) => (
-      <OuiLink href="#" onClick={(e) => e.preventDefault()}>
+      <OuiLink href="#" onClick={(e) => { e.preventDefault(); if (onSelectService) onSelectService(name); }}>
         {name}
       </OuiLink>
     ),
@@ -359,7 +366,7 @@ const faultServiceColumns = [
   },
 ];
 
-const TopFaultServicesPanel = () => (
+const TopFaultServicesPanel = ({ onSelectService }) => (
   <OuiPanel paddingSize="m">
     <OuiTitle size="xs">
       <h3>Top services by fault rate</h3>
@@ -367,19 +374,19 @@ const TopFaultServicesPanel = () => (
     <OuiSpacer size="s" />
     <OuiBasicTable
       items={TOP_FAULT_SERVICES}
-      columns={faultServiceColumns}
+      columns={getFaultServiceColumns(onSelectService)}
       tableLayout="auto"
       compressed
     />
   </OuiPanel>
 );
 
-const depPathColumns = [
+const getDepPathColumns = (onSelectService) => [
   {
     field: 'depService',
     name: 'Dependency service',
     render: (name) => (
-      <OuiLink href="#" onClick={(e) => e.preventDefault()}>
+      <OuiLink href="#" onClick={(e) => { e.preventDefault(); if (onSelectService) onSelectService(name); }}>
         {name}
       </OuiLink>
     ),
@@ -388,7 +395,7 @@ const depPathColumns = [
     field: 'service',
     name: 'Service',
     render: (name) => (
-      <OuiLink href="#" onClick={(e) => e.preventDefault()}>
+      <OuiLink href="#" onClick={(e) => { e.preventDefault(); if (onSelectService) onSelectService(name); }}>
         {name}
       </OuiLink>
     ),
@@ -400,7 +407,7 @@ const depPathColumns = [
   },
 ];
 
-const TopDependencyPathsPanel = () => (
+const TopDependencyPathsPanel = ({ onSelectService }) => (
   <OuiPanel paddingSize="m">
     <OuiTitle size="xs">
       <h3>Top dependency paths by fault rate</h3>
@@ -408,7 +415,7 @@ const TopDependencyPathsPanel = () => (
     <OuiSpacer size="s" />
     <OuiBasicTable
       items={TOP_DEPENDENCY_PATHS}
-      columns={depPathColumns}
+      columns={getDepPathColumns(onSelectService)}
       tableLayout="auto"
       compressed
     />
@@ -417,7 +424,7 @@ const TopDependencyPathsPanel = () => (
 
 // --- Service Catalog Table ---
 
-const catalogColumns = [
+const getCatalogColumns = (onSelectService) => [
   {
     field: 'name',
     name: 'Service',
@@ -437,7 +444,7 @@ const catalogColumns = [
           />
         </OuiFlexItem>
         <OuiFlexItem grow={false}>
-          <OuiLink href="#" onClick={(e) => e.preventDefault()}>
+          <OuiLink href="#" onClick={(e) => { e.preventDefault(); if (onSelectService) onSelectService(name); }}>
             {name}
           </OuiLink>
         </OuiFlexItem>
@@ -451,32 +458,32 @@ const catalogColumns = [
     render: () => (
       <OuiFlexGroup gutterSize="xs" responsive={false}>
         <OuiFlexItem grow={false}>
-          <OuiToolTip content="Alerts">
+          <OuiToolTip content="Logs">
             <OuiButtonIcon
-              iconType="bell"
-              aria-label="Alerts"
+              iconType="visTable"
+              aria-label="Logs"
               size="xs"
-              color="text"
+              color="primary"
             />
           </OuiToolTip>
         </OuiFlexItem>
         <OuiFlexItem grow={false}>
-          <OuiToolTip content="Dashboards">
+          <OuiToolTip content="Traces">
             <OuiButtonIcon
-              iconType="dashboardApp"
-              aria-label="Dashboards"
+              iconType="compass"
+              aria-label="Traces"
               size="xs"
-              color="text"
+              color="primary"
             />
           </OuiToolTip>
         </OuiFlexItem>
         <OuiFlexItem grow={false}>
           <OuiToolTip content="Connections">
             <OuiButtonIcon
-              iconType="kqlFunction"
+              iconType="navServiceMap"
               aria-label="Connections"
               size="xs"
-              color="text"
+              color="primary"
             />
           </OuiToolTip>
         </OuiFlexItem>
@@ -495,14 +502,9 @@ const catalogColumns = [
         <OuiFlexItem grow={false}>
           {latency > 0 && (
             <Sparkline
-              values={[
-                latency * 0.6,
-                latency * 0.8,
-                latency,
-                latency * 0.9,
-                latency * 0.7,
-                latency * 0.85,
-              ]}
+              values={[4, 4.5, 5, 4.8, 5, 5]}
+              className="servicePage__sparkline--primary"
+              fillColor="#2E4A8F"
             />
           )}
         </OuiFlexItem>
@@ -516,20 +518,16 @@ const catalogColumns = [
     render: (throughput) => (
       <OuiFlexGroup gutterSize="s" alignItems="center" responsive={false}>
         <OuiFlexItem grow={false}>
-          <span>{throughput} req/int</span>
+          <span>{throughput} req/s</span>
         </OuiFlexItem>
         <OuiFlexItem grow={false}>
-          <Sparkline
-            values={[
-              throughput * 0.7,
-              throughput * 0.9,
-              throughput,
-              throughput * 0.8,
-              throughput * 0.95,
-              throughput * 0.85,
-            ]}
-            className="servicePage__sparkline--subdued"
-          />
+          {throughput > 0 && (
+            <Sparkline
+              values={[3, 3.2, 3, 3.1, 3, 3]}
+              className="servicePage__sparkline--success"
+              fillColor="#5CB198"
+            />
+          )}
         </OuiFlexItem>
       </OuiFlexGroup>
     ),
@@ -544,23 +542,11 @@ const catalogColumns = [
           <span>{ratio.toFixed(1)}%</span>
         </OuiFlexItem>
         <OuiFlexItem grow={false}>
-          {ratio > 0 && (
-            <Sparkline
-              values={[
-                ratio * 0.8,
-                ratio * 1.1,
-                ratio,
-                ratio * 0.9,
-                ratio * 1.05,
-                ratio * 0.95,
-              ]}
-              className={
-                ratio > 20
-                  ? 'servicePage__sparkline--danger'
-                  : 'servicePage__sparkline--subdued'
-              }
-            />
-          )}
+          <Sparkline
+            values={ratio > 0 ? [4, 5, 6, 5.5, 5, 5.2] : [1, 1, 1, 1, 1, 1]}
+            className={ratio > 20 ? 'servicePage__sparkline--danger' : 'servicePage__sparkline--subdued'}
+            fillColor={ratio > 20 ? '#ED6F73' : '#D4DCE8'}
+          />
         </OuiFlexItem>
       </OuiFlexGroup>
     ),
@@ -578,6 +564,8 @@ export const ServicePage = ({
   onContinueAsThread,
   isAskAiPanelOpen,
   onAskAiToggle,
+  onSelectPage,
+  onOpenCanvasPage,
 }) => {
   const [latencyTab, setLatencyTab] = useState('p99');
   const [filterWidth, setFilterWidth] = useState(240);
@@ -618,44 +606,17 @@ export const ServicePage = ({
   }, []);
 
   return (
-    <div
-      style={{
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-      }}>
+    <div className="mockCanvasPage mockCanvasPage--fullBody">
       {/* Page title + date picker + actions */}
       <DetailPageHeader
         title="Application Performance Services"
         onContinueAsThread={onContinueAsThread}
         isAskAiPanelOpen={isAskAiPanelOpen}
         onAskAiToggle={onAskAiToggle}
+        hideAskAi
       />
 
       {/* Tab bar */}
-      <div className="servicePage__tabBar">
-        <div className="servicePage__tabBarLeft">
-          <OuiButtonGroup
-            legend="APM view toggle"
-            options={[
-              { id: 'services', label: 'Services' },
-              { id: 'application-map', label: 'Application map' },
-            ]}
-            idSelected={activeTab}
-            onChange={(id) => setActiveTab(id)}
-            buttonSize="compressed"
-            isFullWidth
-            style={{ width: 320 }}
-          />
-        </div>
-        <div className="servicePage__tabActions">
-          <OuiButtonEmpty size="s" iconType="popout" iconSide="right">
-            View documentation
-          </OuiButtonEmpty>
-        </div>
-      </div>
-
       {/* Body: filter panel (left) + resize handle + main content */}
       <div className="servicePage__body" ref={bodyRef}>
         {/* Filter panel (left sidebar) */}
@@ -709,10 +670,10 @@ export const ServicePage = ({
             {/* Top summary panels */}
             <OuiFlexGroup gutterSize="m">
               <OuiFlexItem>
-                <TopFaultServicesPanel />
+                <TopFaultServicesPanel onSelectService={onOpenCanvasPage ? (name) => onOpenCanvasPage('service-detail', `Service: ${name}`) : undefined} />
               </OuiFlexItem>
               <OuiFlexItem>
-                <TopDependencyPathsPanel />
+                <TopDependencyPathsPanel onSelectService={onOpenCanvasPage ? (name) => onOpenCanvasPage('service-detail', `Service: ${name}`) : undefined} />
               </OuiFlexItem>
             </OuiFlexGroup>
 
@@ -750,7 +711,7 @@ export const ServicePage = ({
 
               <OuiBasicTable
                 items={SERVICES}
-                columns={catalogColumns}
+                columns={getCatalogColumns(onOpenCanvasPage ? (name) => onOpenCanvasPage('service-detail', `Service: ${name}`) : undefined)}
                 rowHeader="name"
                 tableLayout="fixed"
               />
