@@ -1011,6 +1011,7 @@ export const OnboardingWizardPage = () => {
   const [isStreaming, setIsStreaming] = useState(true);
   const [rightPanelFade, setRightPanelFade] = useState(true);
   const feedRef = useRef(null);
+  const feedEndRef = useRef(null);
   const streamTimers = useRef([]);
 
   const totalSteps = STEPS.length;
@@ -1057,9 +1058,11 @@ export const OnboardingWizardPage = () => {
 
   // Auto-scroll feed to bottom when conversation changes
   useEffect(() => {
-    if (feedRef.current) {
-      feedRef.current.scrollTop = feedRef.current.scrollHeight;
-    }
+    requestAnimationFrame(() => {
+      if (feedEndRef.current) {
+        feedEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }
+    });
   }, [currentStep, isConfirmed, isProcessing, streamedText]);
 
   const handleChipSelect = useCallback(
@@ -1437,7 +1440,7 @@ export const OnboardingWizardPage = () => {
                   <OuiTitle size="xxxs">
                     <h6>Step {step.mainStep} of {totalMainSteps}</h6>
                   </OuiTitle>
-                  <OuiTitle size="xs">
+                  <OuiTitle size="s">
                     <h3>{step.title}</h3>
                   </OuiTitle>
                   <div className="onboardWizard__timeline" style={{ marginTop: 8 }}>
@@ -1480,6 +1483,7 @@ export const OnboardingWizardPage = () => {
                 {/* Conversation feed — reuses threadPage__feed pattern */}
                 <div className="threadPage__feed" ref={feedRef}>
                   {buildConversation()}
+                  <div ref={feedEndRef} />
                 </div>
 
                 {/* Input area */}
