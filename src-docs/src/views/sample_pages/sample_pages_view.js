@@ -1604,10 +1604,10 @@ export const SessionPagesView = () => {
 
   /** Open a page from the empty session page */
   const handleOpenPage = useCallback(
-    (pageKey) => {
+    (pageKey, title) => {
       const pageEntry = SOURCE_PAGE_MOCK[pageKey];
-      const title = pageEntry ? pageEntry.title : pageKey;
-      handleOpenCanvasPage(pageKey, title);
+      const displayTitle = title || (pageEntry ? pageEntry.title : pageKey);
+      handleOpenCanvasPage(pageKey, displayTitle);
     },
     [handleOpenCanvasPage]
   );

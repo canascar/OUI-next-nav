@@ -24,8 +24,6 @@ import {
   OuiTitle,
 } from '../../../../src/components';
 
-import { DetailPageHeader } from './detail_page_header';
-
 // --- Mock Data ---
 
 const TOP_DEPENDENCIES = [
@@ -35,7 +33,7 @@ const TOP_DEPENDENCIES = [
 const CORRELATED_LINKS = [
   { label: 'View service attributes', icon: 'inspect' },
   { label: 'View correlated spans', icon: 'document' },
-  { label: 'View correlated logs', icon: 'editorComment' },
+  { label: 'View correlated logs', icon: 'navDiscover' },
 ];
 
 const STATS = [
@@ -56,7 +54,7 @@ const LATENCY_TABS = [
 const FaultBar = ({ value }) => (
   <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
     <div style={{ flex: 1, height: 8, background: '#E4EAF2', borderRadius: 4, overflow: 'hidden' }}>
-      <div style={{ width: `${value}%`, height: '100%', background: '#4168B8', borderRadius: 4 }} />
+      <div style={{ width: `${value}%`, height: '100%', background: '#2E4A8F', borderRadius: 4 }} />
     </div>
     <span style={{ fontSize: 12, color: '#5A6D8A', whiteSpace: 'nowrap' }}>{value.toFixed(2)}%</span>
   </div>
@@ -94,7 +92,6 @@ export const ServiceDetailPage = ({ serviceName = 'checkout', onOpenCanvasPage, 
     if (onOpenCanvasPage) {
       onOpenCanvasPage('discover-log-correlated', 'Correlated Logs: checkout');
     }
-    // Trigger the query execute after a short delay to let the page open
     if (onQueryExecute) {
       setTimeout(() => {
         onQueryExecute('source = logs | where service = "checkout" | where status >= 500 | stats count() by message');
@@ -108,10 +105,7 @@ export const ServiceDetailPage = ({ serviceName = 'checkout', onOpenCanvasPage, 
   ];
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      <DetailPageHeader title={`Service: ${serviceName}`} hideAskAi />
-
-      <div style={{ flex: 1, overflow: 'auto', padding: 16 }}>
+    <div className="mockCanvasPage">
         {/* Top row: Dependencies + Correlated data */}
         <OuiFlexGroup gutterSize="l">
           <OuiFlexItem grow={3}>
@@ -203,7 +197,6 @@ export const ServiceDetailPage = ({ serviceName = 'checkout', onOpenCanvasPage, 
             </div>
           </div>
         </OuiPanel>
-      </div>
     </div>
   );
 };

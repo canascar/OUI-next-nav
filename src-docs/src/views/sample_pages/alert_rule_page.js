@@ -23,8 +23,6 @@ import {
   OuiBadge,
 } from '../../../../src/components';
 
-import { DetailPageHeader } from './detail_page_header';
-
 // --- Mock Data ---
 
 const OVERVIEW_FIELDS = [
@@ -96,10 +94,7 @@ export const AlertRulePage = () => {
   ];
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-      <DetailPageHeader title="payments-db-latency-monitor" hideAskAi />
-
-      <div style={{ flex: 1, overflow: 'auto', padding: 16 }}>
+    <div className="mockCanvasPage">
         {/* Overview */}
         <OuiPanel hasBorder hasShadow={false} paddingSize="m">
           <OuiTitle size="xs"><h3>Overview</h3></OuiTitle>
@@ -133,7 +128,6 @@ export const AlertRulePage = () => {
           <OuiSpacer size="s" />
           <OuiText size="xs" color="subdued">Rows per page: 20</OuiText>
         </OuiPanel>
-      </div>
     </div>
   );
 };

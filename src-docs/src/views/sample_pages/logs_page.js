@@ -31,7 +31,7 @@ import {
   OuiModalHeader,
   OuiModalHeaderTitle,
   OuiPanel,
-  OuiSuperDatePicker,
+  OuiDatePickerUnified,
   OuiTab,
   OuiTabs,
   OuiText,
@@ -1335,13 +1335,11 @@ export const LogsPage = ({
               style={{ width: 280 }}
             />
             <div style={{ width: 280 }}>
-              <OuiSuperDatePicker
+              <OuiDatePickerUnified
                 start={dateStart}
                 end={dateEnd}
                 onTimeChange={onTimeChange}
-                isLoading={isDateLoading}
                 compressed
-                showUpdateButton={false}
               />
             </div>
           </>

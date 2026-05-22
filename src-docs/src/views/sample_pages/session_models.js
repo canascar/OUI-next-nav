@@ -118,6 +118,8 @@ export const SOURCE_PAGE_MOCK = {
   'service-detail': { component: ServiceDetailPage, title: 'Service Detail' },
   'alert-rule': { component: AlertRulePage, title: 'Alert Rule' },
   traces: { component: TraceAnalysisPageMock, title: 'Trace Analysis' },
+  forecasting: { component: AppServicesPageMock, title: 'Forecasting' },
+  'agent-spans': { component: AppServicesPageMock, title: 'Agent Spans' },
 };
 
 /**

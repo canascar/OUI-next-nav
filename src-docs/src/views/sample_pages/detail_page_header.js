@@ -137,15 +137,6 @@ export const DetailPageHeader = ({
             </OuiToolTip>
           )
         )}
-        <OuiToolTip content="Share" position="bottom">
-          <OuiButtonIcon
-            iconType="share"
-            aria-label="Share"
-            size="s"
-            color="text"
-            display="empty"
-          />
-        </OuiToolTip>
       </div>
       {!hideAskAi && (
         <div className="askAiFloating">

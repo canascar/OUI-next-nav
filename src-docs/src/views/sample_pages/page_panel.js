@@ -32,17 +32,19 @@ export const PAGE_TAB_ICONS = {
   dashboards: 'navDashboards',
   'dashboards-list': 'navDashboards',
   notebooks: 'document',
-  metrics: 'visArea',
+  metrics: 'visLine',
   discover: 'navDiscover',
   'discover-log': 'navDiscover',
   'discover-log-correlated': 'navDiscover',
   'discover-metric': 'visArea',
   'app-map': 'navServiceMap',
   'app-traces': 'apmTrace',
-  'app-services': 'navDashboards',
-  'app-perf-services': 'navServices',
-  'service-detail': 'navServices',
-  traces: 'navServices',
+  'app-services': 'navOverview',
+  'app-perf-services': 'navOverview',
+  'service-detail': 'navOverview',
+  traces: 'visTagCloud',
+  forecasting: 'visLine',
+  'agent-spans': 'visTagCloud',
   'new-tab': 'folderClosed',
 };
 
@@ -99,7 +101,9 @@ const TabBar = ({ tabs, activeTabId, onTabSelect, onTabClose, onAddTab, onExpand
               {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
               <div className="pagePanel__aiPopoverOverlay" onClick={(e) => { e.stopPropagation(); onDismissAiPopover(); }} />
               <div className="pagePanel__aiPopover" onClick={onExpandChat}>
-                <p className="pagePanel__aiPopoverText">{aiButtonMessage}</p>
+                <div className="pagePanel__aiPopoverInner">
+                  <p className="pagePanel__aiPopoverText">{aiButtonMessage}</p>
+                </div>
               </div>
             </>
           )}
@@ -261,7 +265,7 @@ export const PagePanel = ({
     const PageComponent = pageEntry.component;
 
     // Pages that have their own header — skip DetailPageHeader
-    const PAGES_WITH_OWN_HEADER = new Set(['discover-log', 'discover-log-correlated', 'discover-metric', 'app-perf-services', 'service-detail', 'alert-rule']);
+    const PAGES_WITH_OWN_HEADER = new Set(['discover-log', 'discover-log-correlated', 'discover-metric', 'app-perf-services']);
     const skipHeader = PAGES_WITH_OWN_HEADER.has(activeTab.pageKey);
 
     // List pages that need onSelectPage callback

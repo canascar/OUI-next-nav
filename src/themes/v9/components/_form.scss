@@ -85,6 +85,7 @@
 .ouiDatePopoverButton,
 .ouiSuperDatePicker__prettyFormat {
   background-color: rgba(red($ouiFormBackgroundColor), green($ouiFormBackgroundColor), blue($ouiFormBackgroundColor), 0.55) !important;
+  border-radius: $ouiFormControlBorderRadius !important;
 }
 
 .ouiFormControlLayout:not(.ouiFormControlLayout--group) {
@@ -95,6 +96,16 @@
   > .ouiSelect {
     border-radius: $ouiFormControlBorderRadius !important;
   }
+
+  // Remove inner inset border — the layout wrapper provides the visual border
+  > .ouiFormControlLayout__childrenWrapper > .ouiSelect,
+  > .ouiFormControlLayout__childrenWrapper > .ouiFieldText,
+  > .ouiFormControlLayout__childrenWrapper > .ouiFieldSearch,
+  > .ouiFormControlLayout__childrenWrapper > .ouiFieldNumber,
+  > .ouiFormControlLayout__childrenWrapper > .ouiFieldPassword {
+    box-shadow: none !important;
+    border: none !important;
+  }
 }
 
 .ouiFieldText--compressed,
@@ -104,6 +115,7 @@
 .ouiSelect--compressed,
 .ouiDatePopoverButton-compressed {
   background-color: rgba(red($ouiFormBackgroundColor), green($ouiFormBackgroundColor), blue($ouiFormBackgroundColor), 0.55) !important;
+  border-radius: $ouiFormControlCompressedBorderRadius !important;
 }
 
 // Inside groups, inputs get no radius (group clips them)
@@ -368,7 +380,7 @@
 .ouiTextArea,
 .ouiDatePopoverButton,
 .ouiSuperDatePicker__prettyFormat {
-  transition: box-shadow 150ms ease-in-out, background-color 150ms ease-in-out !important;
+  transition: box-shadow 200ms cubic-bezier(0.22, 0.61, 0.36, 1), background-color 150ms ease-in-out, transform 200ms cubic-bezier(0.22, 0.61, 0.36, 1) !important;
 }
 
 .ouiFieldText:hover,
@@ -468,10 +480,14 @@
 .ouiFormControlLayout:not(.ouiFormControlLayout--group) {
   transition: box-shadow 150ms ease-in-out, background-color 150ms ease-in-out, transform 150ms ease-in-out !important;
   transform: translateY(0) !important;
+  border: 1px solid $ouiFormBorderColor !important;
+  border-radius: $ouiFormControlBorderRadius !important;
+  overflow: hidden !important;
 
   &:hover,
   &:focus-within {
     transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)) !important;
   }
 }
 // sass-lint:enable no-important
