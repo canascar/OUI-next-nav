@@ -466,7 +466,8 @@
 
 .emptySessionPage__savedQueryChart {
   width: 120px;
-  align-self: stretch;
+  height: 48px;
+  align-self: center;
   flex-shrink: 0;
   color: $ouiColorDanger;
 }
@@ -501,6 +502,32 @@
 .emptySessionPage__savedQueryRange {
   font-size: 11px;
   color: $ouiColorMediumShade;
+}
+
+// Side-by-side layout for SAVED QUERY + SERVICE
+.emptySessionPage__sideBySide {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  align-items: stretch;
+  margin-top: 20px;
+}
+
+.emptySessionPage__sideBySideCol {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .emptySessionPage__sectionHeader {
+    margin-top: 0;
+  }
+
+  .emptySessionPage__savedQueryCard,
+  .emptySessionPage__favoritePanel {
+    flex: 1;
+  }
 }
 
 .emptySessionPage__tabs .ouiTabs--condensed {

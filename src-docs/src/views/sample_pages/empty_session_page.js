@@ -564,7 +564,7 @@ export const EmptySessionPage = ({
               {/* List items based on active chip */}
               <div className="emptySessionPage__tabContent">
                 {activeChip === 'activity' && (
-                  <div className="emptySessionPage__sectionHeader">// LATEST — 02</div>
+                  <div className="emptySessionPage__sectionHeader">// LATEST</div>
                 )}
                 {activeChip === 'activity' && CHIP_DATA.activity.every((item) => dismissedItems.has(item.key)) && (
                   <div className="emptySessionPage__listItemEmpty">
@@ -687,74 +687,54 @@ export const EmptySessionPage = ({
                   </div>
                 )}
                 {activeChip === 'activity' && (
-                  <div className="emptySessionPage__sectionHeader">// SAVED QUERY — 01</div>
-                )}
-                {activeChip === 'activity' && (
-                  <button type="button" className="emptySessionPage__savedQueryCard" onClick={() => onOpenPage('discover-log')}>
-                    <div className="emptySessionPage__savedQueryLeft">
-                      <span className="emptySessionPage__savedQueryTitle">Connection timeout errors</span>
-                      <code className="emptySessionPage__savedQueryCode">source=logs | where severity=&quot;ERROR&quot;</code>
-                    </div>
-                    <div className="emptySessionPage__savedQueryChart">
-                      <svg viewBox="0 0 120 32" preserveAspectRatio="none" className="emptySessionPage__savedQuerySvg">
-                        <path d="M0,28 L8,27 L16,26 L24,25 L32,24 L40,22 L48,20 L56,18 L64,14 L72,12 L80,8 L88,6 L96,4 L104,3 L112,2 L120,1" fill="none" stroke="currentColor" strokeWidth="2" />
-                        <path d="M0,28 L8,27 L16,26 L24,25 L32,24 L40,22 L48,20 L56,18 L64,14 L72,12 L80,8 L88,6 L96,4 L104,3 L112,2 L120,1 L120,32 L0,32 Z" fill="currentColor" opacity="0.1" />
-                      </svg>
-                    </div>
-                    <div className="emptySessionPage__savedQueryRight">
-                      <span className="emptySessionPage__savedQueryValue">847</span>
-                      <span className="emptySessionPage__savedQueryTrend">↑ +312%</span>
-                      <span className="emptySessionPage__savedQueryRange">Last 15 min</span>
-                    </div>
-                  </button>
-                )}
-                {activeChip === 'activity' && (
-                  <div className="emptySessionPage__sectionHeader">// SERVICE — 03</div>
-                )}
-                {activeChip === 'activity' && (
-                  <div className="emptySessionPage__favoritePanels">
-                    <div className="emptySessionPage__favoritePanel">
-                      <div className="emptySessionPage__favoritePanelTitle">Top services by fault rate</div>
-                      <div className="emptySessionPage__favoritePanelTable">
-                        <div className="emptySessionPage__favoritePanelHeader">
-                          <span>Service</span><span>Fault rate</span>
-                        </div>
-                        <div className="emptySessionPage__favoritePanelRow">
-                          <button type="button" className="emptySessionPage__favoritePanelLink" onClick={() => onOpenPage('service-detail', 'Service: checkout')}>checkout</button>
-                          <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '66.67%' }} /></div><span>66.67%</span></div>
-                        </div>
-                        <div className="emptySessionPage__favoritePanelRow">
-                          <span className="emptySessionPage__favoritePanelLink--static">frontend</span>
-                          <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '14.49%' }} /></div><span>14.49%</span></div>
-                        </div>
-                        <div className="emptySessionPage__favoritePanelRow">
-                          <span className="emptySessionPage__favoritePanelLink--static">frontend-proxy</span>
-                          <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '14.29%' }} /></div><span>14.29%</span></div>
+                  <div className="emptySessionPage__sideBySide">
+                    <div className="emptySessionPage__sideBySideCol">
+                      <div className="emptySessionPage__sectionHeader">// SERVICE</div>
+                      <div className="emptySessionPage__favoritePanel">
+                        <div className="emptySessionPage__favoritePanelTitle">Top services by fault rate</div>
+                        <div className="emptySessionPage__favoritePanelTable">
+                          <div className="emptySessionPage__favoritePanelHeader">
+                            <span>Service</span><span>Fault rate</span>
+                          </div>
+                          <div className="emptySessionPage__favoritePanelRow">
+                            <button type="button" className="emptySessionPage__favoritePanelLink" onClick={() => onOpenPage('service-detail', 'Service: checkout')}>checkout</button>
+                            <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '66.67%' }} /></div><span>66.67%</span></div>
+                          </div>
+                          <div className="emptySessionPage__favoritePanelRow">
+                            <span className="emptySessionPage__favoritePanelLink--static">frontend</span>
+                            <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '14.49%' }} /></div><span>14.49%</span></div>
+                          </div>
+                          <div className="emptySessionPage__favoritePanelRow">
+                            <span className="emptySessionPage__favoritePanelLink--static">frontend-proxy</span>
+                            <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '14.29%' }} /></div><span>14.29%</span></div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div className="emptySessionPage__favoritePanel">
-                      <div className="emptySessionPage__favoritePanelTitle">Top dependency paths by fault rate</div>
-                      <div className="emptySessionPage__favoritePanelTable">
-                        <div className="emptySessionPage__favoritePanelHeader emptySessionPage__favoritePanelHeader--3col">
-                          <span>Dependency service</span><span>Service</span><span>Fault rate</span>
+                    <div className="emptySessionPage__sideBySideCol">
+                      <div className="emptySessionPage__sectionHeader">// SAVED QUERY</div>
+                      <button type="button" className="emptySessionPage__savedQueryCard" onClick={() => onOpenPage('discover-log')}>
+                        <div className="emptySessionPage__savedQueryLeft">
+                          <span className="emptySessionPage__savedQueryTitle">Connection timeout errors</span>
+                          <code className="emptySessionPage__savedQueryCode">source=logs | where severity=&quot;ERROR&quot;</code>
                         </div>
-                        <div className="emptySessionPage__favoritePanelRow emptySessionPage__favoritePanelRow--3col">
-                          <button type="button" className="emptySessionPage__favoritePanelLink" onClick={() => onOpenPage('service-detail', 'Service: checkout')}>checkout</button>
-                          <span className="emptySessionPage__favoritePanelLink--static">frontend</span>
-                          <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '66.67%' }} /></div><span>66.67%</span></div>
+                        <div className="emptySessionPage__savedQueryChart">
+                          <svg viewBox="0 0 120 48" preserveAspectRatio="none" className="emptySessionPage__savedQuerySvg">
+                            <path d="M0,42 L8,41 L16,39 L24,38 L32,36 L40,33 L48,30 L56,27 L64,21 L72,18 L80,12 L88,9 L96,6 L104,4 L112,3 L120,1" fill="none" stroke="currentColor" strokeWidth="2" />
+                            <path d="M0,42 L8,41 L16,39 L24,38 L32,36 L40,33 L48,30 L56,27 L64,21 L72,18 L80,12 L88,9 L96,6 L104,4 L112,3 L120,1 L120,48 L0,48 Z" fill="currentColor" opacity="0.1" />
+                          </svg>
                         </div>
-                        <div className="emptySessionPage__favoritePanelRow emptySessionPage__favoritePanelRow--3col">
-                          <span className="emptySessionPage__favoritePanelLink--static">frontend</span>
-                          <span className="emptySessionPage__favoritePanelLink--static">frontend-proxy</span>
-                          <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '14.29%' }} /></div><span>14.29%</span></div>
+                        <div className="emptySessionPage__savedQueryRight">
+                          <span className="emptySessionPage__savedQueryValue">847</span>
+                          <span className="emptySessionPage__savedQueryTrend">↑ +312%</span>
+                          <span className="emptySessionPage__savedQueryRange">Last 15 min</span>
                         </div>
-                      </div>
+                      </button>
                     </div>
                   </div>
                 )}
                 {activeChip === 'activity' && (
-                  <div className="emptySessionPage__sectionHeader">// FAVORITES — 02</div>
+                  <div className="emptySessionPage__sectionHeader">// FAVORITES</div>
                 )}
                 {activeChip === 'activity' && (CHIP_DATA.favorite || []).map((item) => (
                   <div key={item.key} className="emptySessionPage__listItem">
