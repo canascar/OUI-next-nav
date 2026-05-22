@@ -308,6 +308,10 @@ export { OuiSchemaItem } from './schema';
 
 export { OuiSearchBar, Query, Ast } from './search_bar';
 
+export { OuiSearchInput } from './search_input';
+
+export { OuiSectionLabel } from './section_label';
+
 export {
   OuiSelectable,
   OuiSelectableList,

@@ -225,6 +225,10 @@ import { ThreadInputExample } from './views/thread_input/thread_input_example';
 
 import { ThreadListExample } from './views/thread_list/thread_list_example';
 
+import { SearchInputExample } from './views/search_input/search_input_example';
+
+import { SectionLabelExample } from './views/section_label/section_label_example';
+
 import { TitleExample } from './views/title/title_example';
 
 import { ToastExample } from './views/toast/toast_example';
@@ -451,6 +455,8 @@ const navigation = [
       SuperDatePickerExample,
       DatePickerUnifiedExample,
       ThreadInputExample,
+      SearchInputExample,
+      SectionLabelExample,
     ].map((example) => createExample(example)),
   },
   {
