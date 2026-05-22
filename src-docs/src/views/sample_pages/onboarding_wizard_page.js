@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 
 import {
   OuiButtonIcon,
@@ -40,7 +40,7 @@ import {
  */
 const STEPS = [
   {
-    title: 'What do you want to observe?',
+    title: 'Set up data sources',
     mainStep: 1,
     subStep: 1,
     question:
@@ -61,7 +61,7 @@ const STEPS = [
     },
     rightPanel: {
       title: 'Getting Started',
-      subtitle: 'Choose your observability path',
+      subtitle: 'Set up your data',
       contentType: 'getting-started',
     },
   },
@@ -96,7 +96,7 @@ const STEPS = [
     },
   },
   {
-    title: 'Configure your OpenTelemetry collector',
+    title: 'Set up data sources',
     mainStep: 1,
     subStep: 3,
     question:
@@ -115,7 +115,7 @@ const STEPS = [
     },
   },
   {
-    title: 'Connect your data source',
+    title: 'Connect additional data sources',
     mainStep: 2,
     question:
       'Next: Connect to telemetry from additional data sources',
@@ -209,7 +209,7 @@ const STEPS = [
     question:
       'Your pipeline is deployed and data is flowing in! I\u2019m collecting logs, metrics, and traces from your sources. You can watch the live counts on the right \u2014 once you\u2019re satisfied, continue to finish setup.',
     optionType: 'chips',
-    options: [{ key: 'continue', label: 'Continue' }],
+    options: [{ key: 'continue', label: 'Continue', primary: true }],
     confirmation: () =>
       'Data collection verified. Your observability pipeline is active.',
     rightPanel: {
@@ -225,10 +225,10 @@ const STEPS = [
       'Your observability pipeline is live! Data is flowing into OpenSearch. Here are some next steps to explore.',
     optionType: 'chips',
     options: [
-      { key: 'dashboards', label: 'Go to Dashboards' },
-      { key: 'discover', label: 'Explore in Discover' },
+      { key: 'dashboards', label: 'Start using OpenSearch', primary: true },
       { key: 'alerts', label: 'Set up Alerts' },
-      { key: 'more-sources', label: 'Add more data sources' },
+      { key: 'more-sources', label: 'Collect data sources' },
+      { key: 'import', label: 'Import dashboards and queries' },
     ],
     confirmation: null,
     rightPanel: {
@@ -253,12 +253,10 @@ const OTEL_COMMAND = `docker run \\
 // ─────────────────────────────────────────────
 
 const CHECKLIST_STEPS = [
-  { label: 'What do you want to observe?', description: 'Choose your observability path' },
-  { label: 'Connect your data source', description: 'Hook up telemetry from your infrastructure' },
-  { label: 'Transform your data', description: 'Clean and enrich your log sources' },
-  { label: 'Review and confirm', description: 'Verify your configuration before deploying' },
-  { label: 'Collecting your data', description: 'Watch live data flow into OpenSearch' },
-  { label: "You're all set!", description: 'Explore dashboards, alerts, and more' },
+  { label: 'Set observability goal', description: 'Choose what you want to observe' },
+  { label: 'Collect data from environment', description: 'Configure your collector and environment' },
+  { label: 'Connect data source', description: 'Hook up telemetry from your infrastructure' },
+  { label: 'Data transformations', description: 'Clean and enrich your log sources' },
 ];
 
 const GettingStartedPanel = () => {
@@ -267,13 +265,12 @@ const GettingStartedPanel = () => {
       <RightPanelHeader
         icon="integrationObservability"
         title="Getting Started"
-        subtitle="Choose your observability path"
+        subtitle="Set up your data"
       />
       <OuiSpacer size="l" />
       <div className="onboardWizard__checklist">
         {CHECKLIST_STEPS.map((item, i) => (
           <div key={i} className="onboardWizard__checklistItem">
-            <div className="onboardWizard__checklistCircle" />
             <div className="onboardWizard__checklistText">
               <OuiText size="s">
                 <strong>{item.label}</strong>
@@ -296,7 +293,6 @@ const EnvironmentPanel = ({ selectedOption }) => {
       icon: 'integrationObservability',
       name: 'OpenTelemetry',
       badge: 'Native integration',
-      signals: { metrics: true, logs: true, traces: true },
       setupTime: '~5 min',
     },
     {
@@ -304,7 +300,6 @@ const EnvironmentPanel = ({ selectedOption }) => {
       icon: 'logo_aws',
       name: 'EKS',
       badge: 'Managed service',
-      signals: { metrics: true, logs: true, traces: true },
       setupTime: '~10 min',
     },
     {
@@ -312,7 +307,6 @@ const EnvironmentPanel = ({ selectedOption }) => {
       icon: 'logo_kubernetes',
       name: 'Kubernetes',
       badge: 'Self-managed',
-      signals: { metrics: true, logs: true, traces: true },
       setupTime: '~8 min',
     },
     {
@@ -320,7 +314,6 @@ const EnvironmentPanel = ({ selectedOption }) => {
       icon: 'compute',
       name: 'Other',
       badge: 'Custom setup',
-      signals: { metrics: true, logs: true, traces: false },
       setupTime: '~15 min',
     },
   ];
@@ -349,18 +342,6 @@ const EnvironmentPanel = ({ selectedOption }) => {
               <strong>{env.name}</strong>
             </OuiText>
             <span className="onboardWizard__envBadge">{env.badge}</span>
-            <div className="onboardWizard__envSignals">
-              {Object.entries(env.signals).map(([signal, supported]) => (
-                <span key={signal} className="onboardWizard__envSignal">
-                  <OuiIcon
-                    type={supported ? 'check' : 'cross'}
-                    size="s"
-                    color={supported ? 'success' : 'subdued'}
-                  />
-                  <span>{signal}</span>
-                </span>
-              ))}
-            </div>
           </div>
         ))}
       </div>
@@ -655,11 +636,87 @@ const SummaryPanel = ({ allSelections }) => {
   );
 };
 
+// Generates initial data points for the streaming area chart
+const generateInitialData = (points, baseValue, variance) =>
+  Array.from({ length: points }, () =>
+    baseValue + Math.floor(Math.random() * variance)
+  );
+
+// Attempt a smooth cubic bezier path through points (mimics monotone interpolation)
+const buildSmoothPath = (points, width, height, padding) => {
+  if (points.length < 2) return '';
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const range = max - min || 1;
+
+  const coords = points.map((val, i) => ({
+    x: (i / (points.length - 1)) * width,
+    y: padding + (1 - (val - min) / range) * (height - padding * 2),
+  }));
+
+  // Build a smooth cubic bezier path
+  let path = `M ${coords[0].x},${coords[0].y}`;
+  for (let i = 1; i < coords.length; i++) {
+    const prev = coords[i - 1];
+    const curr = coords[i];
+    const cpx = (prev.x + curr.x) / 2;
+    path += ` C ${cpx},${prev.y} ${cpx},${curr.y} ${curr.x},${curr.y}`;
+  }
+  return path;
+};
+
+// A single streaming area chart using pure SVG — gradient fill like shadcn's area chart
+const LiveStreamAreaChart = ({ color, data }) => {
+  const width = 280;
+  const height = 72;
+  const padding = 4;
+  const gradientId = useMemo(
+    () => `area-grad-${color.replace('#', '')}`,
+    [color]
+  );
+
+  const linePath = buildSmoothPath(data, width, height, padding);
+  // Close the path to form a filled area
+  const areaPath = `${linePath} L ${width},${height} L 0,${height} Z`;
+
+  return (
+    <svg
+      className="onboardWizard__areaChart"
+      viewBox={`0 0 ${width} ${height}`}
+      preserveAspectRatio="none"
+      aria-hidden="true">
+      <defs>
+        <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.3" />
+          <stop offset="95%" stopColor={color} stopOpacity="0.02" />
+        </linearGradient>
+      </defs>
+      <path d={areaPath} fill={`url(#${gradientId})`} />
+      <path
+        d={linePath}
+        fill="none"
+        stroke={color}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+};
+
 const LiveCountersPanel = () => {
+  const MAX_POINTS = 30;
+
   const [counts, setCounts] = useState({
     logs: 1204,
     metrics: 8491,
     traces: 342,
+  });
+
+  const [chartData, setChartData] = useState({
+    logs: generateInitialData(MAX_POINTS, 12, 8),
+    metrics: generateInitialData(MAX_POINTS, 18, 12),
+    traces: generateInitialData(MAX_POINTS, 6, 4),
   });
 
   useEffect(() => {
@@ -669,7 +726,13 @@ const LiveCountersPanel = () => {
         metrics: prev.metrics + Math.floor(Math.random() * 25) + 10,
         traces: prev.traces + Math.floor(Math.random() * 8) + 3,
       }));
-    }, 1500);
+
+      setChartData((prev) => ({
+        logs: [...prev.logs.slice(1), 8 + Math.floor(Math.random() * 12)],
+        metrics: [...prev.metrics.slice(1), 12 + Math.floor(Math.random() * 18)],
+        traces: [...prev.traces.slice(1), 3 + Math.floor(Math.random() * 8)],
+      }));
+    }, 1200);
     return () => clearInterval(interval);
   }, []);
 
@@ -710,30 +773,37 @@ const LiveCountersPanel = () => {
       <OuiSpacer size="l" />
       <div className="onboardWizard__liveCounters">
         {counters.map((c) => (
-          <div key={c.key} className="onboardWizard__counterRow">
-            <div className="onboardWizard__counterIcon">
-              <OuiIcon type={c.icon} size="l" color={c.color} />
-            </div>
-            <div className="onboardWizard__counterInfo">
-              <OuiText size="xs" color="subdued">
-                {c.label}
-              </OuiText>
-              <div className="onboardWizard__counterValue">
-                <span className="onboardWizard__counterNumber">
-                  {c.count.toLocaleString()}
-                </span>
-                <span
-                  className="onboardWizard__counterRate"
-                  style={{ color: c.color }}>
-                  {c.rate}
-                </span>
+          <div key={c.key} className="onboardWizard__counterRow onboardWizard__counterRow--withChart">
+            <div className="onboardWizard__counterMeta">
+              <div className="onboardWizard__counterIcon">
+                <OuiIcon type={c.icon} size="l" color={c.color} />
               </div>
+              <div className="onboardWizard__counterInfo">
+                <OuiText size="xs" color="subdued">
+                  {c.label}
+                </OuiText>
+                <div className="onboardWizard__counterValue">
+                  <span className="onboardWizard__counterNumber">
+                    {c.count.toLocaleString()}
+                  </span>
+                  <span
+                    className="onboardWizard__counterRate"
+                    style={{ color: c.color }}>
+                    {c.rate}
+                  </span>
+                </div>
+              </div>
+              <span
+                className="onboardWizard__counterDot"
+                style={{ backgroundColor: c.color }}
+              />
             </div>
-            <span
-              className="onboardWizard__counterDot"
-              style={{ backgroundColor: c.color }}
-            />
-            <MiniSparkline color={c.color} />
+            <div className="onboardWizard__counterChart">
+              <LiveStreamAreaChart
+                color={c.color}
+                data={chartData[c.key]}
+              />
+            </div>
           </div>
         ))}
       </div>
@@ -867,23 +937,6 @@ const IngestRow = ({ label, rate, color }) => {
   );
 };
 
-const MiniSparkline = ({ color }) => {
-  const points = Array.from({ length: 8 }, () => Math.random() * 24 + 4);
-  const path = points
-    .map((y, i) => `${i === 0 ? 'M' : 'L'} ${i * 10} ${28 - y}`)
-    .join(' ');
-
-  return (
-    <svg
-      className="onboardWizard__miniSparkline"
-      viewBox="0 0 70 28"
-      fill="none"
-      aria-hidden="true">
-      <path d={path} stroke={color} strokeWidth="2" strokeLinecap="round" />
-    </svg>
-  );
-};
-
 const QuickLink = ({ icon, label }) => (
   <button type="button" className="onboardWizard__quickLink">
     <OuiIcon type={icon} size="s" />
@@ -956,7 +1009,9 @@ export const OnboardingWizardPage = () => {
   const [message, setMessage] = useState('');
   const [streamedText, setStreamedText] = useState('');
   const [isStreaming, setIsStreaming] = useState(true);
+  const [rightPanelFade, setRightPanelFade] = useState(true);
   const feedRef = useRef(null);
+  const feedEndRef = useRef(null);
   const streamTimers = useRef([]);
 
   const totalSteps = STEPS.length;
@@ -994,11 +1049,20 @@ export const OnboardingWizardPage = () => {
     };
   }, [currentStep, step.question]);
 
+  // Fade in the right panel when step changes
+  useEffect(() => {
+    setRightPanelFade(false);
+    const timer = setTimeout(() => setRightPanelFade(true), 50);
+    return () => clearTimeout(timer);
+  }, [currentStep]);
+
   // Auto-scroll feed to bottom when conversation changes
   useEffect(() => {
-    if (feedRef.current) {
-      feedRef.current.scrollTop = feedRef.current.scrollHeight;
-    }
+    requestAnimationFrame(() => {
+      if (feedEndRef.current) {
+        feedEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }
+    });
   }, [currentStep, isConfirmed, isProcessing, streamedText]);
 
   const handleChipSelect = useCallback(
@@ -1255,7 +1319,10 @@ export const OnboardingWizardPage = () => {
                     : handleChipSelect(opt.key)
                 }
                 disabled={isConfirmed || isProcessing}>
-                {opt.label}
+                <span>{opt.label}</span>
+                {opt.description && (
+                  <span className="onboardWizard__chipDescription">{opt.description}</span>
+                )}
               </button>
             ))}
           </div>
@@ -1333,7 +1400,7 @@ export const OnboardingWizardPage = () => {
     <div
       style={{
         display: 'flex',
-        position: 'fixed',
+        position: 'absolute',
         top: 0,
         left: 0,
         right: 0,
@@ -1373,16 +1440,14 @@ export const OnboardingWizardPage = () => {
                   <OuiTitle size="xxxs">
                     <h6>Step {step.mainStep} of {totalMainSteps}</h6>
                   </OuiTitle>
-                  <OuiTitle size="xs">
+                  <OuiTitle size="s">
                     <h3>{step.title}</h3>
                   </OuiTitle>
-                  {currentStep > 0 && (
-                    <div className="onboardWizard__timeline" style={{ marginTop: 8 }}>
+                  <div className="onboardWizard__timeline" style={{ marginTop: 8 }}>
                       {Array.from({ length: totalMainSteps }, (_, mainIdx) => {
                         const mainNum = mainIdx + 1;
                         const isMainDone = step.mainStep > mainNum;
                         const isMainCurrent = step.mainStep === mainNum;
-                        if (!isMainDone && !isMainCurrent) return null;
                         // Find the first sub-step index for this main step (for navigation)
                         const firstSubIdx = STEPS.findIndex((s) => s.mainStep === mainNum);
                         if (isMainDone) {
@@ -1397,20 +1462,28 @@ export const OnboardingWizardPage = () => {
                             />
                           );
                         }
+                        if (isMainCurrent) {
+                          return (
+                            <span
+                              key={mainIdx}
+                              className="onboardWizard__timelineDot onboardWizard__timelineDot--current"
+                            />
+                          );
+                        }
                         return (
                           <span
                             key={mainIdx}
-                            className="onboardWizard__timelineDot onboardWizard__timelineDot--current"
+                            className="onboardWizard__timelineDot onboardWizard__timelineDot--inactive"
                           />
                         );
                       })}
                     </div>
-                  )}
                 </div>
 
                 {/* Conversation feed — reuses threadPage__feed pattern */}
                 <div className="threadPage__feed" ref={feedRef}>
                   {buildConversation()}
+                  <div ref={feedEndRef} />
                 </div>
 
                 {/* Input area */}
@@ -1450,7 +1523,7 @@ export const OnboardingWizardPage = () => {
 
             {/* Right Panel */}
             <div className="onboardWizard__right">
-              <div className="onboardWizard__rightPanel">
+              <div className={`onboardWizard__rightPanel${rightPanelFade ? ' onboardWizard__rightPanel--fadeIn' : ''}`} key={currentStep}>
                 <RightPanelContent
                   step={step}
                   selectedOption={currentSelection}
@@ -1458,16 +1531,14 @@ export const OnboardingWizardPage = () => {
                   allSelections={selections}
                 />
               </div>
-            </div>
-
-            {/* Footer */}
-            <div className="onboardWizard__footer">
-              <button
-                type="button"
-                className="onboardWizard__finishLater"
-                onClick={handleFinishLater}>
-                Finish onboarding later
-              </button>
+              <div className="onboardWizard__finishLaterWrapper">
+                <button
+                  type="button"
+                  className="onboardWizard__finishLater"
+                  onClick={handleFinishLater}>
+                  Finish onboarding later
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -8,7 +8,31 @@
   right: 0;
   bottom: 0;
   display: flex;
-  background: linear-gradient(135deg, #f0fafa 0%, #f7f9fc 50%, #ffffff 100%);
+  align-items: center;
+  justify-content: center;
+  background-color: $ouiPageBackgroundColor;
+  background-image:
+    linear-gradient(to right, rgba($ouiColorPrimary, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba($ouiColorPrimary, 0.04) 1px, transparent 1px),
+    linear-gradient(to right, rgba($ouiColorPrimary, 0.015) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba($ouiColorPrimary, 0.015) 1px, transparent 1px);
+  background-size: 24px 24px, 24px 24px, 6px 6px, 6px 6px;
+
+  // Scope left panel (threadPage) to vertically center within the onboardWizard
+  .threadPage__body {
+    align-self: center;
+    height: 600px;
+    max-height: 80vh;
+  }
+
+  .threadPage__conversationCol {
+    justify-content: flex-start;
+  }
+
+  .threadPage__feed {
+    flex: 1;
+    overflow-y: auto;
+  }
 }
 
 // ─────────────────────────────────────────────
@@ -45,21 +69,34 @@
 
 .onboardWizard__right {
   flex: 1;
+  max-width: 680px;
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 40px 40px 80px;
-  overflow-y: auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: stretch;
+  height: 600px;
+  max-height: 80vh;
+  padding: 40px 40px 24px;
+  overflow: hidden;
 }
 
 .onboardWizard__rightPanel {
   width: 100%;
   max-width: 680px;
+  flex: 1;
   background: $ouiColorEmptyShade;
   border-radius: $ouiBorderRadius * 2;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.04);
   padding: 32px;
-  min-height: 400px;
+  overflow-y: auto;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 800ms ease, transform 800ms ease;
+
+  &--fadeIn {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 // ─────────────────────────────────────────────
@@ -99,6 +136,10 @@
     background: $ouiColorPrimary;
     box-shadow: 0 0 0 3px rgba($ouiColorPrimary, 0.2);
   }
+
+  &--inactive {
+    background: $ouiBorderColor;
+  }
 }
 
 // ─────────────────────────────────────────────
@@ -121,11 +162,18 @@
   flex-wrap: wrap;
   gap: 8px;
   justify-content: flex-start;
+
+  // When chips have descriptions, stack them vertically
+  &:has(.onboardWizard__chipDescription) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 .onboardWizard__chip {
   display: inline-flex;
   align-items: center;
+  flex-direction: column;
   padding: 6px 16px;
   border-radius: 20px;
   border: 1px solid $ouiBorderColor;
@@ -134,6 +182,13 @@
   font-family: inherit;
   cursor: pointer;
   transition: all 150ms ease;
+  text-align: left;
+  align-items: flex-start;
+
+  &:has(.onboardWizard__chipDescription) {
+    padding: 10px 16px;
+    border-radius: $ouiBorderRadius;
+  }
 
   &:hover:not(:disabled) {
     border-color: $ouiColorPrimary;
@@ -173,6 +228,13 @@
   }
 }
 
+.onboardWizard__chipDescription {
+  font-size: $ouiFontSizeXS;
+  opacity: 0.8;
+  font-weight: 400;
+  margin-top: 2px;
+  text-align: left;
+}
 // ─────────────────────────────────────────────
 // MULTI-SELECT (Step 5: Transformations)
 // ─────────────────────────────────────────────
@@ -326,19 +388,13 @@
 // FOOTER
 // ─────────────────────────────────────────────
 
-.onboardWizard__footer {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+.onboardWizard__finishLaterWrapper {
   display: flex;
   justify-content: center;
-  padding: 12px;
-  pointer-events: none;
+  padding: 16px 0;
 }
 
 .onboardWizard__finishLater {
-  pointer-events: all;
   background: none;
   border: none;
   color: $ouiTextSubduedColor;
@@ -374,7 +430,7 @@
 .onboardWizard__checklist {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0;
 }
 
 .onboardWizard__checklistItem {
@@ -382,9 +438,22 @@
   align-items: flex-start;
   gap: 12px;
   padding: 16px 20px;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  background: $ouiColorEmptyShade;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  border-image: linear-gradient(
+    to right,
+    transparent,
+    $ouiBorderColor 20%,
+    $ouiBorderColor 80%,
+    transparent
+  ) 1;
+
+  &:last-child {
+    border-bottom: none;
+    border-image: none;
+  }
 }
 
 .onboardWizard__checklistCircle {
@@ -772,6 +841,31 @@
   border: 1px solid $ouiBorderColor;
   border-radius: $ouiBorderRadius;
   background: $ouiColorEmptyShade;
+
+  &--withChart {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 16px 16px 8px;
+  }
+}
+
+.onboardWizard__counterMeta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.onboardWizard__counterChart {
+  width: 100%;
+  height: 72px;
+  margin-top: 4px;
+}
+
+.onboardWizard__areaChart {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .onboardWizard__counterIcon {
@@ -805,12 +899,6 @@
   border-radius: 50%;
   flex-shrink: 0;
   animation: onboardWizardPulse 1.5s infinite;
-}
-
-.onboardWizard__miniSparkline {
-  width: 70px;
-  height: 28px;
-  flex-shrink: 0;
 }
 
 .onboardWizard__collectionHealth {
