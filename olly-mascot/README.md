@@ -6,14 +6,11 @@ A drop-in React component. Self-contained, no external dependencies beyond React
 
 Copy `Mascot.tsx` into your project (e.g. `src/components/Mascot.tsx`).
 
-If you're on plain JSX (not TypeScript), rename it to `Mascot.jsx` and strip the
-type annotations — Claude Code can do this for you. Ask it:
-
-> Convert `Mascot.tsx` to plain JSX, removing types but keeping JSDoc.
+If you're on plain JSX (not TypeScript), use `OpenSearchMascot.jsx` instead.
 
 ## Usage
 
-```tsx
+```jsx
 import { Mascot } from "./components/Mascot";
 
 // Resting + idle-cycles through micro-expressions on its own
@@ -35,7 +32,7 @@ import { Mascot } from "./components/Mascot";
 
 ## Preset palettes
 
-```tsx
+```jsx
 import { Mascot, MASCOT_PALETTES } from "./components/Mascot";
 
 const p = MASCOT_PALETTES.purple;
@@ -44,36 +41,17 @@ const p = MASCOT_PALETTES.purple;
 
 ## Expression vocabulary
 
-| id       | reads as  | use for                                    |
-|----------|-----------|--------------------------------------------|
-| `comma`  | `, ,`     | default / resting / "I'm here"             |
-| `blink`  | `_ _`     | brief beat / acknowledgement               |
-| `happy`  | `^ ^`     | success / cheerful completion              |
-| `dot`    | `. .`     | attentive / serious moment                 |
-| `squint` | `> <`     | uncertain / low confidence result          |
-| `wow`    | `0 0`     | surprise / found something                 |
-| `wink`   | `, _`     | playful aside (use sparingly)              |
-| `heart`  | `<3<3`    | celebration / loved-something signal       |
-| `xx`     | `x x`     | unreachable / sleep / offline              |
-
-## Behavior notes
-
-- **Idle cycling.** When no `expression` prop is set and `idle` is true (default),
-  the mascot drifts through a weighted rotation: ~40% blink, then dot/squint/happy/
-  wow/wink. It always returns to the resting comma between pulses. Pass a specific
-  `expression` to lock it.
-
-- **Eye scaling.** Below 200px, eyes scale up to 1.65× at ≤32px so the expression
-  stays readable in dense UIs (toolbar icons, status indicators, inline tags).
-
-- **Cursor tracking.** Eyes follow the cursor with a small offset. Disable with
-  `follow={false}` for inline / list contexts where it's a distraction.
-
-- **Bob.** `bob={true}` adds a gentle 4.2s vertical bob. Off by default — opt in
-  for hero / standalone placements only.
-
-- **Multiple instances.** Gradient IDs are randomized per instance, so you can
-  place as many mascots on a page as you want without ID collisions.
+| Key     | Eyes  | Meaning                          |
+|---------|-------|----------------------------------|
+| comma   | , ,   | default / resting / "I'm here"   |
+| blink   | _ _   | brief beat / acknowledgement     |
+| happy   | ^ ^   | success / cheerful completion    |
+| dot     | . .   | attentive / serious moment       |
+| squint  | > <   | uncertain / low confidence       |
+| wow     | 0 0   | surprise / found something       |
+| wink    | , _   | playful aside (use sparingly)    |
+| heart   | <3<3  | celebration / loved-something    |
+| xx      | x x   | unreachable / sleep / offline    |
 
 ## API
 
@@ -92,32 +70,7 @@ interface MascotProps {
 }
 ```
 
-## Suggested patterns
-
-**Status indicator in a search input**
-```tsx
-<input ... />
-<Mascot size={22} expression={loading ? "wow" : "comma"} follow={false} />
-```
-
-**Confirmation dialog — gravity matches the stakes**
-```tsx
-<Mascot size={28} expression={amount > 1000 ? "dot" : "happy"} follow={false} />
-```
-
-**Error toast**
-```tsx
-<Mascot size={28} expression="xx" follow={false} />
-<span>Couldn't reach server. <button>Retry</button></span>
-```
-
-**Loading state in a corner of a long-running view**
-```tsx
-<Mascot size={24} follow={false} />   {/* lets it idle-cycle quietly */}
-```
-
-## Principles (in one breath)
+## Principles
 
 Status over personality. Affect scales with stakes. Restraint is the skill.
-Honest about uncertainty. No fake personhood. A soft surface for confirmation
-and recovery.
+Honest about uncertainty. No fake personhood. A soft surface for confirmation and recovery.

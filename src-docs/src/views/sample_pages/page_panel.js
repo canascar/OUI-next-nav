@@ -19,6 +19,7 @@ import {
 import { SOURCE_PAGE_MOCK } from './session_models';
 import { DetailPageHeader } from './detail_page_header';
 import { NewTabPage } from './new_tab_page';
+import { Mascot } from '../../../../olly-mascot/Mascot';
 
 /**
  * Icon mapping for page keys.
@@ -88,25 +89,8 @@ const TabBar = ({ tabs, activeTabId, onTabSelect, onTabClose, onAddTab, onExpand
   return (
     <div className="pagePanel__tabBar">
       {onExpandChat && (
-        <div className={`pagePanel__aiButton${aiButtonHighlight ? ' pagePanel__aiButton--highlight' : ''}`} onClick={onExpandChat}>
-          <OuiButtonIcon
-            iconType="generate"
-            aria-label="Open AI chat"
-            size="s"
-            color={aiButtonHighlight ? 'primary' : 'text'}
-            display="empty"
-          />
-          {aiButtonHighlight && aiButtonMessage && (
-            <>
-              {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-              <div className="pagePanel__aiPopoverOverlay" onClick={(e) => { e.stopPropagation(); onDismissAiPopover(); }} />
-              <div className="pagePanel__aiPopover" onClick={onExpandChat}>
-                <div className="pagePanel__aiPopoverInner">
-                  <p className="pagePanel__aiPopoverText">{aiButtonMessage}</p>
-                </div>
-              </div>
-            </>
-          )}
+        <div className="pagePanel__aiButton" onClick={onExpandChat}>
+          <OuiIcon type="chatLeft" size="m" />
         </div>
       )}
       <div
@@ -295,9 +279,6 @@ export const PagePanel = ({
         onTabClose={onTabClose}
         onAddTab={onAddTab}
         onExpandChat={onExpandChat}
-        aiButtonHighlight={aiButtonHighlight}
-        aiButtonMessage={aiButtonMessage}
-        onDismissAiPopover={onDismissAiPopover}
       />
       <div
         className="pagePanel__content"
@@ -305,6 +286,22 @@ export const PagePanel = ({
         aria-label={activeTab ? activeTab.title : 'No tab selected'}>
         {renderTabContent()}
       </div>
+      {onExpandChat && (
+        <button
+          type="button"
+          className={`pagePanel__floatingMascot${aiButtonHighlight ? ' pagePanel__floatingMascot--highlight' : ''}`}
+          aria-label="Open AI chat"
+          onClick={onExpandChat}>
+          <Mascot size={36} expression="comma" idle bob follow={false} />
+          {aiButtonHighlight && aiButtonMessage && (
+            <div className="pagePanel__aiPopover" onClick={onExpandChat}>
+              <div className="pagePanel__aiPopoverInner">
+                <p className="pagePanel__aiPopoverText">{aiButtonMessage}</p>
+              </div>
+            </div>
+          )}
+        </button>
+      )}
     </div>
   );
 };

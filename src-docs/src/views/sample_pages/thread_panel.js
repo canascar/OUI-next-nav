@@ -83,7 +83,7 @@ export const ThreadPanel = forwardRef(
         {/* Header */}
         <div className="threadPanel__header">
           <div className="threadPanel__headerLeft">
-            <OuiIcon type="generate" size="m" />
+            <OuiIcon type="chatLeft" size="m" />
             <span className="threadPanel__title">{displayTitle}</span>
           </div>
           <div className="threadPanel__headerRight">

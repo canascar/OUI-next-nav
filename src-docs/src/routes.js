@@ -21,6 +21,8 @@ import ColorGuidelines from './views/guidelines/colors';
 
 import { SassGuidelines } from './views/guidelines/sass';
 
+import MascotGuidelinesView from './views/guidelines/mascot_guidelines';
+
 // Services
 
 import { ColorPaletteExample } from './views/color_palette/color_palette_example';
@@ -337,6 +339,10 @@ const navigation = [
       {
         name: 'Sass',
         component: SassGuidelines,
+      },
+      {
+        name: 'Mascot',
+        component: MascotGuidelinesView,
       },
     ],
   },

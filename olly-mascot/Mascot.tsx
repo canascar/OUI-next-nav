@@ -104,9 +104,6 @@ const IDLE_POOL: { id: MascotExpression; weight: number; hold: number }[] = [
 const IDLE_TOTAL_WEIGHT = IDLE_POOL.reduce((s, p) => s + p.weight, 0);
 
 // ── Keyframes injection (one-time) ──────────────────────────────────────────
-// We inject a single <style> with our eye-pop keyframe on first mount,
-// rather than asking the consumer to add it to their global CSS.
-
 const STYLE_ID = "__mascot_keyframes__";
 function ensureKeyframes() {
   if (typeof document === "undefined") return;
@@ -257,7 +254,6 @@ export const Mascot: React.FC<MascotProps> = ({
         <g
           transform={`translate(${EYE_CX}, ${EYE_CY}) scale(${eyeScale}) translate(${-EYE_CX + pupilOffset.x / eyeScale}, ${-EYE_CY + pupilOffset.y / eyeScale})`}
         >
-          {/* keyed on path data so swaps trigger the eye-pop animation */}
           <path key={`l-${active}`} d={geom.left}  fill={eyeColor} style={{ animation: "__mascot_eye_pop__ 160ms ease-out", transformOrigin: "center" }} />
           <path key={`r-${active}`} d={geom.right} fill={eyeColor} style={{ animation: "__mascot_eye_pop__ 160ms ease-out", transformOrigin: "center" }} />
         </g>
@@ -269,8 +265,6 @@ export const Mascot: React.FC<MascotProps> = ({
 export default Mascot;
 
 // ── Optional preset palettes ────────────────────────────────────────────────
-// Use these or roll your own [from, to] gradient pair.
-
 export const MASCOT_PALETTES: Record<string, { body: [string, string]; eye: string }> = {
   navy:   { body: ["#14558E", "#153A5A"], eye: "#FFFFFF" },
   purple: { body: ["#6C4BD9", "#341E73"], eye: "#FFFFFF" },
