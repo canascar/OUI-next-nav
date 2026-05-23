@@ -65,7 +65,7 @@ The onboarding flow is organized into 6 main steps. Step 1 contains sub-steps fo
 
 | Main Step | Title | Sub-steps |
 |-----------|-------|-----------|
-| 1 | What do you want to observe? | 1a. Choose observation goal, 1b. Select environment, 1c. Configure collector |
+| 1 | What do you want to observe? | 1a. Choose observation goal, 1b. Select environment, 1c. Configure collector, 1d. Select telemetry storage |
 | 2 | Connect your data source | — |
 | 3 | Transform your data | — |
 | 4 | Review and confirm | — |
@@ -169,6 +169,38 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 | Content details | A code block displaying the docker run command: `docker run -e CLICKHOUSE_ENDPOINT="https://d9vcnuuz5c.us-west-2.aws.clickhouse.cloud:8443" -e CLICKHOUSE_USER="default" -e CLICKHOUSE_PASSWORD="<your_password_here>" -p 4317:4317 -p 4318:4318 clickhouse/clickstack-otel-collector:latest`. Includes a "Copy" button in the top-right corner of the code block. |
 | Dynamic behavior | When user clicks "I am ready," the right panel briefly shows a connection verification spinner, then transitions to a green checkmark with "Collector detected" status. If "Go back" is selected, navigates to the previous step. |
 | Secondary section | A brief note below the code block: "Replace `<your_password_here>` with your actual password. The collector will listen on ports 4317 (gRPC) and 4318 (HTTP) for incoming telemetry data." |
+
+---
+
+### Step 1 of 6 — Sub-step 1d
+
+**Step Title:** `Set up data sources`
+
+#### Left Panel — Question
+
+| Field | Content |
+|-------|---------|
+| System message | *Based on your setup, I recommend storing your telemetry in an **{recommended resource type}**. This gives you {brief rationale based on earlier selections}.* |
+| Option type | Chips (pill buttons) |
+| Options | |
+| | Option 1: `Looks good` | Option 1 is primary button |
+| | Option 2: `Customize` |
+| | Option 3: `Store in existing` |
+| Default selection | None |
+| Confirmation message (Looks good) | ✓ DONE — Telemetry will be stored in a new **{recommended resource type}**. |
+| Confirmation message (Customize) | *(Navigates to customization sub-flow — see Dynamic behavior)* |
+| Confirmation message (Store in existing) | *(Navigates to resource picker — see Dynamic behavior)* |
+
+#### Right Panel — Preview
+
+| Field | Content |
+|-------|---------|
+| Panel title | `Telemetry Storage` |
+| Panel subtitle | `Recommended for your setup` |
+| Content type | Recommendation card |
+| Content details | A single highlighted recommendation card showing: the recommended resource type (OpenSearch Managed Cluster or OpenSearch Serverless Collection), why it was chosen (e.g., "Your data volume and query pattern suggest a serverless collection for automatic scaling" or "Your retention requirements and steady workload are best served by a managed cluster"), and key specs — estimated OCUs or instance type, index pattern, and default retention period. Below the recommendation card, a muted comparison row shows the alternative option with a one-line summary of why it was not the primary recommendation. |
+| Dynamic behavior | **"Looks good"** — accepts the recommendation, creates the resource with default settings, and advances to Step 2. **"Customize"** — expands the right panel into an editable configuration form where users can adjust: resource type (cluster vs. serverless), instance sizing or OCU allocation, number of replicas, retention policy, and index naming. A "Confirm" button in the form saves the customization and advances to Step 2. **"Store in existing"** — the right panel switches to a resource picker listing the user's existing OpenSearch clusters and serverless collections (fetched from their account). Each row shows: resource name, status, current utilization, and region. User selects one and clicks "Use this resource" to advance to Step 2. |
+| Secondary section | A note: "You can change storage settings later from the Data Management page." |
 
 ---
 
@@ -340,7 +372,7 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ STEP 1: What do you want to observe? (contains 3 sub-steps)             │
+│ STEP 1: What do you want to observe? (contains 4 sub-steps)             │
 │                                                                          │
 │  [Start] → 1a: Choose observation goal                                  │
 │         ├─ "Application" → 1b: Select environment                       │
@@ -350,8 +382,11 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 │  1b: Select environment → 1c                                            │
 │                                                                          │
 │  1c: Configure OTel collector                                            │
-│         ├─ "I am ready" → Step 2                                        │
+│         ├─ "I am ready" → 1d: Select telemetry storage                  │
 │         └─ "Go back" → 1b                                               │
+│                                                                          │
+│  1d: Select telemetry storage                                            │
+│         → User chooses storage destination → Step 2                     │
 └─────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────┐

@@ -115,6 +115,35 @@ const STEPS = [
     },
   },
   {
+    title: 'Set up data sources',
+    mainStep: 1,
+    subStep: 4,
+    question:
+      'Based on your setup, I recommend storing your telemetry in an OpenSearch Managed Cluster with Optimized engine. Columnar storage handles time-series log data more efficiently.',
+    optionType: 'chips',
+    options: [
+      { key: 'looks-good', label: 'Looks good', primary: true },
+      { key: 'customize', label: 'Customize' },
+      { key: 'store-existing', label: 'Store in existing' },
+    ],
+    confirmation: (selected) => {
+      const messages = {
+        'looks-good':
+          'Telemetry will be stored in a new OpenSearch Managed Cluster with Optimized engine.',
+        customize:
+          'Telemetry storage customized. Configuration saved.',
+        'store-existing':
+          'Telemetry will be stored in your existing OpenSearch resource.',
+      };
+      return messages[selected] || 'Storage configured.';
+    },
+    rightPanel: {
+      title: 'Telemetry Storage',
+      subtitle: 'Recommended for your setup',
+      contentType: 'telemetry-storage',
+    },
+  },
+  {
     title: 'Connect additional data sources',
     mainStep: 2,
     question:
@@ -422,6 +451,139 @@ const CollectorSetupPanel = ({ confirmed }) => {
   );
 };
 
+const TelemetryStoragePanel = ({ selectedOption }) => {
+  const recommendation = {
+    type: 'OpenSearch Managed Cluster',
+    subtitle: 'Optimized engine \u2014 Columnar storage',
+    icon: 'logo_opensearch',
+    reason:
+      'Columnar storage handles time-series log data more efficiently, giving you faster queries and lower storage costs for observability workloads.',
+    specs: [
+      { label: 'Engine', value: 'Optimized (Columnar)' },
+      { label: 'Index pattern', value: 'otel-v1-*' },
+      { label: 'Default retention', value: '30 days' },
+    ],
+  };
+
+  const alternative = {
+    type: 'OpenSearch Serverless Collection',
+    reason:
+      'Better suited for unpredictable workloads requiring automatic scaling with no infrastructure to manage.',
+  };
+
+  return (
+    <div className="onboardWizard__rightContent">
+      <RightPanelHeader
+        icon="database"
+        title="Telemetry Storage"
+        subtitle="Recommended for your setup"
+      />
+      <OuiSpacer size="l" />
+      <div
+        className={`onboardWizard__storageCard${
+          selectedOption === 'looks-good'
+            ? ' onboardWizard__storageCard--confirmed'
+            : ''
+        }`}>
+        <div className="onboardWizard__storageCardHeader">
+          <OuiIcon type={recommendation.icon} size="l" />
+          <div>
+            <OuiText size="s">
+              <strong>{recommendation.type}</strong>
+            </OuiText>
+            <OuiText size="xs" color="subdued">
+              {recommendation.subtitle}
+            </OuiText>
+            <span className="onboardWizard__storageBadge">Recommended</span>
+          </div>
+        </div>
+        <OuiSpacer size="s" />
+        <OuiText size="xs" color="subdued">
+          <p style={{ margin: 0 }}>{recommendation.reason}</p>
+        </OuiText>
+        <OuiSpacer size="m" />
+        <div className="onboardWizard__storageSpecs">
+          {recommendation.specs.map((spec) => (
+            <div key={spec.label} className="onboardWizard__storageSpecRow">
+              <OuiText size="xs" color="subdued">
+                {spec.label}
+              </OuiText>
+              <OuiText size="xs">
+                <strong>{spec.value}</strong>
+              </OuiText>
+            </div>
+          ))}
+        </div>
+      </div>
+      <OuiSpacer size="m" />
+      <div className="onboardWizard__storageAlt">
+        <OuiText size="xs" color="subdued">
+          <strong>Alternative:</strong> {alternative.type} &mdash;{' '}
+          {alternative.reason}
+        </OuiText>
+      </div>
+      {selectedOption === 'customize' && (
+        <>
+          <OuiSpacer size="l" />
+          <div className="onboardWizard__storageCustomize">
+            <OuiText size="xs">
+              <strong>Customize configuration</strong>
+            </OuiText>
+            <OuiSpacer size="s" />
+            <OuiText size="xs" color="subdued">
+              <p style={{ margin: 0 }}>
+                Adjust resource type, OCU allocation, replicas, retention policy,
+                and index naming from the Data Management page after setup.
+              </p>
+            </OuiText>
+          </div>
+        </>
+      )}
+      {selectedOption === 'store-existing' && (
+        <>
+          <OuiSpacer size="l" />
+          <div className="onboardWizard__storageExisting">
+            <OuiText size="xs">
+              <strong>Select existing resource</strong>
+            </OuiText>
+            <OuiSpacer size="s" />
+            <div className="onboardWizard__storageExistingList">
+              <div className="onboardWizard__storageExistingItem">
+                <OuiIcon type="logo_opensearch" size="s" />
+                <div>
+                  <OuiText size="xs">
+                    <strong>prod-observability-cluster</strong>
+                  </OuiText>
+                  <OuiText size="xs" color="subdued">
+                    Managed Cluster &middot; us-west-2 &middot; Active
+                  </OuiText>
+                </div>
+              </div>
+              <div className="onboardWizard__storageExistingItem">
+                <OuiIcon type="logo_opensearch" size="s" />
+                <div>
+                  <OuiText size="xs">
+                    <strong>dev-telemetry-collection</strong>
+                  </OuiText>
+                  <OuiText size="xs" color="subdued">
+                    Serverless Collection &middot; us-east-1 &middot; Active
+                  </OuiText>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+      <OuiSpacer size="m" />
+      <OuiText size="xs" color="subdued">
+        <p style={{ margin: 0 }}>
+          You can change storage settings later from the Data Management page.
+        </p>
+      </OuiText>
+    </div>
+  );
+};
+
 const DataSourcesPanel = ({ selectedOption, confirmed }) => {
   const providers = [
     {
@@ -583,8 +745,17 @@ const SummaryPanel = ({ allSelections }) => {
       },
     },
     {
-      label: 'Data source',
+      label: 'Telemetry storage',
       stepIdx: 3,
+      valueMap: {
+        'looks-good': 'OpenSearch Managed Cluster (Optimized engine)',
+        customize: 'Custom configuration',
+        'store-existing': 'Existing resource',
+      },
+    },
+    {
+      label: 'Additional data sources',
+      stepIdx: 4,
       valueMap: {
         opensearch: 'OpenSearch',
         prometheus: 'Prometheus',
@@ -595,7 +766,7 @@ const SummaryPanel = ({ allSelections }) => {
     },
     {
       label: 'Transformations',
-      stepIdx: 4,
+      stepIdx: 5,
       valueMap: {
         pii: 'Remove PII',
         catalog: 'Service catalog data',
@@ -963,6 +1134,8 @@ const RightPanelContent = ({
       return <EnvironmentPanel selectedOption={selectedOption} />;
     case 'collector-setup':
       return <CollectorSetupPanel confirmed={confirmed} />;
+    case 'telemetry-storage':
+      return <TelemetryStoragePanel selectedOption={selectedOption} />;
     case 'data-sources':
       return (
         <DataSourcesPanel
