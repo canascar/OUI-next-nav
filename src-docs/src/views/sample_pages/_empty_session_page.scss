@@ -28,7 +28,7 @@
   width: 100%;
   height: 100%;
   border-radius: 8px;
-  padding: 200px 24px 24px;
+  padding: 120px 24px 24px;
   overflow: hidden;
   position: relative;
   background-image:
@@ -62,7 +62,15 @@
 
 // Header / Title
 .emptySessionPage__header {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.emptySessionPage__headerText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 // Content container — constrains width
@@ -386,6 +394,140 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  scrollbar-width: none; // Firefox
+  -ms-overflow-style: none; // IE/Edge
+
+  &::-webkit-scrollbar {
+    display: none; // Chrome/Safari
+  }
+}
+
+.emptySessionPage__sectionHeader {
+  font-family: $ouiCodeFontFamily;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: $ouiColorPrimary;
+  margin-top: 20px;
+  padding: 8px 0 4px;
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+// Saved query card — short and wide
+.emptySessionPage__savedQueryCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  padding: 12px 16px;
+  background-color: $ouiColorEmptyShade;
+  border: $ouiBorderThin;
+  border-radius: $ouiBorderRadius;
+  cursor: pointer;
+  appearance: none;
+  text-align: left;
+  transition: background-color 150ms ease-in-out, box-shadow 150ms ease-in-out;
+  flex-shrink: 0;
+
+  &:hover {
+    background-color: $ouiColorLightestShade;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+}
+
+.emptySessionPage__savedQueryLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.emptySessionPage__savedQueryTitle {
+  font-size: $ouiFontSizeS;
+  font-weight: $ouiFontWeightMedium;
+  color: $ouiTitleColor;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.emptySessionPage__savedQueryCode {
+  font-family: $ouiCodeFontFamily;
+  font-size: 11px;
+  color: $ouiColorMediumShade;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.emptySessionPage__savedQueryChart {
+  width: 120px;
+  height: 48px;
+  align-self: center;
+  flex-shrink: 0;
+  color: $ouiColorDanger;
+}
+
+.emptySessionPage__savedQuerySvg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.emptySessionPage__savedQueryRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.emptySessionPage__savedQueryValue {
+  font-size: $ouiFontSizeL;
+  font-weight: $ouiFontWeightBold;
+  color: $ouiColorDanger;
+  line-height: 1;
+}
+
+.emptySessionPage__savedQueryTrend {
+  font-size: 11px;
+  font-weight: $ouiFontWeightMedium;
+  color: $ouiColorDanger;
+}
+
+.emptySessionPage__savedQueryRange {
+  font-size: 11px;
+  color: $ouiColorMediumShade;
+}
+
+// Side-by-side layout for SAVED QUERY + SERVICE
+.emptySessionPage__sideBySide {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  align-items: stretch;
+  margin-top: 20px;
+}
+
+.emptySessionPage__sideBySideCol {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .emptySessionPage__sectionHeader {
+    margin-top: 0;
+  }
+
+  .emptySessionPage__savedQueryCard,
+  .emptySessionPage__favoritePanel {
+    flex: 1;
+  }
 }
 
 .emptySessionPage__tabs .ouiTabs--condensed {
@@ -463,8 +605,9 @@
     position: relative;
     flex-direction: column;
     align-items: stretch;
-    max-height: 500px;
+    min-height: 140px;
     overflow: hidden;
+    flex-shrink: 0;
   }
 
   &--dismissing {
@@ -650,6 +793,7 @@
   white-space: nowrap;
   transition: background-color 150ms ease-in-out;
   min-width: 0;
+  position: relative;
 
   &:hover {
     background-color: $ouiColorLightestShade;
@@ -673,8 +817,8 @@
 
 .emptySessionPage__chipDot {
   position: absolute;
-  top: 3px;
-  right: 3px;
+  top: 18px;
+  right: 12px;
   width: 8px;
   height: 8px;
   border-radius: 50%;

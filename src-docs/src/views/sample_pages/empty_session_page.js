@@ -22,6 +22,7 @@ import {
 } from '../../../../src/components';
 
 import { SOURCE_PAGE_MOCK } from './session_models';
+import { Mascot } from '../../../../olly-mascot/Mascot';
 
 /**
  * Quick access shortcut definitions.
@@ -32,9 +33,8 @@ import { SOURCE_PAGE_MOCK } from './session_models';
  * Filter chips for the bottom section.
  */
 const FILTER_CHIPS = [
-  { key: 'activity', label: null, icon: 'bullseye', iconOnly: true },
   { key: 'recent', label: null, icon: 'history', iconOnly: true },
-  { key: 'favorite', label: 'Favorite', icon: 'starEmpty' },
+  { key: 'activity', label: 'Overview' },
   { key: 'discover', label: 'Discover', icon: 'navDiscover' },
   { key: 'monitor', label: 'Monitor', icon: 'navAlerting' },
   { key: 'more', label: 'More', icon: 'apps' },
@@ -499,15 +499,21 @@ export const EmptySessionPage = ({
   return (
     <div className="emptySessionPage">
       <div className="emptySessionPage__panel">
-        {/* Welcome title */}
-        <div className="emptySessionPage__header">
-          <OuiTitle size="m">
-            <h1>Welcome to OpenSearch Observability</h1>
-          </OuiTitle>
-        </div>
-
         {/* Content container — max 832px */}
         <div className="emptySessionPage__content">
+          {/* Welcome title */}
+          <div className="emptySessionPage__header">
+            <Mascot size={44} expression="comma" idle bob follow={false} />
+            <div className="emptySessionPage__headerText">
+              <OuiTitle size="m">
+                <h1>Good morning, John</h1>
+              </OuiTitle>
+              <OuiText size="s" color="subdued">
+                <p>All 247 services steady. 2 activities to review.</p>
+              </OuiText>
+            </div>
+          </div>
+
           {/* Textarea input */}
           <DualPurposeInput
             onStartThread={onStartThread}
@@ -557,10 +563,62 @@ export const EmptySessionPage = ({
 
               {/* List items based on active chip */}
               <div className="emptySessionPage__tabContent">
+                {activeChip === 'activity' && (
+                  <div className="emptySessionPage__sectionHeader">// LATEST</div>
+                )}
                 {activeChip === 'activity' && CHIP_DATA.activity.every((item) => dismissedItems.has(item.key)) && (
                   <div className="emptySessionPage__listItemEmpty">
                     All caught up, no ongoing activity
                   </div>
+                )}
+                {activeChip === 'activity' && (CHIP_DATA.activity || []).filter((item) => !dismissedItems.has(item.key)).map((item) => (
+                  <div
+                    key={item.key}
+                    className={`emptySessionPage__listItem emptySessionPage__listItem--activityLayout${item.icon === 'alert' ? ' emptySessionPage__listItem--activity' : ''}${dismissingItems.has(item.key) ? ' emptySessionPage__listItem--dismissing' : ''}`}>
+                    <button
+                      type="button"
+                      className="emptySessionPage__listItemClickable"
+                      onClick={() => onSelectSession(item.sessionId)}>
+                      <span className="emptySessionPage__activityCard">
+                        <span className="emptySessionPage__activityCardHeader">
+                          <span className="emptySessionPage__listItemTitle">{item.title}</span>
+                        </span>
+                        <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
+                        <span className="emptySessionPage__activityCardPills">
+                          {item.summary && (
+                            <span className="emptySessionPage__activityPill">
+                              <OuiIcon type="generate" size="m" />
+                              <span className="emptySessionPage__activityPillText">{item.summary}</span>
+                              <span className="emptySessionPage__activityPillMeta">3 tabs</span>
+                            </span>
+                          )}
+                          {item.meta && (
+                            <span className="emptySessionPage__activityPill">
+                              {item.icon && <OuiIcon type={item.icon} size="m" color={item.icon === 'alert' ? 'warning' : 'subdued'} />}
+                              <span className="emptySessionPage__activityPillText">{item.meta}</span>
+                            </span>
+                          )}
+                        </span>
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      className="emptySessionPage__listItemDismiss"
+                      aria-label="Dismiss"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDismissingItems((prev) => new Set([...prev, item.key]));
+                        setTimeout(() => {
+                          setDismissedItems((prev) => new Set([...prev, item.key]));
+                          setDismissingItems((prev) => { const next = new Set(prev); next.delete(item.key); return next; });
+                        }, 500);
+                      }}>
+                      Dismiss
+                    </button>
+                  </div>
+                ))}
+                {activeChip === 'discover' && (
+                  <div className="emptySessionPage__sectionHeader">// OPEN A PAGE TO DISCOVER</div>
                 )}
                 {activeChip === 'discover' && (
                   <div className="emptySessionPage__discoverGrid">
@@ -581,6 +639,9 @@ export const EmptySessionPage = ({
                       <span>Alerts</span>
                     </button>
                   </div>
+                )}
+                {activeChip === 'monitor' && (
+                  <div className="emptySessionPage__sectionHeader">// OPEN A PAGE TO MONITOR</div>
                 )}
                 {activeChip === 'monitor' && (
                   <div className="emptySessionPage__discoverGrid">
@@ -611,6 +672,9 @@ export const EmptySessionPage = ({
                   </div>
                 )}
                 {activeChip === 'more' && (
+                  <div className="emptySessionPage__sectionHeader">// OPEN A PAGE</div>
+                )}
+                {activeChip === 'more' && (
                   <div className="emptySessionPage__discoverGrid">
                     <div className="emptySessionPage__discoverGridItem emptySessionPage__discoverGridItem--disabled">
                       <OuiIcon type="document" size="m" />
@@ -622,49 +686,57 @@ export const EmptySessionPage = ({
                     </div>
                   </div>
                 )}
-                {activeChip === 'favorite' && (
-                  <div className="emptySessionPage__favoritePanels">
-                    <div className="emptySessionPage__favoritePanel">
-                      <div className="emptySessionPage__favoritePanelTitle">Top services by fault rate</div>
-                      <div className="emptySessionPage__favoritePanelTable">
-                        <div className="emptySessionPage__favoritePanelHeader">
-                          <span>Service</span><span>Fault rate</span>
-                        </div>
-                        <div className="emptySessionPage__favoritePanelRow">
-                          <button type="button" className="emptySessionPage__favoritePanelLink" onClick={() => onOpenPage('service-detail', 'Service: checkout')}>checkout</button>
-                          <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '66.67%' }} /></div><span>66.67%</span></div>
-                        </div>
-                        <div className="emptySessionPage__favoritePanelRow">
-                          <span className="emptySessionPage__favoritePanelLink--static">frontend</span>
-                          <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '14.49%' }} /></div><span>14.49%</span></div>
-                        </div>
-                        <div className="emptySessionPage__favoritePanelRow">
-                          <span className="emptySessionPage__favoritePanelLink--static">frontend-proxy</span>
-                          <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '14.29%' }} /></div><span>14.29%</span></div>
+                {activeChip === 'activity' && (
+                  <div className="emptySessionPage__sideBySide">
+                    <div className="emptySessionPage__sideBySideCol">
+                      <div className="emptySessionPage__sectionHeader">// SERVICE</div>
+                      <div className="emptySessionPage__favoritePanel">
+                        <div className="emptySessionPage__favoritePanelTitle">Top services by fault rate</div>
+                        <div className="emptySessionPage__favoritePanelTable">
+                          <div className="emptySessionPage__favoritePanelHeader">
+                            <span>Service</span><span>Fault rate</span>
+                          </div>
+                          <div className="emptySessionPage__favoritePanelRow">
+                            <button type="button" className="emptySessionPage__favoritePanelLink" onClick={() => onOpenPage('service-detail', 'Service: checkout')}>checkout</button>
+                            <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '66.67%' }} /></div><span>66.67%</span></div>
+                          </div>
+                          <div className="emptySessionPage__favoritePanelRow">
+                            <span className="emptySessionPage__favoritePanelLink--static">frontend</span>
+                            <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '14.49%' }} /></div><span>14.49%</span></div>
+                          </div>
+                          <div className="emptySessionPage__favoritePanelRow">
+                            <span className="emptySessionPage__favoritePanelLink--static">frontend-proxy</span>
+                            <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '14.29%' }} /></div><span>14.29%</span></div>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div className="emptySessionPage__favoritePanel">
-                      <div className="emptySessionPage__favoritePanelTitle">Top dependency paths by fault rate</div>
-                      <div className="emptySessionPage__favoritePanelTable">
-                        <div className="emptySessionPage__favoritePanelHeader emptySessionPage__favoritePanelHeader--3col">
-                          <span>Dependency service</span><span>Service</span><span>Fault rate</span>
+                    <div className="emptySessionPage__sideBySideCol">
+                      <div className="emptySessionPage__sectionHeader">// SAVED QUERY</div>
+                      <button type="button" className="emptySessionPage__savedQueryCard" onClick={() => onOpenPage('discover-log')}>
+                        <div className="emptySessionPage__savedQueryLeft">
+                          <span className="emptySessionPage__savedQueryTitle">Connection timeout errors</span>
+                          <code className="emptySessionPage__savedQueryCode">source=logs | where severity=&quot;ERROR&quot;</code>
                         </div>
-                        <div className="emptySessionPage__favoritePanelRow emptySessionPage__favoritePanelRow--3col">
-                          <button type="button" className="emptySessionPage__favoritePanelLink" onClick={() => onOpenPage('service-detail', 'Service: checkout')}>checkout</button>
-                          <span className="emptySessionPage__favoritePanelLink--static">frontend</span>
-                          <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '66.67%' }} /></div><span>66.67%</span></div>
+                        <div className="emptySessionPage__savedQueryChart">
+                          <svg viewBox="0 0 120 48" preserveAspectRatio="none" className="emptySessionPage__savedQuerySvg">
+                            <path d="M0,42 L8,41 L16,39 L24,38 L32,36 L40,33 L48,30 L56,27 L64,21 L72,18 L80,12 L88,9 L96,6 L104,4 L112,3 L120,1" fill="none" stroke="currentColor" strokeWidth="2" />
+                            <path d="M0,42 L8,41 L16,39 L24,38 L32,36 L40,33 L48,30 L56,27 L64,21 L72,18 L80,12 L88,9 L96,6 L104,4 L112,3 L120,1 L120,48 L0,48 Z" fill="currentColor" opacity="0.1" />
+                          </svg>
                         </div>
-                        <div className="emptySessionPage__favoritePanelRow emptySessionPage__favoritePanelRow--3col">
-                          <span className="emptySessionPage__favoritePanelLink--static">frontend</span>
-                          <span className="emptySessionPage__favoritePanelLink--static">frontend-proxy</span>
-                          <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '14.29%' }} /></div><span>14.29%</span></div>
+                        <div className="emptySessionPage__savedQueryRight">
+                          <span className="emptySessionPage__savedQueryValue">847</span>
+                          <span className="emptySessionPage__savedQueryTrend">↑ +312%</span>
+                          <span className="emptySessionPage__savedQueryRange">Last 15 min</span>
                         </div>
-                      </div>
+                      </button>
                     </div>
                   </div>
                 )}
-                {activeChip === 'favorite' && (CHIP_DATA.favorite || []).map((item) => (
+                {activeChip === 'activity' && (
+                  <div className="emptySessionPage__sectionHeader">// FAVORITES</div>
+                )}
+                {activeChip === 'activity' && (CHIP_DATA.favorite || []).map((item) => (
                   <div key={item.key} className="emptySessionPage__listItem">
                     <button
                       type="button"
@@ -682,12 +754,12 @@ export const EmptySessionPage = ({
                     </button>
                   </div>
                 ))}
-                {activeChip === 'favorite' && (
+                {activeChip === 'activity' && (
                   <button type="button" className="emptySessionPage__editButton">
-                    <span>Edit favorites</span>
+                    <span>Edit overview</span>
                   </button>
                 )}
-                {activeChip !== 'discover' && activeChip !== 'monitor' && activeChip !== 'more' && activeChip !== 'favorite' && (activeChip === 'recent' ? (
+                {activeChip === 'recent' && (
                   sessions.filter((s) => !s.hidden).slice(0, 5).map((session) => (
                     <div key={session.id} className="emptySessionPage__listItem">
                       <button
@@ -712,71 +784,7 @@ export const EmptySessionPage = ({
                       </button>
                     </div>
                   ))
-                ) : (
-                  (CHIP_DATA[activeChip] || []).filter((item) => {
-                    if (activeChip === 'activity' && dismissedItems.has(item.key)) return false;
-                    return true;
-                  }).map((item) => (
-                    <div
-                      key={item.key}
-                      className={`emptySessionPage__listItem${activeChip === 'activity' ? ' emptySessionPage__listItem--activityLayout' : ''}${activeChip === 'activity' && item.icon === 'alert' ? ' emptySessionPage__listItem--activity' : ''}${dismissingItems.has(item.key) ? ' emptySessionPage__listItem--dismissing' : ''}`}>
-                      <button
-                        type="button"
-                        className="emptySessionPage__listItemClickable"
-                        onClick={() => activeChip === 'activity' ? onSelectSession(item.sessionId) : onOpenPage(activeChip === 'discover' ? 'logs' : activeChip === 'monitor' ? 'alerts' : activeChip === 'favorite' ? (item.pageKey || 'dashboards') : 'notebooks')}>
-                        {activeChip === 'activity' ? (
-                          <span className="emptySessionPage__activityCard">
-                            <span className="emptySessionPage__activityCardHeader">
-                              <span className="emptySessionPage__listItemTitle">{item.title}</span>
-                            </span>
-                            <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
-                            <span className="emptySessionPage__activityCardPills">
-                              {item.summary && (
-                                <span className="emptySessionPage__activityPill">
-                                  <OuiIcon type="generate" size="m" />
-                                  <span className="emptySessionPage__activityPillText">{item.summary}</span>
-                                  <span className="emptySessionPage__activityPillMeta">3 tabs</span>
-                                </span>
-                              )}
-                              {item.meta && (
-                                <span className="emptySessionPage__activityPill">
-                                  {item.icon && <OuiIcon type={item.icon} size="m" color={item.icon === 'alert' ? 'warning' : 'subdued'} />}
-                                  <span className="emptySessionPage__activityPillText">{item.meta}</span>
-                                </span>
-                              )}
-                            </span>
-                          </span>
-                        ) : (
-                          <span className="emptySessionPage__listItemContent">
-                            <span className="emptySessionPage__listItemTitle">{item.title}</span>
-                            <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
-                          </span>
-                        )}
-                        {item.typeIcon && !item.meta && activeChip !== 'activity' && (
-                          <span className="emptySessionPage__listItemRight">
-                            <OuiIcon type={item.typeIcon} size="m" color="subdued" />
-                          </span>
-                        )}
-                      </button>
-                      {activeChip === 'activity' && (
-                        <button
-                          type="button"
-                          className="emptySessionPage__listItemDismiss"
-                          aria-label="Dismiss"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setDismissingItems((prev) => new Set([...prev, item.key]));
-                            setTimeout(() => {
-                              setDismissedItems((prev) => new Set([...prev, item.key]));
-                              setDismissingItems((prev) => { const next = new Set(prev); next.delete(item.key); return next; });
-                            }, 500);
-                          }}>
-                          Dismiss
-                        </button>
-                      )}
-                    </div>
-                  ))
-                ))}
+                )}
               </div>
             </>
           )}
