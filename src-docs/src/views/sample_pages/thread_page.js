@@ -727,6 +727,49 @@ const StatsDisplayAttachment = ({ title, stats }) => {
   );
 };
 
+// Attachment card: trace waterfall (horizontal span bars)
+const TraceWaterfallAttachment = ({ title, spans }) => {
+  const maxDuration = Math.max(...spans.map((s) => s.duration));
+  const colorMap = {
+    primary: '#0077CC',
+    success: '#00BFB3',
+    danger: '#FF6467',
+    warning: '#CDA849',
+    accent: '#4168B8',
+  };
+  return (
+    <div className="threadPage__attachmentWrap">
+      <div className="threadPage__attachment threadPage__attachment--traceWaterfall">
+        {title && (
+          <OuiText size="xs" style={{ marginBottom: 12 }}>
+            <strong>{title}</strong>
+          </OuiText>
+        )}
+        <div className="threadPage__traceSpans">
+          {spans.map((span, i) => (
+            <div key={i} className="threadPage__traceSpanRow">
+              <span className="threadPage__traceSpanName">{span.name}</span>
+              <div className="threadPage__traceSpanBarWrap" style={{ backgroundColor: `${colorMap[span.color] || colorMap.primary}26` }}>
+                <div
+                  className="threadPage__traceSpanBar"
+                  style={{
+                    width: `${(span.duration / maxDuration) * 100}%`,
+                    backgroundColor: colorMap[span.color] || colorMap.primary,
+                    opacity: 0.8,
+                  }}
+                />
+              </div>
+              <span className="threadPage__traceSpanDuration">
+                {span.duration >= 1000 ? `${(span.duration / 1000).toFixed(1)}s` : `${span.duration}ms`}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Attachment card: data table (Tool UI style — tabular data)
 const DataTableAttachment = ({ title, columns, rows }) => {
   return (
@@ -853,6 +896,9 @@ const renderSingleAttachment = (att, idx, onViewAsPage) => {
     return (
       <StatsDisplayAttachment key={idx} title={att.title} stats={att.stats} />
     );
+  }
+  if (att.type === 'trace-waterfall') {
+    return <TraceWaterfallAttachment key={idx} title={att.title} spans={att.spans} />;
   }
   return null;
 };
@@ -1074,12 +1120,24 @@ const SCRIPTED_RESPONSES = {
       ],
       content:
         'The trace data shows payments-db latency spiked from 12ms to 8,400ms at 14:29:58, correlating with a connection pool exhaustion event. This matches a pattern from 3 previous incidents.',
-      attachment: {
-        type: 'link-preview',
-        title: 'payments-db trace analysis',
-        description:
-          'Trace waterfall showing latency spike from 12ms to 8,400ms starting at 14:29:58, with connection pool exhaustion as root cause.',
-      },
+      attachments: [
+        {
+          type: 'trace-waterfall',
+          title: 'Trace waterfall — payments-db dependency',
+          spans: [
+            { name: 'payment-service', duration: 8400, color: 'primary' },
+            { name: '→ acquire_conn', duration: 8200, color: 'danger' },
+            { name: '→ query payments-db', duration: 12, color: 'success' },
+            { name: '→ serialize', duration: 3, color: 'success' },
+          ],
+        },
+        {
+          type: 'link-preview',
+          title: 'payments-db trace analysis',
+          description:
+            'Trace waterfall showing latency spike from 12ms to 8,400ms starting at 14:29:58, with connection pool exhaustion as root cause.',
+        },
+      ],
       followUps: [
         {
           content: 'Here\'s a suggested fix — increase the connection pool max and add a circuit breaker:',

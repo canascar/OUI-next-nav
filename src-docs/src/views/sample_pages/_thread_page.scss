@@ -312,6 +312,54 @@
   margin-top: 12px;
 }
 
+// Trace waterfall attachment
+.threadPage__attachment--traceWaterfall {
+  max-width: 600px;
+}
+
+.threadPage__traceSpans {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.threadPage__traceSpanRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.threadPage__traceSpanName {
+  font-size: $ouiFontSizeXS;
+  color: $ouiTextColor;
+  min-width: 140px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.threadPage__traceSpanBarWrap {
+  flex: 1;
+  height: 16px;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.threadPage__traceSpanBar {
+  height: 100%;
+  border-radius: 3px;
+  min-width: 2px;
+}
+
+.threadPage__traceSpanDuration {
+  font-size: $ouiFontSizeXS;
+  font-weight: $ouiFontWeightMedium;
+  color: $ouiColorMediumShade;
+  min-width: 60px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
 // Data table attachment (Tool UI style)
 .threadPage__attachment--dataTable {
   max-width: 600px;
