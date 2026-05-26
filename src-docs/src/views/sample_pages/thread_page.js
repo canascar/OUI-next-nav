@@ -922,6 +922,72 @@ const ChartAttachment = ({ title, data, chartType, threshold, breachRange }) => 
   );
 };
 
+// Attachment card: item carousel (horizontal scrollable stat cards)
+const ItemCarouselAttachment = ({ title, items }) => {
+  const scrollRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const updateScrollState = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 0);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 1);
+  };
+
+  const scroll = (direction) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const amount = 200;
+    el.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' });
+  };
+
+  return (
+    <div className="threadPage__attachmentWrap">
+      <div className="threadPage__attachment threadPage__attachment--carousel">
+        {title && (
+          <OuiText size="xs" style={{ marginBottom: 8 }}>
+            <strong>{title}</strong>
+          </OuiText>
+        )}
+        <div className="threadPage__carouselContainer">
+          {canScrollLeft && (
+            <button
+              type="button"
+              className="threadPage__carouselArrow threadPage__carouselArrow--left"
+              onClick={() => scroll('left')}
+              aria-label="Scroll left">
+              <OuiIcon type="arrowLeft" size="s" />
+            </button>
+          )}
+          <div
+            className="threadPage__carouselTrack"
+            ref={scrollRef}
+            onScroll={updateScrollState}>
+            {items.map((item, i) => (
+              <div key={i} className="threadPage__carouselCard">
+                <div className="threadPage__carouselLabel">{item.label}</div>
+                <div className={`threadPage__carouselValue threadPage__carouselValue--${item.color || 'default'}`}>
+                  {item.value}
+                </div>
+              </div>
+            ))}
+          </div>
+          {canScrollRight && (
+            <button
+              type="button"
+              className="threadPage__carouselArrow threadPage__carouselArrow--right"
+              onClick={() => scroll('right')}
+              aria-label="Scroll right">
+              <OuiIcon type="arrowRight" size="s" />
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Helper to render a single attachment by type
 const renderSingleAttachment = (att, idx, onViewAsPage) => {
   if (att.type === 'link-preview') {
@@ -966,6 +1032,9 @@ const renderSingleAttachment = (att, idx, onViewAsPage) => {
   }
   if (att.type === 'trace-waterfall') {
     return <TraceWaterfallAttachment key={idx} title={att.title} spans={att.spans} />;
+  }
+  if (att.type === 'item-carousel') {
+    return <ItemCarouselAttachment key={idx} title={att.title} items={att.items} />;
   }
   return null;
 };
@@ -1385,12 +1454,24 @@ kubectl exec -n production deploy/payment-service -- \\
       ],
       content:
         'I have created a monitoring dashboard for the payment service connection pool. It includes panels for pool utilization, acquire wait time, active connections, and P99 latency with alert thresholds configured:',
-      attachment: {
-        type: 'link-preview',
-        title: 'Payment service — connection pool dashboard',
-        description:
-          'Live dashboard with pool utilization, acquire wait time, active connections, circuit breaker status, and P99 latency for the payment service.',
-      },
+      attachments: [
+        {
+          type: 'item-carousel',
+          title: 'Dashboard panels',
+          items: [
+            { label: 'Pool utilization', value: '98%', color: 'danger' },
+            { label: 'Acquire wait (P95)', value: '1,840ms', color: 'danger' },
+            { label: 'Active connections', value: '50/50', color: 'accent' },
+            { label: 'Circuit breaker', value: 'OFF', color: 'subdued' },
+          ],
+        },
+        {
+          type: 'link-preview',
+          title: 'Payment service — connection pool dashboard',
+          description:
+            'Live dashboard with pool utilization, acquire wait time, active connections, circuit breaker status, and P99 latency for the payment service.',
+        },
+      ],
     },
   },
 };
