@@ -477,7 +477,7 @@ export const EmptySessionPage = ({
         <div className="emptySessionPage__content">
           {/* Welcome title */}
           <div className="emptySessionPage__header">
-            <Mascot size={44} expression="comma" idle bob follow={false} />
+            <Mascot size={44} idle bob={false} follow={false} />
             <div className="emptySessionPage__headerText">
               <OuiTitle size="m">
                 <h1>Good morning, John</h1>

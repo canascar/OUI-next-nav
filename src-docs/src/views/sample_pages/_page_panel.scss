@@ -340,11 +340,18 @@
 }
 
 // Floating mascot button — bottom-left of page panel
-.pagePanel__floatingMascot {
+.pagePanel__floatingBar {
   position: absolute;
   left: 8px;
   bottom: 8px;
+  right: 8px;
   z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagePanel__floatingMascot {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -357,8 +364,28 @@
   padding: 0;
   appearance: none;
   transition: transform 200ms ease;
+  flex-shrink: 0;
+  position: relative;
 
   &:hover {
-    transform: scale(1.15);
+    transform: none;
   }
+}
+
+.pagePanel__floatingSearch {
+  cursor: pointer;
+  background-color: $ouiFormBackgroundColor !important;
+
+  + .ouiFormControlLayout,
+  &.ouiFormControlLayout {
+    width: 376px !important;
+    max-width: 376px !important;
+    flex: 0 0 376px !important;
+  }
+}
+
+.pagePanel__floatingBar .ouiFormControlLayout {
+  width: 376px !important;
+  max-width: 376px !important;
+  flex: 0 0 376px !important;
 }

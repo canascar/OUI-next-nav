@@ -1283,6 +1283,7 @@ export const ThreadPage = ({
   selectedItem,
   _onItemSelect,
   pendingMessages,
+  pendingInputValue,
   sourcePage,
   sourcePageTitle,
   isPanelOpen,
@@ -1314,6 +1315,23 @@ export const ThreadPage = ({
 
   const [messages, setMessages] = useState(initialMessages);
   const [message, setMessage] = useState('');
+  const sendRef = useRef(null);
+  const lastProcessedInput = useRef(null);
+
+  // When pendingInputValue changes, auto-send it
+  useEffect(() => {
+    if (!pendingInputValue || pendingInputValue === lastProcessedInput.current) return;
+    lastProcessedInput.current = pendingInputValue;
+    const textToSend = pendingInputValue;
+    const interval = setInterval(() => {
+      if (sendRef.current) {
+        clearInterval(interval);
+        sendRef.current(textToSend);
+      }
+    }, 100);
+    return () => clearInterval(interval);
+  }, [pendingInputValue]);
+
   const [isTyping, setIsTyping] = useState(false);
   const [isCanvasOpen, setIsCanvasOpen] = useState(false);
   const [canvasItems, setCanvasItems] = useState([]);
@@ -1572,8 +1590,8 @@ export const ThreadPage = ({
     }
   }, [messages, isTyping]);
 
-  const handleSend = () => {
-    const text = message.trim();
+  const handleSend = (overrideText) => {
+    const text = (overrideText || message).trim();
     if (!text) return;
     hasInteracted.current = true;
 
@@ -1778,6 +1796,9 @@ export const ThreadPage = ({
     }, 6500);
     streamTimers.current.push(t3);
   };
+
+  // Keep sendRef updated for pendingInputValue auto-send
+  sendRef.current = handleSend;
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {

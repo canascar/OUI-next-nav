@@ -107,29 +107,36 @@ export const SessionContainer = ({
   }, [threadPanelState, onUpdateSession]);
 
   /** Handle expand chat — if AI highlight is active, create thread with mock response */
-  const handleExpandChat = useCallback(() => {
+  const handleExpandChat = useCallback((prompt) => {
+    // If prompt is an event object (from onClick), treat as no prompt
+    const actualPrompt = (typeof prompt === 'string') ? prompt : null;
     triggerAnimation();
+
     if (aiButtonHighlight && pendingAiResponse) {
       // Clear highlight state
       setAiButtonHighlight(false);
       setAiPopoverVisible(false);
       streamTimersRef.current.forEach(clearTimeout);
       streamTimersRef.current = [];
-      // Expand chat and create pending thread with the mock response (no user message)
+      // Expand chat with the AI response + optional user prompt after it
       const threadKey = `thread-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+      const messages = [
+        { role: 'assistant', content: pendingAiResponse.response, streaming: false },
+      ];
       const pendingThread = {
         key: threadKey,
-        messages: [
-          { role: 'assistant', content: pendingAiResponse.response, streaming: false },
-        ],
+        messages,
         sourcePageTitle: 'Discover (log)',
       };
       onUpdateSession({
         threadPanelState: 'side-by-side',
         threadKey,
         pendingThread,
+        pendingInputValue: actualPrompt || undefined,
       });
       setPendingAiResponse(null);
+    } else if (actualPrompt) {
+      onUpdateSession({ threadPanelState: 'side-by-side', pendingInputValue: actualPrompt });
     } else {
       onUpdateSession({ threadPanelState: 'side-by-side' });
     }
@@ -247,6 +254,7 @@ export const SessionContainer = ({
         onSizeChange={handleSizeChange}
         threadKey={session.threadKey}
         pendingThread={session.pendingThread}
+        pendingInputValue={session.pendingInputValue}
         onViewAction={handleViewAction}
         width={leftWidth}
         title={session.title}
