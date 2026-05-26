@@ -29,7 +29,7 @@ import {
   OuiTabs,
   OuiText,
   OuiToolTip,
-  OuiCompressedTextArea,
+  OuiThreadInput,
 } from '../../../../src/components';
 
 import { DetailPageHeader } from './detail_page_header';
@@ -2243,36 +2243,34 @@ export const ThreadPage = ({
               );
             })()}
             <div className="threadPage__inputWrapper">
-              <OuiCompressedTextArea
-                placeholder="Ask anything. Type / for actions."
+              <OuiThreadInput
+                placeholder="Ask AI anything"
                 value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={handleKeyDown}
-                rows={3}
-                resize="none"
-                fullWidth
-                className="threadPage__textarea"
+                onChange={setMessage}
+                onSubmit={handleSend}
+                actionsLeft={
+                  <OuiButtonIcon
+                    iconType="plus"
+                    aria-label="Add attachment"
+                    size="s"
+                    color="text"
+                  />
+                }
+                actionsRight={
+                  <OuiButtonIcon
+                    iconType="sortUp"
+                    aria-label="Send message"
+                    display="fill"
+                    size="s"
+                    isDisabled={
+                      !message.trim() ||
+                      isTyping ||
+                      messages.some((m) => m.streaming)
+                    }
+                    onClick={handleSend}
+                  />
+                }
               />
-              <div className="threadPage__inputActions">
-                <OuiButtonIcon
-                  iconType="plus"
-                  aria-label="Add attachment"
-                  size="s"
-                  color="text"
-                />
-                <OuiButtonIcon
-                  iconType="sortUp"
-                  aria-label="Send message"
-                  display="fill"
-                  size="s"
-                  isDisabled={
-                    !message.trim() ||
-                    isTyping ||
-                    messages.some((m) => m.streaming)
-                  }
-                  onClick={handleSend}
-                />
-              </div>
             </div>
           </div>
         </div>

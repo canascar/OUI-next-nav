@@ -38,6 +38,7 @@ import {
   OuiFlexGroup,
   OuiFlexItem,
   OuiButton,
+  OuiButtonGroup,
   OuiResizableContainer,
   OuiResizablePanel,
   OuiResizableButton,
@@ -1670,16 +1671,6 @@ const SettingsPopoverContent = ({
   appearanceSelection,
   onAppearanceChange,
 }) => {
-  const [appearanceOpen, setAppearanceOpen] = useState(false);
-  const appearanceTimer = useRef(null);
-  const openAppearance = () => {
-    if (appearanceTimer.current) clearTimeout(appearanceTimer.current);
-    setAppearanceOpen(true);
-  };
-  const closeAppearance = () => {
-    appearanceTimer.current = setTimeout(() => setAppearanceOpen(false), 150);
-  };
-
   const handleThemeSelect = (themeKey) => {
     if (!themeContext) return;
     if (onAppearanceChange) onAppearanceChange(themeKey);
@@ -1729,58 +1720,16 @@ const SettingsPopoverContent = ({
             style={{ marginRight: 8 }}
           />
         </button>
-        <div onMouseEnter={openAppearance} onMouseLeave={closeAppearance}>
-          <OuiPopover
-            button={
-              <button
-                type="button"
-                className="samplePagesLeftNav__toolsPopoverItem">
-                <div className="samplePagesLeftNav__navItemIconWrap">
-                  <OuiIcon type="brush" size="m" />
-                </div>
-                <span className="samplePagesLeftNav__toolsPopoverItemLabel">
-                  Appearance
-                </span>
-                <OuiIcon
-                  type="arrowRight"
-                  size="m"
-                  color="subdued"
-                  style={{ marginRight: 8 }}
-                />
-              </button>
-            }
-            isOpen={appearanceOpen}
-            closePopover={() => setAppearanceOpen(false)}
-            anchorPosition="rightUp"
-            offset={-4}
-            panelPaddingSize="s"
-            panelClassName="samplePagesLeftNav__popoverPanel">
-            <div onMouseEnter={openAppearance} onMouseLeave={closeAppearance}>
-              <div className="samplePagesLeftNav__toolsPopover">
-                <div className="samplePagesLeftNav__toolsPopoverContent">
-                  {APPEARANCE_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.key}
-                      type="button"
-                      className="samplePagesLeftNav__toolsPopoverItem"
-                      onClick={() => handleThemeSelect(opt.key)}>
-                      <div
-                        className="samplePagesLeftNav__navItemIconWrap"
-                        style={{
-                          visibility:
-                            appearanceSelection === opt.key
-                              ? 'visible'
-                              : 'hidden',
-                        }}>
-                        <OuiIcon type="check" size="m" />
-                      </div>
-                      <span>{opt.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </OuiPopover>
+        <div className="samplePagesLeftNav__toolsPopoverItem samplePagesLeftNav__toolsPopoverItem--appearance">
+          <OuiButtonGroup
+            legend="Appearance mode"
+            options={APPEARANCE_OPTIONS.map((opt) => ({ id: opt.key, label: opt.label }))}
+            idSelected={appearanceSelection}
+            onChange={(id) => handleThemeSelect(id)}
+            buttonSize="compressed"
+            isFullWidth
+            className="samplePagesLeftNav__appearanceButtonGroup"
+          />
         </div>
       </div>
     </div>

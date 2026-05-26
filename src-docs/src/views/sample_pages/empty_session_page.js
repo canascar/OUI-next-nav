@@ -13,11 +13,11 @@ import React, { useState, useMemo } from 'react';
 
 import {
   OuiButtonIcon,
-  OuiCompressedTextArea,
   OuiIcon,
   OuiTab,
   OuiTabs,
   OuiText,
+  OuiThreadInput,
   OuiTitle,
 } from '../../../../src/components';
 
@@ -183,91 +183,65 @@ const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange }) => {
   const [inputValue, setInputValue] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  const matchingPages = useMemo(() => {
-    if (!inputValue.trim()) return [];
-    const query = inputValue.toLowerCase();
-    return Object.entries(SOURCE_PAGE_MOCK)
-      .filter(([, { title }]) => title.toLowerCase().includes(query))
-      .map(([key, { title }]) => ({ key, title }));
-  }, [inputValue]);
-
-  const handleChange = (e) => {
-    const value = e.target.value;
-    setInputValue(value);
-    setShowSuggestions(value.trim().length > 0);
-    if (onSearchChange) {
-      onSearchChange(value);
-    }
-  };
-
-  const handleSubmit = (e) => {
-    if (e.key === 'Enter' && inputValue.trim()) {
-      // Check if input matches a page
-      const exactMatch = Object.entries(SOURCE_PAGE_MOCK).find(
-        ([, { title }]) =>
-          title.toLowerCase() === inputValue.trim().toLowerCase()
-      );
-      if (exactMatch) {
-        onOpenPage(exactMatch[0]);
-      } else {
-        onStartThread(inputValue.trim());
-      }
-      setInputValue('');
-      setShowSuggestions(false);
-    }
-  };
-
-  const handleSelectPage = (pageKey) => {
-    onOpenPage(pageKey);
-    setInputValue('');
-    setShowSuggestions(false);
-  };
-
   return (
-    <div className="emptySessionPage__inputWrap">
-      <div className="emptySessionPage__inputField">
-        <OuiCompressedTextArea
-          placeholder="Ask AI anything, or type to search a page"
-          value={inputValue}
-          onChange={handleChange}
-          onKeyDown={handleSubmit}
-          rows={3}
-          resize="none"
-          fullWidth
-          className="emptySessionPage__textarea"
+    <OuiThreadInput
+      placeholder="Ask AI anything, or type to search a page"
+      value={inputValue}
+      onChange={(val) => {
+        setInputValue(val);
+        setShowSuggestions(val.trim().length > 0);
+        if (onSearchChange) {
+          onSearchChange(val);
+        }
+      }}
+      onSubmit={(val) => {
+        if (val.trim()) {
+          const exactMatch = Object.entries(SOURCE_PAGE_MOCK).find(
+            ([, { title }]) =>
+              title.toLowerCase() === val.trim().toLowerCase()
+          );
+          if (exactMatch) {
+            onOpenPage(exactMatch[0]);
+          } else {
+            onStartThread(val.trim());
+          }
+          setInputValue('');
+          setShowSuggestions(false);
+        }
+      }}
+      actionsLeft={
+        <OuiButtonIcon
+          iconType="plus"
+          aria-label="Add attachment"
+          size="s"
+          color="text"
         />
-        <div className="emptySessionPage__inputActions">
-          <OuiButtonIcon
-            iconType="plus"
-            aria-label="Add attachment"
-            size="s"
-            color="text"
-          />
-          <OuiButtonIcon
-            iconType="sortUp"
-            aria-label="Send"
-            display="fill"
-            size="s"
-            isDisabled={!inputValue.trim()}
-            onClick={() => {
-              if (inputValue.trim()) {
-                const exactMatch = Object.entries(SOURCE_PAGE_MOCK).find(
-                  ([, { title }]) =>
-                    title.toLowerCase() === inputValue.trim().toLowerCase()
-                );
-                if (exactMatch) {
-                  onOpenPage(exactMatch[0]);
-                } else {
-                  onStartThread(inputValue.trim());
-                }
-                setInputValue('');
-                setShowSuggestions(false);
+      }
+      actionsRight={
+        <OuiButtonIcon
+          iconType="sortUp"
+          aria-label="Send"
+          display="fill"
+          size="s"
+          isDisabled={!inputValue.trim()}
+          onClick={() => {
+            if (inputValue.trim()) {
+              const exactMatch = Object.entries(SOURCE_PAGE_MOCK).find(
+                ([, { title }]) =>
+                  title.toLowerCase() === inputValue.trim().toLowerCase()
+              );
+              if (exactMatch) {
+                onOpenPage(exactMatch[0]);
+              } else {
+                onStartThread(inputValue.trim());
               }
-            }}
-          />
-        </div>
-      </div>
-    </div>
+              setInputValue('');
+              setShowSuggestions(false);
+            }
+          }}
+        />
+      }
+    />
   );
 };
 

@@ -95,6 +95,21 @@
   min-width: 0;
 }
 
+.samplePagesLeftNav__toolsPopoverItem--appearance {
+  padding: 8px 4px;
+  height: auto;
+  cursor: default;
+  display: block;
+
+  &:hover {
+    background-color: transparent !important;
+  }
+}
+
+.samplePagesLeftNav__appearanceButtonGroup {
+  width: 100%;
+}
+
 .samplePagesLeftNav__toolsPopoverGroup {
   display: flex;
   flex-direction: column;
