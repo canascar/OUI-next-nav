@@ -9,6 +9,10 @@
  * GitHub history for details.
  */
 
+// ─────────────────────────────────────────────────────────────
+// v10 Blueprint — Empty Session Page
+// ─────────────────────────────────────────────────────────────
+
 .emptySessionPage {
   display: flex;
   align-items: center;
@@ -24,23 +28,20 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 48px;
+  gap: 40px;
   width: 100%;
   height: 100%;
-  border-radius: 8px;
-  padding: 120px 24px 24px;
+  border-radius: 0;
+  padding: 80px 24px 24px;
   overflow: hidden;
   position: relative;
+  // v10 graph-paper grid background
   background-image:
-    linear-gradient(to right, rgba(46, 74, 143, 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(46, 74, 143, 0.04) 1px, transparent 1px),
-    linear-gradient(to right, rgba(46, 74, 143, 0.015) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(46, 74, 143, 0.015) 1px, transparent 1px);
-  background-size:
-    24px 24px,
-    24px 24px,
-    6px 6px,
-    6px 6px;
+    linear-gradient(to right, lightOrDarkTheme(rgba(13, 48, 87, 0.06), rgba(207, 228, 247, 0.06)) 1px, transparent 1px),
+    linear-gradient(to bottom, lightOrDarkTheme(rgba(13, 48, 87, 0.06), rgba(207, 228, 247, 0.06)) 1px, transparent 1px),
+    linear-gradient(to right, lightOrDarkTheme(rgba(13, 48, 87, 0.12), rgba(207, 228, 247, 0.12)) 1px, transparent 1px),
+    linear-gradient(to bottom, lightOrDarkTheme(rgba(13, 48, 87, 0.12), rgba(207, 228, 247, 0.12)) 1px, transparent 1px);
+  background-size: 16px 16px, 16px 16px, 80px 80px, 80px 80px;
   background-position: 0 0;
 
   &::before {
@@ -60,11 +61,66 @@
   }
 }
 
-// Header / Title
+// ─── Header / Olly Avatar ───────────────────────────────────
 .emptySessionPage__header {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+.emptySessionPage__ollyAvatar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+
+  // Outer ring with crosshair ticks
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1.5px solid lightOrDarkTheme(rgba(13, 48, 87, 0.25), rgba(207, 228, 247, 0.3));
+  }
+
+  // Crosshair ticks (N, S, E, W)
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    background:
+      linear-gradient(to bottom, $ouiColorPrimary 0, $ouiColorPrimary 100%) no-repeat center top / 1.5px 6px,
+      linear-gradient(to bottom, $ouiColorPrimary 0, $ouiColorPrimary 100%) no-repeat center bottom / 1.5px 6px,
+      linear-gradient(to right, $ouiColorPrimary 0, $ouiColorPrimary 100%) no-repeat left center / 6px 1.5px,
+      linear-gradient(to right, $ouiColorPrimary 0, $ouiColorPrimary 100%) no-repeat right center / 6px 1.5px;
+    pointer-events: none;
+  }
+}
+
+// Inner circle — the "face"
+.emptySessionPage__ollyInner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid $ouiColorPrimary;
+  background-color: lightOrDarkTheme(rgba(31, 108, 181, 0.08), rgba(13, 48, 87, 0.6));
+  position: relative;
+  z-index: 1;
+
+  span {
+    font-size: 14px;
+    color: $ouiColorPrimary;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
 }
 
 .emptySessionPage__headerText {
@@ -73,7 +129,7 @@
   gap: 2px;
 }
 
-// Content container — constrains width
+// ─── Content container ──────────────────────────────────────
 .emptySessionPage__content {
   display: flex;
   flex-direction: column;
@@ -85,129 +141,85 @@
   min-height: 0;
 }
 
-// Alert callout (warning)
-.emptySessionPage__alertCallout {
-  display: flex;
-  gap: $ouiSize;
-  padding: $ouiSize;
-  border: 1px solid $ouiColorWarning;
-  border-radius: $ouiBorderRadius;
-  background-color: tintOrShade($ouiColorWarning, 90%, 80%);
-}
-
-.emptySessionPage__alertCalloutIcon {
-  flex-shrink: 0;
-  padding-top: 2px;
-}
-
-.emptySessionPage__alertCalloutBody {
-  display: flex;
-  flex-direction: column;
-  gap: $ouiSizeS;
-}
-
-.emptySessionPage__alertCalloutText {
-  font-size: $ouiFontSizeS;
-  color: $ouiTextColor;
-  line-height: 1.5;
-  margin: 0;
-}
-
-.emptySessionPage__alertCalloutSubtext {
-  font-size: $ouiFontSizeXS;
-  color: $ouiColorMediumShade;
-  line-height: 1.4;
-  margin: 0;
-}
-
-.emptySessionPage__alertCalloutActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $ouiSizeS;
-}
-
-.emptySessionPage__alertCalloutAction {
-  font-size: $ouiFontSizeXS;
-  font-weight: $ouiFontWeightMedium;
-  color: $ouiColorMediumShade;
-  background: none;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  padding: 4px $ouiSizeS;
-  cursor: pointer;
-  transition: background-color $ouiAnimSpeedFast ease-in-out;
-
-  &:hover {
-    background-color: $ouiFocusBackgroundColor;
-  }
-
-  &--primary {
-    color: $ouiColorPrimary;
-    border-color: $ouiColorPrimary;
-  }
-}
-
-// System Callout
-.emptySessionPage__callout {
-  display: flex;
-  width: 100%;
-  max-width: 848px;
-}
-
-.emptySessionPage__calloutBorder {
-  width: 2px;
-  flex-shrink: 0;
-  background-color: $ouiColorDanger;
-}
-
-.emptySessionPage__calloutContent {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  flex: 1;
-  padding: 16px;
-  background-color: #f8e9e9;
-}
-
-.emptySessionPage__calloutText {
-  font-size: $ouiFontSizeXS;
-  color: $ouiTextColor;
-  margin: 0;
-}
-
-.emptySessionPage__calloutCta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 32px;
-  padding: 4px 6px;
-  border: 1px solid $ouiColorDanger;
-  border-radius: 4px;
-  background: none;
-  color: $ouiColorDanger;
-  font-size: $ouiFontSizeS;
-  cursor: pointer;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.05), 0 1px 5px rgba(0, 0, 0, 0.05);
-  align-self: flex-start;
-
-  &:hover {
-    background-color: rgba($ouiColorDanger, 0.05);
-  }
-}
-
-// Dual-purpose input
+// ─── Dual-purpose input ─────────────────────────────────────
 .emptySessionPage__inputWrap {
   position: relative;
   width: 100%;
+
+  // Corner ticks — 6px L-brackets
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  // Top-left — cyan-dim
+  &::before {
+    top: -1px;
+    left: -1px;
+    border-top: 1.5px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.45), rgba($ouiColorPrimary, 0.45));
+    border-left: 1.5px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.45), rgba($ouiColorPrimary, 0.45));
+  }
+
+  // Bottom-right — ink-fade
+  &::after {
+    bottom: -1px;
+    right: -1px;
+    border-bottom: 1.5px solid lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34));
+    border-right: 1.5px solid lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34));
+  }
 }
 
 .emptySessionPage__inputField {
   position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  // Top-right — ink-fade
+  &::before {
+    top: -1px;
+    right: -1px;
+    border-top: 1.5px solid lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34));
+    border-right: 1.5px solid lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34));
+  }
+
+  // Bottom-left — cyan-dim
+  &::after {
+    bottom: -1px;
+    left: -1px;
+    border-bottom: 1.5px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.45), rgba($ouiColorPrimary, 0.45));
+    border-left: 1.5px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.45), rgba($ouiColorPrimary, 0.45));
+  }
 }
 
-// Extra bottom padding for the textarea to make room for action buttons
+// Textarea overrides — square, no radius
 .emptySessionPage__textarea textarea {
   padding-bottom: 36px;
+  margin-bottom: 0;
+  border-radius: 0;
+  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(16, 62, 110, 0.4));
+}
+
+.emptySessionPage__textarea .ouiFormControlLayout {
+  margin-bottom: 0;
+}
+
+.emptySessionPage__textarea .ouiTextArea {
+  margin-bottom: 0;
+  border-radius: 0;
 }
 
 // Plus (bottom-left) and send (bottom-right) inside the textarea
@@ -226,166 +238,110 @@
   }
 }
 
-.emptySessionPage__suggestions {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 10;
-  background-color: $ouiColorEmptyShade;
-  border: 1px solid $ouiBorderColor;
-  border-top: none;
-  border-radius: 0 0 2px 2px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.emptySessionPage__suggestionItem {
-  display: flex;
-  align-items: center;
-  gap: $ouiSizeS;
-  width: 100%;
-  padding: $ouiSizeS $ouiSize;
-  border: none;
-  background: none;
-  cursor: pointer;
-  text-align: left;
-  font-size: $ouiFontSizeS;
-  color: $ouiTextColor;
-
-  &:hover {
-    background-color: $ouiFocusBackgroundColor;
-  }
-}
-
-// Quick Access Row
-.emptySessionPage__quickAccess {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 48px;
-}
-
-.emptySessionPage__quickAccessRow {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 64px;
-
-  &--expandable {
-    animation: quickAccessSlideDown 300ms ease-out;
-    overflow: hidden;
-  }
-}
-
-@keyframes quickAccessSlideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.emptySessionPage__quickAccessItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  width: 64px;
-  cursor: pointer;
-}
-
-.emptySessionPage__quickAccessButton {
+// Send button — round 30px
+.emptySessionPage__sendButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 64px;
-  height: 64px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  border: $ouiBorderThin;
-  background-color: $ouiColorEmptyShade;
+  border: none;
+  background-color: $ouiColorPrimary;
+  color: lightOrDarkTheme(#ffffff, #0d3057);
   cursor: pointer;
-  padding: 24px;
-  transition: background-color 150ms ease-in-out;
 
-  &:hover {
-    background-color: $ouiColorLightestShade;
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 }
 
-.emptySessionPage__quickAccessLabel {
-  font-size: $ouiFontSizeXS;
-  line-height: 18px;
-  color: $ouiTitleColor;
-  text-align: center;
-  white-space: normal;
-  word-wrap: break-word;
+// ─── Filter chips / Tabs ────────────────────────────────────
+.emptySessionPage__chips {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
 }
 
-// More options dropdown
-.emptySessionPage__moreOptions {
-  margin-top: $ouiSizeS;
-  background-color: $ouiColorEmptyShade;
-  border: 1px solid $ouiBorderColor;
-  border-radius: 2px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: $ouiSizeXS 0;
-}
-
-.emptySessionPage__moreOptionItem {
+.emptySessionPage__chip {
   display: flex;
   align-items: center;
-  gap: $ouiSizeS;
-  width: 100%;
-  padding: $ouiSizeS $ouiSize;
-  border: none;
-  background: none;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 14px;
+  height: 36px;
+  background-color: transparent;
+  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34));
+  border-radius: 0;
   cursor: pointer;
-  text-align: left;
-  font-size: $ouiFontSizeS;
-  color: $ouiTextColor;
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: lightOrDarkTheme(rgba(13, 48, 87, 0.62), rgba(207, 228, 247, 0.62));
+  white-space: nowrap;
+  transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out;
+  position: relative;
 
   &:hover {
-    background-color: $ouiFocusBackgroundColor;
-  }
-}
-
-// Tabs section
-.emptySessionPage__tabs {
-  width: 100%;
-  max-width: 848px;
-}
-
-.emptySessionPage__tabHeaders {
-  display: flex;
-  gap: 24px;
-  margin-bottom: 10px;
-}
-
-.emptySessionPage__tabHeader {
-  padding: 8px 0;
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-size: $ouiFontSizeS;
-  font-weight: 700;
-  color: $ouiTextColor;
-  border-bottom: 2px solid transparent;
-
-  &:hover {
+    border-color: $ouiColorPrimary;
     color: $ouiColorPrimary;
   }
 
   &--active {
+    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.08), rgba($ouiColorPrimary, 0.12));
+    border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.45), rgba($ouiColorPrimary, 0.45));
     color: $ouiColorPrimary;
-    border-bottom-color: $ouiColorPrimary;
+  }
+
+  &--iconOnly {
+    flex: 0 0 36px;
+    width: 36px;
+    padding: 0;
   }
 }
 
+.emptySessionPage__chipDot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: $ouiColorDanger;
+}
+
+// ─── Section headers (// LABEL) ────────────────────────────
+.emptySessionPage__sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: $ouiColorPrimary;
+  margin-top: 20px;
+  padding: 8px 0 4px;
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  // Dashed rule stretching to fill
+  &::after {
+    content: '';
+    flex: 1;
+    height: 0;
+    border-top: 1px dashed lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
+  }
+}
+
+// ─── Tab content / scrollable area ─────────────────────────
 .emptySessionPage__tabContent {
   display: flex;
   flex-direction: column;
@@ -394,51 +350,329 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  scrollbar-width: none; // Firefox
-  -ms-overflow-style: none; // IE/Edge
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 
   &::-webkit-scrollbar {
-    display: none; // Chrome/Safari
+    display: none;
   }
 }
 
-.emptySessionPage__sectionHeader {
-  font-family: $ouiCodeFontFamily;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  color: $ouiColorPrimary;
-  margin-top: 20px;
-  padding: 8px 0 4px;
-
-  &:first-child {
-    margin-top: 0;
-  }
-}
-
-// Saved query card — short and wide
-.emptySessionPage__savedQueryCard {
+// ─── Activity cards (// LATEST) ─────────────────────────────
+.emptySessionPage__listItem {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: $ouiSize;
   width: 100%;
-  padding: 12px 16px;
-  background-color: $ouiColorEmptyShade;
-  border: $ouiBorderThin;
-  border-radius: $ouiBorderRadius;
+  padding: $ouiSize;
+  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
+  border-radius: 0;
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(16, 62, 110, 0.4));
   cursor: pointer;
-  appearance: none;
   text-align: left;
-  transition: background-color 150ms ease-in-out, box-shadow 150ms ease-in-out;
-  flex-shrink: 0;
+  font-size: $ouiFontSizeS;
+  color: $ouiTextColor;
+  position: relative;
+  transition: background-color 150ms ease-out, opacity 300ms ease-out,
+              max-height 300ms ease-out, margin 300ms ease-out, padding 300ms ease-out;
 
   &:hover {
-    background-color: $ouiColorLightestShade;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.85), rgba(16, 62, 110, 0.6));
+  }
+
+  &--activityLayout {
+    position: relative;
+    flex-direction: column;
+    align-items: stretch;
+    min-height: 120px;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: none;
+    border-left: 2px solid $ouiColorWarning;
+    border-radius: 0;
+    padding: 16px;
+  }
+
+  &--dismissing {
+    opacity: 0;
+    transform: translateX(-100%);
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-color: transparent;
+    transition: transform 300ms ease-in, opacity 200ms ease-in,
+                max-height 200ms 250ms ease-out, padding 200ms 250ms,
+                margin 200ms 250ms, border-color 200ms 250ms;
   }
 }
 
-.emptySessionPage__savedQueryLeft {
+// Corner ticks on activity cards
+.emptySessionPage__cardTicks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+  }
+
+  // Top-left — amber-dim
+  &::before {
+    top: -1px;
+    left: -1px;
+    border-top: 1.5px solid lightOrDarkTheme(rgba($ouiColorWarning, 0.45), rgba($ouiColorWarning, 0.45));
+    border-left: 1.5px solid lightOrDarkTheme(rgba($ouiColorWarning, 0.45), rgba($ouiColorWarning, 0.45));
+  }
+
+  // Top-right — ink-fade
+  &::after {
+    top: -1px;
+    right: -1px;
+    border-top: 1.5px solid lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34));
+    border-right: 1.5px solid lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34));
+  }
+}
+
+.emptySessionPage__cardTicksBottom {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+  }
+
+  // Bottom-left — amber-dim
+  &::before {
+    bottom: -1px;
+    left: -1px;
+    border-bottom: 1.5px solid lightOrDarkTheme(rgba($ouiColorWarning, 0.45), rgba($ouiColorWarning, 0.45));
+    border-left: 1.5px solid lightOrDarkTheme(rgba($ouiColorWarning, 0.45), rgba($ouiColorWarning, 0.45));
+  }
+
+  // Bottom-right — ink-fade
+  &::after {
+    bottom: -1px;
+    right: -1px;
+    border-bottom: 1.5px solid lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34));
+    border-right: 1.5px solid lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34));
+  }
+}
+
+// Generic corner ticks (cyan variant for panels)
+.emptySessionPage__cornerTicks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+  }
+
+  // Top-left — cyan-dim
+  &::before {
+    top: -1px;
+    left: -1px;
+    border-top: 1.5px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.45), rgba($ouiColorPrimary, 0.45));
+    border-left: 1.5px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.45), rgba($ouiColorPrimary, 0.45));
+  }
+
+  // Top-right — ink-fade
+  &::after {
+    top: -1px;
+    right: -1px;
+    border-top: 1.5px solid lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34));
+    border-right: 1.5px solid lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34));
+  }
+}
+
+.emptySessionPage__cornerTicksBottom {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+  }
+
+  // Bottom-left — cyan-dim
+  &::before {
+    bottom: -1px;
+    left: -1px;
+    border-bottom: 1.5px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.45), rgba($ouiColorPrimary, 0.45));
+    border-left: 1.5px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.45), rgba($ouiColorPrimary, 0.45));
+  }
+
+  // Bottom-right — ink-fade
+  &::after {
+    bottom: -1px;
+    right: -1px;
+    border-bottom: 1.5px solid lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34));
+    border-right: 1.5px solid lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34));
+  }
+}
+
+// ─── Activity card internals ────────────────────────────────
+.emptySessionPage__listItemClickable {
+  display: flex;
+  align-items: center;
+  gap: $ouiSize;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  font-size: $ouiFontSizeS;
+  color: $ouiTextColor;
+}
+
+.emptySessionPage__listItemDismiss {
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: lightOrDarkTheme(rgba(13, 48, 87, 0.62), rgba(207, 228, 247, 0.62));
+  background: none;
+  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34));
+  border-radius: 0;
+  padding: 4px 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+
+  &:hover {
+    border-color: $ouiColorPrimary;
+    color: $ouiColorPrimary;
+  }
+}
+
+.emptySessionPage__listItemEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: $ouiSizeXL $ouiSize;
+  border: 1px dashed lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34));
+  border-radius: 0;
+  color: lightOrDarkTheme(rgba(13, 48, 87, 0.62), rgba(207, 228, 247, 0.62));
+  font-size: $ouiFontSizeS;
+  background-color: transparent;
+}
+
+.emptySessionPage__activityCard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+}
+
+.emptySessionPage__activityCardHeader {
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeS;
+}
+
+.emptySessionPage__listItemTitle {
+  flex: 1;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: $ouiTitleColor;
+}
+
+.emptySessionPage__activityCard .emptySessionPage__listItemTitle {
+  font-weight: 600;
+}
+
+.emptySessionPage__listItemTime {
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: lightOrDarkTheme(rgba(13, 48, 87, 0.62), rgba(207, 228, 247, 0.62));
+  white-space: normal;
+  line-height: 1.4;
+}
+
+.emptySessionPage__listItemSummary {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 4px;
+  font-size: 13.5px;
+  color: lightOrDarkTheme(rgba(13, 48, 87, 0.62), rgba(207, 228, 247, 0.62));
+  line-height: 1.5;
+  margin-top: 4px;
+  white-space: normal;
+}
+
+// Metrics row in activity cards
+.emptySessionPage__activityCardPills {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.emptySessionPage__activityPill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 11px;
+  font-weight: 500;
+  color: lightOrDarkTheme(rgba(13, 48, 87, 0.62), rgba(207, 228, 247, 0.62));
+  line-height: 1.5;
+  width: 100%;
+}
+
+.emptySessionPage__activityPillText {
+  flex: 1;
+  min-width: 0;
+}
+
+.emptySessionPage__activityPillMeta {
+  flex-shrink: 0;
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: lightOrDarkTheme(rgba(13, 48, 87, 0.62), rgba(207, 228, 247, 0.62));
+  white-space: nowrap;
+}
+
+.emptySessionPage__listItemContent {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -446,65 +680,21 @@
   min-width: 0;
 }
 
-.emptySessionPage__savedQueryTitle {
-  font-size: $ouiFontSizeS;
-  font-weight: $ouiFontWeightMedium;
-  color: $ouiTitleColor;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.emptySessionPage__savedQueryCode {
-  font-family: $ouiCodeFontFamily;
-  font-size: 11px;
-  color: $ouiColorMediumShade;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.emptySessionPage__savedQueryChart {
-  width: 120px;
-  height: 48px;
-  align-self: center;
-  flex-shrink: 0;
-  color: $ouiColorDanger;
-}
-
-.emptySessionPage__savedQuerySvg {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-.emptySessionPage__savedQueryRight {
+.emptySessionPage__listItemIcon {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 
-.emptySessionPage__savedQueryValue {
-  font-size: $ouiFontSizeL;
-  font-weight: $ouiFontWeightBold;
-  color: $ouiColorDanger;
-  line-height: 1;
+.emptySessionPage__listItemRight {
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeS;
+  flex-shrink: 0;
 }
 
-.emptySessionPage__savedQueryTrend {
-  font-size: 11px;
-  font-weight: $ouiFontWeightMedium;
-  color: $ouiColorDanger;
-}
-
-.emptySessionPage__savedQueryRange {
-  font-size: 11px;
-  color: $ouiColorMediumShade;
-}
-
-// Side-by-side layout for SAVED QUERY + SERVICE
+// ─── Side-by-side layout (SERVICE + SAVED QUERY) ────────────
 .emptySessionPage__sideBySide {
   display: flex;
   gap: 16px;
@@ -530,394 +720,18 @@
   }
 }
 
-.emptySessionPage__tabs .ouiTabs--condensed {
-  margin-bottom: 12px;
-}
-
-.emptySessionPage__sectionTitle {
-  font-size: $ouiFontSizeS;
-  font-weight: 700;
-  color: $ouiTitleColor;
-  padding: 8px 0;
-  margin-bottom: 12px;
-}
-
-.emptySessionPage__emptyList {
-  text-align: center;
-  padding: $ouiSizeL 0;
-}
-
-.emptySessionPage__placeholderRow {
-  height: 60px;
-  background-color: #d9d9d9;
-  border-radius: 4px;
-}
-
-.emptySessionPage__itemList {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.emptySessionPage__listItem {
-  display: flex;
-  align-items: center;
-  gap: $ouiSize;
-  width: 100%;
-  padding: $ouiSize;
-  border: $ouiBorderThin;
-  border-radius: 8px;
-  background-color: $ouiColorEmptyShade;
-  cursor: pointer;
-  text-align: left;
-  font-size: $ouiFontSizeS;
-  color: $ouiTextColor;
-  transition: background-color $ouiAnimSpeedFast ease-in-out,
-              box-shadow $ouiAnimSpeedFast ease-in-out,
-              opacity 300ms ease-out,
-              max-height 300ms ease-out,
-              margin 300ms ease-out,
-              padding 300ms ease-out;
-
-  &:hover {
-    background-color: $ouiFocusBackgroundColor;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px $ouiFocusRingColor;
-  }
-
-  &--warning {
-    // no special styling, just uses the icon/meta to indicate status
-  }
-
-  &--activity {
-    border-color: $ouiColorWarning;
-    background-color: tintOrShade($ouiColorWarning, 94%, 85%);
-    position: relative;
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  &--activityLayout {
-    position: relative;
-    flex-direction: column;
-    align-items: stretch;
-    min-height: 140px;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-
-  &--dismissing {
-    opacity: 0;
-    transform: translateX(-100%);
-    max-height: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    border-color: transparent;
-    transition: transform 300ms ease-in, opacity 200ms ease-in, max-height 200ms 250ms ease-out, padding 200ms 250ms, margin 200ms 250ms, border-color 200ms 250ms;
-  }
-}
-
-.emptySessionPage__listItemClickable {
-  display: flex;
-  align-items: center;
-  gap: $ouiSize;
-  flex: 1;
-  min-width: 0;
-  width: 100%;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  text-align: left;
-  font-size: $ouiFontSizeS;
-  color: $ouiTextColor;
-}
-
-.emptySessionPage__listItemDismiss {
-  font-size: $ouiFontSizeXS;
-  color: $ouiColorPrimary;
-  background: none;
-  border: 1px solid $ouiBorderColor;
-  border-radius: 999px;
-  padding: 4px 12px;
-  cursor: pointer;
-  flex-shrink: 0;
-  position: absolute;
-  top: $ouiSize;
-  right: $ouiSize;
-
-  &:hover {
-    background-color: $ouiFocusBackgroundColor;
-    border-color: $ouiColorPrimary;
-  }
-}
-
-.emptySessionPage__listItemEmpty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: $ouiSizeXL $ouiSize;
-  border: 1px dashed $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  color: $ouiColorMediumShade;
-  font-size: $ouiFontSizeS;
-  background-color: $ouiPageBackgroundColor;
-}
-
-.emptySessionPage__discoverGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  width: 100%;
-  margin-bottom: $ouiSize;
-
-  &--3col {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-}
-
-.emptySessionPage__discoverGridItem {
-  display: flex;
-  align-items: center;
-  gap: $ouiSizeS;
-  padding: $ouiSize;
-  height: 64px;
-  border: $ouiBorderThin;
-  border-radius: 8px;
-  background-color: $ouiColorEmptyShade;
-  cursor: pointer;
-  font-size: $ouiFontSizeS;
-  color: $ouiTextColor;
-  transition: background-color $ouiAnimSpeedFast ease-in-out;
-
-  &:hover {
-    background-color: $ouiFocusBackgroundColor;
-  }
-
-  &--disabled {
-    cursor: default;
-
-    &:hover {
-      background-color: $ouiColorEmptyShade;
-    }
-  }
-}
-
-.emptySessionPage__listItemContent {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1;
-  min-width: 0;
-}
-
-.emptySessionPage__listItemIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.emptySessionPage__listItemRight {
-  display: flex;
-  align-items: center;
-  gap: $ouiSizeS;
-  flex-shrink: 0;
-}
-
-.emptySessionPage__listItemTitle {
-  flex: 1;
-  font-size: $ouiFontSizeS;
-  color: $ouiTextColor;
-}
-
-.emptySessionPage__activityCard .emptySessionPage__listItemTitle {
-  font-weight: $ouiFontWeightMedium;
-}
-
-.emptySessionPage__listItemTime {
-  color: $ouiColorMediumShade;
-  font-size: $ouiFontSizeXS;
-  white-space: normal;
-  line-height: 1.4;
-}
-
-.emptySessionPage__listItemSummary {
-  display: inline-flex;
-  align-items: flex-start;
-  gap: 4px;
-  font-size: $ouiFontSizeXS;
-  color: $ouiColorMediumShade;
-  line-height: 1.5;
-  margin-top: 4px;
-  white-space: normal;
-}
-
-.emptySessionPage__listItemMeta {
-  color: $ouiColorMediumShade;
-  font-size: $ouiFontSizeXS;
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-
-// Filter chips row
-.emptySessionPage__chips {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-}
-
-.emptySessionPage__chip {
-  display: flex;
-  flex: 1 1 0;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 0 16px;
-  height: 48px;
-  background-color: $ouiColorEmptyShade;
-  border: $ouiBorderThin;
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: $ouiFontSizeXS;
-  color: $ouiTitleColor;
-  white-space: nowrap;
-  transition: background-color 150ms ease-in-out;
-  min-width: 0;
-  position: relative;
-
-  &:hover {
-    background-color: $ouiColorLightestShade;
-  }
-
-  &--active {
-    background-color: $ouiColorLightestShade;
-
-    &:hover {
-      background-color: $ouiColorLightShade;
-    }
-  }
-
-  &--iconOnly {
-    flex: 0 0 48px;
-    width: 48px;
-    padding: 0;
-    position: relative;
-  }
-}
-
-.emptySessionPage__chipDot {
-  position: absolute;
-  top: 18px;
-  right: 12px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: $ouiColorDanger;
-}
-
-.emptySessionPage__searchLabel {
-  font-size: $ouiFontSizeXS;
-  color: $ouiColorMediumShade;
-  text-align: left;
-  padding-left: 8px;
-}
-
-// Meta pill (e.g. alert source) — inline pill above summary
-.emptySessionPage__listItemMetaPill {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  margin-top: 4px;
-  background-color: tintOrShade($ouiColorWarning, 85%, 75%);
-  border: 1px solid tintOrShade($ouiColorWarning, 60%, 50%);
-  border-radius: 999px;
-  font-size: $ouiFontSizeXS;
-  color: $ouiColorDarkShade;
-  line-height: 1.4;
-  width: fit-content;
-}
-
-// Activity card layout
-.emptySessionPage__activityCard {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex: 1;
-  min-width: 0;
-  width: 100%;
-}
-
-.emptySessionPage__activityCardHeader {
-  display: flex;
-  align-items: center;
-  gap: $ouiSizeS;
-}
-
-.emptySessionPage__activityCardPills {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  margin-top: 8px;
-  width: 100%;
-}
-
-.emptySessionPage__activityPill {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  background-color: transparent;
-  border: none;
-  border-radius: 0;
-  font-size: $ouiFontSizeXS;
-  color: $ouiColorDarkShade;
-  line-height: 1.5;
-  width: 100%;
-}
-
-.emptySessionPage__activityPillText {
-  flex: 1;
-  min-width: 0;
-}
-
-.emptySessionPage__activityPillMeta {
-  flex-shrink: 0;
-  color: $ouiColorMediumShade;
-  font-size: $ouiFontSizeXS;
-  white-space: nowrap;
-}
-
-// Favorite panels (Top services / Top dependency paths)
-.emptySessionPage__favoritePanels {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  width: 100%;
-}
-
+// ─── Favorite panel (table-style cards) ─────────────────────
 .emptySessionPage__favoritePanel {
-  border: $ouiBorderThin;
-  border-radius: $ouiBorderRadius;
-  background-color: $ouiColorEmptyShade;
+  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
+  border-radius: 0;
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(16, 62, 110, 0.4));
   padding: $ouiSize;
+  position: relative;
 }
 
 .emptySessionPage__favoritePanelTitle {
-  font-size: $ouiFontSizeS;
-  font-weight: $ouiFontWeightMedium;
+  font-size: 14.5px;
+  font-weight: 600;
   color: $ouiTitleColor;
   margin-bottom: 12px;
 }
@@ -932,14 +746,14 @@
   display: grid;
   grid-template-columns: 120px 1fr;
   gap: 8px;
-  font-size: $ouiFontSizeXS;
-  color: $ouiColorMediumShade;
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: lightOrDarkTheme(rgba(13, 48, 87, 0.62), rgba(207, 228, 247, 0.62));
   padding-bottom: 8px;
-  border-bottom: $ouiBorderThin;
-
-  &--3col {
-    grid-template-columns: 120px 100px 1fr;
-  }
+  border-bottom: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
 }
 
 .emptySessionPage__favoritePanelRow {
@@ -948,11 +762,7 @@
   gap: 8px;
   align-items: center;
   padding: 6px 0;
-  border-bottom: $ouiBorderThin;
-
-  &--3col {
-    grid-template-columns: 120px 100px 1fr;
-  }
+  border-bottom: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
 }
 
 .emptySessionPage__favoritePanelLink {
@@ -981,42 +791,23 @@
   flex: 1;
 
   span {
-    font-size: $ouiFontSizeXS;
-    color: $ouiColorMediumShade;
+    font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+    font-size: 11px;
+    color: lightOrDarkTheme(rgba(13, 48, 87, 0.62), rgba(207, 228, 247, 0.62));
     white-space: nowrap;
   }
 }
 
 .emptySessionPage__favoritePanelBarTrack {
   flex: 1;
-  height: 8px;
-  background-color: $ouiColorLightestShade;
-  border-radius: 4px;
+  height: 6px;
+  background-color: lightOrDarkTheme(rgba(13, 48, 87, 0.08), rgba(207, 228, 247, 0.08));
+  border-radius: 0;
   overflow: hidden;
 }
 
 .emptySessionPage__favoritePanelBarFill {
   height: 100%;
   background-color: $ouiColorPrimary;
-  border-radius: 4px;
-}
-
-// Edit favorites button
-.emptySessionPage__editButton {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  background-color: $ouiColorLightestShade;
-  border: none;
-  border-radius: 999px;
-  cursor: pointer;
-  font-size: $ouiFontSizeXS;
-  color: $ouiColorMediumShade;
-  align-self: center;
-
-  &:hover {
-    background-color: $ouiColorLightShade;
-    color: $ouiTextColor;
-  }
+  border-radius: 0;
 }

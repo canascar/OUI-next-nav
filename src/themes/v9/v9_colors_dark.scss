@@ -14,50 +14,49 @@
 
 // These colors stay the same no matter the theme
 $ouiColorGhost: #FFF;
-$ouiColorInk: #060D1A;
+$ouiColorInk: #06203f;
 
-// Agentic OSD – Utility Dark Theme
-// Deep navy-blue identity with cool blue-tinted dark neutrals
+// v10 Blueprint — Dark Theme
 
 // Core
-$ouiColorPrimary: #7A9FD4;       // Sky – lighter blue for dark mode
-$ouiColorSecondary: #4DC9A8;     // Jade – success
-$ouiColorAccent: #B8D4F0;        // Ice – dark accent
+$ouiColorPrimary: #5dd9ff;       // Cyan — primary accent
+$ouiColorSecondary: #7be0a8;     // Green — success
+$ouiColorAccent: #ffb86b;        // Amber — accent
 
 // Status
-$ouiColorSuccess: #4DC9A8;       // Jade
-$ouiColorWarning: #CDA849;       // Citrine
-$ouiColorDanger: #ED6F73;        // Coral
+$ouiColorSuccess: #7be0a8;       // Green
+$ouiColorWarning: #ffb86b;       // Amber
+$ouiColorDanger: #ff7a7a;        // Red
 
-// Grays – Navy-tinted dark tones
-$ouiColorEmptyShade: #121C30;    // Card surfaces - slightly elevated from page bg
-$ouiColorLightestShade: #182640; // Muted backgrounds / surfaces
-$ouiColorLightShade: #1E2E50;    // Borders
-$ouiColorMediumShade: #6B7F9E;   // Muted text
-$ouiColorDarkShade: #B8D4F0;     // Secondary text / highlights
-$ouiColorDarkestShade: #D8E4F0;  // Foreground text
-$ouiColorFullShade: #FFF;        // Brightest foreground
+// Shades — mapped from v10 ink opacity scale
+$ouiColorEmptyShade: #103e6e;             // panel-solid
+$ouiColorLightestShade: #0a2545;          // bg-deep
+$ouiColorLightShade: rgba(207, 228, 247, 0.16);  // ink-ghost (borders)
+$ouiColorMediumShade: rgba(207, 228, 247, 0.62); // ink-dim (muted text)
+$ouiColorDarkShade: #cfe4f7;              // ink (body text)
+$ouiColorDarkestShade: #cfe4f7;           // ink (foreground)
+$ouiColorFullShade: #FFFFFF;              // ink-bright
 
 // Backgrounds
-$ouiPageBackgroundColor: #060D1A; // Obsidian dark bg
-$ouiColorHighlight: #182640;      // Elevated surface
+$ouiPageBackgroundColor: #0d3057;         // v10 bg
+$ouiColorHighlight: #0a2545;              // bg-deep
 
 // Form input background
-$ouiFormBackgroundColor: #182640;
+$ouiFormBackgroundColor: rgba(10, 37, 69, 0.45);
 
-// CodeBlock
-$ouiCodeBlockCommentShade: #8B949E;
-$ouiCodeBlockStringShade: #A5D6FF;
-$ouiCodeBlockNameShade: #7A9FD4;
-$ouiCodeBlockNumberShade: #79C0FF;
-$ouiCodeBlockKeywordShade: #FF7B72;
-$ouiCodeBlockTypeShade: #7A9FD4;
-$ouiCodeBlockTitleShade: #D2A8FF;
+// CodeBlock — v10 syntax palette
+$ouiCodeBlockCommentShade: rgba(207, 228, 247, 0.34); // ink-fade, italic
+$ouiCodeBlockStringShade: #ffb86b;   // amber — strings
+$ouiCodeBlockNameShade: #5dd9ff;     // cyan — keywords/commands
+$ouiCodeBlockNumberShade: #7be0a8;   // green — numerics
+$ouiCodeBlockKeywordShade: #5dd9ff;  // cyan — keywords
+$ouiCodeBlockTypeShade: #5dd9ff;     // cyan
+$ouiCodeBlockTitleShade: #cfe4f7;    // ink
 
 // Variations from core
-$ouiTextColor: #D8E4F0;
-$ouiTitleColor: #FFF;
-$ouiTextSubduedColor: #6B7F9E;
+$ouiTextColor: #cfe4f7;
+$ouiTitleColor: #FFFFFF;
+$ouiTextSubduedColor: rgba(207, 228, 247, 0.62);
 $ouiColorDisabled: $ouiColorLightestShade !default;
 
 // Contrasty text variants
@@ -66,7 +65,7 @@ $ouiColorSecondaryText: makeHighContrastColor($ouiColorSecondary) !default;
 $ouiColorAccentText: makeHighContrastColor($ouiColorAccent) !default;
 $ouiColorWarningText: makeHighContrastColor($ouiColorWarning) !default;
 $ouiColorDangerText: makeHighContrastColor($ouiColorDanger) !default;
-$ouiColorDisabledText: #6B7F9E !default;
+$ouiColorDisabledText: rgba(207, 228, 247, 0.34) !default;
 $ouiColorSuccessText: $ouiColorSecondaryText !default;
 $ouiLinkColor: $ouiColorDarkShade !default;
 
@@ -77,25 +76,25 @@ $ouiColorChartBand: tint($ouiColorLightestShade, 2.5%);
 // Code
 $ouiCodeBlockBackgroundColor: $ouiColorLightestShade;
 
-// Shadows — deeper for dark surfaces
-$ouiShadowColor: #000;
-$ouiShadowColorLarge: $ouiShadowColor;
-$ouiShadowOpacity: 0.50;
+// Shadows — v10: NO drop shadows. Depth = hairline borders + corner ticks.
+$ouiShadowColor: transparent;
+$ouiShadowColorLarge: transparent;
+$ouiShadowOpacity: 0;
 
-$ouiShadowBase: 0 0 0 1px rgba(30, 46, 80, 0.5), 0 2px 8px rgba(0, 0, 0, 0.4);
-$ouiShadow1: 0 2px 8px rgba(0, 0, 0, 0.4);
-$ouiShadow2: 0 0 0 1px rgba(30, 46, 80, 0.5), 0 4px 12px rgba(0, 0, 0, 0.4);
-$ouiShadow3: 0 0 0 1px rgba(30, 46, 80, 0.5), 0 8px 24px rgba(0, 0, 0, 0.45);
-$ouiShadow4: 0 0 0 1px rgba(30, 46, 80, 0.5), 0 12px 32px rgba(0, 0, 0, 0.5);
-$ouiShadow5: 0 0 0 1px rgba(30, 46, 80, 0.5), 0 24px 48px rgba(0, 0, 0, 0.5);
-$ouiShadow6: 0 0 0 1px rgba(30, 46, 80, 0.5), 0 24px 48px rgba(0, 0, 0, 0.5);
+$ouiShadowBase: none;
+$ouiShadow1: none;
+$ouiShadow2: none;
+$ouiShadow3: none;
+$ouiShadow4: none;
+$ouiShadow5: none;
+$ouiShadow6: none;
 
-// Border color
-$ouiBorderColor: #1E2E50;
+// Border color — ink-ghost
+$ouiBorderColor: rgba(207, 228, 247, 0.16);
 
 // Elevated surfaces
-$ouiBackgroundElevated: #182640;
-$ouiBorderElevated: #1E2E50;
+$ouiBackgroundElevated: #103e6e;
+$ouiBorderElevated: rgba(207, 228, 247, 0.16);
 
 //CodeBlock Colors
 $ouiCodeBlockCommentColor: $ouiCodeBlockCommentShade;

@@ -22,7 +22,6 @@ import {
 } from '../../../../src/components';
 
 import { SOURCE_PAGE_MOCK } from './session_models';
-import { Mascot } from '../../../../olly-mascot/Mascot';
 
 /**
  * Quick access shortcut definitions.
@@ -503,13 +502,17 @@ export const EmptySessionPage = ({
         <div className="emptySessionPage__content">
           {/* Welcome title */}
           <div className="emptySessionPage__header">
-            <Mascot size={44} expression="comma" idle bob follow={false} />
+            <div className="emptySessionPage__ollyAvatar">
+              <div className="emptySessionPage__ollyInner">
+                <span>,,</span>
+              </div>
+            </div>
             <div className="emptySessionPage__headerText">
               <OuiTitle size="m">
                 <h1>Good morning, John</h1>
               </OuiTitle>
               <OuiText size="s" color="subdued">
-                <p>All 247 services steady. 2 activities to review.</p>
+                <p>All <strong style={{ color: 'var(--v10-cyan, #5dd9ff)' }}>247</strong> services steady. <strong style={{ color: 'var(--v10-cyan, #5dd9ff)' }}>2</strong> activities to review.</p>
               </OuiText>
             </div>
           </div>

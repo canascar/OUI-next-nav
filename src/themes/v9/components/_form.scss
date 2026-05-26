@@ -550,3 +550,76 @@
   -webkit-backdrop-filter: none !important;
 }
 // sass-lint:enable no-important
+
+// ============================================================
+// CORNER MARKS — Technical/blueprint corner decorations on form inputs
+// ============================================================
+
+// sass-lint:disable no-important
+.ouiFormControlLayout {
+  position: relative !important;
+
+  // Corner marks — L-shaped brackets outside each corner
+  &::before,
+  &::after {
+    content: '' !important;
+    position: absolute !important;
+    width: 12px !important;
+    height: 12px !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+  }
+
+  // Top-left corner (outside)
+  &::before {
+    top: -4px !important;
+    left: -4px !important;
+    border-top: 2px solid $ouiColorMediumShade !important;
+    border-left: 2px solid $ouiColorMediumShade !important;
+  }
+
+  // Bottom-right corner (outside)
+  &::after {
+    bottom: -4px !important;
+    right: -4px !important;
+    border-bottom: 2px solid $ouiColorMediumShade !important;
+    border-right: 2px solid $ouiColorMediumShade !important;
+  }
+}
+
+// Additional corners via the inner child (top-right, bottom-left)
+.ouiFormControlLayout > .ouiFormControlLayout__childrenWrapper {
+  position: relative !important;
+
+  &::before,
+  &::after {
+    content: '' !important;
+    position: absolute !important;
+    width: 12px !important;
+    height: 12px !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+  }
+
+  // Top-right corner (outside)
+  &::before {
+    top: -4px !important;
+    right: -4px !important;
+    border-top: 2px solid $ouiColorMediumShade !important;
+    border-right: 2px solid $ouiColorMediumShade !important;
+  }
+
+  // Bottom-left corner (outside)
+  &::after {
+    bottom: -4px !important;
+    left: -4px !important;
+    border-bottom: 2px solid $ouiColorMediumShade !important;
+    border-left: 2px solid $ouiColorMediumShade !important;
+  }
+}
+
+// For form rows with labels, apply corners to the outer .ouiFormRow instead
+.ouiFormRow {
+  position: relative !important;
+}
+// sass-lint:enable no-important

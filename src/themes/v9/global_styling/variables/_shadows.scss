@@ -10,23 +10,21 @@
  */
 
 // sass-lint:disable leading-zero
-// Shadows — subtle
-$ouiShadowColor: #000 !default;
-$ouiShadowColorLarge: #000 !default;
+// v10 Blueprint — NO drop shadows. Depth = hairline borders + corner ticks.
+$ouiShadowColor: transparent !default;
+$ouiShadowColorLarge: transparent !default;
 
 // Shadow opacity
-$ouiShadowOpacity: .1 !default;
+$ouiShadowOpacity: 0 !default;
 
-// Base shadow layer
-$ouiShadowBase: 0 1px 3px 0 rgba(0, 0, 0, lightOrDarkTheme(.05, .3));
-
-// Subtle shadow levels
-$ouiShadow1: 0 1px 3px 0 rgba(0, 0, 0, lightOrDarkTheme(.05, .3));
-$ouiShadow2: 0 1px 3px 0 rgba(0, 0, 0, lightOrDarkTheme(.1, .4)), 0 1px 2px -1px rgba(0, 0, 0, lightOrDarkTheme(.1, .4));
-$ouiShadow3: 0 1px 3px 0 rgba(0, 0, 0, lightOrDarkTheme(.1, .4)), 0 2px 4px -1px rgba(0, 0, 0, lightOrDarkTheme(.1, .4));
-$ouiShadow4: 0 1px 3px 0 rgba(0, 0, 0, lightOrDarkTheme(.1, .4)), 0 4px 6px -1px rgba(0, 0, 0, lightOrDarkTheme(.1, .4));
-$ouiShadow5: 0 1px 3px 0 rgba(0, 0, 0, lightOrDarkTheme(.1, .4)), 0 8px 10px -1px rgba(0, 0, 0, lightOrDarkTheme(.1, .4));
-$ouiShadow6: 0 1px 3px 0 rgba(0, 0, 0, lightOrDarkTheme(.25, .5));
+// All shadows disabled — use border layering instead
+$ouiShadowBase: none;
+$ouiShadow1: none;
+$ouiShadow2: none;
+$ouiShadow3: none;
+$ouiShadow4: none;
+$ouiShadow5: none;
+$ouiShadow6: none;
 
 // Local elevation z-index values
 $ouiLocalZIndex1: 1;

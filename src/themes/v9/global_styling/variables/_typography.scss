@@ -39,11 +39,11 @@
 }
 
 // sass-lint:disable quotes
-// Agentic OSD Utility Typography
-// Body: Outfit | Display: Space Grotesk | Code: JetBrains Mono
-$ouiFontFamily: #{"'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'"} !default;
-$ouiFontFamilyDisplay: #{"'Space Grotesk', 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif"} !default;
-$ouiCodeFontFamily: #{"'JetBrains Mono', Consolas, Menlo, Courier, monospace"} !default;
+// v10 Blueprint Typography
+// Body/Titles: Outfit | Code/Labels: IBM Plex Mono
+$ouiFontFamily: #{"'Outfit', system-ui, sans-serif"} !default;
+$ouiFontFamilyDisplay: #{"'Outfit', system-ui, sans-serif"} !default;
+$ouiCodeFontFamily: #{"'IBM Plex Mono', ui-monospace, monospace"} !default;
 // sass-lint:enable quotes
 
 // Careful using ligatures. Code editors like ACE will often error because of width calculations

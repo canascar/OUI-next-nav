@@ -11,12 +11,12 @@
 
 // Sizing
 $ouiFormMaxWidth: $ouiSizeXXL * 10 !default;
-$ouiFormControlHeight: $ouiSizeXL !default;
+$ouiFormControlHeight: $ouiSizeXXL !default;
 $ouiFormControlCompressedHeight: $ouiSizeXL !default;
 $ouiFormControlPadding: $ouiSizeM !default;
 $ouiFormControlCompressedPadding: $ouiSizeS !default;
-$ouiFormControlBorderRadius: 10px !default;
-$ouiFormControlCompressedBorderRadius: 6px !default;
+$ouiFormControlBorderRadius: 0 !default;
+$ouiFormControlCompressedBorderRadius: 0 !default;
 
 $ouiRadioSize: $ouiSize !default;
 $ouiCheckBoxSize: $ouiSize !default;
@@ -57,7 +57,7 @@ $ouiSwitchColors: (
 ) !default;
 
 // Coloring
-$ouiFormBackgroundColor: tint($ouiColorEmptyShade, 40%) !default;
+$ouiFormBackgroundColor: $ouiColorEmptyShade !default;
 $ouiFormBackgroundDisabledColor: darken($ouiColorLightestShade, 2%) !default;
 $ouiFormBackgroundReadOnlyColor: transparentize(lightOrDarkTheme($ouiColorLightShade, $ouiColorInk), .95) !default;
 $ouiFormBorderOpaqueColor: $ouiBorderColor !default;
@@ -66,7 +66,7 @@ $ouiFormBorderDisabledColor: transparentize($ouiBorderColor, .5) !default;
 $ouiFormCustomControlDisabledIconColor: shadeOrTint($ouiColorMediumShade, 38%, 48.5%) !default; // exact 508c foreground for $ouiColorLightShade
 $ouiFormCustomControlBorderColor: shadeOrTint($ouiColorLightestShade, 18%, 30%) !default;
 $ouiFormControlDisabledColor: $ouiColorMediumShade !default;
-$ouiFormControlBoxShadow: 0 1px 1px -1px transparentize($ouiShadowColor, .8), 0 3px 2px -2px transparentize($ouiShadowColor, .8) !default;
+$ouiFormControlBoxShadow: none !default;
 $ouiFormControlPlaceholderText: makeHighContrastColor($ouiTextSubduedColor, $ouiFormBackgroundColor) !default;
 $_ouiFormInputGroupLabelDarkBackgroundColor: #293847 !default;
 $ouiFormInputGroupLabelBackground: $ouiColorLightestShade !default;
