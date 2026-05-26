@@ -36,7 +36,7 @@ import {
   SessionPagesView,
 } from './views/sample_pages/sample_pages_view';
 import { LoginPage } from './views/sample_pages/login_page';
-import { OnboardingPage } from './views/sample_pages/onboarding_page';
+
 import { OnboardingWizardPage } from './views/sample_pages/onboarding_wizard_page';
 
 registerTheme('light', [themeLight]);
@@ -92,14 +92,7 @@ render(
               </LinkWrapper>
             )}
           />
-          <Route
-            path="/onboarding"
-            render={() => (
-              <LinkWrapper>
-                <OnboardingPage />
-              </LinkWrapper>
-            )}
-          />
+
           <Route
             path="/sample-pages"
             render={() => (

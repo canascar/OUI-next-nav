@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef, useState, useEffect } from 'react';
 
 import {
   OuiButtonIcon,
@@ -42,6 +42,7 @@ export const ThreadPanel = forwardRef(
       onSizeChange,
       threadKey,
       pendingThread,
+      pendingInputValue,
       onViewAction,
       width,
       title,
@@ -74,6 +75,16 @@ export const ThreadPanel = forwardRef(
 
     const displayTitle = title || 'New chat';
     const tabCount = sessionTabs ? sessionTabs.length : 0;
+
+    // Auto-focus the thread input textarea when panel becomes visible
+    useEffect(() => {
+      if (ref && ref.current) {
+        const textarea = ref.current.querySelector('.ouiThreadInput__textarea');
+        if (textarea) {
+          setTimeout(() => textarea.focus(), 100);
+        }
+      }
+    }, [ref, sizeState]);
 
     return (
       <div
@@ -146,6 +157,7 @@ export const ThreadPanel = forwardRef(
               threadKey || (pendingThread ? pendingThread.key : null)
             }
             pendingMessages={pendingThread ? pendingThread.messages : undefined}
+            pendingInputValue={pendingInputValue}
             sourcePageTitle={
               pendingThread ? pendingThread.sourcePageTitle : undefined
             }

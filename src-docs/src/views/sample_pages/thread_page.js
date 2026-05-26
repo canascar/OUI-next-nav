@@ -29,11 +29,21 @@ import {
   OuiTabs,
   OuiText,
   OuiToolTip,
-  OuiCompressedTextArea,
+  OuiThreadInput,
 } from '../../../../src/components';
 
 import { DetailPageHeader } from './detail_page_header';
 import { ProgressTracker } from './progress_tracker';
+import {
+  Chart,
+  Settings,
+  Axis,
+  LineSeries,
+  LineAnnotation,
+  AnnotationDomainType,
+  ScaleType,
+  RectAnnotation,
+} from '@elastic/charts';
 import {
   AlertPageMock,
   InventoryAnalysisPageMock,
@@ -71,15 +81,18 @@ const THREADS = {
           },
           {
             type: 'chart',
-            title: 'P99 Latency (last 2h)',
+            chartType: 'line',
+            title: 'Metric: payment-service P99 latency',
+            threshold: 2000,
+            breachRange: { x0: 4, x1: 6, y0: 2000 },
             data: [
-              { label: '12:30', value: 120 },
-              { label: '13:00', value: 135 },
-              { label: '13:30', value: 180 },
-              { label: '14:00', value: 420 },
-              { label: '14:15', value: 1100 },
-              { label: '14:30', value: 2050 },
-              { label: '14:45', value: 2340 },
+              { x: 0, y: 120 },
+              { x: 1, y: 135 },
+              { x: 2, y: 180 },
+              { x: 3, y: 420 },
+              { x: 4, y: 1100 },
+              { x: 5, y: 2050 },
+              { x: 6, y: 2340 },
             ],
           },
         ],
@@ -727,6 +740,49 @@ const StatsDisplayAttachment = ({ title, stats }) => {
   );
 };
 
+// Attachment card: trace waterfall (horizontal span bars)
+const TraceWaterfallAttachment = ({ title, spans }) => {
+  const maxDuration = Math.max(...spans.map((s) => s.duration));
+  const colorMap = {
+    primary: '#0077CC',
+    success: '#00BFB3',
+    danger: '#FF6467',
+    warning: '#CDA849',
+    accent: '#4168B8',
+  };
+  return (
+    <div className="threadPage__attachmentWrap">
+      <div className="threadPage__attachment threadPage__attachment--traceWaterfall">
+        {title && (
+          <OuiText size="xs" style={{ marginBottom: 12 }}>
+            <strong>{title}</strong>
+          </OuiText>
+        )}
+        <div className="threadPage__traceSpans">
+          {spans.map((span, i) => (
+            <div key={i} className="threadPage__traceSpanRow">
+              <span className="threadPage__traceSpanName">{span.name}</span>
+              <div className="threadPage__traceSpanBarWrap" style={{ backgroundColor: `${colorMap[span.color] || colorMap.primary}26` }}>
+                <div
+                  className="threadPage__traceSpanBar"
+                  style={{
+                    width: `${(span.duration / maxDuration) * 100}%`,
+                    backgroundColor: colorMap[span.color] || colorMap.primary,
+                    opacity: 0.8,
+                  }}
+                />
+              </div>
+              <span className="threadPage__traceSpanDuration">
+                {span.duration >= 1000 ? `${(span.duration / 1000).toFixed(1)}s` : `${span.duration}ms`}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Attachment card: data table (Tool UI style — tabular data)
 const DataTableAttachment = ({ title, columns, rows }) => {
   return (
@@ -785,7 +841,61 @@ const CodeBlockAttachment = ({ title, language, code }) => {
 };
 
 // Attachment card: chart (Tool UI style — simple inline bar/sparkline chart)
-const ChartAttachment = ({ title, data }) => {
+const ChartAttachment = ({ title, data, chartType, threshold, breachRange }) => {
+  // Line chart mode using @elastic/charts
+  if (chartType === 'line') {
+    const lineData = data.map((d, i) => ({ x: d.x !== undefined ? d.x : i, y: d.y !== undefined ? d.y : d.value }));
+    return (
+      <div className="threadPage__attachmentWrap">
+        <div className="threadPage__attachment threadPage__attachment--chart">
+          {title && (
+            <OuiText size="xs" style={{ marginBottom: 12 }}>
+              <strong>{title}</strong>
+            </OuiText>
+          )}
+          <div style={{ height: 160 }}>
+            <Chart>
+              <Settings showLegend={false} />
+              <Axis id="bottom" position="bottom" showGridLines={false} />
+              <Axis
+                id="left"
+                position="left"
+                showGridLines
+                tickFormat={(d) => `${d}ms`}
+              />
+              <LineSeries
+                id="p99"
+                xScaleType={ScaleType.Linear}
+                yScaleType={ScaleType.Linear}
+                xAccessor="x"
+                yAccessors={['y']}
+                data={lineData}
+              />
+              {threshold && (
+                <LineAnnotation
+                  id="threshold"
+                  domainType={AnnotationDomainType.YDomain}
+                  dataValues={[{ dataValue: threshold }]}
+                  style={{
+                    line: { stroke: '#FF6467', strokeWidth: 2, dash: [4, 4] },
+                  }}
+                />
+              )}
+              {breachRange && (
+                <RectAnnotation
+                  id="breach"
+                  dataValues={[{ coordinates: breachRange }]}
+                  style={{ fill: '#FF6467', opacity: 0.05 }}
+                />
+              )}
+            </Chart>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Default bar chart mode
   const maxVal = Math.max(...data.map((d) => d.value));
   return (
     <div className="threadPage__attachmentWrap">
@@ -806,6 +916,72 @@ const ChartAttachment = ({ title, data }) => {
               <span className="threadPage__chartBarLabel">{d.label}</span>
             </div>
           ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Attachment card: item carousel (horizontal scrollable stat cards)
+const ItemCarouselAttachment = ({ title, items }) => {
+  const scrollRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const updateScrollState = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 0);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 1);
+  };
+
+  const scroll = (direction) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const amount = 200;
+    el.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' });
+  };
+
+  return (
+    <div className="threadPage__attachmentWrap">
+      <div className="threadPage__attachment threadPage__attachment--carousel">
+        {title && (
+          <OuiText size="xs" style={{ marginBottom: 8 }}>
+            <strong>{title}</strong>
+          </OuiText>
+        )}
+        <div className="threadPage__carouselContainer">
+          {canScrollLeft && (
+            <button
+              type="button"
+              className="threadPage__carouselArrow threadPage__carouselArrow--left"
+              onClick={() => scroll('left')}
+              aria-label="Scroll left">
+              <OuiIcon type="arrowLeft" size="s" />
+            </button>
+          )}
+          <div
+            className="threadPage__carouselTrack"
+            ref={scrollRef}
+            onScroll={updateScrollState}>
+            {items.map((item, i) => (
+              <div key={i} className="threadPage__carouselCard">
+                <div className="threadPage__carouselLabel">{item.label}</div>
+                <div className={`threadPage__carouselValue threadPage__carouselValue--${item.color || 'default'}`}>
+                  {item.value}
+                </div>
+              </div>
+            ))}
+          </div>
+          {canScrollRight && (
+            <button
+              type="button"
+              className="threadPage__carouselArrow threadPage__carouselArrow--right"
+              onClick={() => scroll('right')}
+              aria-label="Scroll right">
+              <OuiIcon type="arrowRight" size="s" />
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -837,7 +1013,7 @@ const renderSingleAttachment = (att, idx, onViewAsPage) => {
     );
   }
   if (att.type === 'chart') {
-    return <ChartAttachment key={idx} title={att.title} data={att.data} />;
+    return <ChartAttachment key={idx} title={att.title} data={att.data} chartType={att.chartType} threshold={att.threshold} breachRange={att.breachRange} />;
   }
   if (att.type === 'data-table') {
     return (
@@ -853,6 +1029,12 @@ const renderSingleAttachment = (att, idx, onViewAsPage) => {
     return (
       <StatsDisplayAttachment key={idx} title={att.title} stats={att.stats} />
     );
+  }
+  if (att.type === 'trace-waterfall') {
+    return <TraceWaterfallAttachment key={idx} title={att.title} spans={att.spans} />;
+  }
+  if (att.type === 'item-carousel') {
+    return <ItemCarouselAttachment key={idx} title={att.title} items={att.items} />;
   }
   return null;
 };
@@ -1074,12 +1256,24 @@ const SCRIPTED_RESPONSES = {
       ],
       content:
         'The trace data shows payments-db latency spiked from 12ms to 8,400ms at 14:29:58, correlating with a connection pool exhaustion event. This matches a pattern from 3 previous incidents.',
-      attachment: {
-        type: 'link-preview',
-        title: 'payments-db trace analysis',
-        description:
-          'Trace waterfall showing latency spike from 12ms to 8,400ms starting at 14:29:58, with connection pool exhaustion as root cause.',
-      },
+      attachments: [
+        {
+          type: 'trace-waterfall',
+          title: 'Trace waterfall — payments-db dependency',
+          spans: [
+            { name: 'payment-service', duration: 8400, color: 'primary' },
+            { name: '→ acquire_conn', duration: 8200, color: 'danger' },
+            { name: '→ query payments-db', duration: 12, color: 'success' },
+            { name: '→ serialize', duration: 3, color: 'success' },
+          ],
+        },
+        {
+          type: 'link-preview',
+          title: 'payments-db trace analysis',
+          description:
+            'Trace waterfall showing latency spike from 12ms to 8,400ms starting at 14:29:58, with connection pool exhaustion as root cause.',
+        },
+      ],
       followUps: [
         {
           content: 'Here\'s a suggested fix — increase the connection pool max and add a circuit breaker:',
@@ -1260,12 +1454,24 @@ kubectl exec -n production deploy/payment-service -- \\
       ],
       content:
         'I have created a monitoring dashboard for the payment service connection pool. It includes panels for pool utilization, acquire wait time, active connections, and P99 latency with alert thresholds configured:',
-      attachment: {
-        type: 'link-preview',
-        title: 'Payment service — connection pool dashboard',
-        description:
-          'Live dashboard with pool utilization, acquire wait time, active connections, circuit breaker status, and P99 latency for the payment service.',
-      },
+      attachments: [
+        {
+          type: 'item-carousel',
+          title: 'Dashboard panels',
+          items: [
+            { label: 'Pool utilization', value: '98%', color: 'danger' },
+            { label: 'Acquire wait (P95)', value: '1,840ms', color: 'danger' },
+            { label: 'Active connections', value: '50/50', color: 'accent' },
+            { label: 'Circuit breaker', value: 'OFF', color: 'subdued' },
+          ],
+        },
+        {
+          type: 'link-preview',
+          title: 'Payment service — connection pool dashboard',
+          description:
+            'Live dashboard with pool utilization, acquire wait time, active connections, circuit breaker status, and P99 latency for the payment service.',
+        },
+      ],
     },
   },
 };
@@ -1283,6 +1489,7 @@ export const ThreadPage = ({
   selectedItem,
   _onItemSelect,
   pendingMessages,
+  pendingInputValue,
   sourcePage,
   sourcePageTitle,
   isPanelOpen,
@@ -1314,6 +1521,23 @@ export const ThreadPage = ({
 
   const [messages, setMessages] = useState(initialMessages);
   const [message, setMessage] = useState('');
+  const sendRef = useRef(null);
+  const lastProcessedInput = useRef(null);
+
+  // When pendingInputValue changes, auto-send it
+  useEffect(() => {
+    if (!pendingInputValue || pendingInputValue === lastProcessedInput.current) return;
+    lastProcessedInput.current = pendingInputValue;
+    const textToSend = pendingInputValue;
+    const interval = setInterval(() => {
+      if (sendRef.current) {
+        clearInterval(interval);
+        sendRef.current(textToSend);
+      }
+    }, 100);
+    return () => clearInterval(interval);
+  }, [pendingInputValue]);
+
   const [isTyping, setIsTyping] = useState(false);
   const [isCanvasOpen, setIsCanvasOpen] = useState(false);
   const [canvasItems, setCanvasItems] = useState([]);
@@ -1572,8 +1796,8 @@ export const ThreadPage = ({
     }
   }, [messages, isTyping]);
 
-  const handleSend = () => {
-    const text = message.trim();
+  const handleSend = (overrideText) => {
+    const text = (overrideText || message).trim();
     if (!text) return;
     hasInteracted.current = true;
 
@@ -1778,6 +2002,9 @@ export const ThreadPage = ({
     }, 6500);
     streamTimers.current.push(t3);
   };
+
+  // Keep sendRef updated for pendingInputValue auto-send
+  sendRef.current = handleSend;
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -2243,36 +2470,34 @@ export const ThreadPage = ({
               );
             })()}
             <div className="threadPage__inputWrapper">
-              <OuiCompressedTextArea
-                placeholder="Ask anything. Type / for actions."
+              <OuiThreadInput
+                placeholder="Ask AI anything"
                 value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={handleKeyDown}
-                rows={3}
-                resize="none"
-                fullWidth
-                className="threadPage__textarea"
+                onChange={setMessage}
+                onSubmit={handleSend}
+                actionsLeft={
+                  <OuiButtonIcon
+                    iconType="plus"
+                    aria-label="Add attachment"
+                    size="s"
+                    color="text"
+                  />
+                }
+                actionsRight={
+                  <OuiButtonIcon
+                    iconType="sortUp"
+                    aria-label="Send message"
+                    display="fill"
+                    size="s"
+                    isDisabled={
+                      !message.trim() ||
+                      isTyping ||
+                      messages.some((m) => m.streaming)
+                    }
+                    onClick={handleSend}
+                  />
+                }
               />
-              <div className="threadPage__inputActions">
-                <OuiButtonIcon
-                  iconType="plus"
-                  aria-label="Add attachment"
-                  size="s"
-                  color="text"
-                />
-                <OuiButtonIcon
-                  iconType="sortUp"
-                  aria-label="Send message"
-                  display="fill"
-                  size="s"
-                  isDisabled={
-                    !message.trim() ||
-                    isTyping ||
-                    messages.some((m) => m.streaming)
-                  }
-                  onClick={handleSend}
-                />
-              </div>
             </div>
           </div>
         </div>

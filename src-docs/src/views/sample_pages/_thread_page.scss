@@ -312,6 +312,54 @@
   margin-top: 12px;
 }
 
+// Trace waterfall attachment
+.threadPage__attachment--traceWaterfall {
+  max-width: 600px;
+}
+
+.threadPage__traceSpans {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.threadPage__traceSpanRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.threadPage__traceSpanName {
+  font-size: $ouiFontSizeXS;
+  color: $ouiTextColor;
+  min-width: 140px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.threadPage__traceSpanBarWrap {
+  flex: 1;
+  height: 16px;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.threadPage__traceSpanBar {
+  height: 100%;
+  border-radius: 3px;
+  min-width: 2px;
+}
+
+.threadPage__traceSpanDuration {
+  font-size: $ouiFontSizeXS;
+  font-weight: $ouiFontWeightMedium;
+  color: $ouiColorMediumShade;
+  min-width: 60px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
 // Data table attachment (Tool UI style)
 .threadPage__attachment--dataTable {
   max-width: 600px;
@@ -405,6 +453,86 @@
   text-align: center;
 }
 
+// Item carousel attachment
+.threadPage__attachment--carousel {
+  padding: 12px;
+}
+
+.threadPage__carouselContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.threadPage__carouselTrack {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  padding: 0;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  scrollbar-width: none;
+}
+
+.threadPage__carouselCard {
+  flex: 0 0 140px;
+  padding: 12px 16px;
+  border: 1px solid $ouiColorLightShade;
+  border-radius: $ouiBorderRadius;
+  background-color: $ouiColorEmptyShade;
+  scroll-snap-align: start;
+  text-align: left;
+}
+
+.threadPage__carouselValue {
+  font-size: $ouiFontSizeL;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 4px;
+
+  &--danger { color: $ouiColorDanger; }
+  &--accent { color: $ouiColorAccent; }
+  &--success { color: $ouiColorSuccess; }
+  &--warning { color: $ouiColorWarning; }
+  &--subdued { color: $ouiColorMediumShade; }
+  &--default { color: $ouiTextColor; }
+}
+
+.threadPage__carouselLabel {
+  font-size: $ouiFontSizeXS;
+  color: $ouiColorDarkShade;
+  white-space: nowrap;
+}
+
+.threadPage__carouselArrow {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid $ouiColorLightShade;
+  background-color: $ouiColorEmptyShade;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  appearance: none;
+  padding: 0;
+
+  &--left { left: -12px; }
+  &--right { right: -12px; }
+
+  &:hover {
+    background-color: $ouiColorLightestShade;
+  }
+}
+
 // Suggested prompts
 .threadPage__suggestedPrompts {
   display: flex;
@@ -415,17 +543,21 @@
 }
 
 .threadPage__suggestedPrompt {
-  color: $ouiTextSubduedColor;
+  color: $ouiColorPrimary;
+  border: 1px solid $ouiColorLightShade;
+  border-radius: 9999px;
 
   &:hover,
   &:focus {
     color: $ouiColorPrimary;
+    border-color: $ouiColorPrimary;
+    background-color: rgba($ouiColorPrimary, 0.06);
   }
 }
 
 // Input area at bottom
 .threadPage__inputArea {
-  padding: 0 8px 8px;
+  padding: 8px 8px 8px;
   flex-shrink: 0;
   max-width: 1000px;
   width: 100%;

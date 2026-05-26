@@ -12,6 +12,7 @@
 import React, { useRef, useState } from 'react';
 import {
   OuiButtonIcon,
+  OuiFieldText,
   OuiIcon,
   OuiPopover,
   OuiToolTip,
@@ -124,12 +125,9 @@ const TabBar = ({ tabs, activeTabId, onTabSelect, onTabClose, onAddTab, onExpand
                       onTabClose(tab.id);
                     }}
                     tabIndex={-1}>
-                    <OuiButtonIcon
-                      iconType="cross"
-                      aria-label={`Close ${tab.title}`}
-                      size="xs"
-                      color="text"
-                      display="empty"
+                    <OuiIcon
+                      type="cross"
+                      size="s"
                     />
                   </button>
                 )}
@@ -222,6 +220,8 @@ export const PagePanel = ({
   onQueryExecute,
 }) => {
   const activeTab = tabs.find((tab) => tab.id === activeTabId);
+  const [floatingInput, setFloatingInput] = useState('');
+  const [isFloatingExpanded, setIsFloatingExpanded] = useState(false);
 
   /** Render the content for the active tab */
   const renderTabContent = () => {
@@ -287,12 +287,7 @@ export const PagePanel = ({
         {renderTabContent()}
       </div>
       {onExpandChat && (
-        <button
-          type="button"
-          className={`pagePanel__floatingMascot${aiButtonHighlight ? ' pagePanel__floatingMascot--highlight' : ''}`}
-          aria-label="Open AI chat"
-          onClick={onExpandChat}>
-          <Mascot size={36} expression="comma" idle bob follow={false} />
+        <div className={`pagePanel__floatingBar${(aiButtonHighlight && aiButtonMessage) || isFloatingExpanded ? ' pagePanel__floatingBar--expanded' : ''}`}>
           {aiButtonHighlight && aiButtonMessage && (
             <div className="pagePanel__aiPopover" onClick={onExpandChat}>
               <div className="pagePanel__aiPopoverInner">
@@ -300,7 +295,33 @@ export const PagePanel = ({
               </div>
             </div>
           )}
-        </button>
+          <div className="pagePanel__floatingInputRow">
+            <button
+              type="button"
+              className={`pagePanel__floatingMascot${aiButtonHighlight ? ' pagePanel__floatingMascot--highlight' : ''}`}
+              aria-label="Open AI chat"
+              onClick={onExpandChat}>
+              <Mascot size={28} idle bob={false} follow={false} />
+            </button>
+            <OuiFieldText
+              placeholder="Ask AI anything"
+              value={floatingInput}
+              onChange={(e) => setFloatingInput(e.target.value)}
+              onFocus={() => setIsFloatingExpanded(true)}
+              onBlur={() => { if (!floatingInput.trim()) setIsFloatingExpanded(false); }}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && floatingInput.trim()) {
+                  e.preventDefault();
+                  onExpandChat(floatingInput.trim());
+                  setFloatingInput('');
+                  setIsFloatingExpanded(false);
+                }
+              }}
+              className="pagePanel__floatingSearch"
+              compressed
+            />
+          </div>
+        </div>
       )}
     </div>
   );

@@ -15,6 +15,7 @@ import {
   OuiLoadingSpinner,
   OuiText,
 } from '../../../../src/components';
+import { Mascot } from '../../../../olly-mascot/Mascot';
 
 /**
  * ProgressTracker — OUI-skinned version of Tool UI's Progress Tracker.
@@ -40,7 +41,7 @@ const StepIcon = ({ status }) => {
     case 'completed':
       return <OuiIcon type="checkInCircleEmpty" size="m" color="success" />;
     case 'in-progress':
-      return <OuiLoadingSpinner size="m" />;
+      return <Mascot size={16} idle bob={false} follow={false} />;
     case 'failed':
       return <OuiIcon type="crossInACircleFilled" size="m" color="danger" />;
     case 'pending':
