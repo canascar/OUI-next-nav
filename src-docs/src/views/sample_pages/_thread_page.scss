@@ -463,17 +463,21 @@
 }
 
 .threadPage__suggestedPrompt {
-  color: $ouiTextSubduedColor;
+  color: $ouiColorPrimary;
+  border: 1px solid $ouiColorLightShade;
+  border-radius: 9999px;
 
   &:hover,
   &:focus {
     color: $ouiColorPrimary;
+    border-color: $ouiColorPrimary;
+    background-color: rgba($ouiColorPrimary, 0.06);
   }
 }
 
 // Input area at bottom
 .threadPage__inputArea {
-  padding: 0 8px 8px;
+  padding: 8px 8px 8px;
   flex-shrink: 0;
   max-width: 1000px;
   width: 100%;

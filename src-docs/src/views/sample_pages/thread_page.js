@@ -35,6 +35,16 @@ import {
 import { DetailPageHeader } from './detail_page_header';
 import { ProgressTracker } from './progress_tracker';
 import {
+  Chart,
+  Settings,
+  Axis,
+  LineSeries,
+  LineAnnotation,
+  AnnotationDomainType,
+  ScaleType,
+  RectAnnotation,
+} from '@elastic/charts';
+import {
   AlertPageMock,
   InventoryAnalysisPageMock,
   ConnectionPoolPageMock,
@@ -71,15 +81,18 @@ const THREADS = {
           },
           {
             type: 'chart',
-            title: 'P99 Latency (last 2h)',
+            chartType: 'line',
+            title: 'Metric: payment-service P99 latency',
+            threshold: 2000,
+            breachRange: { x0: 4, x1: 6, y0: 2000 },
             data: [
-              { label: '12:30', value: 120 },
-              { label: '13:00', value: 135 },
-              { label: '13:30', value: 180 },
-              { label: '14:00', value: 420 },
-              { label: '14:15', value: 1100 },
-              { label: '14:30', value: 2050 },
-              { label: '14:45', value: 2340 },
+              { x: 0, y: 120 },
+              { x: 1, y: 135 },
+              { x: 2, y: 180 },
+              { x: 3, y: 420 },
+              { x: 4, y: 1100 },
+              { x: 5, y: 2050 },
+              { x: 6, y: 2340 },
             ],
           },
         ],
@@ -828,7 +841,61 @@ const CodeBlockAttachment = ({ title, language, code }) => {
 };
 
 // Attachment card: chart (Tool UI style — simple inline bar/sparkline chart)
-const ChartAttachment = ({ title, data }) => {
+const ChartAttachment = ({ title, data, chartType, threshold, breachRange }) => {
+  // Line chart mode using @elastic/charts
+  if (chartType === 'line') {
+    const lineData = data.map((d, i) => ({ x: d.x !== undefined ? d.x : i, y: d.y !== undefined ? d.y : d.value }));
+    return (
+      <div className="threadPage__attachmentWrap">
+        <div className="threadPage__attachment threadPage__attachment--chart">
+          {title && (
+            <OuiText size="xs" style={{ marginBottom: 12 }}>
+              <strong>{title}</strong>
+            </OuiText>
+          )}
+          <div style={{ height: 160 }}>
+            <Chart>
+              <Settings showLegend={false} />
+              <Axis id="bottom" position="bottom" showGridLines={false} />
+              <Axis
+                id="left"
+                position="left"
+                showGridLines
+                tickFormat={(d) => `${d}ms`}
+              />
+              <LineSeries
+                id="p99"
+                xScaleType={ScaleType.Linear}
+                yScaleType={ScaleType.Linear}
+                xAccessor="x"
+                yAccessors={['y']}
+                data={lineData}
+              />
+              {threshold && (
+                <LineAnnotation
+                  id="threshold"
+                  domainType={AnnotationDomainType.YDomain}
+                  dataValues={[{ dataValue: threshold }]}
+                  style={{
+                    line: { stroke: '#FF6467', strokeWidth: 2, dash: [4, 4] },
+                  }}
+                />
+              )}
+              {breachRange && (
+                <RectAnnotation
+                  id="breach"
+                  dataValues={[{ coordinates: breachRange }]}
+                  style={{ fill: '#FF6467', opacity: 0.05 }}
+                />
+              )}
+            </Chart>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Default bar chart mode
   const maxVal = Math.max(...data.map((d) => d.value));
   return (
     <div className="threadPage__attachmentWrap">
@@ -880,7 +947,7 @@ const renderSingleAttachment = (att, idx, onViewAsPage) => {
     );
   }
   if (att.type === 'chart') {
-    return <ChartAttachment key={idx} title={att.title} data={att.data} />;
+    return <ChartAttachment key={idx} title={att.title} data={att.data} chartType={att.chartType} threshold={att.threshold} breachRange={att.breachRange} />;
   }
   if (att.type === 'data-table') {
     return (
