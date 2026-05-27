@@ -50,37 +50,13 @@ export const SessionList = ({
   activeSessionId,
   onSelectSession,
   onCreateSession,
-  onRenameSession,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [editValue, setEditValue] = useState('');
 
   const handleScroll = useCallback((e) => {
     setIsScrolled(e.target.scrollTop > 0);
   }, []);
-
-  const handleStartRename = (e, session) => {
-    e.stopPropagation();
-    setEditingId(session.id);
-    setEditValue(session.title);
-  };
-
-  const handleFinishRename = (sessionId) => {
-    if (editValue.trim() && onRenameSession) {
-      onRenameSession(sessionId, editValue.trim());
-    }
-    setEditingId(null);
-  };
-
-  const handleRenameKeyDown = (e, sessionId) => {
-    if (e.key === 'Enter') {
-      handleFinishRename(sessionId);
-    } else if (e.key === 'Escape') {
-      setEditingId(null);
-    }
-  };
 
   const filteredSessions = searchQuery.trim()
     ? sessions.filter((s) =>
@@ -139,23 +115,9 @@ export const SessionList = ({
                   }`}
                   aria-current={isActive ? 'true' : undefined}>
                   <div className="sessionList__cardContent">
-                    {editingId === session.id ? (
-                      <input
-                        className="sessionList__cardTitleInput"
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        onBlur={() => handleFinishRename(session.id)}
-                        onKeyDown={(e) => handleRenameKeyDown(e, session.id)}
-                        onClick={(e) => e.stopPropagation()}
-                        autoFocus
-                      />
-                    ) : (
-                      <span
-                        className="sessionList__cardTitle"
-                        onClick={(e) => handleStartRename(e, session)}>
-                        {session.title}
-                      </span>
-                    )}
+                    <span className="sessionList__cardTitle">
+                      {session.title}
+                    </span>
                     <span className="sessionList__cardMeta">
                       {formatSessionTime(session.createdAt)}
                     </span>

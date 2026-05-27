@@ -174,27 +174,6 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  cursor: text;
-
-  &:hover {
-    text-decoration: underline;
-    text-decoration-style: dashed;
-    text-underline-offset: 3px;
-    text-decoration-color: rgba($ouiColorPrimary, 0.4);
-  }
-}
-
-// Inline rename input
-.sessionList__cardTitleInput {
-  font-size: $ouiFontSizeS;
-  font-weight: $ouiFontWeightMedium;
-  color: $ouiTextColor;
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid $ouiColorPrimary;
-  outline: none;
-  padding: 0;
-  width: 100%;
 }
 
 // Meta info (time, tab count)

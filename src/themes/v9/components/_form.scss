@@ -254,11 +254,15 @@
 }
 // sass-lint:enable no-important, no-color-literals, leading-zero
 
-// Backdrop blur on modal and flyout overlays
+// Backdrop on modal and flyout overlays — no blur
 // sass-lint:disable no-important, no-color-literals
 .ouiOverlayMask {
-  backdrop-filter: blur(65px);
-  background-color: rgba(red($ouiPageBackgroundColor), green($ouiPageBackgroundColor), blue($ouiPageBackgroundColor), .30) !important;
+  backdrop-filter: none;
+  background-color: rgba(red($ouiPageBackgroundColor), green($ouiPageBackgroundColor), blue($ouiPageBackgroundColor), .95) !important;
+}
+
+.ouiFlyout {
+  border-color: lightOrDarkTheme(rgba(13, 48, 87, 0.30), rgba(207, 228, 247, 0.30)) !important;
 }
 // sass-lint:enable no-important, no-color-literals
 

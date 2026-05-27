@@ -53,6 +53,26 @@
   font-size: $ouiFontSizeXS;
   color: $ouiTitleColor;
   white-space: nowrap;
+  cursor: text;
+  padding: 2px 4px;
+  border-radius: 2px;
+  transition: background-color 150ms ease;
+
+  &:hover {
+    background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.06));
+  }
+}
+
+.threadPanel__titleInput {
+  font-size: $ouiFontSizeXS;
+  color: $ouiTitleColor;
+  background: none;
+  border: none;
+  border-bottom: 2px solid $ouiColorPrimary;
+  outline: none;
+  padding: 2px 4px;
+  width: 140px;
+  font-family: inherit;
 }
 
 .threadPanel__headerRight {

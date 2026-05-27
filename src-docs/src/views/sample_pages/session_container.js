@@ -253,6 +253,7 @@ export const SessionContainer = ({
         isAnimating={isAnimating}
         sessionSummary={session.summary}
         sessionTabs={session.tabs}
+        onRename={(newTitle) => onUpdateSession({ title: newTitle })}
       />
 
       {/* Resize handle — only in side-by-side */}
