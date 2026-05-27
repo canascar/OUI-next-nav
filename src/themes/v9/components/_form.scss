@@ -63,6 +63,16 @@
   display: flex !important;
   align-items: center !important;
 }
+
+// Make append/prepend labels more visible in dark mode
+.ouiFormControlLayout--group > .ouiFormControlLayout__prepend,
+.ouiFormControlLayout--group > .ouiFormControlLayout__append {
+  background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.03), rgba(207, 228, 247, 0.08)) !important;
+
+  .ouiFormLabel {
+    color: lightOrDarkTheme(inherit, rgba(207, 228, 247, 0.85)) !important;
+  }
+}
 // sass-lint:enable no-important
 
 // Remove border-radius from dropdown/select option items
@@ -403,18 +413,21 @@
 }
 
 .ouiFieldText:hover,
-.ouiFieldText:focus,
 .ouiFieldSearch:hover,
-.ouiFieldSearch:focus,
 .ouiFieldNumber:hover,
-.ouiFieldNumber:focus,
 .ouiFieldPassword:hover,
-.ouiFieldPassword:focus,
 .ouiSelect:hover,
-.ouiSelect:focus,
-.ouiTextArea:hover,
-.ouiTextArea:focus {
+.ouiTextArea:hover {
   box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)), inset 0 0 0 1px $ouiFormBorderColor !important;
+}
+
+.ouiFieldText:focus,
+.ouiFieldSearch:focus,
+.ouiFieldNumber:focus,
+.ouiFieldPassword:focus,
+.ouiSelect:focus,
+.ouiTextArea:focus {
+  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)), inset 0 -2px 0 0 $ouiColorPrimary !important;
 }
 
 .ouiFieldText:active,
@@ -488,6 +501,10 @@
   &:focus-within {
     transform: translateY(-1px) !important;
     box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)) !important;
+  }
+
+  &:focus-within {
+    border-bottom: 2px solid $ouiColorPrimary !important;
   }
 }
 // sass-lint:enable no-important

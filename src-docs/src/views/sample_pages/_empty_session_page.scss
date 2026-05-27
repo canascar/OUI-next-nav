@@ -228,6 +228,11 @@
   gap: 8px;
   align-items: center;
   width: 100%;
+
+  // First child (icon-only button) stays fixed width, rest fill equally
+  .emptySessionPage__chip:not(.emptySessionPage__chip--iconOnly) {
+    flex: 1;
+  }
 }
 
 .emptySessionPage__chip {
@@ -338,8 +343,8 @@
   font-size: $ouiFontSizeS;
   color: $ouiTextColor;
   position: relative;
-  transition: background-color 150ms ease-out, opacity 300ms ease-out,
-              max-height 300ms ease-out, margin 300ms ease-out, padding 300ms ease-out;
+  transition: background-color 200ms ease, border-color 200ms ease, transform 200ms ease,
+              opacity 300ms ease-out, max-height 300ms ease-out, margin 300ms ease-out, padding 300ms ease-out;
 
   // Corner ticks — all four corners via pseudo-elements
   &::before {
@@ -368,7 +373,9 @@
   }
 
   &:hover {
-    background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.85), rgba(16, 62, 110, 0.6));
+    background-color: rgba($ouiColorPrimary, 0.08);
+    border-color: rgba($ouiColorPrimary, 0.3);
+    transform: translateY(-1px);
   }
 
   &--activityLayout {

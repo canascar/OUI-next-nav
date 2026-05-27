@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import {
   OuiCompressedFieldSearch,
@@ -50,8 +50,37 @@ export const SessionList = ({
   activeSessionId,
   onSelectSession,
   onCreateSession,
+  onRenameSession,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [editValue, setEditValue] = useState('');
+
+  const handleScroll = useCallback((e) => {
+    setIsScrolled(e.target.scrollTop > 0);
+  }, []);
+
+  const handleStartRename = (e, session) => {
+    e.stopPropagation();
+    setEditingId(session.id);
+    setEditValue(session.title);
+  };
+
+  const handleFinishRename = (sessionId) => {
+    if (editValue.trim() && onRenameSession) {
+      onRenameSession(sessionId, editValue.trim());
+    }
+    setEditingId(null);
+  };
+
+  const handleRenameKeyDown = (e, sessionId) => {
+    if (e.key === 'Enter') {
+      handleFinishRename(sessionId);
+    } else if (e.key === 'Escape') {
+      setEditingId(null);
+    }
+  };
 
   const filteredSessions = searchQuery.trim()
     ? sessions.filter((s) =>
@@ -60,24 +89,31 @@ export const SessionList = ({
     : sessions;
 
   return (
-    <div className="sessionList">
+    <div className="sessionList" onScroll={handleScroll}>
       <div className="sessionList__content">
         {/* Header */}
-        <div className="sessionList__header">
-          <OuiTitle size="s">
-            <h2>All sessions</h2>
-          </OuiTitle>
-        </div>
-
-        {/* Search */}
-        <div className="sessionList__search">
-          <OuiCompressedFieldSearch
-            placeholder="Search sessions..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            fullWidth
-            aria-label="Search sessions"
-          />
+        <div className={`sessionList__header${isScrolled ? ' sessionList__header--scrolled' : ''}`}>
+          <div className="sessionList__titleRow">
+            <OuiTitle size="s">
+              <h2>All sessions</h2>
+            </OuiTitle>
+            <button
+              type="button"
+              className="sessionList__newButton"
+              onClick={onCreateSession}>
+              <OuiIcon type="plusInCircle" size="s" />
+              <span>New session</span>
+            </button>
+          </div>
+          <div className="sessionList__search">
+            <OuiCompressedFieldSearch
+              placeholder="Search sessions..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              fullWidth
+              aria-label="Search sessions"
+            />
+          </div>
         </div>
 
         {/* Session cards */}
@@ -103,9 +139,23 @@ export const SessionList = ({
                   }`}
                   aria-current={isActive ? 'true' : undefined}>
                   <div className="sessionList__cardContent">
-                    <span className="sessionList__cardTitle">
-                      {session.title}
-                    </span>
+                    {editingId === session.id ? (
+                      <input
+                        className="sessionList__cardTitleInput"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onBlur={() => handleFinishRename(session.id)}
+                        onKeyDown={(e) => handleRenameKeyDown(e, session.id)}
+                        onClick={(e) => e.stopPropagation()}
+                        autoFocus
+                      />
+                    ) : (
+                      <span
+                        className="sessionList__cardTitle"
+                        onClick={(e) => handleStartRename(e, session)}>
+                        {session.title}
+                      </span>
+                    )}
                     <span className="sessionList__cardMeta">
                       {formatSessionTime(session.createdAt)}
                     </span>

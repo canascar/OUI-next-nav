@@ -24,7 +24,7 @@ export function createSession(state) {
   const newSession = createDefaultSession();
   return {
     ...state,
-    sessions: [...state.sessions, newSession],
+    sessions: [newSession, ...state.sessions],
     activeSessionId: newSession.id,
   };
 }

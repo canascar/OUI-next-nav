@@ -1653,6 +1653,14 @@ export const SessionPagesView = () => {
           activeSessionId={sessionState.activeSessionId}
           onSelectSession={handleSelectSession}
           onCreateSession={handleCreateSession}
+          onRenameSession={(sessionId, newTitle) => {
+            setSessionState((prev) => ({
+              ...prev,
+              sessions: prev.sessions.map((s) =>
+                s.id === sessionId ? { ...s, title: newTitle } : s
+              ),
+            }));
+          }}
         />
       );
     }
