@@ -316,6 +316,32 @@
 .pagePanel__aiPopover {
   position: relative;
   cursor: pointer;
+
+  &:hover .pagePanel__floatingDismiss {
+    opacity: 1;
+  }
+}
+
+.pagePanel__floatingDismiss {
+  position: absolute;
+  top: -18px;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: $ouiColorEmptyShade;
+  border: 1px solid $ouiBorderColor;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 150ms ease;
+  z-index: 1;
+
+  &:hover {
+    background-color: $ouiColorLightestShade;
+  }
 }
 
 @keyframes aiGradientRotate {

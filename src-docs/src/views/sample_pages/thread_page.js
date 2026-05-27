@@ -143,6 +143,11 @@ kubectl rollout status deployment/payment-service -n production --timeout=120s
 echo "Done. Monitoring P99 latency for recovery..."`,
         },
       },
+      {
+        role: 'assistant',
+        content:
+          '**Summary**\n\nPayment-service P99 latency breached 2,000ms due to connection pool exhaustion on 3 of 4 pods. The outbound pool hit 98% utilization, causing requests to queue rather than fail fast. No recent deployments contributed. Root cause: pool max of 50 connections was insufficient under current load. Fix applied: pool max increased to 150 with a 5s acquire timeout, and pods restarted. Latency is expected to recover within 2–3 minutes.',
+      },
     ],
   },
   'checkout-error': {
@@ -1668,7 +1673,12 @@ export const ThreadPage = ({
     setCompletedScriptedIds(new Set());
     hasInteracted.current = false;
     if (feedRef.current) {
-      feedRef.current.scrollTop = 0;
+      // Scroll to bottom if thread has existing messages, top if empty
+      setTimeout(() => {
+        if (feedRef.current) {
+          feedRef.current.scrollTop = feedRef.current.scrollHeight;
+        }
+      }, 0);
     }
 
     // If coming from "Continue as thread", open the canvas with the source page

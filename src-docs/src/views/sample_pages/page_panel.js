@@ -297,6 +297,16 @@ export const PagePanel = ({
               <div className="pagePanel__aiPopoverInner">
                 <p className="pagePanel__aiPopoverText">{aiButtonMessage}</p>
               </div>
+              <button
+                type="button"
+                className="pagePanel__floatingDismiss"
+                aria-label="Dismiss"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDismissAiPopover && onDismissAiPopover();
+                }}>
+                <OuiIcon type="cross" size="s" />
+              </button>
             </div>
           )}
           <div className="pagePanel__floatingInputRow">

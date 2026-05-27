@@ -96,6 +96,7 @@
 .ouiSuperDatePicker__prettyFormat {
   background-color: rgba(red($ouiFormBackgroundColor), green($ouiFormBackgroundColor), blue($ouiFormBackgroundColor), 0.55) !important;
   border-radius: $ouiFormControlBorderRadius !important;
+  border: 1px solid $ouiFormBorderColor !important;
 }
 
 .ouiFormControlLayout:not(.ouiFormControlLayout--group) {
