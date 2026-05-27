@@ -431,7 +431,7 @@
 .ouiFieldPassword:focus,
 .ouiSelect:focus,
 .ouiTextArea:focus {
-  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)), inset 0 -2px 0 0 $ouiColorPrimary !important;
+  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)), inset 0 -1px 0 0 $ouiColorPrimary !important;
 }
 
 .ouiFieldText:active,
@@ -508,7 +508,7 @@
   }
 
   &:focus-within {
-    border-bottom: 2px solid $ouiColorPrimary !important;
+    border-bottom: 1px solid $ouiColorPrimary !important;
   }
 }
 // sass-lint:enable no-important

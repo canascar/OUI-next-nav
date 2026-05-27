@@ -589,6 +589,24 @@
     transition: opacity 150ms ease-in;
   }
 
+  // Bottom accent line on focus
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: $ouiColorPrimary;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 300ms ease;
+  }
+
+  &:has(textarea:focus)::after {
+    opacity: 1;
+  }
+
   // Ensure no extra space below the textarea
   .ouiFormControlLayout {
     margin-bottom: 0;
