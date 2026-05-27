@@ -594,6 +594,50 @@
   background-color: transparent;
 }
 
+// ─── Discover / Monitor / More grid ─────────────────────────
+.emptySessionPage__discoverGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: $ouiSize;
+
+  &--3col {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+.emptySessionPage__discoverGridItem {
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeS;
+  padding: $ouiSize;
+  height: 64px;
+  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
+  border-radius: 0;
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(16, 62, 110, 0.4));
+  cursor: pointer;
+  font-size: $ouiFontSizeS;
+  color: $ouiTextColor;
+  transition: background-color 200ms ease, border-color 200ms ease;
+
+  &:hover {
+    background-color: rgba($ouiColorPrimary, 0.08);
+    border-color: rgba($ouiColorPrimary, 0.3);
+  }
+
+  &--disabled {
+    cursor: default;
+    opacity: 0.4;
+    pointer-events: none;
+
+    &:hover {
+      background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(16, 62, 110, 0.4));
+      border-color: lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
+    }
+  }
+}
+
 .emptySessionPage__activityCard {
   display: flex;
   flex-direction: column;
@@ -734,7 +778,7 @@
 // ─── Saved Query card (matches favoritePanel) ──────────────
 .emptySessionPage__savedQueryCard {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   gap: 16px;
   border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
   border-radius: 0;

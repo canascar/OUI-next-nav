@@ -29,7 +29,7 @@ import {
   OuiTabs,
   OuiText,
   OuiToolTip,
-  OuiThreadInput,
+  OuiCompressedTextArea,
 } from '../../../../src/components';
 
 import { DetailPageHeader } from './detail_page_header';
@@ -655,11 +655,7 @@ const ViewAsPageButton = ({ onClick }) => (
       type="button"
       className="threadPage__addToCanvasBtn"
       onClick={onClick}>
-      View
-    </button>
-    <span className="threadPage__addToCanvasDivider" />
-    <button type="button" className="threadPage__addToCanvasBtn">
-      Add as context
+      View as page
     </button>
   </div>
 );
@@ -2470,34 +2466,37 @@ export const ThreadPage = ({
               );
             })()}
             <div className="threadPage__inputWrapper">
-              <OuiThreadInput
-                placeholder="Ask AI anything"
+              <OuiCompressedTextArea
+                placeholder="Ask anything. Type / for actions."
                 value={message}
-                onChange={setMessage}
-                onSubmit={handleSend}
-                actionsLeft={
-                  <OuiButtonIcon
-                    iconType="plus"
-                    aria-label="Add attachment"
-                    size="s"
-                    color="text"
-                  />
-                }
-                actionsRight={
-                  <OuiButtonIcon
-                    iconType="sortUp"
-                    aria-label="Send message"
-                    display="fill"
-                    size="s"
-                    isDisabled={
-                      !message.trim() ||
-                      isTyping ||
-                      messages.some((m) => m.streaming)
-                    }
-                    onClick={handleSend}
-                  />
-                }
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={handleKeyDown}
+                rows={3}
+                resize="none"
+                fullWidth
+                autoFocus
+                className="threadPage__textarea"
               />
+              <div className="threadPage__inputActions">
+                <OuiButtonIcon
+                  iconType="plus"
+                  aria-label="Add attachment"
+                  size="s"
+                  color="text"
+                />
+                <OuiButtonIcon
+                  iconType="sortUp"
+                  aria-label="Send message"
+                  display="fill"
+                  size="s"
+                  isDisabled={
+                    !message.trim() ||
+                    isTyping ||
+                    messages.some((m) => m.streaming)
+                  }
+                  onClick={handleSend}
+                />
+              </div>
             </div>
           </div>
         </div>

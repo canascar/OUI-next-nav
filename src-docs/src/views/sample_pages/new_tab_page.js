@@ -20,7 +20,6 @@ import { SOURCE_PAGE_MOCK } from './session_models';
  * Filter chips for the new tab page (no Recent tab).
  */
 const TAB_FILTER_CHIPS = [
-  { key: 'overview', label: 'Overview' },
   { key: 'discover', label: 'Discover' },
   { key: 'monitor', label: 'Monitor' },
   { key: 'more', label: 'More' },
@@ -38,7 +37,7 @@ const TAB_CHIP_DATA = {
 
 export const NewTabPage = ({ onSelectPage }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeChip, setActiveChip] = useState('overview');
+  const [activeChip, setActiveChip] = useState('discover');
   const [inputValue, setInputValue] = useState('');
 
   // Build searchable items
@@ -185,77 +184,6 @@ export const NewTabPage = ({ onSelectPage }) => {
               </div>
             )}
 
-            {/* Overview: side-by-side SERVICE + SAVED QUERY (no LATEST) */}
-            {activeChip === 'overview' && (
-              <div className="emptySessionPage__sideBySide">
-                <div className="emptySessionPage__sideBySideCol">
-                  <div className="emptySessionPage__sectionHeader">// SERVICE</div>
-                  <div className="emptySessionPage__favoritePanel">
-                    <div className="emptySessionPage__favoritePanelTitle">Top services by fault rate</div>
-                    <div className="emptySessionPage__favoritePanelTable">
-                      <div className="emptySessionPage__favoritePanelHeader">
-                        <span>Service</span><span>Fault rate</span>
-                      </div>
-                      <div className="emptySessionPage__favoritePanelRow">
-                        <button type="button" className="emptySessionPage__favoritePanelLink" onClick={() => onSelectPage('service-detail', 'Service: checkout')}>checkout</button>
-                        <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '66.67%' }} /></div><span>66.67%</span></div>
-                      </div>
-                      <div className="emptySessionPage__favoritePanelRow">
-                        <span className="emptySessionPage__favoritePanelLink--static">frontend</span>
-                        <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '14.49%' }} /></div><span>14.49%</span></div>
-                      </div>
-                      <div className="emptySessionPage__favoritePanelRow">
-                        <span className="emptySessionPage__favoritePanelLink--static">frontend-proxy</span>
-                        <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '14.29%' }} /></div><span>14.29%</span></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="emptySessionPage__sideBySideCol">
-                  <div className="emptySessionPage__sectionHeader">// SAVED QUERY</div>
-                  <button type="button" className="emptySessionPage__savedQueryCard" onClick={() => onSelectPage('discover-log', 'Connection timeout errors')}>
-                    <div className="emptySessionPage__savedQueryLeft">
-                      <span className="emptySessionPage__savedQueryTitle">Connection timeout errors</span>
-                      <code className="emptySessionPage__savedQueryCode">source=logs | where severity=&quot;ERROR&quot;</code>
-                    </div>
-                    <div className="emptySessionPage__savedQueryChart">
-                      <svg viewBox="0 0 120 48" preserveAspectRatio="none" className="emptySessionPage__savedQuerySvg">
-                        <path d="M0,42 L8,41 L16,39 L24,38 L32,36 L40,33 L48,30 L56,27 L64,21 L72,18 L80,12 L88,9 L96,6 L104,4 L112,3 L120,1" fill="none" stroke="currentColor" strokeWidth="2" />
-                        <path d="M0,42 L8,41 L16,39 L24,38 L32,36 L40,33 L48,30 L56,27 L64,21 L72,18 L80,12 L88,9 L96,6 L104,4 L112,3 L120,1 L120,48 L0,48 Z" fill="currentColor" opacity="0.1" />
-                      </svg>
-                    </div>
-                    <div className="emptySessionPage__savedQueryRight">
-                      <span className="emptySessionPage__savedQueryValue">847</span>
-                      <span className="emptySessionPage__savedQueryTrend">↑ +312%</span>
-                      <span className="emptySessionPage__savedQueryRange">Last 15 min</span>
-                    </div>
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Overview: FAVORITES */}
-            {activeChip === 'overview' && (
-              <div className="emptySessionPage__sectionHeader">// FAVORITES</div>
-            )}
-            {activeChip === 'overview' && (TAB_CHIP_DATA.favorite || []).map((item) => (
-              <div key={item.key} className="emptySessionPage__listItem">
-                <button
-                  type="button"
-                  className="emptySessionPage__listItemClickable"
-                  onClick={() => onSelectPage(item.pageKey, item.title)}>
-                  <span className="emptySessionPage__listItemContent">
-                    <span className="emptySessionPage__listItemTitle">{item.title}</span>
-                    <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
-                  </span>
-                  {item.typeIcon && (
-                    <span className="emptySessionPage__listItemRight">
-                      <OuiIcon type={item.typeIcon} size="m" color="subdued" />
-                    </span>
-                  )}
-                </button>
-              </div>
-            ))}
           </div>
         </>
       )}

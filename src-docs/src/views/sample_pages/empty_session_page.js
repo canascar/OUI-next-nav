@@ -13,16 +13,16 @@ import React, { useState, useMemo } from 'react';
 
 import {
   OuiButtonIcon,
+  OuiCompressedTextArea,
   OuiIcon,
   OuiTab,
   OuiTabs,
   OuiText,
-  OuiThreadInput,
   OuiTitle,
 } from '../../../../src/components';
 
 import { SOURCE_PAGE_MOCK } from './session_models';
-import { Mascot } from '../../../../olly-mascot/Mascot';
+import { OllyAvatar } from './olly_avatar';
 
 /**
  * Quick access shortcut definitions.
@@ -179,69 +179,94 @@ const SystemCallout = ({ alert, onAction }) => {
  * @param {(prompt: string) => void} props.onStartThread
  * @param {(pageKey: string) => void} props.onOpenPage
  */
-const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange }) => {
+const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, onBlur, onHoverStart, onHoverEnd, borderActive }) => {
   const [inputValue, setInputValue] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
 
+  const matchingPages = useMemo(() => {
+    if (!inputValue.trim()) return [];
+    const query = inputValue.toLowerCase();
+    return Object.entries(SOURCE_PAGE_MOCK)
+      .filter(([, { title }]) => title.toLowerCase().includes(query))
+      .map(([key, { title }]) => ({ key, title }));
+  }, [inputValue]);
+
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setInputValue(value);
+    setShowSuggestions(value.trim().length > 0);
+    if (onSearchChange) {
+      onSearchChange(value);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    if (e.key === 'Enter' && inputValue.trim()) {
+      const exactMatch = Object.entries(SOURCE_PAGE_MOCK).find(
+        ([, { title }]) =>
+          title.toLowerCase() === inputValue.trim().toLowerCase()
+      );
+      if (exactMatch) {
+        onOpenPage(exactMatch[0]);
+      } else {
+        onStartThread(inputValue.trim());
+      }
+      setInputValue('');
+      setShowSuggestions(false);
+    }
+  };
+
   return (
-    <OuiThreadInput
-      placeholder="Ask AI anything, or type to search a page"
-      value={inputValue}
-      onChange={(val) => {
-        setInputValue(val);
-        setShowSuggestions(val.trim().length > 0);
-        if (onSearchChange) {
-          onSearchChange(val);
-        }
-      }}
-      onSubmit={(val) => {
-        if (val.trim()) {
-          const exactMatch = Object.entries(SOURCE_PAGE_MOCK).find(
-            ([, { title }]) =>
-              title.toLowerCase() === val.trim().toLowerCase()
-          );
-          if (exactMatch) {
-            onOpenPage(exactMatch[0]);
-          } else {
-            onStartThread(val.trim());
-          }
-          setInputValue('');
-          setShowSuggestions(false);
-        }
-      }}
-      actionsLeft={
-        <OuiButtonIcon
-          iconType="plus"
-          aria-label="Add attachment"
-          size="s"
-          color="text"
+    <div
+      className={`emptySessionPage__inputWrap${borderActive ? ' emptySessionPage__inputWrap--borderActive' : ''}`}
+      onMouseEnter={onHoverStart}
+      onMouseLeave={onHoverEnd}>
+      <div className="emptySessionPage__inputField">
+        <OuiCompressedTextArea
+          placeholder="Ask AI anything, or type to search a page"
+          value={inputValue}
+          onChange={handleChange}
+          onKeyDown={handleSubmit}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          rows={3}
+          resize="none"
+          fullWidth
+          autoFocus
+          className="emptySessionPage__textarea"
         />
-      }
-      actionsRight={
-        <OuiButtonIcon
-          iconType="sortUp"
-          aria-label="Send"
-          display="fill"
-          size="s"
-          isDisabled={!inputValue.trim()}
-          onClick={() => {
-            if (inputValue.trim()) {
-              const exactMatch = Object.entries(SOURCE_PAGE_MOCK).find(
-                ([, { title }]) =>
-                  title.toLowerCase() === inputValue.trim().toLowerCase()
-              );
-              if (exactMatch) {
-                onOpenPage(exactMatch[0]);
-              } else {
-                onStartThread(inputValue.trim());
+        <div className="emptySessionPage__inputActions">
+          <OuiButtonIcon
+            iconType="plus"
+            aria-label="Add attachment"
+            size="s"
+            color="text"
+          />
+          <OuiButtonIcon
+            iconType="sortUp"
+            aria-label="Send"
+            display="fill"
+            size="s"
+            isDisabled={!inputValue.trim()}
+            onClick={() => {
+              if (inputValue.trim()) {
+                const exactMatch = Object.entries(SOURCE_PAGE_MOCK).find(
+                  ([, { title }]) =>
+                    title.toLowerCase() === inputValue.trim().toLowerCase()
+                );
+                if (exactMatch) {
+                  onOpenPage(exactMatch[0]);
+                } else {
+                  onStartThread(inputValue.trim());
+                }
+                setInputValue('');
+                setShowSuggestions(false);
               }
-              setInputValue('');
-              setShowSuggestions(false);
-            }
-          }}
-        />
-      }
-    />
+            }}
+          />
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -444,6 +469,9 @@ export const EmptySessionPage = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [dismissedItems, setDismissedItems] = useState(new Set());
   const [dismissingItems, setDismissingItems] = useState(new Set());
+  const [inputHovered, setInputHovered] = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
+  const inputActive = inputHovered || inputFocused;
 
   // Build a flat searchable list from all chip data + SOURCE_PAGE_MOCK
   const allSearchableItems = useMemo(() => {
@@ -477,7 +505,7 @@ export const EmptySessionPage = ({
         <div className="emptySessionPage__content">
           {/* Welcome title */}
           <div className="emptySessionPage__header">
-            <Mascot size={44} idle bob={false} follow={false} />
+            <OllyAvatar size={52} lookingDown={inputActive} />
             <div className="emptySessionPage__headerText">
               <OuiTitle size="m">
                 <h1>Good morning, John</h1>
@@ -493,6 +521,11 @@ export const EmptySessionPage = ({
             onStartThread={onStartThread}
             onOpenPage={onOpenPage}
             onSearchChange={setSearchQuery}
+            onFocus={() => setInputFocused(true)}
+            onBlur={() => setInputFocused(false)}
+            onHoverStart={() => setInputHovered(true)}
+            onHoverEnd={() => setInputHovered(false)}
+            borderActive={inputActive}
           />
 
           {/* Search results OR normal content */}

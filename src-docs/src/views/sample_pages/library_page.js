@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState } from 'react';
 
 import {
   OuiCompressedFieldSearch,
@@ -74,19 +74,6 @@ const TABS = [
 export const LibraryPage = ({ onSelectPage }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('all');
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [tabsScrollLeft, setTabsScrollLeft] = useState(false);
-  const [tabsScrollRight, setTabsScrollRight] = useState(true);
-
-  const handleScroll = useCallback((e) => {
-    setIsScrolled(e.target.scrollTop > 0);
-  }, []);
-
-  const handleTabsScroll = useCallback((e) => {
-    const el = e.target;
-    setTabsScrollLeft(el.scrollLeft > 0);
-    setTabsScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 1);
-  }, []);
 
   const filteredItems = LIBRARY_OBJECTS.filter((item) => {
     const matchesSearch = !searchQuery.trim() ||
@@ -97,36 +84,36 @@ export const LibraryPage = ({ onSelectPage }) => {
   });
 
   return (
-    <div className="libraryPage" onScroll={handleScroll}>
+    <div className="libraryPage">
       <div className="libraryPage__content">
-        <div className={`libraryPage__header${isScrolled ? ' libraryPage__header--scrolled' : ''}`}>
+        <div className="libraryPage__header">
           <OuiTitle size="s">
             <h2>Library</h2>
           </OuiTitle>
+        </div>
 
-          <div className="libraryPage__search">
-            <OuiCompressedFieldSearch
-              placeholder="Search assets..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              fullWidth
-              aria-label="Search assets"
-            />
-          </div>
+        <div className="libraryPage__search">
+          <OuiCompressedFieldSearch
+            placeholder="Search assets..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            fullWidth
+            aria-label="Search assets"
+          />
+        </div>
 
-          <div className={`libraryPage__tabs${tabsScrollLeft ? ' libraryPage__tabs--scrolledLeft' : ''}${!tabsScrollRight ? ' libraryPage__tabs--scrolledRight' : ''}`}>
-            <div className="emptySessionPage__chips" onScroll={handleTabsScroll}>
-              {TABS.map((tab) => (
-                <button
-                  key={tab.id}
-                  type="button"
-                  className={`emptySessionPage__chip${activeTab === tab.id ? ' emptySessionPage__chip--active' : ''}`}
-                  onClick={() => setActiveTab(tab.id)}>
-                  <OuiIcon type={tab.icon} size="m" />
-                  <span>{tab.label}</span>
-                </button>
-              ))}
-            </div>
+        <div className="libraryPage__tabs">
+          <div className="emptySessionPage__chips">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                className={`emptySessionPage__chip${activeTab === tab.id ? ' emptySessionPage__chip--active' : ''}`}
+                onClick={() => setActiveTab(tab.id)}>
+                <OuiIcon type={tab.icon} size="m" />
+                <span>{tab.label}</span>
+              </button>
+            ))}
           </div>
         </div>
 

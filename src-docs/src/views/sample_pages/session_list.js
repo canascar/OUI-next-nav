@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 
 import {
   OuiCompressedFieldSearch,
@@ -52,11 +52,6 @@ export const SessionList = ({
   onCreateSession,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [isScrolled, setIsScrolled] = useState(false);
-
-  const handleScroll = useCallback((e) => {
-    setIsScrolled(e.target.scrollTop > 0);
-  }, []);
 
   const filteredSessions = searchQuery.trim()
     ? sessions.filter((s) =>
@@ -65,31 +60,24 @@ export const SessionList = ({
     : sessions;
 
   return (
-    <div className="sessionList" onScroll={handleScroll}>
+    <div className="sessionList">
       <div className="sessionList__content">
         {/* Header */}
-        <div className={`sessionList__header${isScrolled ? ' sessionList__header--scrolled' : ''}`}>
-          <div className="sessionList__titleRow">
-            <OuiTitle size="s">
-              <h2>All sessions</h2>
-            </OuiTitle>
-            <button
-              type="button"
-              className="sessionList__newButton"
-              onClick={onCreateSession}>
-              <OuiIcon type="plusInCircle" size="s" />
-              <span>New session</span>
-            </button>
-          </div>
-          <div className="sessionList__search">
-            <OuiCompressedFieldSearch
-              placeholder="Search sessions..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              fullWidth
-              aria-label="Search sessions"
-            />
-          </div>
+        <div className="sessionList__header">
+          <OuiTitle size="s">
+            <h2>All sessions</h2>
+          </OuiTitle>
+        </div>
+
+        {/* Search */}
+        <div className="sessionList__search">
+          <OuiCompressedFieldSearch
+            placeholder="Search sessions..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            fullWidth
+            aria-label="Search sessions"
+          />
         </div>
 
         {/* Session cards */}

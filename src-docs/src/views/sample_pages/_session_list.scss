@@ -21,7 +21,7 @@
   align-items: center;
   width: 100%;
   height: 100%;
-  padding: 0 $ouiSizeL $ouiSizeL $ouiSizeL;
+  padding: $ouiSizeL;
   overflow-y: auto;
   background-color: $ouiPageBackgroundColor;
 }
@@ -30,68 +30,20 @@
 .sessionList__content {
   width: 100%;
   max-width: 832px;
-  display: flex;
-  flex-direction: column;
 }
 
-// Header with title and search — sticky
+// Header with title and create button
 .sessionList__header {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  background-color: $ouiPageBackgroundColor;
-  padding-top: $ouiSizeL;
-  padding-bottom: 0;
-  margin: 0;
-  border-bottom: 1px solid transparent;
-  transition: border-color 200ms ease, box-shadow 200ms ease;
-
-  &--scrolled {
-    border-bottom-color: $ouiBorderColor;
-    box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.08), rgba(0, 0, 0, 0.2));
-  }
-
-  h2 {
-    padding-bottom: 8px;
-  }
-}
-
-// Title row with "New session" button
-.sessionList__titleRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 8px;
-}
-
-.sessionList__newButton {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: none;
-  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34));
-  border-radius: 0;
-  padding: 4px 12px;
-  cursor: pointer;
-  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  color: lightOrDarkTheme(rgba(13, 48, 87, 0.62), rgba(207, 228, 247, 0.62));
-  transition: border-color 150ms ease, color 150ms ease;
-
-  &:hover {
-    border-color: $ouiColorPrimary;
-    color: $ouiColorPrimary;
-  }
+  margin-bottom: $ouiSizeL;
+  flex-shrink: 0;
 }
 
 // Search bar
 .sessionList__search {
-  margin-bottom: 0;
+  margin-bottom: $ouiSize;
 }
 
 // Cards container
@@ -99,7 +51,6 @@
   display: flex;
   flex-direction: column;
   gap: $ouiSizeS;
-  padding-top: 8px;
 }
 
 // Empty state
@@ -115,32 +66,32 @@
   gap: $ouiSize;
   width: 100%;
   padding: $ouiSize;
-  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
-  border-radius: 0;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(16, 62, 110, 0.4));
+  border: $ouiBorderThin;
+  border-radius: $ouiBorderRadius;
+  background-color: $ouiColorEmptyShade;
   cursor: pointer;
   text-align: left;
   position: relative;
-  transition: background-color 200ms ease, border-color 200ms ease, transform 200ms ease;
+  transition: background-color $ouiAnimSpeedFast ease-in-out,
+              border-color $ouiAnimSpeedFast ease-in-out,
+              box-shadow $ouiAnimSpeedFast ease-in-out;
 
   &:hover {
-    background-color: rgba($ouiColorPrimary, 0.08);
-    border-color: rgba($ouiColorPrimary, 0.3);
-    transform: translateY(-1px);
+    background-color: $ouiFocusBackgroundColor;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
 
   &:focus {
     outline: none;
-    border-color: rgba($ouiColorPrimary, 0.3);
+    box-shadow: 0 0 0 2px $ouiFocusRingColor;
   }
 
   // Active session highlight
   &--active {
-    border-color: rgba($ouiColorPrimary, 0.45);
-    background-color: rgba($ouiColorPrimary, 0.06);
+    border-color: $ouiColorPrimary;
 
     &:hover {
-      background-color: rgba($ouiColorPrimary, 0.1);
+      background-color: $ouiFocusBackgroundColor;
     }
   }
 }

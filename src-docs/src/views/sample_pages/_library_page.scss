@@ -17,8 +17,8 @@
   align-items: center;
   width: 100%;
   height: 100%;
-  padding: 0 $ouiSizeL $ouiSizeL $ouiSizeL;
-  overflow-y: auto;
+  padding: $ouiSizeL $ouiSizeL $ouiSizeL $ouiSizeL;
+  overflow: hidden;
   background-color: $ouiPageBackgroundColor;
 }
 
@@ -27,75 +27,25 @@
   max-width: 832px;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 }
 
 .libraryPage__header {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  background-color: $ouiPageBackgroundColor;
-  padding-top: $ouiSizeL;
-  padding-bottom: 8px;
-  margin: 0;
-  border-bottom: 1px solid transparent;
-  transition: border-color 200ms ease;
-
-  &--scrolled {
-    border-bottom-color: $ouiBorderColor;
-  }
-
-  h2 {
-    padding-bottom: 8px;
-  }
+  margin-bottom: $ouiSizeL;
 }
 
 .libraryPage__search {
-  margin-bottom: 0;
+  margin-bottom: $ouiSize;
 }
 
 .libraryPage__tabs {
-  margin-bottom: 0;
-  padding-top: 8px;
-  position: relative;
-
-  // Left fade shadow
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: 8px;
-    bottom: 0;
-    width: 32px;
-    pointer-events: none;
-    z-index: 1;
-    transition: opacity 200ms ease;
-  }
-
-  &::before {
-    left: 0;
-    background: linear-gradient(to right, $ouiPageBackgroundColor, transparent);
-    opacity: 0;
-  }
-
-  &::after {
-    right: 0;
-    background: linear-gradient(to left, $ouiPageBackgroundColor, transparent);
-    opacity: 1;
-  }
-
-  &--scrolledLeft::before {
-    opacity: 1;
-  }
-
-  &--scrolledRight::after {
-    opacity: 0;
-  }
+  margin-bottom: $ouiSize;
 
   .emptySessionPage__chips {
     flex-wrap: nowrap;
     overflow-x: auto;
     justify-content: flex-start;
-    padding: 0;
     -ms-overflow-style: none;
     scrollbar-width: none;
 
@@ -113,6 +63,11 @@
   display: flex;
   flex-direction: column;
   gap: $ouiSizeS;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  margin-right: -#{$ouiSizeL};
+  padding-right: $ouiSizeL;
 }
 
 .libraryPage__empty {
