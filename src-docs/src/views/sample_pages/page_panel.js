@@ -288,7 +288,10 @@ export const PagePanel = ({
         {renderTabContent()}
       </div>
       {onExpandChat && (
-        <div className={`pagePanel__floatingBar${(aiButtonHighlight && aiButtonMessage) || isFloatingExpanded ? ' pagePanel__floatingBar--expanded' : ''}`}>
+        <div
+          className={`pagePanel__floatingBar${(aiButtonHighlight && aiButtonMessage) || isFloatingExpanded ? ' pagePanel__floatingBar--expanded' : ''}`}
+          onMouseEnter={() => setOllyHovered(true)}
+          onMouseLeave={() => setOllyHovered(false)}>
           {aiButtonHighlight && aiButtonMessage && (
             <div className="pagePanel__aiPopover" onClick={onExpandChat}>
               <div className="pagePanel__aiPopoverInner">
@@ -301,9 +304,7 @@ export const PagePanel = ({
               type="button"
               className={`pagePanel__floatingMascot${aiButtonHighlight ? ' pagePanel__floatingMascot--highlight' : ''}`}
               aria-label="Open AI chat"
-              onClick={onExpandChat}
-              onMouseEnter={() => setOllyHovered(true)}
-              onMouseLeave={() => setOllyHovered(false)}>
+              onClick={onExpandChat}>
               <OllyAvatar size={28} highlight={ollyHovered} />
             </button>
             <OuiFieldText

@@ -505,7 +505,15 @@ export const EmptySessionPage = ({
         <div className="emptySessionPage__content">
           {/* Welcome title */}
           <div className="emptySessionPage__header">
-            <OllyAvatar size={52} lookingDown={inputActive} />
+            <div
+              className={`emptySessionPage__avatarWrap${inputActive ? ' emptySessionPage__avatarWrap--active' : ''}`}
+              onClick={() => {
+                const textarea = document.querySelector('.emptySessionPage__textarea textarea');
+                if (textarea) textarea.focus();
+              }}
+              style={{ cursor: 'pointer' }}>
+              <OllyAvatar size={52} lookingDown={inputActive} />
+            </div>
             <div className="emptySessionPage__headerText">
               <OuiTitle size="m">
                 <h1>Good morning, John</h1>
