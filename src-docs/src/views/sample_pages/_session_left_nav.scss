@@ -81,6 +81,13 @@
       background-color: rgba($ouiColorPrimary, 0.15);
     }
   }
+
+  &[disabled],
+  &.ouiButtonIcon-isDisabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
 }
 
 // Wrapper for sessions button + badge
