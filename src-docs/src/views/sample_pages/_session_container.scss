@@ -18,11 +18,10 @@
   height: 100%;
   min-width: 0;
   overflow: hidden;
-  gap: 8px;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-right: 8px;
+  gap: 0;
+  padding: 0;
   position: relative;
+  background-color: $ouiPageBackgroundColor;
 }
 
 // Remove gap when chat pane is minimized so page panel reaches the left edge
@@ -35,6 +34,12 @@
   height: 100%;
   min-width: 0;
   overflow: hidden;
+  border-left: 1px solid $ouiBorderColor;
+}
+
+// Hide left border when canvas is full width (chat minimized)
+.sessionContainer--chatMinimized .sessionContainer__pagePanelWrap {
+  border-left: none;
 }
 
 .sessionContainer__pagePanelWrap--animating {
@@ -47,7 +52,7 @@
   flex-direction: column;
   height: 100%;
   background-color: $ouiColorEmptyShade;
-  border-radius: 8px;
+  border-radius: 0;
 }
 
 .sessionContainer__collapsedPanelHeader {

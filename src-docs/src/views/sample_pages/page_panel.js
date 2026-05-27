@@ -20,7 +20,7 @@ import {
 import { SOURCE_PAGE_MOCK } from './session_models';
 import { DetailPageHeader } from './detail_page_header';
 import { NewTabPage } from './new_tab_page';
-import { Mascot } from '../../../../olly-mascot/Mascot';
+import { OllyAvatar } from './olly_avatar';
 
 /**
  * Icon mapping for page keys.
@@ -222,6 +222,7 @@ export const PagePanel = ({
   const activeTab = tabs.find((tab) => tab.id === activeTabId);
   const [floatingInput, setFloatingInput] = useState('');
   const [isFloatingExpanded, setIsFloatingExpanded] = useState(false);
+  const [ollyHovered, setOllyHovered] = useState(false);
 
   /** Render the content for the active tab */
   const renderTabContent = () => {
@@ -287,12 +288,25 @@ export const PagePanel = ({
         {renderTabContent()}
       </div>
       {onExpandChat && (
-        <div className={`pagePanel__floatingBar${(aiButtonHighlight && aiButtonMessage) || isFloatingExpanded ? ' pagePanel__floatingBar--expanded' : ''}`}>
+        <div
+          className={`pagePanel__floatingBar${(aiButtonHighlight && aiButtonMessage) || isFloatingExpanded ? ' pagePanel__floatingBar--expanded' : ''}`}
+          onMouseEnter={() => setOllyHovered(true)}
+          onMouseLeave={() => setOllyHovered(false)}>
           {aiButtonHighlight && aiButtonMessage && (
             <div className="pagePanel__aiPopover" onClick={onExpandChat}>
               <div className="pagePanel__aiPopoverInner">
                 <p className="pagePanel__aiPopoverText">{aiButtonMessage}</p>
               </div>
+              <button
+                type="button"
+                className="pagePanel__floatingDismiss"
+                aria-label="Dismiss"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDismissAiPopover && onDismissAiPopover();
+                }}>
+                <OuiIcon type="cross" size="s" />
+              </button>
             </div>
           )}
           <div className="pagePanel__floatingInputRow">
@@ -301,7 +315,7 @@ export const PagePanel = ({
               className={`pagePanel__floatingMascot${aiButtonHighlight ? ' pagePanel__floatingMascot--highlight' : ''}`}
               aria-label="Open AI chat"
               onClick={onExpandChat}>
-              <Mascot size={28} idle bob={false} follow={false} />
+              <OllyAvatar size={28} highlight={ollyHovered} />
             </button>
             <OuiFieldText
               placeholder="Ask AI anything"

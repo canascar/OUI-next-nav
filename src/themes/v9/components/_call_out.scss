@@ -23,8 +23,8 @@ $ouiCallOutTypes: (
 .ouiCallOut {
   padding: calc($ouiSize * 1.25); // 20px for better breathing room
   border: 1px solid transparent; // All-around border instead of just left
-  border-radius: 8px; // Rounded on right side only (per user request)
-  box-shadow: 0 1px 2px 0 rgba($ouiShadowColor, 0.05); // Subtle elevation for light theme
+  border-radius: 0; // v10 Blueprint: square corners everywhere
+  box-shadow: none; // v10: no drop shadows
   // border-left-width: 3px; // Thicker left border for accent
 
   &.ouiCallOut--small {
@@ -63,7 +63,7 @@ $ouiCallOutTypes: (
       // Dark theme: higher opacity for visibility
       border-color: rgba($color, 0.3);
       background-color: rgba($color, 0.12);
-      box-shadow: 0 1px 2px 0 rgba($ouiShadowColor, 0.2);
+      box-shadow: none;
     } @else {
       // Light theme: lower opacity for subtlety
       border-color: rgba($color, 0.2);

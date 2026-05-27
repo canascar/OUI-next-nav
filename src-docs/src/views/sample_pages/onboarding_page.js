@@ -29,6 +29,8 @@ import {
   OuiCompressedTextArea,
 } from '../../../../src/components';
 
+import { SessionLeftNav } from './session_left_nav';
+
 const THREAD = {
   title: 'Getting started',
   messages: [],
@@ -772,11 +774,19 @@ export const OnboardingPage = () => {
         right: 0,
         bottom: 0,
       }}>
+      <SessionLeftNav
+        isEmptySession={true}
+        activeView="session"
+        disableActions={true}
+        onCreateSession={() => {}}
+        onBrowseSessions={() => {}}
+        onBrowseLibrary={() => {}}
+        onSelectSession={() => {}}
+      />
       <div
         style={{
           flex: 1,
           overflow: 'hidden',
-          padding: 8,
           display: 'flex',
         }}>
         <div

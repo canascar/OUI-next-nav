@@ -76,8 +76,8 @@
 @function ouiFormControlGradient($color: $ouiColorPrimary) {
   @return linear-gradient(to top,
     $color,
-    $color 2px,
-    transparent 2px,
+    $color 1px,
+    transparent 1px,
     transparent 100%
   );
 }

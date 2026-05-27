@@ -24,6 +24,8 @@ import {
   OuiCompressedTextArea,
 } from '../../../../src/components';
 
+import { SessionLeftNav } from './session_left_nav';
+
 /**
  * STEPS CONFIGURATION
  * Onboarding flow for OpenSearch Observability Data Collection.
@@ -1785,26 +1787,22 @@ export const OnboardingWizardPage = () => {
         right: 0,
         bottom: 0,
       }}>
-      {/* Minimal left nav — logo only */}
-      <nav className="samplePagesLeftNav" aria-label="Main navigation">
-        <div className="samplePagesLeftNav__header">
-          <OuiToolTip content="OpenSearch" position="right">
-            <button
-              type="button"
-              className="samplePagesLeftNav__logoButton"
-              aria-label="OpenSearch home">
-              <OuiIcon type="logoOpenSearch" size="l" aria-hidden="true" />
-            </button>
-          </OuiToolTip>
-        </div>
-      </nav>
+      {/* Left nav — matches Day N session experience */}
+      <SessionLeftNav
+        isEmptySession={true}
+        activeView="session"
+        disableActions={true}
+        onCreateSession={() => {}}
+        onBrowseSessions={() => {}}
+        onBrowseLibrary={() => {}}
+        onSelectSession={() => {}}
+      />
 
       {/* Content area with chrome panel */}
       <div
         style={{
           flex: 1,
           overflow: 'hidden',
-          padding: '8px 8px 8px 0',
           display: 'flex',
         }}>
         <div

@@ -39,6 +39,7 @@ export const SessionLeftNav = ({
   sessions = [],
   activeView,
   isEmptySession,
+  disableActions = false,
 }) => {
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
@@ -66,21 +67,38 @@ export const SessionLeftNav = ({
 
       {/* Primary actions */}
       <div className="sessionLeftNav__actions">
-        <OuiToolTip content="New session" position="right">
+        {disableActions ? (
           <OuiButtonIcon
-            className={`sessionLeftNav__actionButton${
-              isEmptySession && activeView === 'session'
-                ? ' sessionLeftNav__actionButton--active'
-                : ''
-            }`}
+            className="sessionLeftNav__actionButton"
             iconType="plusInCircle"
             aria-label="New session"
             color="text"
             display="empty"
-            onClick={onCreateSession}
+            isDisabled
           />
-        </OuiToolTip>
+        ) : (
+          <OuiToolTip content="New session" position="right">
+            <OuiButtonIcon
+              className="sessionLeftNav__actionButton"
+              iconType="plusInCircle"
+              aria-label="New session"
+              color="text"
+              display="empty"
+              onClick={onCreateSession}
+            />
+          </OuiToolTip>
+        )}
 
+        {disableActions ? (
+          <OuiButtonIcon
+            className="sessionLeftNav__actionButton"
+            iconType="navTicketing"
+            aria-label="All sessions"
+            color="text"
+            display="empty"
+            isDisabled
+          />
+        ) : (
         <div
           onMouseEnter={() => openNavPopover('sessions')}
           onMouseLeave={() => closeNavPopover()}>
@@ -88,11 +106,7 @@ export const SessionLeftNav = ({
             button={
               <div className="sessionLeftNav__sessionsButtonWrap">
                 <OuiButtonIcon
-                  className={`sessionLeftNav__actionButton${
-                    activeView === 'session-list'
-                      ? ' sessionLeftNav__actionButton--active'
-                      : ''
-                  }`}
+                  className="sessionLeftNav__actionButton"
                   iconType="navTicketing"
                   aria-label="All sessions"
                   color="text"
@@ -141,25 +155,49 @@ export const SessionLeftNav = ({
             </div>
           </OuiPopover>
         </div>
+        )}
 
-        <OuiToolTip content="Library" position="right">
+        {disableActions ? (
           <OuiButtonIcon
-            className={`sessionLeftNav__actionButton${
-              activeView === 'library'
-                ? ' sessionLeftNav__actionButton--active'
-                : ''
-            }`}
-            iconType={activeView === 'library' ? 'folderOpen' : 'folderClosed'}
+            className="sessionLeftNav__actionButton"
+            iconType="folderClosed"
             aria-label="Library"
             color="text"
             display="empty"
-            onClick={onBrowseLibrary}
+            isDisabled
           />
-        </OuiToolTip>
+        ) : (
+          <OuiToolTip content="Library" position="right">
+            <OuiButtonIcon
+              className={`sessionLeftNav__actionButton${
+                activeView === 'library'
+                  ? ' sessionLeftNav__actionButton--active'
+                  : ''
+              }`}
+              iconType={activeView === 'library' ? 'folderOpen' : 'folderClosed'}
+              aria-label="Library"
+              color="text"
+              display="empty"
+              onClick={onBrowseLibrary}
+            />
+          </OuiToolTip>
+        )}
       </div>
 
       {/* Footer — exact copy from SamplePagesLeftNav collapsed */}
       <div className="sessionLeftNav__footer">
+        {disableActions ? (
+          <div className="sessionLeftNav__footerButton">
+            <OuiButtonIcon
+              iconType="wsSelector"
+              aria-label="Workspace"
+              color="text"
+              display="empty"
+              size="xs"
+              isDisabled
+            />
+          </div>
+        ) : (
         <div
           className="sessionLeftNav__footerButton"
           onMouseEnter={() => openNavPopover('workspace-footer')}
@@ -199,6 +237,7 @@ export const SessionLeftNav = ({
             </div>
           </OuiPopover>
         </div>
+        )}
         <div className="sessionLeftNav__footerButton">
           <OuiToolTip content="Developer tools" position="right">
             <OuiButtonIcon
