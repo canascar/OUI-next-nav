@@ -63,6 +63,16 @@
   display: flex !important;
   align-items: center !important;
 }
+
+// Make append/prepend labels more visible in dark mode
+.ouiFormControlLayout--group > .ouiFormControlLayout__prepend,
+.ouiFormControlLayout--group > .ouiFormControlLayout__append {
+  background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.03), rgba(207, 228, 247, 0.08)) !important;
+
+  .ouiFormLabel {
+    color: lightOrDarkTheme(inherit, rgba(207, 228, 247, 0.85)) !important;
+  }
+}
 // sass-lint:enable no-important
 
 // Remove border-radius from dropdown/select option items
@@ -244,11 +254,15 @@
 }
 // sass-lint:enable no-important, no-color-literals, leading-zero
 
-// Backdrop blur on modal and flyout overlays
+// Backdrop on modal and flyout overlays — no blur
 // sass-lint:disable no-important, no-color-literals
 .ouiOverlayMask {
-  backdrop-filter: blur(65px);
-  background-color: rgba(red($ouiPageBackgroundColor), green($ouiPageBackgroundColor), blue($ouiPageBackgroundColor), .30) !important;
+  backdrop-filter: none;
+  background-color: rgba(red($ouiPageBackgroundColor), green($ouiPageBackgroundColor), blue($ouiPageBackgroundColor), .95) !important;
+}
+
+.ouiFlyout {
+  border-color: lightOrDarkTheme(rgba(13, 48, 87, 0.30), rgba(207, 228, 247, 0.30)) !important;
 }
 // sass-lint:enable no-important, no-color-literals
 
@@ -403,18 +417,21 @@
 }
 
 .ouiFieldText:hover,
-.ouiFieldText:focus,
 .ouiFieldSearch:hover,
-.ouiFieldSearch:focus,
 .ouiFieldNumber:hover,
-.ouiFieldNumber:focus,
 .ouiFieldPassword:hover,
-.ouiFieldPassword:focus,
 .ouiSelect:hover,
-.ouiSelect:focus,
-.ouiTextArea:hover,
-.ouiTextArea:focus {
+.ouiTextArea:hover {
   box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)), inset 0 0 0 1px $ouiFormBorderColor !important;
+}
+
+.ouiFieldText:focus,
+.ouiFieldSearch:focus,
+.ouiFieldNumber:focus,
+.ouiFieldPassword:focus,
+.ouiSelect:focus,
+.ouiTextArea:focus {
+  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)), inset 0 -1px 0 0 $ouiColorPrimary !important;
 }
 
 .ouiFieldText:active,
@@ -489,6 +506,10 @@
     transform: translateY(-1px) !important;
     box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)) !important;
   }
+
+  &:focus-within {
+    border-bottom: 1px solid $ouiColorPrimary !important;
+  }
 }
 // sass-lint:enable no-important
 
@@ -548,5 +569,78 @@
   box-shadow: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+}
+// sass-lint:enable no-important
+
+// ============================================================
+// CORNER MARKS — Technical/blueprint corner decorations on form inputs
+// ============================================================
+
+// sass-lint:disable no-important
+.ouiFormControlLayout {
+  position: relative !important;
+
+  // Corner marks — L-shaped brackets outside each corner
+  &::before,
+  &::after {
+    content: '' !important;
+    position: absolute !important;
+    width: 12px !important;
+    height: 12px !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+  }
+
+  // Top-left corner (outside)
+  &::before {
+    top: -4px !important;
+    left: -4px !important;
+    border-top: 2px solid $ouiColorMediumShade !important;
+    border-left: 2px solid $ouiColorMediumShade !important;
+  }
+
+  // Bottom-right corner (outside)
+  &::after {
+    bottom: -4px !important;
+    right: -4px !important;
+    border-bottom: 2px solid $ouiColorMediumShade !important;
+    border-right: 2px solid $ouiColorMediumShade !important;
+  }
+}
+
+// Additional corners via the inner child (top-right, bottom-left)
+.ouiFormControlLayout > .ouiFormControlLayout__childrenWrapper {
+  position: relative !important;
+
+  &::before,
+  &::after {
+    content: '' !important;
+    position: absolute !important;
+    width: 12px !important;
+    height: 12px !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+  }
+
+  // Top-right corner (outside)
+  &::before {
+    top: -4px !important;
+    right: -4px !important;
+    border-top: 2px solid $ouiColorMediumShade !important;
+    border-right: 2px solid $ouiColorMediumShade !important;
+  }
+
+  // Bottom-left corner (outside)
+  &::after {
+    bottom: -4px !important;
+    left: -4px !important;
+    border-bottom: 2px solid $ouiColorMediumShade !important;
+    border-left: 2px solid $ouiColorMediumShade !important;
+  }
+}
+
+// For form rows with labels, apply corners to the outer .ouiFormRow instead
+.ouiFormRow {
+  position: relative !important;
 }
 // sass-lint:enable no-important

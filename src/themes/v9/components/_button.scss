@@ -28,8 +28,8 @@
 
   &:hover,
   &:focus {
-    background-color: $ouiColorAccent !important;
-    border-color: $ouiColorAccent !important;
+    background-color: lighten($ouiColorPrimary, 8%) !important;
+    border-color: lighten($ouiColorPrimary, 8%) !important;
   }
 
   &:active {
@@ -87,8 +87,8 @@
 
   &:hover,
   &:focus {
-    background-color: $ouiColorAccent !important;
-    border-color: $ouiColorAccent !important;
+    background-color: lighten($ouiColorPrimary, 8%) !important;
+    border-color: lighten($ouiColorPrimary, 8%) !important;
   }
 }
 

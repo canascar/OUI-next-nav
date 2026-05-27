@@ -49,12 +49,15 @@ export const ThreadPanel = forwardRef(
       isAnimating,
       sessionSummary,
       sessionTabs,
+      onRename,
     },
     ref
   ) => {
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const [shareInput, setShareInput] = useState('');
     const [sharedWith, setSharedWith] = useState([]);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editValue, setEditValue] = useState('');
 
     const handleNavigate = (pageKey, navTitle) => {
       if (onViewAction) {
@@ -95,7 +98,40 @@ export const ThreadPanel = forwardRef(
         <div className="threadPanel__header">
           <div className="threadPanel__headerLeft">
             <OuiIcon type="chatLeft" size="m" />
-            <span className="threadPanel__title">{displayTitle}</span>
+            {isEditing ? (
+              <input
+                className="threadPanel__titleInput"
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onBlur={() => {
+                  if (editValue.trim() && onRename) {
+                    onRename(editValue.trim());
+                  }
+                  setIsEditing(false);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    if (editValue.trim() && onRename) {
+                      onRename(editValue.trim());
+                    }
+                    setIsEditing(false);
+                  } else if (e.key === 'Escape') {
+                    setIsEditing(false);
+                  }
+                }}
+                autoFocus
+              />
+            ) : (
+              <span
+                className="threadPanel__title"
+                onClick={() => {
+                  setEditValue(displayTitle);
+                  setIsEditing(true);
+                }}
+                title="Click to rename">
+                {displayTitle}
+              </span>
+            )}
           </div>
           <div className="threadPanel__headerRight">
             <OuiToolTip content="Share" position="bottom">

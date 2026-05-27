@@ -28,6 +28,15 @@ $elasticLogoTextDark: #1C1E23;
 
 body {
   @include ouiHeaderAffordForFixed;
+
+  // v10 Blueprint — drafting grid (16px fine + 80px major)
+  background-color: $ouiPageBackgroundColor;
+  background-image:
+    linear-gradient(to right,  lightOrDarkTheme(rgba(13, 48, 87, 0.05), rgba(207, 228, 247, 0.05)) 1px, transparent 1px),
+    linear-gradient(to bottom, lightOrDarkTheme(rgba(13, 48, 87, 0.05), rgba(207, 228, 247, 0.05)) 1px, transparent 1px),
+    linear-gradient(to right,  lightOrDarkTheme(rgba(13, 48, 87, 0.10), rgba(207, 228, 247, 0.10)) 1px, transparent 1px),
+    linear-gradient(to bottom, lightOrDarkTheme(rgba(13, 48, 87, 0.10), rgba(207, 228, 247, 0.10)) 1px, transparent 1px);
+  background-size: 16px 16px, 16px 16px, 80px 80px, 80px 80px;
 }
 
 .ouiBody--headerIsFixed--double {

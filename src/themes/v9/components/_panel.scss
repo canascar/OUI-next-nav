@@ -3,28 +3,66 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// Clip content to panel border radius
-// sass-lint:disable no-important
-.ouiPanel:not(.ouiCheckableCard):not(.ouiCard--hasBetaBadge):not(.ouiSplitPanel):not(.ouiSplitPanel__inner) {
-  border-radius: 10px !important;
-}
-// sass-lint:enable no-important
+// v10 Blueprint — Panels and Cards
+// Square corners, translucent background, corner ticks on all panels/cards.
 
-// Panel background — 92% opacity per skill spec (Step 6)
 // sass-lint:disable no-important, no-color-literals
+
+// Remove all border-radius
+.ouiPanel:not(.ouiCheckableCard):not(.ouiCard--hasBetaBadge):not(.ouiSplitPanel):not(.ouiSplitPanel__inner) {
+  border-radius: 0 !important;
+}
+
+// Panel background — translucent (grid bleeds through)
 .ouiPanel--plain,
 .ouiPanel--subdued {
   background-color: lightOrDarkTheme(
-    rgba(255, 255, 255, 0.92),
-    rgba(18, 28, 48, 0.92)
+    rgba(255, 255, 255, 0.85),
+    rgba(10, 37, 69, 0.55)
   ) !important;
 }
 
 // Cards get the same treatment
 .ouiCard {
   background-color: lightOrDarkTheme(
-    rgba(255, 255, 255, 0.92),
-    rgba(18, 28, 48, 0.92)
+    rgba(255, 255, 255, 0.85),
+    rgba(10, 37, 69, 0.55)
   ) !important;
+  border-radius: 0 !important;
 }
+
+// ─── Corner ticks on all panels and cards ───────────────────
+// TL (cyan-dim) via ::before, BR (ink-fade) via ::after
+// Exclude popovers, tooltips, flyouts, and other overlay panels
+.ouiPanel:not(.ouiPopover__panel):not(.ouiToolTip):not(.ouiFlyout),
+.ouiCard {
+  position: relative !important;
+
+  &::before,
+  &::after {
+    content: '' !important;
+    position: absolute !important;
+    width: 6px !important;
+    height: 6px !important;
+    pointer-events: none !important;
+    z-index: 1 !important;
+  }
+
+  // Top-left — cyan-dim (accent side)
+  &::before {
+    top: -1px !important;
+    left: -1px !important;
+    border-top: 1px solid lightOrDarkTheme(rgba(31, 108, 181, 0.40), rgba(93, 217, 255, 0.45)) !important;
+    border-left: 1px solid lightOrDarkTheme(rgba(31, 108, 181, 0.40), rgba(93, 217, 255, 0.45)) !important;
+  }
+
+  // Bottom-right — ink-fade (muted side)
+  &::after {
+    bottom: -1px !important;
+    right: -1px !important;
+    border-bottom: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34)) !important;
+    border-right: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34)) !important;
+  }
+}
+
 // sass-lint:enable no-important, no-color-literals

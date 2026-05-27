@@ -15,34 +15,35 @@
 
 // These colors stay the same no matter the theme
 $ouiColorGhost: #FFFFFF !default;
-$ouiColorInk: #060D1A !default;
+$ouiColorInk: #06203f !default;
 
-// Core – Blue-forward identity (Agentic OSD Utility)
-$ouiColorPrimary: #2E4A8F !default;      // Deep Blue – primary brand
-$ouiColorSecondary: #5CB198 !default;    // Jade – success / secondary
-$ouiColorAccent: #4168B8 !default;       // Azure – hover states
+// v10 Blueprint — Light Theme
+// Core
+$ouiColorPrimary: #1f6cb5 !default;       // Cyan — primary accent
+$ouiColorSecondary: #2e8b6f !default;     // Green — success
+$ouiColorAccent: #c47a1f !default;        // Amber — accent
 
 // Status
-$ouiColorSuccess: #5CB198 !default;      // Jade
-$ouiColorWarning: #CDA849 !default;      // Citrine
-$ouiColorDanger: #ED6F73 !default;       // Coral
+$ouiColorSuccess: #2e8b6f !default;       // Green
+$ouiColorWarning: #c47a1f !default;       // Amber
+$ouiColorDanger: #c53961 !default;        // Red
 
-// Grays – Navy-tinted cool neutrals (Opal to Obsidian)
-$ouiColorEmptyShade: #FFFFFF !default;   // Card surfaces
-$ouiColorLightestShade: #E4EAF2 !default; // Subtle backgrounds
-$ouiColorLightShade: #D4DCE8 !default;   // Borders
-$ouiColorMediumShade: #5A6D8A !default;  // Muted text
-$ouiColorDarkShade: #1E2A4A !default;    // Secondary text (Eggplant)
-$ouiColorDarkestShade: #0E1525 !default; // Foreground (Obsidian)
-$ouiColorFullShade: #060D1A !default;    // Near black
+// Shades — mapped from v10 ink opacity scale
+$ouiColorEmptyShade: #FFFFFF !default;            // panel-solid
+$ouiColorLightestShade: #dde4ee !default;         // bg-deep
+$ouiColorLightShade: rgba(13, 48, 87, 0.14) !default;  // ink-ghost (borders)
+$ouiColorMediumShade: rgba(13, 48, 87, 0.62) !default; // ink-dim (muted text)
+$ouiColorDarkShade: #0d3057 !default;             // ink (body text)
+$ouiColorDarkestShade: #06203f !default;          // ink-bright (titles)
+$ouiColorFullShade: #06203f !default;             // Near black
 
 // Backgrounds
-$ouiPageBackgroundColor: #F4F6FB !default; // Opal page bg
-$ouiColorHighlight: #EDF1F8 !default;    // Highlight / elevated surface
+$ouiPageBackgroundColor: #eef2f7 !default;        // v10 bg
+$ouiColorHighlight: #dde4ee !default;             // bg-deep
 
 // Every color below must be based mathematically on the set above and in a particular order.
-$ouiTextColor: $ouiColorDarkestShade !default;
-$ouiTitleColor: shade($ouiTextColor, 50%) !default;
+$ouiTextColor: $ouiColorDarkShade !default;
+$ouiTitleColor: $ouiColorDarkestShade !default;
 $ouiTextSubduedColor: $ouiColorMediumShade !default;
 $ouiColorDisabled: tint($ouiTextColor, 70%) !default;
 

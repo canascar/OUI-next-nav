@@ -32,10 +32,49 @@
 
 // Logo colors - Agentic OSD Utility palette
 :root {
-  --ouiLogoPrimary: #{lightOrDarkTheme(#2E4A8F, #7A9FD4)};
-  --ouiLogoSecondary: #{lightOrDarkTheme(#4168B8, #B8D4F0)};
+  // v10 Blueprint — Design tokens
+  --v10-font-sans: 'Outfit', system-ui, sans-serif;
+  --v10-font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --v10-radius: 0;
+  --v10-grid-fine-step: 16px;
+  --v10-grid-major-step: 80px;
+  --v10-motion-theme: 200ms ease;
+  --v10-motion-default: 150ms ease-out;
 
-  // Text colors for inline styles in popovers
+  // v10 color tokens (theme-aware)
+  --v10-bg: #{$ouiPageBackgroundColor};
+  --v10-bg-deep: #{$ouiColorLightestShade};
+  --v10-panel: #{lightOrDarkTheme(rgba(255, 255, 255, 0.85), rgba(10, 37, 69, 0.55))};
+  --v10-panel-solid: #{$ouiColorEmptyShade};
+  --v10-ink: #{$ouiTextColor};
+  --v10-ink-bright: #{$ouiTitleColor};
+  --v10-ink-dim: #{lightOrDarkTheme(rgba(13, 48, 87, 0.62), rgba(207, 228, 247, 0.62))};
+  --v10-ink-fade: #{lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34))};
+  --v10-ink-ghost: #{lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16))};
+  --v10-cyan: #{$ouiColorPrimary};
+  --v10-cyan-dim: #{lightOrDarkTheme(rgba(31, 108, 181, 0.40), rgba(93, 217, 255, 0.45))};
+  --v10-cyan-soft: #{lightOrDarkTheme(rgba(31, 108, 181, 0.08), rgba(93, 217, 255, 0.10))};
+  --v10-amber: #{$ouiColorWarning};
+  --v10-amber-dim: #{lightOrDarkTheme(rgba(196, 122, 31, 0.45), rgba(255, 184, 107, 0.45))};
+  --v10-amber-soft: #{lightOrDarkTheme(rgba(196, 122, 31, 0.10), rgba(255, 184, 107, 0.12))};
+  --v10-green: #{$ouiColorSuccess};
+  --v10-green-dim: #{lightOrDarkTheme(rgba(46, 139, 111, 0.45), rgba(123, 224, 168, 0.45))};
+  --v10-green-soft: #{lightOrDarkTheme(rgba(46, 139, 111, 0.08), rgba(123, 224, 168, 0.10))};
+  --v10-red: #{$ouiColorDanger};
+  --v10-red-dim: #{lightOrDarkTheme(rgba(197, 57, 97, 0.45), rgba(255, 122, 122, 0.45))};
+  --v10-red-soft: #{lightOrDarkTheme(rgba(197, 57, 97, 0.08), rgba(255, 122, 122, 0.10))};
+  --v10-grid-fine: #{lightOrDarkTheme(rgba(13, 48, 87, 0.05), rgba(207, 228, 247, 0.05))};
+  --v10-grid-major: #{lightOrDarkTheme(rgba(13, 48, 87, 0.10), rgba(207, 228, 247, 0.10))};
+  --v10-input-bg: #{lightOrDarkTheme(rgba(255, 255, 255, 0.70), rgba(10, 37, 69, 0.45))};
+  --v10-code-bg: #{lightOrDarkTheme(rgba(13, 48, 87, 0.05), rgba(10, 37, 69, 0.70))};
+  --v10-scroll-thumb: #{lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.22))};
+  --v10-scroll-thumb-hover: #{lightOrDarkTheme(rgba(13, 48, 87, 0.24), rgba(207, 228, 247, 0.38))};
+
+  // Logo colors
+  --ouiLogoPrimary: #{lightOrDarkTheme(#075985, #0284C7)};
+  --ouiLogoSecondary: #{lightOrDarkTheme(#082F49, #BAE6FD)};
+
+  // OUI component color aliases
   --ouiColorDarkShade: #{$ouiColorDarkShade};
   --ouiColorMediumShade: #{$ouiColorMediumShade};
   --ouiColorEmptyShade: #{$ouiColorEmptyShade};
@@ -44,16 +83,22 @@
   --ouiTextColor: #{$ouiTextColor};
   --ouiColorPrimary: #{$ouiColorPrimary};
 
-  // Nav popover item hover/active states - more visible in dark mode
-  --navItemHover: #{lightOrDarkTheme(rgba(46, 74, 143, 0.08), rgba(122, 159, 212, 0.2))};
-  --navItemActive: #{lightOrDarkTheme(rgba(46, 74, 143, 0.15), rgba(122, 159, 212, 0.35))};
+  // Nav popover item hover/active states
+  --navItemHover: #{lightOrDarkTheme(rgba(31, 108, 181, 0.08), rgba(93, 217, 255, 0.10))};
+  --navItemActive: #{lightOrDarkTheme(rgba(31, 108, 181, 0.15), rgba(93, 217, 255, 0.20))};
 }
+
+// v10 Scrollbar styles
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: var(--v10-scroll-thumb); border-radius: 0; }
+*::-webkit-scrollbar-thumb:hover { background: var(--v10-scroll-thumb-hover); }
 
 // Popover panel border
 .ouiPopover__panel,
 .ouiPopover__panel.ouiPanel {
   border: 1px solid $ouiBorderColor !important;
-  border-radius: 10px !important;
+  border-radius: 0 !important;
 }
 
 // Avatar popover: force to right of left nav
@@ -66,7 +111,7 @@
 // Datepicker popover border
 .react-datepicker-popper .react-datepicker {
   border: 1px solid $ouiBorderColor;
-  border-radius: 12px;
+  border-radius: 0;
 }
 
 // Resizable panels - transparent background

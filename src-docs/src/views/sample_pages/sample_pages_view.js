@@ -490,6 +490,16 @@ const renderPage = (
 };
 
 export const SamplePagesView = () => {
+  // Prevent page scroll when this full-screen view is mounted
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, []);
+
   const [activePage, setActivePage] = useState('home');
   const [selectedItem, setSelectedItem] = useState(null);
   const [pendingThread, setPendingThread] = useState(null); // { key, messages }
@@ -1498,6 +1508,16 @@ function initializeSessionState() {
  * is an independent workspace containing a thread panel and page panel with tabs.
  */
 export const SessionPagesView = () => {
+  // Prevent page scroll when this full-screen view is mounted
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, []);
+
   // Session state: sessions array + activeSessionId
   const [sessionState, setSessionState] = useState(initializeSessionState);
 
