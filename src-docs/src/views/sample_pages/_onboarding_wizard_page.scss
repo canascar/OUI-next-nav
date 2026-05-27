@@ -222,6 +222,28 @@
     }
   }
 
+  &--empty {
+    background: transparent;
+    color: $ouiColorAccent;
+    border-color: transparent;
+
+    &:hover:not(:disabled) {
+      background: rgba($ouiColorAccent, 0.06);
+      border-color: transparent;
+    }
+
+    &.onboardWizard__chip--selected {
+      background: rgba($ouiColorAccent, 0.1);
+      color: $ouiColorAccent;
+      border-color: transparent;
+
+      &:hover:not(:disabled) {
+        background: rgba($ouiColorAccent, 0.12);
+        border-color: transparent;
+      }
+    }
+  }
+
   &:disabled {
     opacity: 0.6;
     cursor: default;

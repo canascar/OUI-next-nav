@@ -47,14 +47,14 @@ const STEPS = [
       'Welcome to OpenSearch for Observability. I\u2019ll help you set up your data. What would you like to observe?',
     optionType: 'chips',
     options: [
-      { key: 'application', label: 'Collect data from your application' },
-      { key: 'cloud', label: 'Connect with cloud services' },
-      { key: 'sample', label: 'Get started with sample data' },
+      { key: 'application', label: 'Instrument application' },
+      { key: 'cloud', label: 'Connect existing data sources' },
+      { key: 'sample', label: 'Get started with sample data', empty: true },
     ],
     confirmation: (selected) => {
       const labels = {
-        application: 'Collect data from your application',
-        cloud: 'Connect with cloud services',
+        application: 'Instrument application',
+        cloud: 'Connect existing data sources',
         sample: 'Get started with sample data',
       };
       return `Great choice! Let\u2019s set up ${labels[selected] || selected}.`;
@@ -220,6 +220,12 @@ const STEPS = [
     title: 'Review and confirm',
     mainStep: 4,
     question: 'Here\u2019s a summary of your setup. Everything look good?',
+    dynamicQuestion: (selections) => {
+      if (selections[0] === 'application') {
+        return 'Here\u2019s a summary of your setup. Everything look good?\n\nBased on your data, I recommend storing your telemetry in an OpenSearch Managed Cluster with Optimized engine. Columnar storage handles time-series log data more efficiently.';
+      }
+      return 'Here\u2019s a summary of your setup. Everything look good?';
+    },
     optionType: 'chips',
     options: [
       { key: 'deploy', label: 'Looks good \u2014 deploy my configuration', primary: true },
@@ -729,8 +735,8 @@ const SummaryPanel = ({ allSelections }) => {
       label: 'Observation goal',
       stepIdx: 0,
       valueMap: {
-        application: 'Collect data from your application',
-        cloud: 'Connect with cloud services',
+        application: 'Instrument application',
+        cloud: 'Connect existing data sources',
         sample: 'Get started with sample data',
       },
     },
@@ -752,6 +758,9 @@ const SummaryPanel = ({ allSelections }) => {
         customize: 'Custom configuration',
         'store-existing': 'Existing resource',
       },
+      // When user chose "Instrument application", 1d is skipped — auto-recommended
+      skippedWhen: () => allSelections[0] === 'application',
+      skippedLabel: 'OpenSearch Managed Cluster (Optimized engine)',
     },
     {
       label: 'Additional data sources',
@@ -763,6 +772,9 @@ const SummaryPanel = ({ allSelections }) => {
         s3: 'Amazon S3',
         skip: 'Skipped',
       },
+      // When user chose "Instrument application", this step is skipped entirely
+      skippedWhen: () => allSelections[0] === 'application',
+      skippedLabel: 'Not needed (application instrumented)',
     },
     {
       label: 'Transformations',
@@ -784,6 +796,19 @@ const SummaryPanel = ({ allSelections }) => {
       <OuiSpacer size="l" />
       <div className="onboardWizard__summaryList">
         {summaryRows.map((row) => {
+          // If this step was skipped due to earlier selection, show skipped label
+          if (row.skippedWhen && row.skippedWhen()) {
+            return (
+              <div key={row.stepIdx} className="onboardWizard__summaryRow">
+                <OuiText size="xs" color="subdued">
+                  {row.label}
+                </OuiText>
+                <OuiText size="s">
+                  <strong>{row.skippedLabel}</strong>
+                </OuiText>
+              </div>
+            );
+          }
           const val = allSelections[row.stepIdx];
           let display = '\u2014';
           if (Array.isArray(val) && val.length > 0) {
@@ -1199,7 +1224,10 @@ export const OnboardingWizardPage = () => {
     streamTimers.current.forEach(clearTimeout);
     streamTimers.current = [];
 
-    const fullText = step.question;
+    // Use dynamicQuestion if available, passing selections for context
+    const fullText = step.dynamicQuestion
+      ? step.dynamicQuestion(selections)
+      : step.question;
     const tokens = fullText.split(/(\s+)/);
     setStreamedText('');
     setIsStreaming(true);
@@ -1292,14 +1320,30 @@ export const OnboardingWizardPage = () => {
   }, [currentStep, isConfirmed, isProcessing]);
 
   // Auto-advance to next step after confirmation (with brief delay to show confirmation)
+  // If user selected "Instrument application" in step 1a:
+  //   - Skip sub-step 1d (index 3, telemetry storage) 
+  //   - Skip step 2 (index 4, connect additional data sources)
   useEffect(() => {
     if (isConfirmed && currentStep < totalSteps - 1) {
       const timer = setTimeout(() => {
-        setCurrentStep((prev) => prev + 1);
+        setCurrentStep((prev) => {
+          const nextStep = prev + 1;
+          if (selections[0] === 'application') {
+            // From 1c → skip 1d and step 2, jump directly to Transform your data
+            if (nextStep === 3) {
+              return 5;
+            }
+            // Safety: also skip step 2 if somehow reached
+            if (nextStep === 4) {
+              return 5;
+            }
+          }
+          return nextStep;
+        });
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [isConfirmed, currentStep, totalSteps]);
+  }, [isConfirmed, currentStep, totalSteps, selections]);
 
   const handleStepClick = useCallback(
     (stepIdx) => {
@@ -1409,7 +1453,9 @@ export const OnboardingWizardPage = () => {
       <div key={`q-${currentStep}`} className="threadPage__message threadPage__message--assistant">
         <div className="threadPage__bubble threadPage__bubble--assistant">
           <OuiText size="s">
-            <p>{streamedText}</p>
+            {streamedText.split('\n\n').map((paragraph, idx) => (
+              <p key={idx}>{paragraph}</p>
+            ))}
           </OuiText>
           {!isStreaming && !isConfirmed && (
             <>
@@ -1485,7 +1531,7 @@ export const OnboardingWizardPage = () => {
                   currentSelection === opt.key
                     ? ' onboardWizard__chip--selected'
                     : ''
-                }${opt.primary ? ' onboardWizard__chip--confirm' : ''}`}
+                }${opt.primary ? ' onboardWizard__chip--confirm' : ''}${opt.empty ? ' onboardWizard__chip--empty' : ''}`}
                 onClick={() =>
                   isLastStep
                     ? handleFinalNavigation(opt.key)
