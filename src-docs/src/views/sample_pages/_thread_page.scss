@@ -561,16 +561,22 @@
   display: flex;
   flex-direction: column;
 
-  // Border highlight — fades in on hover/focus, fades out on blur
+  // Animated border — conic gradient rotating around on hover/focus
   &::before {
     content: '';
     position: absolute;
     inset: 0;
     z-index: 1;
     pointer-events: none;
-    border: 1px solid $ouiColorPrimary;
+    border: 1px solid transparent;
+    background:
+      conic-gradient(from var(--v10-border-angle, 0deg), $ouiColorPrimary, transparent 30%, transparent 70%, $ouiColorPrimary) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
     opacity: 0;
     transition: opacity 400ms ease-out;
+    animation: v10BorderRotate 3s linear infinite;
   }
 
   &:hover::before {

@@ -122,8 +122,7 @@
   transition: border-color 200ms ease;
 
   &:focus {
-    border-color: $ouiColorPrimary;
-    animation: none;
+    border-color: transparent;
   }
 }
 
@@ -155,14 +154,10 @@
   transition: opacity 150ms ease-in;
 }
 
-// When focused (typing), stop animation and show solid border
+// When focused (typing), keep animation running
 .emptySessionPage__inputWrap:has(textarea:focus) .emptySessionPage__inputField::before {
-  animation: none;
-  background: none;
-  border: 1px solid $ouiColorPrimary;
-  -webkit-mask: none;
-  mask: none;
   opacity: 1;
+  transition: opacity 150ms ease-in;
 }
 
 @keyframes v10BorderRotate {

@@ -239,6 +239,7 @@ const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, 
           rows={3}
           resize="none"
           fullWidth
+          autoFocus
           className="emptySessionPage__textarea"
         />
         <div className="emptySessionPage__inputActions">
@@ -514,7 +515,12 @@ export const EmptySessionPage = ({
           {/* Welcome title */}
           <div className="emptySessionPage__header">
             <div
-              className={`emptySessionPage__avatarWrap${inputActive ? ' emptySessionPage__avatarWrap--active' : ''}`}>
+              className={`emptySessionPage__avatarWrap${inputActive ? ' emptySessionPage__avatarWrap--active' : ''}`}
+              onClick={() => {
+                const textarea = document.querySelector('.emptySessionPage__textarea textarea');
+                if (textarea) textarea.focus();
+              }}
+              style={{ cursor: 'pointer' }}>
               <OllyAvatar size={52} lookingDown={inputActive} />
             </div>
             <div className="emptySessionPage__headerText">

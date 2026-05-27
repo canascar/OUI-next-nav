@@ -1323,6 +1323,18 @@ export const ThreadPage = ({
   const [isCanvasExpanding, setIsCanvasExpanding] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const isDragging = useRef(false);
+  const textareaRef = useRef(null);
+
+  // Auto-focus the textarea on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (textareaRef.current) {
+        const textarea = textareaRef.current.querySelector('textarea');
+        if (textarea) textarea.focus();
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, []);
   const feedRef = useRef(null);
   const responseIndex = useRef(0);
   const [completedScriptedIds, setCompletedScriptedIds] = useState(new Set());
@@ -2242,7 +2254,7 @@ export const ThreadPage = ({
                 </div>
               );
             })()}
-            <div className="threadPage__inputWrapper">
+            <div className="threadPage__inputWrapper" ref={textareaRef}>
               <OuiCompressedTextArea
                 placeholder="Ask anything. Type / for actions."
                 value={message}
@@ -2251,6 +2263,7 @@ export const ThreadPage = ({
                 rows={3}
                 resize="none"
                 fullWidth
+                autoFocus
                 className="threadPage__textarea"
               />
               <div className="threadPage__inputActions">
