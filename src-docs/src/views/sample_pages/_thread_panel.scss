@@ -17,9 +17,15 @@
   height: 100%;
   min-width: 0;
   overflow: hidden;
-  background-color: $ouiColorEmptyShade;
-  border-radius: 8px;
+  background-color: $ouiPageBackgroundColor;
+  border-radius: 0;
   flex-shrink: 0;
+  padding-right: 8px;
+
+  // When minimized, remove padding so it collapses fully
+  .sessionContainer--chatMinimized & {
+    padding-right: 0;
+  }
 }
 
 .threadPanel--animating {

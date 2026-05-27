@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   OuiButtonIcon,
   OuiIcon,
@@ -20,6 +20,7 @@ import { SOURCE_PAGE_MOCK } from './session_models';
 import { DetailPageHeader } from './detail_page_header';
 import { NewTabPage } from './new_tab_page';
 import { Mascot } from '../../../../olly-mascot/Mascot';
+import { OllyAvatar } from './olly_avatar';
 
 /**
  * Icon mapping for page keys.
@@ -222,6 +223,28 @@ export const PagePanel = ({
   onQueryExecute,
 }) => {
   const activeTab = tabs.find((tab) => tab.id === activeTabId);
+  const [ollyHovered, setOllyHovered] = useState(false);
+  const [ollyEntering, setOllyEntering] = useState(!!onExpandChat);
+  const [ollyExiting, setOllyExiting] = useState(false);
+  const showOlly = !!onExpandChat;
+  const prevShowOlly = useRef(showOlly);
+
+  useEffect(() => {
+    if (showOlly === prevShowOlly.current) return;
+    const wasShowing = prevShowOlly.current;
+    prevShowOlly.current = showOlly;
+
+    if (showOlly && !wasShowing) {
+      setOllyExiting(false);
+      setOllyEntering(true);
+      const timer = setTimeout(() => setOllyEntering(false), 800);
+      return () => clearTimeout(timer);
+    } else if (!showOlly && wasShowing) {
+      setOllyExiting(true);
+      const timer = setTimeout(() => setOllyExiting(false), 400);
+      return () => clearTimeout(timer);
+    }
+  }, [showOlly]);
 
   /** Render the content for the active tab */
   const renderTabContent = () => {
@@ -286,13 +309,15 @@ export const PagePanel = ({
         aria-label={activeTab ? activeTab.title : 'No tab selected'}>
         {renderTabContent()}
       </div>
-      {onExpandChat && (
+      {(showOlly || ollyExiting) && (
         <button
           type="button"
-          className={`pagePanel__floatingMascot${aiButtonHighlight ? ' pagePanel__floatingMascot--highlight' : ''}`}
+          className={`pagePanel__floatingMascot${ollyEntering ? ' pagePanel__floatingMascot--entering' : ''}${ollyExiting ? ' pagePanel__floatingMascot--exiting' : ''}${aiButtonHighlight ? ' pagePanel__floatingMascot--highlight' : ''}`}
           aria-label="Open AI chat"
-          onClick={onExpandChat}>
-          <Mascot size={36} expression="comma" idle bob follow={false} />
+          onClick={onExpandChat}
+          onMouseEnter={() => setOllyHovered(true)}
+          onMouseLeave={() => setOllyHovered(false)}>
+          <OllyAvatar size={36} highlight={ollyHovered} />
           {aiButtonHighlight && aiButtonMessage && (
             <div className="pagePanel__aiPopover" onClick={onExpandChat}>
               <div className="pagePanel__aiPopoverInner">

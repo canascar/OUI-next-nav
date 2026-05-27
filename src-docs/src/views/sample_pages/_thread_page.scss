@@ -558,11 +558,54 @@
 // Wrapper positions textarea with action buttons overlaid at bottom
 .threadPage__inputWrapper {
   position: relative;
+  display: flex;
+  flex-direction: column;
+
+  // Border highlight — fades in on hover/focus, fades out on blur
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    border: 1px solid $ouiColorPrimary;
+    opacity: 0;
+    transition: opacity 400ms ease-out;
+  }
+
+  &:hover::before {
+    opacity: 1;
+    transition: opacity 150ms ease-in;
+  }
+
+  &:has(textarea:focus)::before {
+    opacity: 1;
+    transition: opacity 150ms ease-in;
+  }
+
+  // Ensure no extra space below the textarea
+  .ouiFormControlLayout {
+    margin-bottom: 0;
+  }
+
+  .ouiTextArea {
+    margin-bottom: 0;
+  }
 }
 
 // Remove default textarea border so the wrapper controls it
 .threadPage__textarea textarea {
   padding-bottom: 36px;
+  border-color: lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
+  transition: border-color 200ms ease;
+
+  &:focus {
+    border-color: transparent;
+  }
+}
+
+.threadPage__inputWrapper:hover .threadPage__textarea textarea:not(:focus) {
+  border-color: transparent;
 }
 
 // Plus (bottom-left) and send (bottom-right) inside the textarea

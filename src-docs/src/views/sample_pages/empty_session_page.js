@@ -21,6 +21,7 @@ import {
   OuiTitle,
 } from '../../../../src/components';
 
+import { OllyAvatar } from './olly_avatar';
 import { SOURCE_PAGE_MOCK } from './session_models';
 
 /**
@@ -178,7 +179,7 @@ const SystemCallout = ({ alert, onAction }) => {
  * @param {(prompt: string) => void} props.onStartThread
  * @param {(pageKey: string) => void} props.onOpenPage
  */
-const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange }) => {
+const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, onBlur, onHoverStart, onHoverEnd, borderActive }) => {
   const [inputValue, setInputValue] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
 
@@ -223,13 +224,18 @@ const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange }) => {
   };
 
   return (
-    <div className="emptySessionPage__inputWrap">
+    <div
+      className={`emptySessionPage__inputWrap${borderActive ? ' emptySessionPage__inputWrap--borderActive' : ''}`}
+      onMouseEnter={onHoverStart}
+      onMouseLeave={onHoverEnd}>
       <div className="emptySessionPage__inputField">
         <OuiCompressedTextArea
           placeholder="Ask AI anything, or type to search a page"
           value={inputValue}
           onChange={handleChange}
           onKeyDown={handleSubmit}
+          onFocus={onFocus}
+          onBlur={onBlur}
           rows={3}
           resize="none"
           fullWidth
@@ -469,6 +475,11 @@ export const EmptySessionPage = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [dismissedItems, setDismissedItems] = useState(new Set());
   const [dismissingItems, setDismissingItems] = useState(new Set());
+  const [inputHovered, setInputHovered] = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
+  // Border activates on hover or focus, deactivates on mouse-out or blur
+  const borderActive = inputHovered || inputFocused;
+  const inputActive = inputHovered || inputFocused;
 
   // Build a flat searchable list from all chip data + SOURCE_PAGE_MOCK
   const allSearchableItems = useMemo(() => {
@@ -502,17 +513,16 @@ export const EmptySessionPage = ({
         <div className="emptySessionPage__content">
           {/* Welcome title */}
           <div className="emptySessionPage__header">
-            <div className="emptySessionPage__ollyAvatar">
-              <div className="emptySessionPage__ollyInner">
-                <span>,,</span>
-              </div>
+            <div
+              className={`emptySessionPage__avatarWrap${inputActive ? ' emptySessionPage__avatarWrap--active' : ''}`}>
+              <OllyAvatar size={52} lookingDown={inputActive} />
             </div>
             <div className="emptySessionPage__headerText">
               <OuiTitle size="m">
                 <h1>Good morning, John</h1>
               </OuiTitle>
               <OuiText size="s" color="subdued">
-                <p>All <strong style={{ color: 'var(--v10-cyan, #5dd9ff)' }}>247</strong> services steady. <strong style={{ color: 'var(--v10-cyan, #5dd9ff)' }}>2</strong> activities to review.</p>
+                <p>All <strong style={{ color: 'var(--v10-cyan)' }}>247</strong> services steady. <strong style={{ color: 'var(--v10-cyan)' }}>2</strong> activities to review.</p>
               </OuiText>
             </div>
           </div>
@@ -522,6 +532,11 @@ export const EmptySessionPage = ({
             onStartThread={onStartThread}
             onOpenPage={onOpenPage}
             onSearchChange={setSearchQuery}
+            onFocus={() => setInputFocused(true)}
+            onBlur={() => setInputFocused(false)}
+            onHoverStart={() => setInputHovered(true)}
+            onHoverEnd={() => setInputHovered(false)}
+            borderActive={borderActive}
           />
 
           {/* Search results OR normal content */}
@@ -694,6 +709,8 @@ export const EmptySessionPage = ({
                     <div className="emptySessionPage__sideBySideCol">
                       <div className="emptySessionPage__sectionHeader">// SERVICE</div>
                       <div className="emptySessionPage__favoritePanel">
+                        <span className="emptySessionPage__cornerTicks" />
+                        <span className="emptySessionPage__cornerTicksBottom" />
                         <div className="emptySessionPage__favoritePanelTitle">Top services by fault rate</div>
                         <div className="emptySessionPage__favoritePanelTable">
                           <div className="emptySessionPage__favoritePanelHeader">
@@ -717,6 +734,8 @@ export const EmptySessionPage = ({
                     <div className="emptySessionPage__sideBySideCol">
                       <div className="emptySessionPage__sectionHeader">// SAVED QUERY</div>
                       <button type="button" className="emptySessionPage__savedQueryCard" onClick={() => onOpenPage('discover-log')}>
+                        <span className="emptySessionPage__cornerTicks" />
+                        <span className="emptySessionPage__cornerTicksBottom" />
                         <div className="emptySessionPage__savedQueryLeft">
                           <span className="emptySessionPage__savedQueryTitle">Connection timeout errors</span>
                           <code className="emptySessionPage__savedQueryCode">source=logs | where severity=&quot;ERROR&quot;</code>

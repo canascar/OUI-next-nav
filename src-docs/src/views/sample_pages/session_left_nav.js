@@ -211,6 +211,18 @@ export const SessionLeftNav = ({
             />
           </OuiToolTip>
         </div>
+        <div className="sessionLeftNav__footerButton">
+          <OuiToolTip content={isDark ? 'Switch to light' : 'Switch to dark'} position="right">
+            <OuiButtonIcon
+              iconType={isDark ? 'cloudSunny' : 'moon'}
+              aria-label={isDark ? 'Switch to light theme' : 'Switch to dark theme'}
+              color="text"
+              display="empty"
+              size="xs"
+              onClick={() => themeContext.changeTheme(isDark ? 'v9-light' : 'v9-dark')}
+            />
+          </OuiToolTip>
+        </div>
         <div
           className="sessionLeftNav__footerButton"
           onMouseEnter={() => openNavPopover('settings-footer')}

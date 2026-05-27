@@ -226,13 +226,13 @@ export const SessionContainer = ({
 
   if (isMinimized) {
     leftWidth = '0px';
-    rightStyle = { width: '100%' };
+    rightStyle = { flex: 1 };
   } else if (isFullScreen) {
-    leftWidth = `calc(100% - ${COLLAPSED_WIDTH}px - 8px)`;
-    rightStyle = { width: `${COLLAPSED_WIDTH}px` };
+    leftWidth = `calc(100% - ${COLLAPSED_WIDTH}px - 1px)`;
+    rightStyle = { width: `${COLLAPSED_WIDTH}px`, flex: 'none' };
   } else {
     leftWidth = `${threadPanelWidth}%`;
-    rightStyle = { width: `calc(${100 - threadPanelWidth}% - 8px)` };
+    rightStyle = { flex: 1 };
   }
 
   return (
