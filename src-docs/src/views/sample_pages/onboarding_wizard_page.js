@@ -98,6 +98,23 @@ const STEPS = [
   {
     title: 'Set up data sources',
     mainStep: 1,
+    subStep: '2-eks',
+    question:
+      'Scanning your AWS account for EKS clusters and instrumented services...',
+    optionType: 'auto-discovery',
+    options: [],
+    autoAdvanceDelay: 5000,
+    confirmation: () =>
+      'Discovery complete. We found 3 EKS clusters and 14 services instrumented with OpenTelemetry. Redirecting to review...',
+    rightPanel: {
+      title: 'EKS Discovery',
+      subtitle: 'Detecting clusters and services',
+      contentType: 'eks-discovery',
+    },
+  },
+  {
+    title: 'Set up data sources',
+    mainStep: 1,
     subStep: 3,
     question:
       'Run the following command to start your OpenTelemetry collector. Once it\u2019s running, click "I am ready" to continue.',
@@ -399,6 +416,89 @@ const EnvironmentPanel = ({ selectedOption }) => {
             </OuiText>
           </div>
         </>
+      )}
+    </div>
+  );
+};
+
+const EKS_DISCOVERY_CLUSTERS = [
+  { name: 'prod-app-cluster', region: 'us-west-2', services: 6, status: 'Active' },
+  { name: 'staging-services', region: 'us-west-2', services: 5, status: 'Active' },
+  { name: 'dev-playground', region: 'us-east-1', services: 3, status: 'Active' },
+];
+
+const EKSDiscoveryPanel = ({ discoveryPhase }) => {
+  return (
+    <div className="onboardWizard__rightContent">
+      <RightPanelHeader
+        icon="logo_aws"
+        title="EKS Discovery"
+        subtitle="Detecting clusters and services"
+      />
+      <OuiSpacer size="l" />
+      {discoveryPhase === 'scanning' && (
+        <div className="onboardWizard__eksScanning">
+          <div className="onboardWizard__eksScanRow">
+            <OuiLoadingSpinner size="s" />
+            <OuiText size="s">Scanning AWS account for EKS clusters...</OuiText>
+          </div>
+          <OuiSpacer size="m" />
+          <div className="onboardWizard__eksScanProgress">
+            <div className="onboardWizard__eksScanProgressBar" />
+          </div>
+        </div>
+      )}
+      {discoveryPhase === 'found' && (
+        <div className="onboardWizard__eksResults">
+          <div className="onboardWizard__eksResultSummary">
+            <div className="onboardWizard__eksResultBadge">
+              <OuiIcon type="checkInCircleFilled" size="s" color="success" />
+              <OuiText size="s">
+                <strong>3 EKS clusters</strong> detected
+              </OuiText>
+            </div>
+            <OuiSpacer size="xs" />
+            <div className="onboardWizard__eksResultBadge">
+              <OuiIcon type="checkInCircleFilled" size="s" color="success" />
+              <OuiText size="s">
+                <strong>14 services</strong> instrumented with OpenTelemetry
+              </OuiText>
+            </div>
+          </div>
+          <OuiSpacer size="l" />
+          <div className="onboardWizard__eksClusterList">
+            {EKS_DISCOVERY_CLUSTERS.map((cluster) => (
+              <div key={cluster.name} className="onboardWizard__eksClusterCard">
+                <div className="onboardWizard__eksClusterHeader">
+                  <OuiIcon type="compute" size="m" />
+                  <div>
+                    <OuiText size="s">
+                      <strong>{cluster.name}</strong>
+                    </OuiText>
+                    <OuiText size="xs" color="subdued">
+                      {cluster.region} &middot; {cluster.status}
+                    </OuiText>
+                  </div>
+                </div>
+                <div className="onboardWizard__eksClusterServices">
+                  <OuiText size="xs" color="subdued">
+                    {cluster.services} instrumented services
+                  </OuiText>
+                  <span className="onboardWizard__eksClusterLive">
+                    <span className="onboardWizard__liveDot" />
+                    <OuiText size="xs">Active</OuiText>
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <OuiSpacer size="m" />
+          <OuiText size="xs" color="subdued">
+            <p style={{ margin: 0 }}>
+              Waiting for additional data... Auto-advancing to review.
+            </p>
+          </OuiText>
+        </div>
       )}
     </div>
   );
@@ -752,19 +852,19 @@ const SummaryPanel = ({ allSelections }) => {
     },
     {
       label: 'Telemetry storage',
-      stepIdx: 3,
+      stepIdx: 4,
       valueMap: {
         'looks-good': 'OpenSearch Managed Cluster (Optimized engine)',
         customize: 'Custom configuration',
         'store-existing': 'Existing resource',
       },
-      // When user chose "Instrument application", 1d is skipped — auto-recommended
-      skippedWhen: () => allSelections[0] === 'application',
+      // When user chose "Instrument application" or "EKS", 1d is skipped — auto-recommended
+      skippedWhen: () => allSelections[0] === 'application' || allSelections[1] === 'eks',
       skippedLabel: 'OpenSearch Managed Cluster (Optimized engine)',
     },
     {
       label: 'Additional data sources',
-      stepIdx: 4,
+      stepIdx: 5,
       valueMap: {
         opensearch: 'OpenSearch',
         prometheus: 'Prometheus',
@@ -772,17 +872,20 @@ const SummaryPanel = ({ allSelections }) => {
         s3: 'Amazon S3',
         skip: 'Skipped',
       },
-      // When user chose "Instrument application", this step is skipped entirely
-      skippedWhen: () => allSelections[0] === 'application',
-      skippedLabel: 'Not needed (application instrumented)',
+      // When user chose "Instrument application" or "EKS", this step is skipped
+      skippedWhen: () => allSelections[0] === 'application' || allSelections[1] === 'eks',
+      skippedLabel: allSelections[1] === 'eks' ? '14 services auto-discovered from EKS' : 'Not needed (application instrumented)',
     },
     {
       label: 'Transformations',
-      stepIdx: 5,
+      stepIdx: 6,
       valueMap: {
         pii: 'Remove PII',
         catalog: 'Service catalog data',
       },
+      // When user chose EKS path, transformations are also skipped
+      skippedWhen: () => allSelections[1] === 'eks',
+      skippedLabel: 'Auto-configured from EKS metadata',
     },
   ];
 
@@ -1157,6 +1260,8 @@ const RightPanelContent = ({
       return <GettingStartedPanel />;
     case 'environment':
       return <EnvironmentPanel selectedOption={selectedOption} />;
+    case 'eks-discovery':
+      return <EKSDiscoveryPanel discoveryPhase={confirmed ? 'found' : (selectedOption ? 'scanning' : 'scanning')} />;
     case 'collector-setup':
       return <CollectorSetupPanel confirmed={confirmed} />;
     case 'telemetry-storage':
@@ -1250,6 +1355,27 @@ export const OnboardingWizardPage = () => {
     };
   }, [currentStep, step.question]);
 
+  // Auto-discovery step: auto-confirm after scanning animation
+  useEffect(() => {
+    if (step.optionType === 'auto-discovery' && !isConfirmed && !isProcessing) {
+      // Wait for the streaming text to finish, then auto-confirm
+      const streamDuration = step.question.split(/(\s+)/).length * 30 + 500;
+      const timer = setTimeout(() => {
+        setIsProcessing(true);
+        // Show scanning for 2 seconds, then confirm (discovery found)
+        setTimeout(() => {
+          setConfirmedSteps((prev) => ({ ...prev, [currentStep]: true }));
+          setIsProcessing(false);
+          // Update the streamed text to the discovery result
+          setStreamedText(
+            'We found 3 EKS clusters and 14 services instrumented with OpenTelemetry. Waiting for additional data...'
+          );
+        }, 2000);
+      }, streamDuration);
+      return () => clearTimeout(timer);
+    }
+  }, [currentStep, step.optionType, isConfirmed, isProcessing]);
+
   // Fade in the right panel when step changes
   useEffect(() => {
     setRightPanelFade(false);
@@ -1270,8 +1396,8 @@ export const OnboardingWizardPage = () => {
     (key) => {
       if (isConfirmed || isProcessing) return;
 
-      // Step 3 "Go back" navigates back
-      if (currentStep === 2 && key === 'goback') {
+      // Step 1c (OTel collector, index 3) "Go back" navigates back to 1b
+      if (currentStep === 3 && key === 'goback') {
         setCurrentStep(1);
         return;
       }
@@ -1320,22 +1446,56 @@ export const OnboardingWizardPage = () => {
   }, [currentStep, isConfirmed, isProcessing]);
 
   // Auto-advance to next step after confirmation (with brief delay to show confirmation)
+  // Branching logic from sub-step 1b (index 1):
+  //   - "opentelemetry" → go to 1c (OTel collector, index 3)
+  //   - "eks" → go to EKS discovery (index 2), which auto-advances to Step 4
+  //   - Other → go to 1c (OTel collector, index 3)
   // If user selected "Instrument application" in step 1a:
-  //   - Skip sub-step 1d (index 3, telemetry storage) 
-  //   - Skip step 2 (index 4, connect additional data sources)
+  //   - Skip sub-step 1d (index 4, telemetry storage) 
+  //   - Skip step 2 (index 5, connect additional data sources)
   useEffect(() => {
     if (isConfirmed && currentStep < totalSteps - 1) {
+      const currentStepDef = STEPS[currentStep];
+
+      // EKS Discovery auto-advance: wait 5 seconds then go to Step 4 (review/confirm)
+      if (currentStepDef.optionType === 'auto-discovery') {
+        const timer = setTimeout(() => {
+          // Find the index of Step 4 (Review and confirm, mainStep === 4)
+          const step4Idx = STEPS.findIndex((s) => s.mainStep === 4);
+          setCurrentStep(step4Idx);
+        }, 5000);
+        return () => clearTimeout(timer);
+      }
+
       const timer = setTimeout(() => {
         setCurrentStep((prev) => {
-          const nextStep = prev + 1;
+          let nextStep = prev + 1;
+
+          // From sub-step 1b (index 1): branch based on environment selection
+          if (prev === 1) {
+            if (selections[1] === 'eks') {
+              // Go to EKS discovery (index 2)
+              return 2;
+            }
+            // OpenTelemetry or other → skip EKS discovery, go to OTel collector (index 3)
+            return 3;
+          }
+
+          // From EKS discovery (index 2): this is handled by auto-advance above, 
+          // but as safety: go to Step 4
+          if (prev === 2) {
+            const step4Idx = STEPS.findIndex((s) => s.mainStep === 4);
+            return step4Idx;
+          }
+
           if (selections[0] === 'application') {
-            // From 1c → skip 1d and step 2, jump directly to Transform your data
-            if (nextStep === 3) {
-              return 5;
+            // From 1c (index 3) → skip 1d (index 4) and step 2 (index 5), jump to Transform (step 3)
+            if (nextStep === 4) {
+              return 6;
             }
             // Safety: also skip step 2 if somehow reached
-            if (nextStep === 4) {
-              return 5;
+            if (nextStep === 5) {
+              return 6;
             }
           }
           return nextStep;

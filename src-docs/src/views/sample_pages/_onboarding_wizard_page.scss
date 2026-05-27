@@ -594,6 +594,95 @@
 }
 
 // ─────────────────────────────────────────────
+// EKS DISCOVERY — Auto-detection panel
+// ─────────────────────────────────────────────
+
+.onboardWizard__eksScanning {
+  padding: 24px;
+  text-align: center;
+}
+
+.onboardWizard__eksScanRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.onboardWizard__eksScanProgress {
+  margin-top: 16px;
+  height: 4px;
+  background: $ouiColorLightestShade;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.onboardWizard__eksScanProgressBar {
+  height: 100%;
+  width: 60%;
+  background: linear-gradient(90deg, $ouiColorPrimary, $ouiColorAccent);
+  border-radius: 2px;
+  animation: eksScanPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes eksScanPulse {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.onboardWizard__eksResults {
+  padding: 0;
+}
+
+.onboardWizard__eksResultSummary {
+  padding: 16px;
+  background: rgba($ouiColorSuccess, 0.06);
+  border: 1px solid rgba($ouiColorSuccess, 0.2);
+  border-radius: $ouiBorderRadius;
+}
+
+.onboardWizard__eksResultBadge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.onboardWizard__eksClusterList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.onboardWizard__eksClusterCard {
+  padding: 14px 16px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorEmptyShade;
+  transition: border-color 150ms ease;
+}
+
+.onboardWizard__eksClusterHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.onboardWizard__eksClusterServices {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid $ouiColorLightestShade;
+}
+
+.onboardWizard__eksClusterLive {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+// ─────────────────────────────────────────────
 // COLLECTOR SETUP — Code Block (Step 3)
 // ─────────────────────────────────────────────
 
