@@ -289,14 +289,15 @@ const EnvironmentPanel = ({ selectedOption }) => {
       />
       <OuiSpacer size="l" />
       <div className="onboardWizard__envGrid">
-        {environments.map((env) => (
+        {environments.map((env, index) => (
           <div
             key={env.key}
-            className={`onboardWizard__envCard${
+            className={`onboardWizard__envCard onboardWizard__envCard--staggerIn${
               selectedOption === env.key
                 ? ' onboardWizard__envCard--selected'
                 : ''
-            }`}>
+            }`}
+            style={{ animationDelay: `${index * 80}ms` }}>
             <OuiIcon type={env.icon} size="l" />
             <OuiText size="s">
               <strong>{env.name}</strong>
@@ -308,7 +309,7 @@ const EnvironmentPanel = ({ selectedOption }) => {
       {selected && (
         <>
           <OuiSpacer size="l" />
-          <div className="onboardWizard__envDetail">
+          <div className="onboardWizard__envDetail onboardWizard__envDetail--fadeIn">
             <OuiText size="xs">
               <strong>What&rsquo;s included</strong>
             </OuiText>
@@ -1038,7 +1039,7 @@ export const OnboardingWizardPage = () => {
   // Fade in the right panel when step changes
   useEffect(() => {
     setRightPanelFade(false);
-    const timer = setTimeout(() => setRightPanelFade(true), 50);
+    const timer = setTimeout(() => setRightPanelFade(true), 80);
     return () => clearTimeout(timer);
   }, [currentStep]);
 
@@ -1066,7 +1067,7 @@ export const OnboardingWizardPage = () => {
       setTimeout(() => {
         setConfirmedSteps((prev) => ({ ...prev, [currentStep]: true }));
         setIsProcessing(false);
-      }, 1200);
+      }, 1000);
     },
     [currentStep, isConfirmed, isProcessing]
   );
@@ -1091,7 +1092,7 @@ export const OnboardingWizardPage = () => {
     setTimeout(() => {
       setConfirmedSteps((prev) => ({ ...prev, [currentStep]: true }));
       setIsProcessing(false);
-    }, 1200);
+    }, 1000);
   }, [currentStep, isProcessing]);
 
   const handleSkip = useCallback(() => {
@@ -1101,7 +1102,7 @@ export const OnboardingWizardPage = () => {
     setTimeout(() => {
       setConfirmedSteps((prev) => ({ ...prev, [currentStep]: true }));
       setIsProcessing(false);
-    }, 800);
+    }, 700);
   }, [currentStep, isConfirmed, isProcessing]);
 
   // Auto-advance to next step after confirmation (with brief delay to show confirmation)
@@ -1177,13 +1178,17 @@ export const OnboardingWizardPage = () => {
     [currentStep, confirmedSteps, selections, totalSteps]
   );
 
+  const [isExiting, setIsExiting] = useState(false);
+
   const handleFinishLater = () => {
-    window.location.hash = '/sample-pages';
+    setIsExiting(true);
+    setTimeout(() => { window.location.hash = '/sample-pages'; }, 600);
   };
 
   // Last step: selections navigate away
   const handleFinalNavigation = () => {
-    window.location.hash = '/sample-pages';
+    setIsExiting(true);
+    setTimeout(() => { window.location.hash = '/sample-pages'; }, 600);
   };
 
   const handleSend = () => {
@@ -1460,7 +1465,7 @@ export const OnboardingWizardPage = () => {
         <div
           className="samplePagesContentPanel"
           style={{ flex: 1, minWidth: 0, position: 'relative' }}>
-          <div className="onboardWizard">
+          <div className={`onboardWizard${isExiting ? ' onboardWizard--exiting' : ''}`}>
             {/* Left Panel — Thread-style chat interaction */}
             <div className="onboardWizard__left">
               <div className="onboardWizard__leftPanel">
