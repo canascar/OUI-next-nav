@@ -23,16 +23,23 @@
   text-align: left;
   font-family: inherit;
   width: 100%;
-  transition: background-color 150ms ease-in-out, border-color 150ms ease-in-out;
+  transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
 
   &:hover {
     background-color: rgba($ouiColorPrimary, 0.05);
     border-color: $ouiColorPrimary;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
   }
 
   &--selected {
     border-color: $ouiColorPrimary;
     background-color: rgba($ouiColorPrimary, 0.08);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba($ouiColorPrimary, 0.08);
   }
 
   &:focus-visible {

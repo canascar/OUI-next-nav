@@ -9,6 +9,13 @@
   bottom: 0;
   display: flex;
   background: transparent;
+  transition: opacity 500ms cubic-bezier(0.4, 0, 0.2, 1), transform 500ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  &--exiting {
+    opacity: 0;
+    transform: translateY(-12px);
+    pointer-events: none;
+  }
 
   > * {
     position: relative;
@@ -103,14 +110,14 @@
   padding: 24px;
   overflow-y: auto;
   opacity: 0;
-  transform: translateX(20px);
-  transition: opacity 400ms ease, transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform: translateY(10px);
+  transition: opacity 450ms cubic-bezier(0.4, 0, 0.2, 1), transform 450ms cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
 
 
   &--fadeIn {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
   }
 }
 
@@ -136,7 +143,7 @@
   border: none;
   padding: 0;
   cursor: default;
-  transition: transform 150ms ease, background-color 150ms ease;
+  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1), background-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &--done {
     background: $ouiColorSuccess;
@@ -196,7 +203,12 @@
   font-size: $ouiFontSizeS;
   font-family: inherit;
   cursor: pointer;
-  transition: all 150ms ease;
+  transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 250ms cubic-bezier(0.4, 0, 0.2, 1),
+              transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 250ms cubic-bezier(0.4, 0, 0.2, 1);
   text-align: left;
   align-items: flex-start;
 
@@ -208,8 +220,8 @@
   &:hover:not(:disabled) {
     border-color: $ouiColorPrimary;
     background: rgba($ouiColorPrimary, 0.12);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba($ouiColorPrimary, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba($ouiColorPrimary, 0.12);
   }
 
   &--selected {
@@ -234,7 +246,7 @@
       background: lighten($ouiColorPrimary, 8%);
       border-color: lighten($ouiColorPrimary, 8%);
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba($ouiColorPrimary, 0.35);
+      box-shadow: 0 8px 24px rgba($ouiColorPrimary, 0.25);
     }
 
     &:disabled {
@@ -363,7 +375,7 @@
   height: 10px;
   border-radius: 50%;
   background: $ouiBorderColor;
-  transition: background-color 200ms ease;
+  transition: background-color 350ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &--done {
     background: $ouiColorSuccess;
@@ -404,7 +416,7 @@
   font-family: inherit;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 150ms ease;
+  transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
     background: darken($ouiColorPrimary, 8%);
@@ -458,13 +470,13 @@
 
 .onboardWizard__rightContent {
   min-height: 340px;
-  animation: wizardContentFadeIn 400ms ease both;
+  animation: wizardContentFadeIn 500ms cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
 @keyframes wizardContentFadeIn {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -545,7 +557,7 @@
   border: 1px solid $ouiBorderColor;
   border-radius: $ouiBorderRadius;
   background: $ouiColorEmptyShade;
-  transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+  transition: border-color 300ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1), transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
 
   &--active {
     border-color: $ouiColorPrimary;
@@ -574,11 +586,33 @@
   border-radius: $ouiBorderRadius;
   background: $ouiColorEmptyShade;
   text-align: center;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  transition: border-color 300ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1), transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  &--staggerIn {
+    animation: envCardFadeIn 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
 
   &--selected {
     border-color: $ouiColorPrimary;
     box-shadow: 0 0 0 1px $ouiColorPrimary;
+    transform: scale(1.03);
+    transition: border-color 300ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1), transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  &:hover:not(&--selected) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  }
+}
+
+@keyframes envCardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -612,6 +646,21 @@
   border: 1px solid $ouiBorderColor;
   border-radius: $ouiBorderRadius;
   background: $ouiColorLightestShade;
+
+  &--fadeIn {
+    animation: envDetailFadeIn 450ms cubic-bezier(0.4, 0, 0.2, 1) 100ms both;
+  }
+}
+
+@keyframes envDetailFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .onboardWizard__envDetailList {
@@ -655,7 +704,7 @@
   width: 60%;
   background: linear-gradient(90deg, $ouiColorPrimary, $ouiColorAccent);
   border-radius: 2px;
-  animation: eksScanPulse 1.5s ease-in-out infinite;
+  animation: eksScanPulse 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 @keyframes eksScanPulse {
@@ -691,7 +740,7 @@
   border: 1px solid $ouiBorderColor;
   border-radius: $ouiBorderRadius;
   background: $ouiColorEmptyShade;
-  transition: border-color 150ms ease;
+  transition: border-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .onboardWizard__eksClusterHeader {
@@ -779,7 +828,7 @@
   border: 2px solid $ouiColorPrimary;
   border-radius: $ouiBorderRadius;
   background: rgba($ouiColorPrimary, 0.03);
-  transition: border-color 150ms ease, background-color 150ms ease;
+  transition: border-color 350ms cubic-bezier(0.4, 0, 0.2, 1), background-color 350ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &--confirmed {
     border-color: $ouiColorSuccess;
@@ -856,7 +905,7 @@
   border-radius: $ouiBorderRadius;
   background: $ouiColorLightestShade;
   cursor: pointer;
-  transition: border-color 150ms ease, background-color 150ms ease;
+  transition: border-color 250ms cubic-bezier(0.4, 0, 0.2, 1), background-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
     border-color: $ouiColorPrimary;
@@ -885,7 +934,7 @@
   border-radius: $ouiBorderRadius;
   background: $ouiColorEmptyShade;
   text-align: center;
-  transition: border-color 150ms ease;
+  transition: border-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &--selected {
     border-color: $ouiColorPrimary;
@@ -1219,7 +1268,7 @@
   background: $ouiColorEmptyShade;
   font-family: inherit;
   cursor: pointer;
-  transition: border-color 150ms ease;
+  transition: border-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
     border-color: $ouiColorPrimary;
