@@ -21,7 +21,7 @@
   height: 100%;
   min-height: 400px;
   padding: 8px 8px 8px 0;
-  background-color: $ouiPageBackgroundColor;
+  background: transparent;
 }
 
 .emptySessionPage__panel {
@@ -35,27 +35,7 @@
   padding: 80px 24px 24px;
   overflow: hidden;
   position: relative;
-  // v10 graph-paper grid background
-  background-image:
-    linear-gradient(to right, lightOrDarkTheme(rgba(13, 48, 87, 0.03), rgba(207, 228, 247, 0.03)) 1px, transparent 1px),
-    linear-gradient(to bottom, lightOrDarkTheme(rgba(13, 48, 87, 0.03), rgba(207, 228, 247, 0.03)) 1px, transparent 1px),
-    linear-gradient(to right, lightOrDarkTheme(rgba(13, 48, 87, 0.06), rgba(207, 228, 247, 0.06)) 1px, transparent 1px),
-    linear-gradient(to bottom, lightOrDarkTheme(rgba(13, 48, 87, 0.06), rgba(207, 228, 247, 0.06)) 1px, transparent 1px);
-  background-size: 16px 16px, 16px 16px, 80px 80px, 80px 80px;
-  background-position: 0 0;
-
-  // Vignette overlay — fades grid toward edges
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: radial-gradient(
-      ellipse at center,
-      transparent 30%,
-      lightOrDarkTheme(rgba($ouiPageBackgroundColor, 0.7), rgba($ouiPageBackgroundColor, 0.7)) 100%
-    );
-  }
+  background: transparent;
 }
 
 // ─── Header / Olly Avatar ───────────────────────────────────
@@ -96,6 +76,8 @@
   max-width: 832px;
   flex: 1;
   min-height: 0;
+  position: relative;
+  z-index: 1;
 }
 
 // ─── Dual-purpose input ─────────────────────────────────────
@@ -117,8 +99,10 @@
   min-height: 100px;
   margin-bottom: 0;
   border-radius: 0;
-  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(16, 62, 110, 0.4));
+  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.10), rgba(207, 228, 247, 0.12));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.3), rgba(16, 62, 110, 0.15));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   transition: border-color 200ms ease;
 
   &:focus {
@@ -256,7 +240,7 @@
   padding: 0 14px;
   height: 36px;
   background-color: transparent;
-  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34));
+  border: 1px solid transparent;
   border-radius: 0;
   cursor: pointer;
   font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
@@ -264,20 +248,29 @@
   font-weight: 600;
   letter-spacing: 1.2px;
   text-transform: uppercase;
-  color: lightOrDarkTheme(rgba(13, 48, 87, 0.62), rgba(207, 228, 247, 0.62));
+  color: lightOrDarkTheme(rgba(13, 48, 87, 0.45), rgba(207, 228, 247, 0.45));
   white-space: nowrap;
-  transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out;
+  transition: color 150ms ease-out;
   position: relative;
 
   &:hover {
-    border-color: $ouiColorPrimary;
     color: $ouiColorPrimary;
   }
 
   &--active {
-    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.08), rgba($ouiColorPrimary, 0.12));
-    border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.45), rgba($ouiColorPrimary, 0.45));
     color: $ouiColorPrimary;
+
+    // Underline rule
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: $ouiColorPrimary;
+      pointer-events: none;
+    }
   }
 
   &--iconOnly {
@@ -288,12 +281,13 @@
 }
 
 .emptySessionPage__chipDot {
-  position: absolute;
-  top: 6px;
-  right: 6px;
+  display: inline-block;
+  position: relative;
   width: 6px;
   height: 6px;
-  border-radius: 0;
+  min-width: 6px;
+  min-height: 6px;
+  border-radius: 50%;
   background-color: $ouiColorAccent;
 }
 
@@ -348,9 +342,11 @@
   gap: $ouiSize;
   width: 100%;
   padding: $ouiSize;
-  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
+  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.10), rgba(207, 228, 247, 0.12));
   border-radius: 0;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(16, 62, 110, 0.4));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.35), rgba(16, 62, 110, 0.18));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   cursor: pointer;
   text-align: left;
   font-size: $ouiFontSizeS;
@@ -402,6 +398,10 @@
     border-left: 2px solid $ouiColorWarning;
     border-radius: 0;
     padding: 16px;
+    // Light glassmorphism
+    background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.45), rgba(16, 62, 110, 0.25));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
   }
 
   &--dismissing {
@@ -613,16 +613,18 @@
   gap: $ouiSizeS;
   padding: $ouiSize;
   height: 64px;
-  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
+  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.10), rgba(207, 228, 247, 0.12));
   border-radius: 0;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(16, 62, 110, 0.4));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.3), rgba(16, 62, 110, 0.15));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   cursor: pointer;
   font-size: $ouiFontSizeS;
   color: $ouiTextColor;
   transition: background-color 200ms ease, border-color 200ms ease;
 
   &:hover {
-    background-color: rgba($ouiColorPrimary, 0.08);
+    background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.5), rgba($ouiColorPrimary, 0.12));
     border-color: rgba($ouiColorPrimary, 0.3);
   }
 
@@ -632,8 +634,8 @@
     pointer-events: none;
 
     &:hover {
-      background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(16, 62, 110, 0.4));
-      border-color: lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
+      background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.3), rgba(16, 62, 110, 0.15));
+      border-color: lightOrDarkTheme(rgba(13, 48, 87, 0.10), rgba(207, 228, 247, 0.12));
     }
   }
 }
@@ -780,9 +782,11 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
+  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.10), rgba(207, 228, 247, 0.12));
   border-radius: 0;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(16, 62, 110, 0.4));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.4), rgba(16, 62, 110, 0.2));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   padding: $ouiSize;
   position: relative;
   cursor: pointer;
@@ -791,7 +795,7 @@
   appearance: none;
 
   &:hover {
-    background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.85), rgba(16, 62, 110, 0.6));
+    background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(16, 62, 110, 0.35));
   }
 }
 
@@ -864,9 +868,11 @@
 
 // ─── Favorite panel (table-style cards) ─────────────────────
 .emptySessionPage__favoritePanel {
-  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
+  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.10), rgba(207, 228, 247, 0.12));
   border-radius: 0;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(16, 62, 110, 0.4));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.4), rgba(16, 62, 110, 0.2));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   padding: $ouiSize;
   position: relative;
 }
