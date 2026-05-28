@@ -1452,91 +1452,95 @@ export const OnboardingWizardPage = () => {
           style={{ flex: 1, minWidth: 0, position: 'relative' }}>
           <div className="onboardWizard">
             {/* Left Panel — Thread-style chat interaction */}
-            <div className="threadPage__body" style={{ flex: '0 0 38%', minWidth: 320, maxWidth: 480 }}>
-              <div className="threadPage__conversationCol">
-                {/* Step indicator header */}
-                <div className="onboardWizard__stepIndicator" style={{ padding: '12px 16px 0' }}>
-                  <OuiTitle size="xxxs">
-                    <h6>Step {step.mainStep} of {totalMainSteps}</h6>
-                  </OuiTitle>
-                  <OuiTitle size="s">
-                    <h3>{step.title}</h3>
-                  </OuiTitle>
-                  <div className="onboardWizard__timeline" style={{ marginTop: 8 }}>
-                      {Array.from({ length: totalMainSteps }, (_, mainIdx) => {
-                        const mainNum = mainIdx + 1;
-                        const isMainDone = step.mainStep > mainNum;
-                        const isMainCurrent = step.mainStep === mainNum;
-                        // Find the first sub-step index for this main step (for navigation)
-                        const firstSubIdx = STEPS.findIndex((s) => s.mainStep === mainNum);
-                        if (isMainDone) {
-                          return (
-                            <button
-                              key={mainIdx}
-                              type="button"
-                              className="onboardWizard__timelineDot onboardWizard__timelineDot--done"
-                              onClick={() => handleStepClick(firstSubIdx)}
-                              aria-label={`Go back to step ${mainNum}: ${STEPS[firstSubIdx].title}`}
-                              title={STEPS[firstSubIdx].title}
-                            />
-                          );
-                        }
-                        if (isMainCurrent) {
-                          return (
-                            <span
-                              key={mainIdx}
-                              className="onboardWizard__timelineDot onboardWizard__timelineDot--current"
-                            />
-                          );
-                        }
-                        return (
-                          <span
-                            key={mainIdx}
-                            className="onboardWizard__timelineDot onboardWizard__timelineDot--inactive"
+            <div className="onboardWizard__left">
+              <div className="onboardWizard__leftPanel">
+                <div className="threadPage__body">
+                  <div className="threadPage__conversationCol">
+                    {/* Step indicator header */}
+                    <div className="onboardWizard__stepIndicator" style={{ padding: '12px 16px 0' }}>
+                      <OuiTitle size="xxxs">
+                        <h6>Step {step.mainStep} of {totalMainSteps}</h6>
+                      </OuiTitle>
+                      <OuiTitle size="s">
+                        <h3>{step.title}</h3>
+                      </OuiTitle>
+                      <div className="onboardWizard__timeline" style={{ marginTop: 8 }}>
+                          {Array.from({ length: totalMainSteps }, (_, mainIdx) => {
+                            const mainNum = mainIdx + 1;
+                            const isMainDone = step.mainStep > mainNum;
+                            const isMainCurrent = step.mainStep === mainNum;
+                            // Find the first sub-step index for this main step (for navigation)
+                            const firstSubIdx = STEPS.findIndex((s) => s.mainStep === mainNum);
+                            if (isMainDone) {
+                              return (
+                                <button
+                                  key={mainIdx}
+                                  type="button"
+                                  className="onboardWizard__timelineDot onboardWizard__timelineDot--done"
+                                  onClick={() => handleStepClick(firstSubIdx)}
+                                  aria-label={`Go back to step ${mainNum}: ${STEPS[firstSubIdx].title}`}
+                                  title={STEPS[firstSubIdx].title}
+                                />
+                              );
+                            }
+                            if (isMainCurrent) {
+                              return (
+                                <span
+                                  key={mainIdx}
+                                  className="onboardWizard__timelineDot onboardWizard__timelineDot--current"
+                                />
+                              );
+                            }
+                            return (
+                              <span
+                                key={mainIdx}
+                                className="onboardWizard__timelineDot onboardWizard__timelineDot--inactive"
+                              />
+                            );
+                          })}
+                        </div>
+                    </div>
+
+                    {/* Conversation feed — reuses threadPage__feed pattern */}
+                    <div className="threadPage__feed" ref={feedRef}>
+                      {buildConversation()}
+                      <div ref={feedEndRef} />
+                    </div>
+
+                    {/* Input area */}
+                    <div className="threadPage__inputArea">
+                      <div className="threadPage__inputWrapper">
+                        <OuiCompressedTextArea
+                          placeholder="Ask anything or use / for commands"
+                          value={message}
+                          onChange={(e) => setMessage(e.target.value)}
+                          onKeyDown={handleKeyDown}
+                          rows={2}
+                          resize="none"
+                          fullWidth
+                          className="threadPage__textarea"
+                        />
+                        <div className="threadPage__inputActions">
+                          <OuiButtonIcon
+                            iconType="plus"
+                            aria-label="Add attachment"
+                            size="s"
+                            color="text"
                           />
-                        );
-                      })}
+                          <OuiButtonIcon
+                            iconType="sortUp"
+                            aria-label="Send message"
+                            display="fill"
+                            size="s"
+                            isDisabled={!message.trim() || isProcessing}
+                            onClick={handleSend}
+                          />
+                        </div>
+                      </div>
                     </div>
-                </div>
 
-                {/* Conversation feed — reuses threadPage__feed pattern */}
-                <div className="threadPage__feed" ref={feedRef}>
-                  {buildConversation()}
-                  <div ref={feedEndRef} />
-                </div>
-
-                {/* Input area */}
-                <div className="threadPage__inputArea">
-                  <div className="threadPage__inputWrapper">
-                    <OuiCompressedTextArea
-                      placeholder="Ask anything or use / for commands"
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      onKeyDown={handleKeyDown}
-                      rows={2}
-                      resize="none"
-                      fullWidth
-                      className="threadPage__textarea"
-                    />
-                    <div className="threadPage__inputActions">
-                      <OuiButtonIcon
-                        iconType="plus"
-                        aria-label="Add attachment"
-                        size="s"
-                        color="text"
-                      />
-                      <OuiButtonIcon
-                        iconType="sortUp"
-                        aria-label="Send message"
-                        display="fill"
-                        size="s"
-                        isDisabled={!message.trim() || isProcessing}
-                        onClick={handleSend}
-                      />
-                    </div>
                   </div>
                 </div>
-
               </div>
             </div>
 
@@ -1549,14 +1553,6 @@ export const OnboardingWizardPage = () => {
                   confirmed={isConfirmed}
                   allSelections={selections}
                 />
-              </div>
-              <div className="onboardWizard__finishLaterWrapper">
-                <button
-                  type="button"
-                  className="onboardWizard__finishLater"
-                  onClick={handleFinishLater}>
-                  Finish onboarding later
-                </button>
               </div>
             </div>
           </div>
