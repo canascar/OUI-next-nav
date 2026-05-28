@@ -710,16 +710,22 @@ const buildSmoothPath = (points, width, height, padding) => {
 
 // A single streaming area chart using pure SVG — gradient fill like shadcn's area chart
 const LiveStreamAreaChart = ({ color, data }) => {
-  const width = 280;
-  const height = 72;
+  const width = 320;
+  const height = 80;
   const padding = 4;
   const gradientId = useMemo(
     () => `area-grad-${color.replace('#', '')}`,
     [color]
   );
 
-  const linePath = buildSmoothPath(data, width, height, padding);
-  // Close the path to form a filled area
+  // Build a sharp polyline (no smooth curves — blueprint style)
+  const points = data.map((val, i) => {
+    const max = Math.max(...data);
+    const x = (i / (data.length - 1)) * width;
+    const y = padding + ((1 - val / max) * (height - padding * 2));
+    return `${x},${y}`;
+  });
+  const linePath = `M ${points.join(' L ')}`;
   const areaPath = `${linePath} L ${width},${height} L 0,${height} Z`;
 
   return (
@@ -730,18 +736,26 @@ const LiveStreamAreaChart = ({ color, data }) => {
       aria-hidden="true">
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.3" />
-          <stop offset="95%" stopColor={color} stopOpacity="0.02" />
+          <stop offset="0%" stopColor={color} stopOpacity="0.12" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
+      {/* Horizontal grid — dashed, blueprint style */}
+      {[0.25, 0.5, 0.75].map((ratio, i) => (
+        <line key={i} x1="0" y1={height * ratio} x2={width} y2={height * ratio}
+          stroke="currentColor" strokeWidth="0.5" strokeDasharray="3 4" opacity="0.12" />
+      ))}
+      {/* Baseline */}
+      <line x1="0" y1={height} x2={width} y2={height}
+        stroke="currentColor" strokeWidth="0.7" opacity="0.15" />
       <path d={areaPath} fill={`url(#${gradientId})`} />
       <path
         d={linePath}
         fill="none"
         stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        strokeWidth="1.8"
+        strokeLinecap="square"
+        strokeLinejoin="miter"
       />
     </svg>
   );
@@ -836,10 +850,6 @@ const LiveCountersPanel = () => {
                   </span>
                 </div>
               </div>
-              <span
-                className="onboardWizard__counterDot"
-                style={{ backgroundColor: c.color }}
-              />
             </div>
             <div className="onboardWizard__counterChart">
               <LiveStreamAreaChart
