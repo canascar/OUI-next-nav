@@ -315,7 +315,7 @@ export const PagePanel = ({
               className={`pagePanel__floatingMascot${aiButtonHighlight ? ' pagePanel__floatingMascot--highlight' : ''}`}
               aria-label="Open AI chat"
               onClick={onExpandChat}>
-              <OllyAvatar size={28} highlight={ollyHovered} />
+              <OllyAvatar size={28} highlight={true} />
             </button>
             <OuiFieldText
               placeholder="Ask AI anything"
