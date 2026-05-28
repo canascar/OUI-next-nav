@@ -154,6 +154,6 @@ describe('OuiSuperDatePicker', () => {
         updateButtonProps={updateButtonProps}
       />
     );
-    expect(component.find(OuiButton).props()).toMatchObject(updateButtonProps);
+    expect(component.find(OuiButton).props()).toMatchObject(updateButtonProps!);
   });
 });

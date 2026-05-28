@@ -37,12 +37,17 @@ import { OuiToolTip, OuiToolTipProps } from '../../tool_tip';
 import { CommonProps } from '../../common';
 
 export type OuiSuperUpdateButtonProps = CommonProps &
-  Partial<Omit<OuiButtonIconProps, 'isDisabled' | 'onClick' | 'iconType'>> & {
+  Partial<
+    Omit<OuiButtonIconProps, 'isDisabled' | 'onClick' | 'iconType' | 'color'>
+  > & {
     className?: string;
     isDisabled: boolean;
     isLoading: boolean;
     needsUpdate: boolean;
     onClick: MouseEventHandler<HTMLButtonElement>;
+    color?: OuiButtonIconProps['color'];
+    fill?: boolean;
+    textProps?: Record<string, unknown>;
 
     /**
      * Passes props to `OuiToolTip`
@@ -170,7 +175,7 @@ export class OuiSuperUpdateButton extends Component<OuiSuperUpdateButtonProps> {
         {...toolTipProps}>
         <OuiButtonIcon
           className={classes}
-          color={needsUpdate || isLoading ? 'success' as any : 'primary'}
+          color={needsUpdate || isLoading ? ('success' as any) : 'primary'}
           iconType={isLoading ? 'loading' : 'refresh'}
           aria-label={typeof buttonText === 'string' ? buttonText : 'Refresh'}
           isDisabled={isDisabled}

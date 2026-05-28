@@ -32,7 +32,7 @@ import React from 'react';
 import { shallow, mount } from 'enzyme';
 
 import { OuiSuperUpdateButton } from './super_update_button';
-import { OuiButton, OuiButtonProps } from '../../button';
+import { OuiButton } from '../../button';
 
 const noop = () => {};
 
@@ -83,9 +83,9 @@ describe('OuiSuperUpdateButton', () => {
         id: 'test',
       },
     };
-    const extraProps: Partial<OuiButtonProps> = {
+    const extraProps = {
       fill: false,
-      size: 's',
+      size: 's' as const,
       contentProps: { id: 'contentSpan' },
     };
 

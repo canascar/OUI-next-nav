@@ -22,7 +22,7 @@ import { CommonProps } from '../common';
 
 export interface OuiThreadInputProps
   extends CommonProps,
-    Omit<HTMLAttributes<HTMLDivElement>, 'onSubmit'> {
+    Omit<HTMLAttributes<HTMLDivElement>, 'onSubmit' | 'onChange'> {
   /** Placeholder text for the textarea */
   placeholder?: string;
   /** Current value of the textarea */
