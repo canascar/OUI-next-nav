@@ -15,24 +15,18 @@
 
 .emptySessionPage {
   display: flex;
-  align-items: center;
-  justify-content: center;
   width: 100%;
   height: 100%;
   min-height: 400px;
-  padding: 8px 8px 8px 0;
-  background: transparent;
+  background-color: $ouiPageBackgroundColor;
 }
 
 .emptySessionPage__panel {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 40px;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   height: 100%;
   border-radius: 0;
-  padding: 120px 24px 120px;
   overflow: hidden;
   position: relative;
   background: transparent;
@@ -76,18 +70,13 @@
   max-width: 832px;
   flex: 1;
   min-height: 0;
-  position: relative;
-  z-index: 1;
 }
 
 // ─── Two-column layout ──────────────────────────────────────
 .emptySessionPage__twoCol {
-  display: grid;
-  grid-template-columns: 400px 1fr;
-  gap: 80px;
+  display: flex;
   width: 100%;
-  max-width: 1100px;
-  flex: 1;
+  height: 100%;
   min-height: 0;
   position: relative;
   z-index: 1;
@@ -97,9 +86,12 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 8px 0 0 0;
-  overflow-y: auto;
+  flex: 1;
   min-width: 0;
+  padding: 120px 48px 120px 48px;
+  max-width: 600px;
+  margin: 0 auto;
+  overflow-y: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
 
@@ -117,16 +109,25 @@
 .emptySessionPage__rightCol {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 76px 0 0 0;
-  min-width: 0;
-  overflow: hidden;
+  gap: 0;
+  width: 480px;
+  flex-shrink: 0;
+  height: 100%;
+  overflow-y: auto;
+  padding: 24px;
+  border-left: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.08), rgba(207, 228, 247, 0.08));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.4), rgba(10, 37, 69, 0.3));
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .emptySessionPage__rightGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr;
   gap: 8px;
   flex: 1;
   min-height: 0;
@@ -179,15 +180,79 @@
 
 .emptySessionPage__favoritePanel--action {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 10px;
   cursor: pointer;
   appearance: none;
+  border-style: dashed;
   transition: background-color 200ms ease, border-color 200ms ease;
 
   &:hover {
     background-color: rgba($ouiColorPrimary, 0.08);
     border-color: rgba($ouiColorPrimary, 0.3);
+  }
+}
+
+.emptySessionPage__openPageLabel {
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: lightOrDarkTheme(rgba(13, 48, 87, 0.55), rgba(207, 228, 247, 0.55));
+}
+
+// ─── Open a page card ───────────────────────────────────────
+.emptySessionPage__openPageCard {
+  display: flex;
+  flex-direction: column;
+  border: 1px dashed lightOrDarkTheme(rgba(13, 48, 87, 0.18), rgba(207, 228, 247, 0.18));
+  border-radius: 0;
+  padding: 16px;
+  gap: 12px;
+}
+
+.emptySessionPage__openPageHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: lightOrDarkTheme(rgba(13, 48, 87, 0.55), rgba(207, 228, 247, 0.55));
+}
+
+.emptySessionPage__openPageGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.emptySessionPage__openPageItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 8px;
+  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.08), rgba(207, 228, 247, 0.08));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(16, 62, 110, 0.3));
+  cursor: pointer;
+  font-size: $ouiFontSizeXS;
+  font-weight: 500;
+  color: $ouiTextColor;
+  transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
+  appearance: none;
+
+  &:hover {
+    background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.9), rgba($ouiColorPrimary, 0.12));
+    border-color: rgba($ouiColorPrimary, 0.3);
+    transform: translateY(-1px);
+    color: $ouiColorPrimary;
   }
 }
 
@@ -266,10 +331,19 @@
 }
 
 .emptySessionPage__bottomInput {
-  width: 100%;
-  max-width: 1100px;
-  position: relative;
-  z-index: 1;
+  position: fixed;
+  bottom: 0;
+  left: 72px;
+  right: 480px;
+  display: flex;
+  justify-content: center;
+  padding: 16px 48px 24px;
+  z-index: 10;
+  background: linear-gradient(to top, $ouiPageBackgroundColor 60%, transparent 100%);
+
+  .emptySessionPage__inputWrap {
+    max-width: 600px;
+  }
 }
 
 // ─── Dual-purpose input ─────────────────────────────────────
@@ -291,14 +365,12 @@
   min-height: 100px;
   margin-bottom: 0;
   border-radius: 0;
-  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.10), rgba(207, 228, 247, 0.12));
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.3), rgba(16, 62, 110, 0.15));
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16)) !important;
+  background-color: lightOrDarkTheme($ouiColorEmptyShade, #103e6e) !important;
   transition: border-color 200ms ease;
 
   &:focus {
-    border-color: transparent;
+    border-color: transparent !important;
   }
 }
 
@@ -432,7 +504,7 @@
   padding: 0 14px;
   height: 36px;
   background-color: transparent;
-  border: 1px solid transparent;
+  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34));
   border-radius: 0;
   cursor: pointer;
   font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
@@ -440,29 +512,20 @@
   font-weight: 600;
   letter-spacing: 1.2px;
   text-transform: uppercase;
-  color: lightOrDarkTheme(rgba(13, 48, 87, 0.45), rgba(207, 228, 247, 0.45));
+  color: lightOrDarkTheme(rgba(13, 48, 87, 0.62), rgba(207, 228, 247, 0.62));
   white-space: nowrap;
-  transition: color 150ms ease-out;
+  transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out;
   position: relative;
 
   &:hover {
+    border-color: $ouiColorPrimary;
     color: $ouiColorPrimary;
   }
 
   &--active {
+    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.08), rgba($ouiColorPrimary, 0.12));
+    border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.45), rgba($ouiColorPrimary, 0.45));
     color: $ouiColorPrimary;
-
-    // Underline rule
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background-color: $ouiColorPrimary;
-      pointer-events: none;
-    }
   }
 
   &--iconOnly {
@@ -473,13 +536,12 @@
 }
 
 .emptySessionPage__chipDot {
-  display: inline-block;
-  position: relative;
+  position: absolute;
+  top: 6px;
+  right: 6px;
   width: 6px;
   height: 6px;
-  min-width: 6px;
-  min-height: 6px;
-  border-radius: 50%;
+  border-radius: 0;
   background-color: $ouiColorAccent;
 }
 
@@ -534,11 +596,9 @@
   gap: $ouiSize;
   width: 100%;
   padding: $ouiSize;
-  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.10), rgba(207, 228, 247, 0.12));
+  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
   border-radius: 0;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.35), rgba(16, 62, 110, 0.18));
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(16, 62, 110, 0.4));
   cursor: pointer;
   text-align: left;
   font-size: $ouiFontSizeS;
@@ -590,10 +650,6 @@
     border-left: 2px solid $ouiColorWarning;
     border-radius: 0;
     padding: 16px;
-    // Light glassmorphism
-    background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.45), rgba(16, 62, 110, 0.25));
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
   }
 
   &--dismissing {
@@ -805,18 +861,16 @@
   gap: $ouiSizeS;
   padding: $ouiSize;
   height: 64px;
-  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.10), rgba(207, 228, 247, 0.12));
+  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
   border-radius: 0;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.3), rgba(16, 62, 110, 0.15));
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(16, 62, 110, 0.4));
   cursor: pointer;
   font-size: $ouiFontSizeS;
   color: $ouiTextColor;
   transition: background-color 200ms ease, border-color 200ms ease;
 
   &:hover {
-    background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.5), rgba($ouiColorPrimary, 0.12));
+    background-color: rgba($ouiColorPrimary, 0.08);
     border-color: rgba($ouiColorPrimary, 0.3);
   }
 
@@ -826,8 +880,8 @@
     pointer-events: none;
 
     &:hover {
-      background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.3), rgba(16, 62, 110, 0.15));
-      border-color: lightOrDarkTheme(rgba(13, 48, 87, 0.10), rgba(207, 228, 247, 0.12));
+      background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(16, 62, 110, 0.4));
+      border-color: lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
     }
   }
 }
@@ -975,9 +1029,7 @@
   gap: 8px;
   border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
   border-radius: 0;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.4), rgba(16, 62, 110, 0.2));
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(16, 62, 110, 0.4));
   padding: $ouiSize;
   position: relative;
   cursor: pointer;
@@ -987,7 +1039,7 @@
   overflow: hidden;
 
   &:hover {
-    background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(16, 62, 110, 0.35));
+    background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.85), rgba(16, 62, 110, 0.6));
   }
 }
 
@@ -1069,11 +1121,9 @@
 
 // ─── Favorite panel (table-style cards) ─────────────────────
 .emptySessionPage__favoritePanel {
-  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.10), rgba(207, 228, 247, 0.12));
+  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
   border-radius: 0;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.4), rgba(16, 62, 110, 0.2));
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(16, 62, 110, 0.4));
   padding: $ouiSize;
   position: relative;
 }
