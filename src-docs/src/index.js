@@ -38,6 +38,7 @@ import {
 import { LoginPage } from './views/sample_pages/login_page';
 
 import { OnboardingWizardPage } from './views/sample_pages/onboarding_wizard_page';
+import { MarketingPage } from './views/sample_pages/marketing_page';
 
 registerTheme('light', [themeLight]);
 registerTheme('dark', [themeDark]);
@@ -77,6 +78,14 @@ render(
             render={() => (
               <LinkWrapper>
                 <OnboardingWizardPage />
+              </LinkWrapper>
+            )}
+          />
+          <Route
+            path="/marketing"
+            render={() => (
+              <LinkWrapper>
+                <MarketingPage />
               </LinkWrapper>
             )}
           />

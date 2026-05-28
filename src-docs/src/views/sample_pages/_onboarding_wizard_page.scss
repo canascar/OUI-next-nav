@@ -274,21 +274,21 @@
 
   &--empty {
     background: transparent;
-    color: $ouiColorAccent;
+    color: $ouiColorPrimary;
     border-color: transparent;
 
     &:hover:not(:disabled) {
-      background: rgba($ouiColorAccent, 0.06);
+      background: rgba($ouiColorPrimary, 0.06);
       border-color: transparent;
     }
 
     &.onboardWizard__chip--selected {
-      background: rgba($ouiColorAccent, 0.1);
-      color: $ouiColorAccent;
+      background: rgba($ouiColorPrimary, 0.1);
+      color: $ouiColorPrimary;
       border-color: transparent;
 
       &:hover:not(:disabled) {
-        background: rgba($ouiColorAccent, 0.12);
+        background: rgba($ouiColorPrimary, 0.12);
         border-color: transparent;
       }
     }
