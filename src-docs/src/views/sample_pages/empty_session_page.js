@@ -701,7 +701,7 @@ export const EmptySessionPage = ({
               </div>
 
               {/* Card 6: Open a page */}
-              <button type="button" className="emptySessionPage__favoritePanel emptySessionPage__favoritePanel--action" onClick={() => onOpenPage('discover-log')}>
+              <button type="button" className="emptySessionPage__favoritePanel emptySessionPage__favoritePanel--action" onClick={() => onOpenPage('new-tab', 'New Tab')}>
                 <OuiIcon type="plusInCircle" size="l" color="subdued" />
                 <span className="emptySessionPage__openPageLabel">Open a page</span>
               </button>
