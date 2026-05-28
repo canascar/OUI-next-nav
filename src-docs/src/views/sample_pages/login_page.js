@@ -49,15 +49,12 @@ export const LoginPage = ({ onLogin }) => {
   const inkGhost = isDark ? 'rgba(207, 228, 247, 0.16)' : 'rgba(13, 48, 87, 0.14)';
   const inkFade = isDark ? 'rgba(207, 228, 247, 0.34)' : 'rgba(13, 48, 87, 0.32)';
   const cyanDim = isDark ? 'rgba(93, 217, 255, 0.45)' : 'rgba(31, 108, 181, 0.40)';
-  const gridFine = isDark ? 'rgba(207, 228, 247, 0.05)' : 'rgba(13, 48, 87, 0.05)';
-  const gridMajor = isDark ? 'rgba(207, 228, 247, 0.10)' : 'rgba(13, 48, 87, 0.10)';
+  const gridColor = isDark ? 'rgba(207, 228, 247, 0.03)' : 'rgba(13, 48, 87, 0.03)';
 
-  // v10 grid: 16px fine + 80px major
+  // v10 grid: simple 40px squares
   const gridBackground = `
-    linear-gradient(to right, ${gridFine} 1px, transparent 1px),
-    linear-gradient(to bottom, ${gridFine} 1px, transparent 1px),
-    linear-gradient(to right, ${gridMajor} 1px, transparent 1px),
-    linear-gradient(to bottom, ${gridMajor} 1px, transparent 1px)
+    linear-gradient(to right, ${gridColor} 1px, transparent 1px),
+    linear-gradient(to bottom, ${gridColor} 1px, transparent 1px)
   `;
 
   // Corner tick style helper
@@ -87,7 +84,7 @@ export const LoginPage = ({ onLogin }) => {
         position: 'relative',
         backgroundColor: bgColor,
         backgroundImage: gridBackground,
-        backgroundSize: '16px 16px, 16px 16px, 80px 80px, 80px 80px',
+        backgroundSize: '40px 40px',
       }}>
 
       {/* Back arrow */}

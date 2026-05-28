@@ -225,28 +225,7 @@
   height: 100%;
   min-height: 0;
   position: relative;
-  // v10 graph-paper grid background
-  background-image:
-    linear-gradient(to right, lightOrDarkTheme(rgba(13, 48, 87, 0.03), rgba(207, 228, 247, 0.03)) 1px, transparent 1px),
-    linear-gradient(to bottom, lightOrDarkTheme(rgba(13, 48, 87, 0.03), rgba(207, 228, 247, 0.03)) 1px, transparent 1px),
-    linear-gradient(to right, lightOrDarkTheme(rgba(13, 48, 87, 0.06), rgba(207, 228, 247, 0.06)) 1px, transparent 1px),
-    linear-gradient(to bottom, lightOrDarkTheme(rgba(13, 48, 87, 0.06), rgba(207, 228, 247, 0.06)) 1px, transparent 1px);
-  background-size: 16px 16px, 16px 16px, 80px 80px, 80px 80px;
-  background-position: 0 0;
-
-  // Vignette overlay
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: radial-gradient(
-      ellipse at center,
-      transparent 30%,
-      lightOrDarkTheme(rgba($ouiColorEmptyShade, 0.7), rgba($ouiColorEmptyShade, 0.7)) 100%
-    );
-    z-index: 0;
-  }
+  background: transparent;
 
   > * {
     position: relative;
