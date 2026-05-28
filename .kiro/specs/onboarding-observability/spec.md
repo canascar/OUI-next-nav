@@ -65,7 +65,7 @@ The onboarding flow is organized into 6 main steps. Step 1 contains sub-steps fo
 
 | Main Step | Title | Sub-steps |
 |-----------|-------|-----------|
-| 1 | What do you want to observe? | 1a. Choose observation goal, 1b. Select environment, 1c. Configure collector |
+| 1 | What do you want to observe? | 1a. Choose observation goal, 1b. Select environment, 1b-eks. EKS auto-discovery (if EKS selected), 1c. Configure collector, 1d. Select telemetry storage |
 | 2 | Connect your data source | — |
 | 3 | Transform your data | — |
 | 4 | Review and confirm | — |
@@ -143,6 +143,36 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 
 ---
 
+### Step 1 of 6 — Sub-step 1b-eks (EKS Auto-Discovery)
+
+**Step Title:** `Set up data sources`
+
+This sub-step activates only when the user selects "EKS" in sub-step 1b. It is a parallel path that bypasses sub-steps 1c, 1d, step 2, and step 3, auto-redirecting to Step 4 (Review and confirm).
+
+#### Left Panel — Auto-Discovery
+
+| Field | Content |
+|-------|---------|
+| System message | *Scanning your AWS account for EKS clusters and instrumented services...* |
+| Option type | None (auto-discovery — no user interaction required) |
+| Behavior | After streaming the scanning message, the system automatically detects EKS resources. After ~2 seconds of scanning, the message updates to: *We found 3 EKS clusters and 14 services instrumented with OpenTelemetry. Waiting for additional data...* |
+| Confirmation message | ✓ DONE — Discovery complete. We found 3 EKS clusters and 14 services instrumented with OpenTelemetry. Redirecting to review... |
+| Auto-advance | After 5 seconds (to allow for additional data to arrive), auto-redirects to Step 4 (Review and confirm). |
+
+#### Right Panel — Discovery Results
+
+| Field | Content |
+|-------|---------|
+| Panel title | `EKS Discovery` |
+| Panel subtitle | `Detecting clusters and services` |
+| Content type | Discovery dashboard |
+| Content details (scanning phase) | A loading spinner with "Scanning AWS account for EKS clusters..." text and an animated progress bar. |
+| Content details (found phase) | A success summary showing: (1) "3 EKS clusters detected" with green checkmark, (2) "14 services instrumented with OpenTelemetry" with green checkmark. Below: a list of 3 cluster cards, each showing cluster name, region, status, number of instrumented services, and a "Live" indicator with pulse dot. |
+| Dynamic behavior | Initially shows scanning animation. After detection completes (~2s), transitions to the discovered results with cluster cards. The panel remains visible for 5 seconds before auto-advancing to Step 4. |
+| Secondary section | A note: "Waiting for additional data... Auto-advancing to review." |
+
+---
+
 ### Step 1 of 6 — Sub-step 1c
 
 **Step Title:** `Set up data sources`
@@ -169,6 +199,38 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 | Content details | A code block displaying the docker run command: `docker run -e CLICKHOUSE_ENDPOINT="https://d9vcnuuz5c.us-west-2.aws.clickhouse.cloud:8443" -e CLICKHOUSE_USER="default" -e CLICKHOUSE_PASSWORD="<your_password_here>" -p 4317:4317 -p 4318:4318 clickhouse/clickstack-otel-collector:latest`. Includes a "Copy" button in the top-right corner of the code block. |
 | Dynamic behavior | When user clicks "I am ready," the right panel briefly shows a connection verification spinner, then transitions to a green checkmark with "Collector detected" status. If "Go back" is selected, navigates to the previous step. |
 | Secondary section | A brief note below the code block: "Replace `<your_password_here>` with your actual password. The collector will listen on ports 4317 (gRPC) and 4318 (HTTP) for incoming telemetry data." |
+
+---
+
+### Step 1 of 6 — Sub-step 1d
+
+**Step Title:** `Set up data sources`
+
+#### Left Panel — Question
+
+| Field | Content |
+|-------|---------|
+| System message | *Based on your setup, I recommend storing your telemetry in an **{recommended resource type}**. This gives you {brief rationale based on earlier selections}.* |
+| Option type | Chips (pill buttons) |
+| Options | |
+| | Option 1: `Looks good` | Option 1 is primary button |
+| | Option 2: `Customize` |
+| | Option 3: `Store in existing` |
+| Default selection | None |
+| Confirmation message (Looks good) | ✓ DONE — Telemetry will be stored in a new **{recommended resource type}**. |
+| Confirmation message (Customize) | *(Navigates to customization sub-flow — see Dynamic behavior)* |
+| Confirmation message (Store in existing) | *(Navigates to resource picker — see Dynamic behavior)* |
+
+#### Right Panel — Preview
+
+| Field | Content |
+|-------|---------|
+| Panel title | `Telemetry Storage` |
+| Panel subtitle | `Recommended for your setup` |
+| Content type | Recommendation card |
+| Content details | A single highlighted recommendation card showing: the recommended resource type (OpenSearch Managed Cluster or OpenSearch Serverless Collection), why it was chosen (e.g., "Your data volume and query pattern suggest a serverless collection for automatic scaling" or "Your retention requirements and steady workload are best served by a managed cluster"), and key specs — estimated OCUs or instance type, index pattern, and default retention period. Below the recommendation card, a muted comparison row shows the alternative option with a one-line summary of why it was not the primary recommendation. |
+| Dynamic behavior | **"Looks good"** — accepts the recommendation, creates the resource with default settings, and advances to Step 2. **"Customize"** — expands the right panel into an editable configuration form where users can adjust: resource type (cluster vs. serverless), instance sizing or OCU allocation, number of replicas, retention policy, and index naming. A "Confirm" button in the form saves the customization and advances to Step 2. **"Store in existing"** — the right panel switches to a resource picker listing the user's existing OpenSearch clusters and serverless collections (fetched from their account). Each row shows: resource name, status, current utilization, and region. User selects one and clicks "Use this resource" to advance to Step 2. |
+| Secondary section | A note: "You can change storage settings later from the Data Management page." |
 
 ---
 
@@ -258,8 +320,8 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 | Panel title | `Configuration Summary` |
 | Panel subtitle | `Review before deploying` |
 | Content type | Configuration summary |
-| Content details | A structured summary card showing all selections: (1) Observation goal, (2) Environment, (3) Data source / provider, (4) Signals enabled (metrics, logs, traces), (5) Estimated data volume, (6) Index patterns to be created. Each row shows the step title, selected value, and an edit icon. |
-| Dynamic behavior | If user selects "I want to make changes," the right panel highlights the editable fields and the left panel navigates back to the relevant step. If user confirms, a deployment progress indicator appears showing: creating indices → configuring pipeline → starting collection → verifying data flow. |
+| Content details | A structured summary card showing all selections: (1) Observation goal, (2) Environment, (3) Telemetry storage (auto-recommended if EKS path), (4) Additional data sources (shows "14 services auto-discovered from EKS" if EKS path, or the selected provider), (5) Transformations (shows "Auto-configured from EKS metadata" if EKS path). Each row shows the step title, selected value, and an edit icon. |
+| Dynamic behavior | If user selects "I want to make changes," the right panel highlights the editable fields and the left panel navigates back to the relevant step. If user confirms, a deployment progress indicator appears showing: creating indices → configuring pipeline → starting collection → verifying data flow. For the EKS path, fields that were auto-configured show their auto-detected values without edit icons. |
 
 ---
 
@@ -328,10 +390,11 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 |----------|-------------|
 | Typing animation | System (assistant) messages are streamed word-by-word with a typing effect (~30ms per token), matching the thread page's streaming pattern. Interactive options (chips, multi-select) only appear after the typing animation completes. |
 | Step transition | Auto-advances to the next step ~1 second after confirmation. No "Continue" button — the flow progresses automatically once the user makes a selection and the confirmation displays. The last step (Step 6) does not auto-advance; its chips navigate to other pages. When advancing to a new main step, the chat history from previous main steps is cleared — only sub-step history within the current main step is visible. |
+| EKS auto-discovery path | When user selects "EKS" in sub-step 1b, the flow enters a parallel path (sub-step 1b-eks). The system automatically scans for EKS clusters (~2s scanning animation), displays "We found 3 EKS clusters and 14 services instrumented with OpenTelemetry" in the chat, waits 5 seconds for additional data to arrive, then auto-redirects to Step 4 (Review and confirm). This path bypasses sub-steps 1c, 1d, Step 2, and Step 3 entirely. |
 | Back navigation | Users can click on any completed main step dot in the progress timeline to navigate back. Changes to earlier steps cascade-reset subsequent steps. Sub-step 1c also has an explicit "Go back" option that returns to 1b. |
-| Skip steps | Sub-step 1b (environment) is skippable if user chose "sample data" in sub-step 1a. A "Skip" text link appears below the options. |
-| Validation | Sub-steps 1a–1c and Step 2 require a selection before advancing. Step 2 additionally validates that the connection is successful before showing confirmation. Step 3 allows skipping without selection. Step 4 requires explicit confirmation via chip selection ("Looks good"). Step 5 requires user to click "Continue" chip after observing live data. |
-| Loading states | Sub-step 1c shows a collector verification spinner when "I am ready" is clicked. Step 2 shows a connection/validation spinner (2–5s) after provider selection. Step 4 shows a deployment progress bar with stage indicators when user confirms. Step 5 shows live-updating counters immediately upon entering. |
+| Skip steps | Sub-step 1b (environment) is skippable if user chose "sample data" in sub-step 1a. A "Skip" text link appears below the options. The EKS path automatically skips sub-steps 1c, 1d, Step 2, and Step 3. |
+| Validation | Sub-steps 1a–1c and Step 2 require a selection before advancing. Step 2 additionally validates that the connection is successful before showing confirmation. Step 3 allows skipping without selection. Step 4 requires explicit confirmation via chip selection ("Looks good"). Step 5 requires user to click "Continue" chip after observing live data. The EKS auto-discovery step requires no user input — it auto-confirms after detection. |
+| Loading states | Sub-step 1b-eks shows a scanning progress bar animation during cluster detection (~2s). Sub-step 1c shows a collector verification spinner when "I am ready" is clicked. Step 2 shows a connection/validation spinner (2–5s) after provider selection. Step 4 shows a deployment progress bar with stage indicators when user confirms. Step 5 shows live-updating counters immediately upon entering. |
 | Completion | After Step 6, selecting a destination navigates the user out of the onboarding flow to the chosen feature (dashboards, discover, alerts, or back to onboarding for additional sources). |
 
 ---
@@ -340,18 +403,33 @@ The step indicator displays `Step X/6` based on the main step number. Timeline d
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│ STEP 1: What do you want to observe? (contains 3 sub-steps)             │
+│ STEP 1: What do you want to observe? (contains 4 sub-steps)             │
 │                                                                          │
 │  [Start] → 1a: Choose observation goal                                  │
 │         ├─ "Application" → 1b: Select environment                       │
 │         ├─ "Cloud services" → 1b: Select environment (cloud preset)     │
 │         └─ "Sample data" → Skip to 1c (pre-configured)                 │
 │                                                                          │
-│  1b: Select environment → 1c                                            │
+│  1b: Select environment                                                  │
+│         ├─ "OpenTelemetry" → 1c: Configure OTel collector               │
+│         ├─ "EKS" → 1b-eks: Auto-discovery (parallel path)              │
+│         ├─ "Kubernetes" → 1c: Configure OTel collector                  │
+│         └─ "Other" → 1c: Configure OTel collector                       │
+│                                                                          │
+│  1b-eks: EKS Auto-Discovery                                             │
+│         → System auto-detects EKS clusters in AWS account               │
+│         → Right panel shows detected clusters and services              │
+│         → Chat says "We found 3 EKS clusters and 14 services            │
+│           instrumented with OpenTelemetry"                               │
+│         → Waits 5 seconds for additional data                           │
+│         → Auto-redirects to Step 4 (Review and confirm)                 │
 │                                                                          │
 │  1c: Configure OTel collector                                            │
-│         ├─ "I am ready" → Step 2                                        │
+│         ├─ "I am ready" → 1d: Select telemetry storage                  │
 │         └─ "Go back" → 1b                                               │
+│                                                                          │
+│  1d: Select telemetry storage                                            │
+│         → User chooses storage destination → Step 2                     │
 └─────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────┐
@@ -410,6 +488,9 @@ Based on the screenshot reference:
 - Only uses existing OUI icons from `src/components/icon/assets/`
 - Must render correctly under both `v9-light` and `v9-dark` themes
 - Step data is defined as a JS config array (`STEPS`), making it easy to add/remove/reorder steps
+- Branching logic is handled in the auto-advance `useEffect`: sub-step 1b routes to either the EKS discovery step (index 2) or the OTel collector step (index 3) based on selection
+- The EKS discovery step uses `optionType: 'auto-discovery'` — no user interaction required; auto-confirms after ~2s scanning then auto-advances to Step 4 after a 5s delay
+- The `SummaryPanel` component dynamically adjusts displayed rows based on which path was taken (EKS vs. OTel), showing auto-configured values for skipped steps
 - Validation logic (connection checks) will be async with timeout and retry support
 - State management tracks: current step, selections per step, validation status, and connection health
 

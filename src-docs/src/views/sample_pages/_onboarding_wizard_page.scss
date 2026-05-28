@@ -250,6 +250,28 @@
     }
   }
 
+  &--empty {
+    background: transparent;
+    color: $ouiColorPrimary;
+    border-color: transparent;
+
+    &:hover:not(:disabled) {
+      background: rgba($ouiColorPrimary, 0.06);
+      border-color: transparent;
+    }
+
+    &.onboardWizard__chip--selected {
+      background: rgba($ouiColorPrimary, 0.1);
+      color: $ouiColorPrimary;
+      border-color: transparent;
+
+      &:hover:not(:disabled) {
+        background: rgba($ouiColorPrimary, 0.12);
+        border-color: transparent;
+      }
+    }
+  }
+
   &:disabled {
     opacity: 0.6;
     cursor: default;
@@ -612,6 +634,95 @@
 }
 
 // ─────────────────────────────────────────────
+// EKS DISCOVERY — Auto-detection panel
+// ─────────────────────────────────────────────
+
+.onboardWizard__eksScanning {
+  padding: 24px;
+  text-align: center;
+}
+
+.onboardWizard__eksScanRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.onboardWizard__eksScanProgress {
+  margin-top: 16px;
+  height: 4px;
+  background: $ouiColorLightestShade;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.onboardWizard__eksScanProgressBar {
+  height: 100%;
+  width: 60%;
+  background: linear-gradient(90deg, $ouiColorPrimary, $ouiColorAccent);
+  border-radius: 2px;
+  animation: eksScanPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes eksScanPulse {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.onboardWizard__eksResults {
+  padding: 0;
+}
+
+.onboardWizard__eksResultSummary {
+  padding: 16px;
+  background: rgba($ouiColorSuccess, 0.06);
+  border: 1px solid rgba($ouiColorSuccess, 0.2);
+  border-radius: $ouiBorderRadius;
+}
+
+.onboardWizard__eksResultBadge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.onboardWizard__eksClusterList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.onboardWizard__eksClusterCard {
+  padding: 14px 16px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorEmptyShade;
+  transition: border-color 150ms ease;
+}
+
+.onboardWizard__eksClusterHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.onboardWizard__eksClusterServices {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid $ouiColorLightestShade;
+}
+
+.onboardWizard__eksClusterLive {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+// ─────────────────────────────────────────────
 // COLLECTOR SETUP — Code Block (Step 3)
 // ─────────────────────────────────────────────
 
@@ -664,6 +775,100 @@
   border: 1px solid $ouiColorSuccess;
   border-radius: $ouiBorderRadius;
   background: rgba($ouiColorSuccess, 0.06);
+}
+
+// ─────────────────────────────────────────────
+// TELEMETRY STORAGE — Recommendation (Step 1d)
+// ─────────────────────────────────────────────
+
+.onboardWizard__storageCard {
+  padding: 20px;
+  border: 2px solid $ouiColorPrimary;
+  border-radius: $ouiBorderRadius;
+  background: rgba($ouiColorPrimary, 0.03);
+  transition: border-color 150ms ease, background-color 150ms ease;
+
+  &--confirmed {
+    border-color: $ouiColorSuccess;
+    background: rgba($ouiColorSuccess, 0.03);
+  }
+}
+
+.onboardWizard__storageCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.onboardWizard__storageBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  background: rgba($ouiColorPrimary, 0.1);
+  color: $ouiColorPrimary;
+  border-radius: 10px;
+  margin-left: 8px;
+}
+
+.onboardWizard__storageSpecs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorEmptyShade;
+}
+
+.onboardWizard__storageSpecRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.onboardWizard__storageAlt {
+  padding: 12px 16px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorLightestShade;
+}
+
+.onboardWizard__storageCustomize {
+  padding: 16px;
+  border: 1px solid $ouiColorPrimary;
+  border-radius: $ouiBorderRadius;
+  background: rgba($ouiColorPrimary, 0.03);
+}
+
+.onboardWizard__storageExisting {
+  padding: 16px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorEmptyShade;
+}
+
+.onboardWizard__storageExistingList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.onboardWizard__storageExistingItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorLightestShade;
+  cursor: pointer;
+  transition: border-color 150ms ease, background-color 150ms ease;
+
+  &:hover {
+    border-color: $ouiColorPrimary;
+    background: rgba($ouiColorPrimary, 0.04);
+  }
 }
 
 // ─────────────────────────────────────────────

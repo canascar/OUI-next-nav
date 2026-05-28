@@ -34,11 +34,8 @@ import { SessionLeftNav } from './session_left_nav';
  *
  * Main steps:
  *   1. What do you want to observe? (includes environment + collector config)
- *   2. Connect your data source
- *   3. Transform your data
- *   4. Review and confirm
- *   5. Collecting your data
- *   6. You're all set!
+ *   2. Review and confirm
+ *   3. Collecting your data
  */
 const STEPS = [
   {
@@ -49,14 +46,14 @@ const STEPS = [
       'Welcome to OpenSearch for Observability. I\u2019ll help you set up your data. What would you like to observe?',
     optionType: 'chips',
     options: [
-      { key: 'application', label: 'Collect data from your application' },
-      { key: 'cloud', label: 'Connect with cloud services' },
-      { key: 'sample', label: 'Get started with sample data' },
+      { key: 'application', label: 'Instrument application' },
+      { key: 'cloud', label: 'Connect existing data sources' },
+      { key: 'sample', label: 'Get started with sample data', empty: true },
     ],
     confirmation: (selected) => {
       const labels = {
-        application: 'Collect data from your application',
-        cloud: 'Connect with cloud services',
+        application: 'Instrument application',
+        cloud: 'Connect existing data sources',
         sample: 'Get started with sample data',
       };
       return `Great choice! Let\u2019s set up ${labels[selected] || selected}.`;
@@ -100,6 +97,23 @@ const STEPS = [
   {
     title: 'Set up data sources',
     mainStep: 1,
+    subStep: '2-eks',
+    question:
+      'Scanning your AWS account for EKS clusters and instrumented services...',
+    optionType: 'auto-discovery',
+    options: [],
+    autoAdvanceDelay: 5000,
+    confirmation: () =>
+      'Discovery complete. We found 3 EKS clusters and 14 services instrumented with OpenTelemetry. Redirecting to review...',
+    rightPanel: {
+      title: 'EKS Discovery',
+      subtitle: 'Detecting clusters and services',
+      contentType: 'eks-discovery',
+    },
+  },
+  {
+    title: 'Set up data sources',
+    mainStep: 1,
     subStep: 3,
     question:
       'Run the following command to start your OpenTelemetry collector. Once it\u2019s running, click "I am ready" to continue.',
@@ -117,82 +131,44 @@ const STEPS = [
     },
   },
   {
-    title: 'Connect additional data sources',
-    mainStep: 2,
+    title: 'Set up data sources',
+    mainStep: 1,
+    subStep: 4,
     question:
-      'Next: Connect to telemetry from additional data sources',
+      'Based on your setup, I recommend storing your telemetry in an OpenSearch Serverless Collection with Optimized engine. Columnar storage handles time-series log data more efficiently.',
     optionType: 'chips',
     options: [
-      { key: 'opensearch', label: 'OpenSearch' },
-      { key: 'prometheus', label: 'Prometheus' },
-      { key: 'cloudwatch', label: 'Amazon CloudWatch Logs' },
-      { key: 's3', label: 'Amazon S3' },
+      { key: 'looks-good', label: 'Looks good', primary: true },
+      { key: 'customize', label: 'Customize' },
+      { key: 'store-existing', label: 'Store in existing' },
     ],
-    skipLabel: 'Skip for now',
     confirmation: (selected) => {
-      const labels = {
-        opensearch: 'OpenSearch',
-        prometheus: 'Prometheus',
-        cloudwatch: 'Amazon CloudWatch Logs',
-        s3: 'Amazon S3',
+      const messages = {
+        'looks-good':
+          'Telemetry will be stored in a new OpenSearch Serverless Collection with Optimized engine.',
+        customize:
+          'Telemetry storage customized. Configuration saved.',
+        'store-existing':
+          'Telemetry will be stored in your existing OpenSearch Serverless Collection.',
       };
-      if (!selected || (Array.isArray(selected) && selected.length === 0)) {
-        return 'Skipped data source connection.';
-      }
-      const services = Math.floor(Math.random() * 5) + 4;
-      const logGroups = Math.floor(Math.random() * 30) + 20;
-      return `Connected to ${labels[selected] || selected}. I\u2019m seeing ${services} services and ${logGroups} log groups.`;
+      return messages[selected] || 'Storage configured.';
     },
     rightPanel: {
-      title: 'Data Sources',
-      subtitle: 'Where telemetry comes from',
-      contentType: 'data-sources',
-    },
-  },
-  {
-    title: 'Transform your data',
-    mainStep: 3,
-    question:
-      'Logs collected aren\u2019t always in the perfect format. Would you like to make any changes to your log sources?',
-    optionType: 'multiselect',
-    options: [
-      {
-        key: 'pii',
-        label: 'Remove Personally Identifiable data',
-        description:
-          'Strip PII such as emails, IP addresses, and names from your log sources',
-      },
-      {
-        key: 'catalog',
-        label: 'Add service catalog data',
-        description:
-          'Enrich logs with service ownership, team, and environment metadata',
-      },
-    ],
-    skipLabel: 'Skip for now',
-    confirmation: (selected) => {
-      if (!selected || (Array.isArray(selected) && selected.length === 0)) {
-        return 'No transformations applied. You can configure these later from settings.';
-      }
-      const labels = {
-        pii: 'Remove PII',
-        catalog: 'Add service catalog data',
-      };
-      const names = (Array.isArray(selected) ? selected : [selected]).map(
-        (s) => labels[s] || s
-      );
-      return `Applying ${names.join(' and ')} to your data pipeline.`;
-    },
-    rightPanel: {
-      title: 'Data Transformations',
-      subtitle: 'Enrich and clean your log sources',
-      contentType: 'transformations',
+      title: 'Telemetry Storage',
+      subtitle: 'Recommended for your setup',
+      contentType: 'telemetry-storage',
     },
   },
   {
     title: 'Review and confirm',
-    mainStep: 4,
+    mainStep: 2,
     question: 'Here\u2019s a summary of your setup. Everything look good?',
+    dynamicQuestion: (selections) => {
+      if (selections[0] === 'application') {
+        return 'Here\u2019s a summary of your setup. Everything look good?\n\nBased on your data, I recommend storing your telemetry in an OpenSearch Serverless Collection with Optimized engine. Columnar storage handles time-series log data more efficiently.';
+      }
+      return 'Here\u2019s a summary of your setup. Everything look good?';
+    },
     optionType: 'chips',
     options: [
       { key: 'deploy', label: 'Looks good \u2014 deploy my configuration', primary: true },
@@ -207,36 +183,20 @@ const STEPS = [
   },
   {
     title: 'Collecting your data',
-    mainStep: 5,
+    mainStep: 3,
     question:
       'Your pipeline is deployed and data is flowing in! I\u2019m collecting logs, metrics, and traces from your sources. You can watch the live counts on the right \u2014 once you\u2019re satisfied, continue to finish setup.',
     optionType: 'chips',
-    options: [{ key: 'continue', label: 'Continue', primary: true }],
+    options: [
+      { key: 'continue', label: 'Continue', primary: true },
+      { key: 'import', label: 'Import dashboards and queries' },
+    ],
     confirmation: () =>
       'Data collection verified. Your observability pipeline is active.',
     rightPanel: {
       title: 'Live Data Collection',
       subtitle: 'Watching your data flow in real-time',
       contentType: 'live-counters',
-    },
-  },
-  {
-    title: "You're all set!",
-    mainStep: 6,
-    question:
-      'Your observability pipeline is live! Data is flowing into OpenSearch. Here are some next steps to explore.',
-    optionType: 'chips',
-    options: [
-      { key: 'dashboards', label: 'Start using OpenSearch', primary: true },
-      { key: 'alerts', label: 'Set up Alerts' },
-      { key: 'more-sources', label: 'Collect data sources' },
-      { key: 'import', label: 'Import dashboards and queries' },
-    ],
-    confirmation: null,
-    rightPanel: {
-      title: 'Observability Dashboard',
-      subtitle: 'Your data is flowing',
-      contentType: 'completion-dashboard',
     },
   },
 ];
@@ -257,8 +217,6 @@ const OTEL_COMMAND = `docker run \\
 const CHECKLIST_STEPS = [
   { label: 'Set observability goal', description: 'Choose what you want to observe' },
   { label: 'Collect data from environment', description: 'Configure your collector and environment' },
-  { label: 'Connect data source', description: 'Hook up telemetry from your infrastructure' },
-  { label: 'Data transformations', description: 'Clean and enrich your log sources' },
 ];
 
 const GettingStartedPanel = () => {
@@ -371,6 +329,89 @@ const EnvironmentPanel = ({ selectedOption }) => {
   );
 };
 
+const EKS_DISCOVERY_CLUSTERS = [
+  { name: 'prod-app-cluster', region: 'us-west-2', services: 6, status: 'Active' },
+  { name: 'staging-services', region: 'us-west-2', services: 5, status: 'Active' },
+  { name: 'dev-playground', region: 'us-east-1', services: 3, status: 'Active' },
+];
+
+const EKSDiscoveryPanel = ({ discoveryPhase }) => {
+  return (
+    <div className="onboardWizard__rightContent">
+      <RightPanelHeader
+        icon="logo_aws"
+        title="EKS Discovery"
+        subtitle="Detecting clusters and services"
+      />
+      <OuiSpacer size="l" />
+      {discoveryPhase === 'scanning' && (
+        <div className="onboardWizard__eksScanning">
+          <div className="onboardWizard__eksScanRow">
+            <OuiLoadingSpinner size="s" />
+            <OuiText size="s">Scanning AWS account for EKS clusters...</OuiText>
+          </div>
+          <OuiSpacer size="m" />
+          <div className="onboardWizard__eksScanProgress">
+            <div className="onboardWizard__eksScanProgressBar" />
+          </div>
+        </div>
+      )}
+      {discoveryPhase === 'found' && (
+        <div className="onboardWizard__eksResults">
+          <div className="onboardWizard__eksResultSummary">
+            <div className="onboardWizard__eksResultBadge">
+              <OuiIcon type="checkInCircleFilled" size="s" color="success" />
+              <OuiText size="s">
+                <strong>3 EKS clusters</strong> detected
+              </OuiText>
+            </div>
+            <OuiSpacer size="xs" />
+            <div className="onboardWizard__eksResultBadge">
+              <OuiIcon type="checkInCircleFilled" size="s" color="success" />
+              <OuiText size="s">
+                <strong>14 services</strong> instrumented with OpenTelemetry
+              </OuiText>
+            </div>
+          </div>
+          <OuiSpacer size="l" />
+          <div className="onboardWizard__eksClusterList">
+            {EKS_DISCOVERY_CLUSTERS.map((cluster) => (
+              <div key={cluster.name} className="onboardWizard__eksClusterCard">
+                <div className="onboardWizard__eksClusterHeader">
+                  <OuiIcon type="compute" size="m" />
+                  <div>
+                    <OuiText size="s">
+                      <strong>{cluster.name}</strong>
+                    </OuiText>
+                    <OuiText size="xs" color="subdued">
+                      {cluster.region} &middot; {cluster.status}
+                    </OuiText>
+                  </div>
+                </div>
+                <div className="onboardWizard__eksClusterServices">
+                  <OuiText size="xs" color="subdued">
+                    {cluster.services} instrumented services
+                  </OuiText>
+                  <span className="onboardWizard__eksClusterLive">
+                    <span className="onboardWizard__liveDot" />
+                    <OuiText size="xs">Active</OuiText>
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <OuiSpacer size="m" />
+          <OuiText size="xs" color="subdued">
+            <p style={{ margin: 0 }}>
+              Waiting for additional data... Auto-advancing to review.
+            </p>
+          </OuiText>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const CollectorSetupPanel = ({ confirmed }) => {
   const [copied, setCopied] = useState(false);
 
@@ -424,141 +465,135 @@ const CollectorSetupPanel = ({ confirmed }) => {
   );
 };
 
-const DataSourcesPanel = ({ selectedOption, confirmed }) => {
-  const providers = [
-    {
-      key: 'opensearch',
-      icon: 'logo_opensearch',
-      name: 'OpenSearch',
-      subtitle: 'Search & analytics',
-    },
-    {
-      key: 'prometheus',
-      icon: 'logo_prometheus',
-      name: 'Prometheus',
-      subtitle: 'Metrics monitoring',
-    },
-    {
-      key: 'cloudwatch',
-      icon: 'logo_aws',
-      name: 'CloudWatch',
-      subtitle: 'AWS logs',
-    },
-    {
-      key: 's3',
-      icon: 'logo_aws',
-      name: 'Amazon S3',
-      subtitle: 'Object storage',
-    },
-  ];
+const TelemetryStoragePanel = ({ selectedOption }) => {
+  const recommendation = {
+    type: 'OpenSearch Serverless Collection',
+    subtitle: 'Optimized engine \u2014 Columnar storage',
+    icon: 'logo_opensearch',
+    reason:
+      'Serverless with columnar storage handles time-series log data more efficiently, giving you faster queries, lower storage costs, and no infrastructure to manage for observability workloads.',
+    specs: [
+      { label: 'Engine', value: 'Optimized (Columnar)' },
+      { label: 'Index pattern', value: 'otel-v1-*' },
+      { label: 'Default retention', value: '30 days' },
+    ],
+  };
+
+  const alternative = {
+    type: 'OpenSearch Managed Cluster',
+    reason:
+      'Better suited for workloads requiring full cluster control, custom plugin support, or dedicated infrastructure.',
+  };
 
   return (
     <div className="onboardWizard__rightContent">
       <RightPanelHeader
         icon="database"
-        title="Data Sources"
-        subtitle="Where telemetry comes from"
+        title="Telemetry Storage"
+        subtitle="Recommended for your setup"
       />
       <OuiSpacer size="l" />
-      <div className="onboardWizard__providerGrid">
-        {providers.map((p) => (
-          <div
-            key={p.key}
-            className={`onboardWizard__providerCard${
-              selectedOption === p.key
-                ? ' onboardWizard__providerCard--selected'
-                : ''
-            }`}>
-            {confirmed && selectedOption === p.key && (
-              <span className="onboardWizard__connectedBadge">Connected</span>
-            )}
-            <div className="onboardWizard__providerIcon">
-              <OuiIcon type={p.icon} size="xl" />
-            </div>
+      <div
+        className={`onboardWizard__storageCard${
+          selectedOption === 'looks-good'
+            ? ' onboardWizard__storageCard--confirmed'
+            : ''
+        }`}>
+        <div className="onboardWizard__storageCardHeader">
+          <OuiIcon type={recommendation.icon} size="l" />
+          <div>
             <OuiText size="s">
-              <strong>{p.name}</strong>
+              <strong>{recommendation.type}</strong>
             </OuiText>
             <OuiText size="xs" color="subdued">
-              <p style={{ margin: 0 }}>{p.subtitle}</p>
+              {recommendation.subtitle}
             </OuiText>
-            {confirmed && selectedOption === p.key ? (
-              <OuiText size="xs" className="onboardWizard__liveIndicator">
-                <span className="onboardWizard__liveDot" />
-                Live
-              </OuiText>
-            ) : (
-              <OuiText size="xs" color="subdued">
-                <p style={{ margin: 0 }}>Not connected</p>
-              </OuiText>
-            )}
+            <span className="onboardWizard__storageBadge">Recommended</span>
           </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const TransformationsPanel = ({ selectedOption }) => {
-  const selected = Array.isArray(selectedOption) ? selectedOption : [];
-
-  const sampleLogBefore = {
-    timestamp: '2024-03-15T14:32:01.234Z',
-    level: 'INFO',
-    message: 'User login successful',
-    user_email: 'john.doe@example.com',
-    ip_address: '192.168.1.42',
-    user_name: 'John Doe',
-  };
-
-  const buildAfterLog = () => {
-    const log = { ...sampleLogBefore };
-    if (selected.includes('pii')) {
-      log.user_email = '[REDACTED]';
-      log.ip_address = '[REDACTED]';
-      log.user_name = '[REDACTED]';
-    }
-    if (selected.includes('catalog')) {
-      log['service.team'] = 'auth-platform';
-      log['service.environment'] = 'production';
-    }
-    return log;
-  };
-
-  return (
-    <div className="onboardWizard__rightContent">
-      <RightPanelHeader
-        icon="logstash_filter"
-        title="Data Transformations"
-        subtitle="Enrich and clean your log sources"
-      />
-      <OuiSpacer size="l" />
-      <div className="onboardWizard__transformCompare">
-        <div className="onboardWizard__transformBlock">
-          <OuiText size="xs">
-            <strong>Before</strong>
-          </OuiText>
-          <OuiSpacer size="xs" />
-          <pre className="onboardWizard__logPreview">
-            {JSON.stringify(sampleLogBefore, null, 2)}
-          </pre>
         </div>
-        <div className="onboardWizard__transformBlock">
-          <OuiText size="xs">
-            <strong>After</strong>
-          </OuiText>
-          <OuiSpacer size="xs" />
-          <pre className="onboardWizard__logPreview">
-            {selected.length === 0
-              ? 'No transformations selected.'
-              : JSON.stringify(buildAfterLog(), null, 2)}
-          </pre>
+        <OuiSpacer size="s" />
+        <OuiText size="xs" color="subdued">
+          <p style={{ margin: 0 }}>{recommendation.reason}</p>
+        </OuiText>
+        <OuiSpacer size="m" />
+        <div className="onboardWizard__storageSpecs">
+          {recommendation.specs.map((spec) => (
+            <div key={spec.label} className="onboardWizard__storageSpecRow">
+              <OuiText size="xs" color="subdued">
+                {spec.label}
+              </OuiText>
+              <OuiText size="xs">
+                <strong>{spec.value}</strong>
+              </OuiText>
+            </div>
+          ))}
         </div>
       </div>
-      <OuiSpacer size="l" />
-      <div className="onboardWizard__pipelineStatus">
-        <OuiIcon type="checkInCircleFilled" size="s" color="success" />
-        <OuiText size="xs">Connection valid &mdash; data flowing</OuiText>
+      <OuiSpacer size="m" />
+      <div className="onboardWizard__storageAlt">
+        <OuiText size="xs" color="subdued">
+          <strong>Alternative:</strong> {alternative.type} &mdash;{' '}
+          {alternative.reason}
+        </OuiText>
       </div>
+      {selectedOption === 'customize' && (
+        <>
+          <OuiSpacer size="l" />
+          <div className="onboardWizard__storageCustomize">
+            <OuiText size="xs">
+              <strong>Customize configuration</strong>
+            </OuiText>
+            <OuiSpacer size="s" />
+            <OuiText size="xs" color="subdued">
+              <p style={{ margin: 0 }}>
+                Adjust resource type, OCU allocation, replicas, retention policy,
+                and index naming from the Data Management page after setup.
+              </p>
+            </OuiText>
+          </div>
+        </>
+      )}
+      {selectedOption === 'store-existing' && (
+        <>
+          <OuiSpacer size="l" />
+          <div className="onboardWizard__storageExisting">
+            <OuiText size="xs">
+              <strong>Select existing resource</strong>
+            </OuiText>
+            <OuiSpacer size="s" />
+            <div className="onboardWizard__storageExistingList">
+              <div className="onboardWizard__storageExistingItem">
+                <OuiIcon type="logo_opensearch" size="s" />
+                <div>
+                  <OuiText size="xs">
+                    <strong>prod-observability-cluster</strong>
+                  </OuiText>
+                  <OuiText size="xs" color="subdued">
+                    Serverless Collection &middot; us-west-2 &middot; Active
+                  </OuiText>
+                </div>
+              </div>
+              <div className="onboardWizard__storageExistingItem">
+                <OuiIcon type="logo_opensearch" size="s" />
+                <div>
+                  <OuiText size="xs">
+                    <strong>dev-telemetry-collection</strong>
+                  </OuiText>
+                  <OuiText size="xs" color="subdued">
+                    Serverless Collection &middot; us-east-1 &middot; Active
+                  </OuiText>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+      <OuiSpacer size="m" />
+      <OuiText size="xs" color="subdued">
+        <p style={{ margin: 0 }}>
+          You can change storage settings later from the Data Management page.
+        </p>
+      </OuiText>
     </div>
   );
 };
@@ -566,12 +601,12 @@ const TransformationsPanel = ({ selectedOption }) => {
 const SummaryPanel = ({ allSelections }) => {
   const summaryRows = [
     {
-      label: 'Observation goal',
+      label: 'Services instrumented',
       stepIdx: 0,
       valueMap: {
-        application: 'Collect data from your application',
-        cloud: 'Connect with cloud services',
-        sample: 'Get started with sample data',
+        application: '14 services',
+        cloud: '14 services',
+        sample: '14 services',
       },
     },
     {
@@ -585,23 +620,16 @@ const SummaryPanel = ({ allSelections }) => {
       },
     },
     {
-      label: 'Data source',
-      stepIdx: 3,
-      valueMap: {
-        opensearch: 'OpenSearch',
-        prometheus: 'Prometheus',
-        cloudwatch: 'Amazon CloudWatch Logs',
-        s3: 'Amazon S3',
-        skip: 'Skipped',
-      },
-    },
-    {
-      label: 'Transformations',
+      label: 'Telemetry storage',
       stepIdx: 4,
       valueMap: {
-        pii: 'Remove PII',
-        catalog: 'Service catalog data',
+        'looks-good': 'OpenSearch Serverless Collection (Optimized engine)',
+        customize: 'Custom configuration',
+        'store-existing': 'Existing resource',
       },
+      // When user chose "Instrument application" or "EKS", 1d is skipped — auto-recommended
+      skippedWhen: () => allSelections[0] === 'application' || allSelections[1] === 'eks',
+      skippedLabel: 'OpenSearch Serverless Collection (Optimized engine)',
     },
   ];
 
@@ -615,6 +643,19 @@ const SummaryPanel = ({ allSelections }) => {
       <OuiSpacer size="l" />
       <div className="onboardWizard__summaryList">
         {summaryRows.map((row) => {
+          // If this step was skipped due to earlier selection, show skipped label
+          if (row.skippedWhen && row.skippedWhen()) {
+            return (
+              <div key={row.stepIdx} className="onboardWizard__summaryRow">
+                <OuiText size="xs" color="subdued">
+                  {row.label}
+                </OuiText>
+                <OuiText size="s">
+                  <strong>{row.skippedLabel}</strong>
+                </OuiText>
+              </div>
+            );
+          }
           const val = allSelections[row.stepIdx];
           let display = '\u2014';
           if (Array.isArray(val) && val.length > 0) {
@@ -821,83 +862,6 @@ const LiveCountersPanel = () => {
   );
 };
 
-const CompletionDashboardPanel = () => {
-  const [eventCount, setEventCount] = useState(12847);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setEventCount((prev) => prev + Math.floor(Math.random() * 30) + 10);
-    }, 2000);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <div className="onboardWizard__rightContent">
-      <RightPanelHeader
-        icon="dashboard"
-        title="Observability Dashboard"
-        subtitle="Your data is flowing"
-      />
-      <OuiSpacer size="l" />
-      <div className="onboardWizard__completionStatus">
-        <span className="onboardWizard__healthBadge">
-          <OuiIcon type="checkInCircleFilled" size="s" color="success" />
-          Healthy
-        </span>
-      </div>
-      <OuiSpacer size="m" />
-      <div className="onboardWizard__completionStats">
-        <div className="onboardWizard__completionStat">
-          <OuiText size="xs" color="subdued">
-            Ingestion rate
-          </OuiText>
-          <OuiTitle size="s">
-            <h4>{eventCount.toLocaleString()}</h4>
-          </OuiTitle>
-          <OuiText size="xs" color="subdued">
-            events/min
-          </OuiText>
-        </div>
-        <div className="onboardWizard__completionStat">
-          <OuiText size="xs" color="subdued">
-            Indices created
-          </OuiText>
-          <OuiTitle size="s">
-            <h4>4</h4>
-          </OuiTitle>
-          <OuiText size="xs" color="subdued">
-            active
-          </OuiText>
-        </div>
-        <div className="onboardWizard__completionStat">
-          <OuiText size="xs" color="subdued">
-            Avg latency
-          </OuiText>
-          <OuiTitle size="s">
-            <h4>12ms</h4>
-          </OuiTitle>
-          <OuiText size="xs" color="subdued">
-            p95
-          </OuiText>
-        </div>
-      </div>
-      <OuiSpacer size="l" />
-      <div className="onboardWizard__quickLinks">
-        <OuiText size="xs">
-          <strong>Quick Links</strong>
-        </OuiText>
-        <OuiSpacer size="s" />
-        <div className="onboardWizard__quickLinkRow">
-          <QuickLink icon="documentation" label="Documentation" />
-          <QuickLink icon="users" label="Community" />
-          <QuickLink icon="help" label="Support" />
-          <QuickLink icon="app_console" label="API Reference" />
-        </div>
-      </div>
-    </div>
-  );
-};
-
 // ─────────────────────────────────────────────
 // SHARED SUBCOMPONENTS
 // ─────────────────────────────────────────────
@@ -939,13 +903,6 @@ const IngestRow = ({ label, rate, color }) => {
   );
 };
 
-const QuickLink = ({ icon, label }) => (
-  <button type="button" className="onboardWizard__quickLink">
-    <OuiIcon type={icon} size="s" />
-    <OuiText size="xs">{label}</OuiText>
-  </button>
-);
-
 // ─────────────────────────────────────────────
 // RIGHT PANEL CONTENT ROUTER
 // ─────────────────────────────────────────────
@@ -963,23 +920,16 @@ const RightPanelContent = ({
       return <GettingStartedPanel />;
     case 'environment':
       return <EnvironmentPanel selectedOption={selectedOption} />;
+    case 'eks-discovery':
+      return <EKSDiscoveryPanel discoveryPhase={confirmed ? 'found' : (selectedOption ? 'scanning' : 'scanning')} />;
     case 'collector-setup':
       return <CollectorSetupPanel confirmed={confirmed} />;
-    case 'data-sources':
-      return (
-        <DataSourcesPanel
-          selectedOption={selectedOption}
-          confirmed={confirmed}
-        />
-      );
-    case 'transformations':
-      return <TransformationsPanel selectedOption={selectedOption} />;
+    case 'telemetry-storage':
+      return <TelemetryStoragePanel selectedOption={selectedOption} />;
     case 'summary':
       return <SummaryPanel allSelections={allSelections} />;
     case 'live-counters':
       return <LiveCountersPanel />;
-    case 'completion-dashboard':
-      return <CompletionDashboardPanel />;
     default:
       return (
         <div className="onboardWizard__rightContent">
@@ -1028,7 +978,10 @@ export const OnboardingWizardPage = () => {
     streamTimers.current.forEach(clearTimeout);
     streamTimers.current = [];
 
-    const fullText = step.question;
+    // Use dynamicQuestion if available, passing selections for context
+    const fullText = step.dynamicQuestion
+      ? step.dynamicQuestion(selections)
+      : step.question;
     const tokens = fullText.split(/(\s+)/);
     setStreamedText('');
     setIsStreaming(true);
@@ -1051,6 +1004,27 @@ export const OnboardingWizardPage = () => {
     };
   }, [currentStep, step.question]);
 
+  // Auto-discovery step: auto-confirm after scanning animation
+  useEffect(() => {
+    if (step.optionType === 'auto-discovery' && !isConfirmed && !isProcessing) {
+      // Wait for the streaming text to finish, then auto-confirm
+      const streamDuration = step.question.split(/(\s+)/).length * 30 + 500;
+      const timer = setTimeout(() => {
+        setIsProcessing(true);
+        // Show scanning for 2 seconds, then confirm (discovery found)
+        setTimeout(() => {
+          setConfirmedSteps((prev) => ({ ...prev, [currentStep]: true }));
+          setIsProcessing(false);
+          // Update the streamed text to the discovery result
+          setStreamedText(
+            'We found 3 EKS clusters and 14 services instrumented with OpenTelemetry. Waiting for additional data...'
+          );
+        }, 2000);
+      }, streamDuration);
+      return () => clearTimeout(timer);
+    }
+  }, [currentStep, step.optionType, isConfirmed, isProcessing]);
+
   // Fade in the right panel when step changes
   useEffect(() => {
     setRightPanelFade(false);
@@ -1071,8 +1045,8 @@ export const OnboardingWizardPage = () => {
     (key) => {
       if (isConfirmed || isProcessing) return;
 
-      // Step 3 "Go back" navigates back
-      if (currentStep === 2 && key === 'goback') {
+      // Step 1c (OTel collector, index 3) "Go back" navigates back to 1b
+      if (currentStep === 3 && key === 'goback') {
         setCurrentStep(1);
         return;
       }
@@ -1121,14 +1095,59 @@ export const OnboardingWizardPage = () => {
   }, [currentStep, isConfirmed, isProcessing]);
 
   // Auto-advance to next step after confirmation (with brief delay to show confirmation)
+  // Branching logic from sub-step 1b (index 1):
+  //   - "opentelemetry" → go to 1c (OTel collector, index 3)
+  //   - "eks" → go to EKS discovery (index 2), which auto-advances to Step 2 (Review)
+  //   - Other → go to 1c (OTel collector, index 3)
+  // If user selected "Instrument application" in step 1a:
+  //   - Skip sub-step 1d (index 4, telemetry storage) 
   useEffect(() => {
     if (isConfirmed && currentStep < totalSteps - 1) {
+      const currentStepDef = STEPS[currentStep];
+
+      // EKS Discovery auto-advance: wait 5 seconds then go to Step 2 (review/confirm)
+      if (currentStepDef.optionType === 'auto-discovery') {
+        const timer = setTimeout(() => {
+          // Find the index of Step 2 (Review and confirm, mainStep === 2)
+          const step2Idx = STEPS.findIndex((s) => s.mainStep === 2);
+          setCurrentStep(step2Idx);
+        }, 5000);
+        return () => clearTimeout(timer);
+      }
+
       const timer = setTimeout(() => {
-        setCurrentStep((prev) => prev + 1);
+        setCurrentStep((prev) => {
+          let nextStep = prev + 1;
+
+          // From sub-step 1b (index 1): branch based on environment selection
+          if (prev === 1) {
+            if (selections[1] === 'eks') {
+              // Go to EKS discovery (index 2)
+              return 2;
+            }
+            // OpenTelemetry or other → skip EKS discovery, go to OTel collector (index 3)
+            return 3;
+          }
+
+          // From EKS discovery (index 2): this is handled by auto-advance above, 
+          // but as safety: go to Step 2 (Review)
+          if (prev === 2) {
+            const step2Idx = STEPS.findIndex((s) => s.mainStep === 2);
+            return step2Idx;
+          }
+
+          if (selections[0] === 'application') {
+            // From 1c (index 3) → skip 1d (index 4), jump to Review (step 2, index 5)
+            if (nextStep === 4) {
+              return 5;
+            }
+          }
+          return nextStep;
+        });
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [isConfirmed, currentStep, totalSteps]);
+  }, [isConfirmed, currentStep, totalSteps, selections]);
 
   const handleStepClick = useCallback(
     (stepIdx) => {
@@ -1152,7 +1171,7 @@ export const OnboardingWizardPage = () => {
     window.location.hash = '/sample-pages';
   };
 
-  // Step 8: selections navigate away
+  // Last step: selections navigate away
   const handleFinalNavigation = () => {
     window.location.hash = '/sample-pages';
   };
@@ -1238,7 +1257,9 @@ export const OnboardingWizardPage = () => {
       <div key={`q-${currentStep}`} className="threadPage__message threadPage__message--assistant">
         <div className="threadPage__bubble threadPage__bubble--assistant">
           <OuiText size="s">
-            <p>{streamedText}</p>
+            {streamedText.split('\n\n').map((paragraph, idx) => (
+              <p key={idx}>{paragraph}</p>
+            ))}
           </OuiText>
           {!isStreaming && !isConfirmed && (
             <>
@@ -1314,7 +1335,7 @@ export const OnboardingWizardPage = () => {
                   currentSelection === opt.key
                     ? ' onboardWizard__chip--selected'
                     : ''
-                }${opt.primary ? ' onboardWizard__chip--confirm' : ''}`}
+                }${opt.primary ? ' onboardWizard__chip--confirm' : ''}${opt.empty ? ' onboardWizard__chip--empty' : ''}`}
                 onClick={() =>
                   isLastStep
                     ? handleFinalNavigation(opt.key)
