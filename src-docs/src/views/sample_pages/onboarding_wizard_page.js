@@ -710,16 +710,22 @@ const buildSmoothPath = (points, width, height, padding) => {
 
 // A single streaming area chart using pure SVG — gradient fill like shadcn's area chart
 const LiveStreamAreaChart = ({ color, data }) => {
-  const width = 280;
-  const height = 72;
+  const width = 320;
+  const height = 80;
   const padding = 4;
   const gradientId = useMemo(
     () => `area-grad-${color.replace('#', '')}`,
     [color]
   );
 
-  const linePath = buildSmoothPath(data, width, height, padding);
-  // Close the path to form a filled area
+  // Build a sharp polyline (no smooth curves — blueprint style)
+  const points = data.map((val, i) => {
+    const max = Math.max(...data);
+    const x = (i / (data.length - 1)) * width;
+    const y = padding + ((1 - val / max) * (height - padding * 2));
+    return `${x},${y}`;
+  });
+  const linePath = `M ${points.join(' L ')}`;
   const areaPath = `${linePath} L ${width},${height} L 0,${height} Z`;
 
   return (
@@ -730,18 +736,26 @@ const LiveStreamAreaChart = ({ color, data }) => {
       aria-hidden="true">
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.3" />
-          <stop offset="95%" stopColor={color} stopOpacity="0.02" />
+          <stop offset="0%" stopColor={color} stopOpacity="0.12" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
+      {/* Horizontal grid — dashed, blueprint style */}
+      {[0.25, 0.5, 0.75].map((ratio, i) => (
+        <line key={i} x1="0" y1={height * ratio} x2={width} y2={height * ratio}
+          stroke="currentColor" strokeWidth="0.5" strokeDasharray="3 4" opacity="0.12" />
+      ))}
+      {/* Baseline */}
+      <line x1="0" y1={height} x2={width} y2={height}
+        stroke="currentColor" strokeWidth="0.7" opacity="0.15" />
       <path d={areaPath} fill={`url(#${gradientId})`} />
       <path
         d={linePath}
         fill="none"
         stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        strokeWidth="1.8"
+        strokeLinecap="square"
+        strokeLinejoin="miter"
       />
     </svg>
   );
@@ -836,10 +850,6 @@ const LiveCountersPanel = () => {
                   </span>
                 </div>
               </div>
-              <span
-                className="onboardWizard__counterDot"
-                style={{ backgroundColor: c.color }}
-              />
             </div>
             <div className="onboardWizard__counterChart">
               <LiveStreamAreaChart
@@ -1452,91 +1462,95 @@ export const OnboardingWizardPage = () => {
           style={{ flex: 1, minWidth: 0, position: 'relative' }}>
           <div className="onboardWizard">
             {/* Left Panel — Thread-style chat interaction */}
-            <div className="threadPage__body" style={{ flex: '0 0 38%', minWidth: 320, maxWidth: 480 }}>
-              <div className="threadPage__conversationCol">
-                {/* Step indicator header */}
-                <div className="onboardWizard__stepIndicator" style={{ padding: '12px 16px 0' }}>
-                  <OuiTitle size="xxxs">
-                    <h6>Step {step.mainStep} of {totalMainSteps}</h6>
-                  </OuiTitle>
-                  <OuiTitle size="s">
-                    <h3>{step.title}</h3>
-                  </OuiTitle>
-                  <div className="onboardWizard__timeline" style={{ marginTop: 8 }}>
-                      {Array.from({ length: totalMainSteps }, (_, mainIdx) => {
-                        const mainNum = mainIdx + 1;
-                        const isMainDone = step.mainStep > mainNum;
-                        const isMainCurrent = step.mainStep === mainNum;
-                        // Find the first sub-step index for this main step (for navigation)
-                        const firstSubIdx = STEPS.findIndex((s) => s.mainStep === mainNum);
-                        if (isMainDone) {
-                          return (
-                            <button
-                              key={mainIdx}
-                              type="button"
-                              className="onboardWizard__timelineDot onboardWizard__timelineDot--done"
-                              onClick={() => handleStepClick(firstSubIdx)}
-                              aria-label={`Go back to step ${mainNum}: ${STEPS[firstSubIdx].title}`}
-                              title={STEPS[firstSubIdx].title}
-                            />
-                          );
-                        }
-                        if (isMainCurrent) {
-                          return (
-                            <span
-                              key={mainIdx}
-                              className="onboardWizard__timelineDot onboardWizard__timelineDot--current"
-                            />
-                          );
-                        }
-                        return (
-                          <span
-                            key={mainIdx}
-                            className="onboardWizard__timelineDot onboardWizard__timelineDot--inactive"
+            <div className="onboardWizard__left">
+              <div className="onboardWizard__leftPanel">
+                <div className="threadPage__body">
+                  <div className="threadPage__conversationCol">
+                    {/* Step indicator header */}
+                    <div className="onboardWizard__stepIndicator" style={{ padding: '12px 16px 0' }}>
+                      <OuiTitle size="xxxs">
+                        <h6>Step {step.mainStep} of {totalMainSteps}</h6>
+                      </OuiTitle>
+                      <OuiTitle size="s">
+                        <h3>{step.title}</h3>
+                      </OuiTitle>
+                      <div className="onboardWizard__timeline" style={{ marginTop: 8 }}>
+                          {Array.from({ length: totalMainSteps }, (_, mainIdx) => {
+                            const mainNum = mainIdx + 1;
+                            const isMainDone = step.mainStep > mainNum;
+                            const isMainCurrent = step.mainStep === mainNum;
+                            // Find the first sub-step index for this main step (for navigation)
+                            const firstSubIdx = STEPS.findIndex((s) => s.mainStep === mainNum);
+                            if (isMainDone) {
+                              return (
+                                <button
+                                  key={mainIdx}
+                                  type="button"
+                                  className="onboardWizard__timelineDot onboardWizard__timelineDot--done"
+                                  onClick={() => handleStepClick(firstSubIdx)}
+                                  aria-label={`Go back to step ${mainNum}: ${STEPS[firstSubIdx].title}`}
+                                  title={STEPS[firstSubIdx].title}
+                                />
+                              );
+                            }
+                            if (isMainCurrent) {
+                              return (
+                                <span
+                                  key={mainIdx}
+                                  className="onboardWizard__timelineDot onboardWizard__timelineDot--current"
+                                />
+                              );
+                            }
+                            return (
+                              <span
+                                key={mainIdx}
+                                className="onboardWizard__timelineDot onboardWizard__timelineDot--inactive"
+                              />
+                            );
+                          })}
+                        </div>
+                    </div>
+
+                    {/* Conversation feed — reuses threadPage__feed pattern */}
+                    <div className="threadPage__feed" ref={feedRef}>
+                      {buildConversation()}
+                      <div ref={feedEndRef} />
+                    </div>
+
+                    {/* Input area */}
+                    <div className="threadPage__inputArea">
+                      <div className="threadPage__inputWrapper">
+                        <OuiCompressedTextArea
+                          placeholder="Ask anything or use / for commands"
+                          value={message}
+                          onChange={(e) => setMessage(e.target.value)}
+                          onKeyDown={handleKeyDown}
+                          rows={2}
+                          resize="none"
+                          fullWidth
+                          className="threadPage__textarea"
+                        />
+                        <div className="threadPage__inputActions">
+                          <OuiButtonIcon
+                            iconType="plus"
+                            aria-label="Add attachment"
+                            size="s"
+                            color="text"
                           />
-                        );
-                      })}
+                          <OuiButtonIcon
+                            iconType="sortUp"
+                            aria-label="Send message"
+                            display="fill"
+                            size="s"
+                            isDisabled={!message.trim() || isProcessing}
+                            onClick={handleSend}
+                          />
+                        </div>
+                      </div>
                     </div>
-                </div>
 
-                {/* Conversation feed — reuses threadPage__feed pattern */}
-                <div className="threadPage__feed" ref={feedRef}>
-                  {buildConversation()}
-                  <div ref={feedEndRef} />
-                </div>
-
-                {/* Input area */}
-                <div className="threadPage__inputArea">
-                  <div className="threadPage__inputWrapper">
-                    <OuiCompressedTextArea
-                      placeholder="Ask anything or use / for commands"
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      onKeyDown={handleKeyDown}
-                      rows={2}
-                      resize="none"
-                      fullWidth
-                      className="threadPage__textarea"
-                    />
-                    <div className="threadPage__inputActions">
-                      <OuiButtonIcon
-                        iconType="plus"
-                        aria-label="Add attachment"
-                        size="s"
-                        color="text"
-                      />
-                      <OuiButtonIcon
-                        iconType="sortUp"
-                        aria-label="Send message"
-                        display="fill"
-                        size="s"
-                        isDisabled={!message.trim() || isProcessing}
-                        onClick={handleSend}
-                      />
-                    </div>
                   </div>
                 </div>
-
               </div>
             </div>
 
@@ -1549,14 +1563,6 @@ export const OnboardingWizardPage = () => {
                   confirmed={isConfirmed}
                   allSelections={selections}
                 />
-              </div>
-              <div className="onboardWizard__finishLaterWrapper">
-                <button
-                  type="button"
-                  className="onboardWizard__finishLater"
-                  onClick={handleFinishLater}>
-                  Finish onboarding later
-                </button>
               </div>
             </div>
           </div>

@@ -8,51 +8,63 @@
   right: 0;
   bottom: 0;
   display: flex;
-  align-items: center;
-  justify-content: center;
   background: transparent;
 
   > * {
     position: relative;
     z-index: 1;
   }
+}
 
-  // Scope left panel (threadPage) to vertically center within the onboardWizard
+// ─────────────────────────────────────────────
+// LEFT PANEL
+// ─────────────────────────────────────────────
+
+.onboardWizard__left {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 40px 32px;
+  overflow: hidden;
+  background-color: $ouiPageBackgroundColor;
+}
+
+.onboardWizard__leftPanel {
+  width: 100%;
+  max-width: 520px;
+  max-height: 70vh;
+  background-color: $ouiColorEmptyShade;
+  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.12), rgba(207, 228, 247, 0.12));
+  border-radius: 0;
+  box-shadow: none;
+  padding: 24px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
   .threadPage__body {
-    align-self: center;
-    height: 600px;
-    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
   }
 
   .threadPage__conversationCol {
-    justify-content: flex-start;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
   }
 
   .threadPage__feed {
     flex: 1;
     overflow-y: auto;
+    min-height: 0;
   }
-}
-
-// ─────────────────────────────────────────────
-// LEFT PANEL (now uses threadPage__ classes)
-// ─────────────────────────────────────────────
-
-// Legacy left panel styles retained for any remaining references
-.onboardWizard__left {
-  width: 38%;
-  min-width: 320px;
-  max-width: 480px;
-  display: flex;
-  flex-direction: column;
-  padding: 32px 32px 16px;
-  overflow-y: auto;
-}
-
-.onboardWizard__leftInner {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
 }
 
 // Inline confirmation (used inside thread-style messages)
@@ -68,52 +80,33 @@
 
 .onboardWizard__right {
   flex: 1;
-  max-width: 680px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: stretch;
-  height: 600px;
-  max-height: 80vh;
-  padding: 40px 40px 24px;
+  justify-content: center;
+  height: 100%;
+  padding: 40px 32px;
   overflow: hidden;
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.4), rgba(10, 37, 69, 0.3));
+  border-left: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.08), rgba(207, 228, 247, 0.08));
 }
 
 .onboardWizard__rightPanel {
   width: 100%;
-  max-width: 680px;
-  background-color: $ouiColorEmptyShade !important;
-  background-image: none !important;
+  max-width: 520px;
+  max-height: 70vh;
+  background-color: $ouiColorEmptyShade;
+  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.12), rgba(207, 228, 247, 0.12));
   border-radius: 0;
-  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.25), rgba(207, 228, 247, 0.25));
-  box-shadow: 0 16px 48px lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.2)), 0 4px 16px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.15));
-  padding: $ouiSizeXL;
+  box-shadow: none;
+  padding: 24px;
   overflow-y: auto;
   opacity: 0;
   transform: translateX(20px);
   transition: opacity 400ms ease, transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
   position: relative;
 
-  // Corner ticks
-  &::before {
-    content: '';
-    position: absolute;
-    top: -1px;
-    left: -1px;
-    right: -1px;
-    bottom: -1px;
-    pointer-events: none;
-    z-index: 1;
-    background:
-      linear-gradient(lightOrDarkTheme(rgba(31, 108, 181, 0.45), rgba(93, 217, 255, 0.45)), lightOrDarkTheme(rgba(31, 108, 181, 0.45), rgba(93, 217, 255, 0.45))) no-repeat 0 0 / 8px 1.5px,
-      linear-gradient(lightOrDarkTheme(rgba(31, 108, 181, 0.45), rgba(93, 217, 255, 0.45)), lightOrDarkTheme(rgba(31, 108, 181, 0.45), rgba(93, 217, 255, 0.45))) no-repeat 0 0 / 1.5px 8px,
-      linear-gradient(lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34)), lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34))) no-repeat 100% 0 / 8px 1.5px,
-      linear-gradient(lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34)), lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34))) no-repeat 100% 0 / 1.5px 8px,
-      linear-gradient(lightOrDarkTheme(rgba(31, 108, 181, 0.45), rgba(93, 217, 255, 0.45)), lightOrDarkTheme(rgba(31, 108, 181, 0.45), rgba(93, 217, 255, 0.45))) no-repeat 0 100% / 8px 1.5px,
-      linear-gradient(lightOrDarkTheme(rgba(31, 108, 181, 0.45), rgba(93, 217, 255, 0.45)), lightOrDarkTheme(rgba(31, 108, 181, 0.45), rgba(93, 217, 255, 0.45))) no-repeat 0 100% / 1.5px 8px,
-      linear-gradient(lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34)), lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34))) no-repeat 100% 100% / 8px 1.5px,
-      linear-gradient(lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34)), lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34))) no-repeat 100% 100% / 1.5px 8px;
-  }
 
   &--fadeIn {
     opacity: 1;
@@ -1075,7 +1068,7 @@
 .onboardWizard__liveCounters {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .onboardWizard__counterRow {
@@ -1083,28 +1076,29 @@
   align-items: center;
   gap: 12px;
   padding: 16px;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
+  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.08), rgba(207, 228, 247, 0.08));
+  border-radius: 0;
   background: $ouiColorEmptyShade;
 
   &--withChart {
     flex-direction: column;
     align-items: stretch;
-    gap: 8px;
-    padding: 16px 16px 8px;
+    gap: 4px;
+    padding: 20px 20px 12px;
   }
 }
 
 .onboardWizard__counterMeta {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .onboardWizard__counterChart {
   width: 100%;
-  height: 72px;
-  margin-top: 4px;
+  height: 80px;
+  margin-top: 8px;
+  color: $ouiTextColor;
 }
 
 .onboardWizard__areaChart {
@@ -1115,6 +1109,7 @@
 
 .onboardWizard__counterIcon {
   flex-shrink: 0;
+  opacity: 0.7;
 }
 
 .onboardWizard__counterInfo {
@@ -1128,14 +1123,21 @@
 }
 
 .onboardWizard__counterNumber {
-  font-size: 20px;
-  font-weight: 600;
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 26px;
+  font-weight: 700;
   line-height: 1.2;
+  letter-spacing: -0.5px;
 }
 
 .onboardWizard__counterRate {
-  font-size: $ouiFontSizeXS;
-  font-weight: 500;
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.06));
 }
 
 .onboardWizard__counterDot {
@@ -1151,9 +1153,12 @@
   align-items: center;
   gap: 8px;
   padding: 12px 16px;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  background: $ouiColorLightestShade;
+  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.08), rgba(207, 228, 247, 0.08));
+  border-radius: 0;
+  background: lightOrDarkTheme(rgba($ouiColorSuccess, 0.04), rgba($ouiColorSuccess, 0.06));
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 12px;
+  letter-spacing: 0.2px;
 }
 
 // ─────────────────────────────────────────────
