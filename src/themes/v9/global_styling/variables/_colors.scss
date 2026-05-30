@@ -15,31 +15,31 @@
 
 // These colors stay the same no matter the theme
 $ouiColorGhost: #FFFFFF !default;
-$ouiColorInk: #06203f !default;
+$ouiColorInk: #0a0a0a !default;
 
-// v10 Blueprint — Light Theme
-// Core
-$ouiColorPrimary: #1f6cb5 !default;       // Cyan — primary accent
-$ouiColorSecondary: #2e8b6f !default;     // Green — success
-$ouiColorAccent: #c47a1f !default;        // Amber — accent
+// Glass Theme — Light
+// Core — indigo/violet accent palette
+$ouiColorPrimary: #6366f1 !default;       // Indigo — primary accent
+$ouiColorSecondary: #10b981 !default;     // Green — success
+$ouiColorAccent: #6366f1 !default;        // Indigo — accent (same as primary)
 
-// Status
-$ouiColorSuccess: #2e8b6f !default;       // Green
-$ouiColorWarning: #c47a1f !default;       // Amber
-$ouiColorDanger: #c53961 !default;        // Red
+// Status — deliberately desaturated
+$ouiColorSuccess: #10b981 !default;       // Green
+$ouiColorWarning: #d97706 !default;       // Amber
+$ouiColorDanger: #dc2626 !default;        // Red
 
-// Shades — mapped from v10 ink opacity scale
-$ouiColorEmptyShade: #FFFFFF !default;            // panel-solid
-$ouiColorLightestShade: #dde4ee !default;         // bg-deep
-$ouiColorLightShade: rgba(13, 48, 87, 0.14) !default;  // ink-ghost (borders)
-$ouiColorMediumShade: rgba(13, 48, 87, 0.62) !default; // ink-dim (muted text)
-$ouiColorDarkShade: #0d3057 !default;             // ink (body text)
-$ouiColorDarkestShade: #06203f !default;          // ink-bright (titles)
-$ouiColorFullShade: #06203f !default;             // Near black
+// Shades — Glass ink ramp
+$ouiColorEmptyShade: #ffffff !default;            // Card surfaces (solid)
+$ouiColorLightestShade: #fbfbf9 !default;         // Subtle backgrounds
+$ouiColorLightShade: #ececef !default;            // Borders
+$ouiColorMediumShade: rgba(10, 10, 10, 0.46) !default; // Muted text
+$ouiColorDarkShade: #0a0a0a !default;             // Body text
+$ouiColorDarkestShade: #000000 !default;          // Titles
+$ouiColorFullShade: #000000 !default;             // Near black
 
 // Backgrounds
-$ouiPageBackgroundColor: #eef2f7 !default;        // v10 bg
-$ouiColorHighlight: #dde4ee !default;             // bg-deep
+$ouiPageBackgroundColor: #f8f7fc !default;        // Glass canvas (Opal)
+$ouiColorHighlight: #f7f7f5 !default;             // Muted surface
 
 // Every color below must be based mathematically on the set above and in a particular order.
 $ouiTextColor: $ouiColorDarkShade !default;
@@ -55,7 +55,7 @@ $ouiColorWarningText: makeHighContrastColor($ouiColorWarning) !default;
 $ouiColorDangerText: makeHighContrastColor($ouiColorDanger) !default;
 $ouiColorDisabledText: makeDisabledContrastColor($ouiColorDisabled) !default;
 $ouiColorSuccessText: $ouiColorSecondaryText !default;
-$ouiLinkColor: $ouiColorPrimary !default;
+$ouiLinkColor: #4f46e5 !default; // accent-bright
 
 // Visualization colors
 

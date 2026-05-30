@@ -3,65 +3,89 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// v10 Blueprint — Panels and Cards
-// Square corners, translucent background, corner ticks on all panels/cards.
+// Glass Theme — Panels and Cards
+// Solid white surfaces with hairline borders + feather shadows.
+// Frosted glass reserved for floating/featured moments.
 
 // sass-lint:disable no-important, no-color-literals
 
-// Remove all border-radius
+// All OuiPanel — solid surface with hairline border
 .ouiPanel:not(.ouiCheckableCard):not(.ouiCard--hasBetaBadge):not(.ouiSplitPanel):not(.ouiSplitPanel__inner) {
-  border-radius: 0 !important;
+  border-radius: $ouiBorderRadius !important;
 }
 
-// Panel background — translucent (grid bleeds through)
+// Panel background — solid surface
 .ouiPanel--plain,
 .ouiPanel--subdued {
   background-color: lightOrDarkTheme(
-    rgba(255, 255, 255, 0.85),
-    rgba(10, 37, 69, 0.55)
+    #ffffff,
+    #15161a
   ) !important;
+  border: 1px solid lightOrDarkTheme(#ececef, #23252b) !important;
+  box-shadow: 0 1px 2px rgba(15, 15, 15, 0.04), 0 8px 24px rgba(15, 15, 15, 0.04) !important;
 }
 
-// Cards get the same treatment
+// Cards — same solid treatment
 .ouiCard {
   background-color: lightOrDarkTheme(
-    rgba(255, 255, 255, 0.85),
-    rgba(10, 37, 69, 0.55)
+    #ffffff,
+    #15161a
   ) !important;
-  border-radius: 0 !important;
+  border: 1px solid lightOrDarkTheme(#ececef, #23252b) !important;
+  border-radius: $ouiBorderRadius !important;
+  box-shadow: 0 1px 2px rgba(15, 15, 15, 0.04), 0 8px 24px rgba(15, 15, 15, 0.04) !important;
 }
 
-// ─── Corner ticks on all panels and cards ───────────────────
-// TL (cyan-dim) via ::before, BR (ink-fade) via ::after
-// Exclude popovers, tooltips, flyouts, and other overlay panels
+// Remove corner ticks from v10 — Glass uses clean rounded corners
 .ouiPanel:not(.ouiPopover__panel):not(.ouiToolTip):not(.ouiFlyout),
 .ouiCard {
-  position: relative !important;
-
   &::before,
   &::after {
-    content: '' !important;
-    position: absolute !important;
-    width: 6px !important;
-    height: 6px !important;
-    pointer-events: none !important;
-    z-index: 1 !important;
+    display: none !important;
+  }
+}
+
+// Popover panel — frosted glass (floating)
+.ouiPopover__panel,
+.ouiPopover__panel.ouiPanel {
+  background: lightOrDarkTheme(rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.045)) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.10)) !important;
+  border-radius: $ouiBorderRadius !important;
+  box-shadow: 0 2px 6px rgba(15, 15, 15, 0.06), 0 16px 36px rgba(15, 15, 15, 0.08) !important;
+}
+
+// Datepicker popover
+.react-datepicker-popper .react-datepicker {
+  border: 1px solid lightOrDarkTheme(#ececef, #23252b);
+  border-radius: $ouiBorderRadius;
+}
+
+// Resizable panels — transparent background
+.ouiResizablePanel,
+.ouiResizablePanel .ouiResizablePanel__content {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+// Start cards hover/active states
+.ouiPanel.startCard {
+  cursor: pointer;
+  transition: border-color 180ms ease, box-shadow 280ms cubic-bezier(.2, .7, .2, 1),
+              background-color 180ms ease, transform 280ms cubic-bezier(.2, .7, .2, 1) !important;
+
+  &:hover {
+    border-color: $ouiColorPrimary !important;
+    box-shadow: 0 0 0 1px $ouiColorPrimary, 0 4px 12px rgba($ouiColorPrimary, 0.15) !important;
+    transform: translateY(-1px);
   }
 
-  // Top-left — cyan-dim (accent side)
-  &::before {
-    top: -1px !important;
-    left: -1px !important;
-    border-top: 1px solid lightOrDarkTheme(rgba(31, 108, 181, 0.40), rgba(93, 217, 255, 0.45)) !important;
-    border-left: 1px solid lightOrDarkTheme(rgba(31, 108, 181, 0.40), rgba(93, 217, 255, 0.45)) !important;
-  }
-
-  // Bottom-right — ink-fade (muted side)
-  &::after {
-    bottom: -1px !important;
-    right: -1px !important;
-    border-bottom: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34)) !important;
-    border-right: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34)) !important;
+  &:active {
+    border-color: $ouiColorPrimary !important;
+    box-shadow: 0 0 0 2px $ouiColorPrimary, 0 2px 8px rgba($ouiColorPrimary, 0.2) !important;
+    transform: translateY(0);
   }
 }
 

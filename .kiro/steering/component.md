@@ -2,9 +2,9 @@
 inclusion: always
 ---
 
-## V9 Theme — Agentic OSD Utility Design System
+## Glass Theme — Agentic OSD Design System
 
-This project uses the **OUI v9 theme** exclusively. All work must follow the exact values below. Source of truth: `apply-v9-theme-to-oui-project-1.md`.
+This project uses the **Glass theme** (`v9-light` / `v9-dark`). All work must follow the values below.
 
 ---
 
@@ -16,152 +16,183 @@ This project uses the **OUI v9 theme** exclusively. All work must follow the exa
 | Dark colors | `src/themes/v9/v9_colors_dark.scss` |
 | Typography | `src/themes/v9/global_styling/variables/_typography.scss` |
 | Borders | `src/themes/v9/global_styling/variables/_borders.scss` |
+| Shadows | `src/themes/v9/global_styling/variables/_shadows.scss` |
+| Form variables | `src/themes/v9/global_styling/variables/_form.scss` |
 | Button variables | `src/themes/v9/global_styling/variables/_buttons.scss` |
 | Button overrides | `src/themes/v9/components/_button.scss` |
 | Panel overrides | `src/themes/v9/components/_panel.scss` |
 | Tab overrides | `src/themes/v9/components/_tabs.scss` |
+| Form overrides | `src/themes/v9/components/_form.scss` |
+| Background | `src/themes/v9/components/_background.scss` |
+| CSS custom props | `src/themes/v9/components/_index.scss` |
+| Headless components | `src/components/headless/` |
 
 ---
 
-### Step 1 — Fonts
+### Fonts
 
 ```html
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
 ```
 
-| Token | Value |
-|-------|-------|
-| `$ouiFontFamily` | `'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif` |
-| `$ouiFontFamilyDisplay` | `'Space Grotesk', 'Outfit', -apple-system, sans-serif` |
-| `$ouiCodeFontFamily` | `'JetBrains Mono', Consolas, Menlo, Courier, monospace` |
+| Token | Value | Role |
+|-------|-------|------|
+| `$ouiFontFamily` | `'Plus Jakarta Sans', system-ui, -apple-system, sans-serif` | Body/display |
+| `$ouiFontFamilyDisplay` | `'Plus Jakarta Sans', system-ui, -apple-system, sans-serif` | Headings |
+| `$ouiCodeFontFamily` | `'Space Grotesk', ui-monospace, 'SF Mono', monospace` | Numerics, timestamps, code |
 
 ---
 
-### Step 3 — Light Colors
+### Light Colors
 
 | Token | Value | Name |
 |-------|-------|------|
-| `$ouiColorPrimary` | `#2E4A8F` | Deep Blue |
-| `$ouiColorSecondary` | `#5CB198` | Jade |
-| `$ouiColorAccent` | `#4168B8` | Azure |
-| `$ouiColorSuccess` | `#5CB198` | Jade |
-| `$ouiColorWarning` | `#CDA849` | Citrine |
-| `$ouiColorDanger` | `#ED6F73` | Coral |
-| `$ouiColorEmptyShade` | `#FFFFFF` | Card surfaces |
-| `$ouiColorLightestShade` | `#E4EAF2` | Subtle backgrounds |
-| `$ouiColorLightShade` | `#D4DCE8` | Borders |
-| `$ouiColorMediumShade` | `#5A6D8A` | Muted text |
-| `$ouiColorDarkShade` | `#1E2A4A` | Secondary text |
-| `$ouiColorDarkestShade` | `#0E1525` | Foreground text |
-| `$ouiColorFullShade` | `#060D1A` | Near black |
-| `$ouiPageBackgroundColor` | `#F4F6FB` | Opal |
-| `$ouiColorHighlight` | `#EDF1F8` | Elevated surface |
+| `$ouiColorPrimary` | `#6366f1` | Indigo |
+| `$ouiColorSecondary` | `#10b981` | Green |
+| `$ouiColorAccent` | `#6366f1` | Indigo |
+| `$ouiColorSuccess` | `#10b981` | Green |
+| `$ouiColorWarning` | `#d97706` | Amber |
+| `$ouiColorDanger` | `#dc2626` | Red |
+| `$ouiColorEmptyShade` | `#ffffff` | Card surfaces |
+| `$ouiColorLightestShade` | `#fbfbf9` | Subtle backgrounds |
+| `$ouiColorLightShade` | `#ececef` | Borders |
+| `$ouiColorMediumShade` | `rgba(10,10,10,0.46)` | Muted text |
+| `$ouiColorDarkShade` | `#0a0a0a` | Body text |
+| `$ouiColorDarkestShade` | `#000000` | Titles |
+| `$ouiColorFullShade` | `#000000` | Near black |
+| `$ouiPageBackgroundColor` | `#f8f7fc` | Opal canvas |
+| `$ouiColorHighlight` | `#f7f7f5` | Muted surface |
 
 ---
 
-### Step 4 — Dark Colors
+### Dark Colors
 
 | Token | Value | Name |
 |-------|-------|------|
-| `$ouiColorPrimary` | `#7A9FD4` | Sky |
-| `$ouiColorSecondary` | `#4DC9A8` | Jade |
-| `$ouiColorAccent` | `#B8D4F0` | Ice |
-| `$ouiColorSuccess` | `#4DC9A8` | Jade |
-| `$ouiColorWarning` | `#CDA849` | Citrine |
-| `$ouiColorDanger` | `#ED6F73` | Coral |
-| `$ouiColorEmptyShade` | `#121C30` | Card surfaces |
-| `$ouiColorLightestShade` | `#182640` | Muted backgrounds |
-| `$ouiColorLightShade` | `#1E2E50` | Borders |
-| `$ouiColorMediumShade` | `#6B7F9E` | Muted text |
-| `$ouiColorDarkShade` | `#B8D4F0` | Secondary text |
-| `$ouiColorDarkestShade` | `#D8E4F0` | Foreground text |
-| `$ouiColorFullShade` | `#FFFFFF` | Brightest foreground |
-| `$ouiPageBackgroundColor` | `#060D1A` | Obsidian |
-| `$ouiColorHighlight` | `#182640` | Elevated surface |
-| `$ouiBorderColor` | `#1E2E50` | Border |
-| `$ouiTextColor` | `#D8E4F0` | Body text |
-| `$ouiTitleColor` | `#FFFFFF` | Heading text |
-| `$ouiFormBackgroundColor` | `#182640` | Form inputs |
+| `$ouiColorPrimary` | `#a5b4fc` | Indigo light |
+| `$ouiColorSecondary` | `#34d399` | Green |
+| `$ouiColorAccent` | `#a5b4fc` | Indigo light |
+| `$ouiColorSuccess` | `#34d399` | Green |
+| `$ouiColorWarning` | `#fbbf24` | Amber |
+| `$ouiColorDanger` | `#f87171` | Red |
+| `$ouiColorEmptyShade` | `#15161a` | Card surfaces |
+| `$ouiColorLightestShade` | `#101115` | Subtle backgrounds |
+| `$ouiColorLightShade` | `#23252b` | Borders |
+| `$ouiColorMediumShade` | `rgba(250,250,250,0.50)` | Muted text |
+| `$ouiColorDarkShade` | `#fafafa` | Body text |
+| `$ouiColorDarkestShade` | `#ffffff` | Foreground text |
+| `$ouiColorFullShade` | `#ffffff` | Brightest |
+| `$ouiPageBackgroundColor` | `#0c0d12` | Dark canvas |
+| `$ouiColorHighlight` | `#1b1d22` | Elevated surface |
+| `$ouiBorderColor` | `#23252b` | Border |
+| `$ouiTextColor` | `#fafafa` | Body text |
+| `$ouiTitleColor` | `#ffffff` | Heading text |
 
-**Dark shadows:**
+---
+
+### Shadows (feather-light)
+
 ```scss
-$ouiShadowBase:  0 0 0 1px rgba(30, 46, 80, 0.5), 0 2px 8px rgba(0, 0, 0, 0.4);
-$ouiShadow1:     0 2px 8px rgba(0, 0, 0, 0.4);
-$ouiShadow2:     0 0 0 1px rgba(30, 46, 80, 0.5), 0 4px 12px rgba(0, 0, 0, 0.4);
-$ouiShadow3:     0 0 0 1px rgba(30, 46, 80, 0.5), 0 8px 24px rgba(0, 0, 0, 0.45);
-$ouiShadow4:     0 0 0 1px rgba(30, 46, 80, 0.5), 0 12px 32px rgba(0, 0, 0, 0.5);
-$ouiShadow5:     0 0 0 1px rgba(30, 46, 80, 0.5), 0 24px 48px rgba(0, 0, 0, 0.5);
-$ouiShadowOpacity: 0.50;
+// Light
+$ouiShadow1: 0 1px 2px rgba(15,15,15,0.04), 0 8px 24px rgba(15,15,15,0.04);
+$ouiShadow2: 0 4px 12px rgba(15,15,15,0.06), 0 24px 48px rgba(15,15,15,0.06);
+
+// Dark
+$ouiShadow1: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.3);
+$ouiShadow2: 0 4px 12px rgba(0,0,0,0.4), 0 24px 48px rgba(0,0,0,0.4);
 ```
 
 ---
 
-### Step 5 — Buttons
+### Borders & Radius
+
+| Token | Value | Use |
+|-------|-------|-----|
+| `$ouiBorderRadius` | `12px` | Cards, panels |
+| `$ouiBorderRadiusSmall` | `6px` | Pills, chips |
+| `$ouiBorderRadiusLarge` | `18px` | Context panels |
+| `$ouiButtonBorderRadius` | `999px` | Pill buttons |
+| `$ouiFormControlBorderRadius` | `10px` | Form inputs, textareas, uploaders |
+| `$ouiCheckboxBorderRadius` | `3px` | Checkboxes |
+
+**Nested radius rule:** inner element = outer container radius − padding.
+
+---
+
+### Buttons
 
 - All buttons: `border-radius: 999px` (pill)
-- Transition: `transform 250ms cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 250ms, background-color 150ms`
+- Transition: `transform 180ms cubic-bezier(.2,.7,.2,1), box-shadow 180ms, background-color 120ms`
 
 **Filled primary:**
-- Background: `#2E4A8F` → hover `#4168B8`
-- Hover: `translateY(-2px)`, `box-shadow: 0 8px 24px rgba(65,104,184,0.45), 0 4px 8px rgba(65,104,184,0.25)`
+- Background: `#6366f1` (indigo)
+- Glow: `0 8px 22px -10px $ouiColorPrimary`
+- Hover: `translateY(-1px)`
 - Active: `translateY(0)`, no shadow
 
-**All filled buttons hover:** same lift + glow as primary
-
 **Outline buttons:**
-- Background: `transparent`
-- Border: `#D4DCE8` (light) / `$ouiColorLightShade` (dark)
-- Text: `#0E1525` (monotone — NOT primary color)
-- Hover: `rgba(46,74,143,0.06)` bg, `translateY(-2px)`, `box-shadow: 0 4px 16px rgba(46,74,143,0.15)`
-- Active: `translateY(0) scale(0.98)`, no shadow
+- Background: `$ouiColorEmptyShade` (solid surface)
+- Border: `1px solid $ouiColorLightShade`
+- Shadow: `0 1px 2px rgba(15,15,15,0.04)`
+- Hover: border darkens, `translateY(-1px)`, elevated shadow
+- Active: `translateY(0)`
 
-**Disabled:** `background: #E4EAF2`, `color: #5A6D8A`, `opacity: 0.5`, no transform, no shadow
+**Disabled:** `background: $ouiColorLightestShade`, `opacity: 0.5`, no transform
 
-**Button group (compressed):** container `border-radius: 999px` to match pill buttons
-
----
-
-### Step 6 — Panels
-
-```scss
-// All OuiPanel — 92% opacity
-.ouiPanel {
-  background-color: rgba($ouiColorEmptyShade, 0.92) !important;
-}
-```
-
-Light: `rgba(255,255,255,0.92)` | Dark: `rgba(18,28,48,0.92)`
+**Button group (compressed):** container `border-radius: 999px`
 
 ---
 
-### Step 7 — Navigation (Glassmorphism)
+### Form Inputs
+
+- Border radius: `10px` (all inputs, textareas, file pickers)
+- Compressed: `8px`
+- Checkboxes: `3px`
+- Focus: `border-color: $ouiColorPrimary` (1px, animates in), box-shadow for lift
+- No bottom-only border on focus
+- Dropdown items: `6px` radius on hover states
+
+---
+
+### Panels & Cards
+
+- Solid surface: `background: $ouiColorEmptyShade`, `border: 1px solid $ouiColorLightShade`, `border-radius: 12px`
+- Shadow: `0 1px 2px rgba(15,15,15,0.04), 0 8px 24px rgba(15,15,15,0.04)`
+- No corner ticks — removed entirely
+- Popovers: frosted glass (`backdrop-filter: blur(24px) saturate(160%)`)
+
+---
+
+### Navigation (Frosted Glass)
+
+All nav surfaces are translucent with backdrop blur:
 
 ```scss
 // Collapsed nav
 .samplePagesLeftNav {
-  background-color: lightOrDarkTheme(rgba(255,255,255,0.75), rgba(14,21,37,0.80));
-  border-right: 1px solid lightOrDarkTheme(#D4DCE8, rgba(255,255,255,0.08));
-  backdrop-filter: blur(12px);
+  background-color: lightOrDarkTheme(rgba(255,255,255,0.62), rgba(12,13,18,0.80));
+  backdrop-filter: blur(24px) saturate(160%);
+  border-right: 1px solid lightOrDarkTheme(#ececef, rgba(255,255,255,0.07));
 }
 
 // Expanded side panel
 .samplePagesLeftNav__expandedPanel {
-  background-color: lightOrDarkTheme(rgba(255,255,255,0.80), rgba(14,21,37,0.75));
-  backdrop-filter: blur(60px);
+  background-color: lightOrDarkTheme(rgba(255,255,255,0.62), rgba(12,13,18,0.75));
+  backdrop-filter: blur(28px) saturate(180%);
 }
 
 // Hover popover
 .samplePagesLeftNav__hoverPopover {
-  background-color: lightOrDarkTheme(rgba(255,255,255,0.60), rgba(14,21,37,0.85));
-  backdrop-filter: blur(16px);
-  border: 1px solid lightOrDarkTheme(rgba(212,220,232,0.7), $ouiColorLightShade);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.1);
+  background-color: lightOrDarkTheme(rgba(255,255,255,0.62), rgba(12,13,18,0.85));
+  backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid lightOrDarkTheme(rgba(255,255,255,0.9), rgba(255,255,255,0.10));
+  box-shadow: 0 2px 6px rgba(15,15,15,0.06), 0 16px 36px rgba(15,15,15,0.08);
 }
 ```
 
 ---
 
-### Step 8 — Nav Item States
+### Nav Item States
 
 ```scss
 .navItem:hover .navIcon        { background-color: rgba($ouiColorDarkestShade, 0.07); }
@@ -171,34 +202,71 @@ Light: `rgba(255,255,255,0.92)` | Dark: `rgba(18,28,48,0.92)`
 
 ---
 
-### Step 9 — Page Background
+### Page Background (Canvas Gradient)
+
+Soft indigo/violet corner blobs on a near-white (light) or near-black (dark) canvas:
 
 ```scss
-body { background-color: #F4F6FB; }       // Opal (light)
-.ouiBody--dark { background-color: #060D1A; } // Obsidian (dark)
+// Light
+html {
+  background-color: #f8f7fc;
+  background-image:
+    radial-gradient(ellipse 40% 35% at 0% 0%, hsl(245,80%,90%,0.55), transparent 60%),
+    radial-gradient(ellipse 35% 30% at 100% 8%, hsl(215,90%,92%,0.45), transparent 60%),
+    radial-gradient(ellipse 35% 30% at 100% 100%, hsl(260,80%,92%,0.45), transparent 60%),
+    radial-gradient(ellipse 35% 30% at 5% 100%, hsl(230,80%,92%,0.40), transparent 60%);
+  background-attachment: fixed;
+}
+
+// Dark
+html {
+  background-color: #0c0d12;
+  background-image:
+    radial-gradient(ellipse 40% 35% at 0% 0%, hsl(245,80%,28%,0.40), transparent 60%),
+    radial-gradient(ellipse 35% 30% at 100% 8%, hsl(215,90%,22%,0.35), transparent 60%),
+    radial-gradient(ellipse 35% 30% at 100% 100%, hsl(260,80%,22%,0.40), transparent 60%),
+    radial-gradient(ellipse 35% 30% at 5% 100%, hsl(230,80%,22%,0.40), transparent 60%);
+  background-attachment: fixed;
+}
 ```
 
 ---
 
-### Borders & Radius
+### Tabs (Pill Track Style)
 
-| Token | Value |
-|-------|-------|
-| `$ouiBorderRadius` | `6px` |
-| `$ouiBorderRadiusSmall` | `4px` |
-| `$ouiBorderRadiusLarge` | `16px` |
-| `$ouiButtonBorderRadius` | `9999px` (pill) |
-
-**Nested radius rule:** inner element = outer container radius − padding. Example: `6px` container with `4px` padding → `2px` inner.
-
----
-
-### Tabs (OuiTabs — v9 pill track style)
-
-- Container: `background: $ouiColorLightestShade`, `border-radius: $ouiBorderRadius`, `padding: 4px`
+- Container: `background: $ouiColorLightestShade`, `border-radius: 12px`, `padding: 4px`
 - Selected tab: `background: $ouiColorEmptyShade`, shadow `0 1px 2px rgba(0,0,0,.06), 0 1px 3px rgba(0,0,0,.1)`
 - No underline indicator
 - Condensed: `padding: 3px`, tab radius `= $ouiBorderRadius - 3px`
+
+---
+
+### Headless Components (Agentic UI)
+
+Located in `src/components/headless/`. Documented in the docs site under the **Headless** category.
+
+| Component | Purpose |
+|-----------|---------|
+| `OuiInsightCard` | Widget card for metrics, charts, tables. Variants: `default`, `glass`, `add` |
+| `OuiInsightCallout` | Severity-railed callout for AI insights. Severities: `default`, `warning`, `danger`, `success`, `info` |
+
+---
+
+### CSS Custom Properties (`--g-*` tokens)
+
+The Glass theme exposes a full set of `--g-*` CSS custom properties in `:root` for use in custom layouts:
+
+- `--g-font-sans`, `--g-font-mono` — type families
+- `--g-bg`, `--g-bg-gradient` — canvas
+- `--g-surface`, `--g-surface-border` — solid surfaces
+- `--g-glass`, `--g-glass-blur` — frosted glass
+- `--g-ink`, `--g-ink-mute`, `--g-ink-fade` — ink ramp
+- `--g-accent`, `--g-accent-bright`, `--g-accent-soft` — indigo accent
+- `--g-success`, `--g-warn`, `--g-danger`, `--g-info` — status
+- `--g-radius-xs` through `--g-radius-pill` — radii
+- `--g-shadow-surface`, `--g-shadow-glass`, `--g-shadow-panel` — shadows
+- `--g-dur-fast`, `--g-dur-normal`, `--g-dur-slow` — motion
+- `--g-ease-out`, `--g-ease-std` — easing
 
 ---
 
@@ -206,11 +274,13 @@ body { background-color: #F4F6FB; }       // Opal (light)
 
 - **Only use v9 theme** (`v9-light` / `v9-dark`). Never use legacy OUI themes.
 - **Never invent colors.** Use only tokens from the files above.
-- **Never invent fonts.** Outfit, Space Grotesk, JetBrains Mono only.
+- **Never invent fonts.** Plus Jakarta Sans, Space Grotesk only.
 - **Never create custom SVG icons.** Use only `src/components/icon/assets/`. Flag missing icons.
-- **Never hardcode hex values** in component SCSS — always reference SCSS tokens.
+- **Never hardcode hex values** in component SCSS — always reference SCSS tokens or `--g-*` vars.
 - **All components must render correctly** under both `v9-light` and `v9-dark`.
 - **Use `lightOrDarkTheme()`** for values that differ between modes.
 - **Nested border-radius:** always apply `outer - padding` formula.
-- **Button groups:** compressed container must use `border-radius: 9999px`.
-- **No drop shadows on nav** — use border only.
+- **Button groups:** compressed container must use `border-radius: 999px`.
+- **No corner ticks** — removed from all panels, cards, modals, and form inputs.
+- **Frosted glass** is reserved for floating/featured moments (nav, popovers, featured cards).
+- **Solid surfaces** are the default card style (white/dark with hairline border + feather shadow).

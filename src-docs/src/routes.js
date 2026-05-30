@@ -125,6 +125,12 @@ import { HeaderExample } from './views/header/header_example';
 
 import { HealthExample } from './views/health/health_example';
 
+import { HeadlessExample } from './views/headless/headless_example';
+
+import { InsightCardExample } from './views/headless/insight_card_example';
+
+import { InsightCalloutExample } from './views/headless/insight_callout_example';
+
 import { HighlightAndMarkExample } from './views/highlight_and_mark/highlight_and_mark_example';
 
 import { HorizontalRuleExample } from './views/horizontal_rule/horizontal_rule_example';
@@ -467,6 +473,13 @@ const navigation = [
       MarkdownPluginExample,
       CodeEditorExample,
       CodeExample,
+    ].map((example) => createExample(example)),
+  },
+  {
+    name: 'Headless',
+    items: [
+      InsightCardExample,
+      InsightCalloutExample,
     ].map((example) => createExample(example)),
   },
   {

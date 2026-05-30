@@ -204,6 +204,11 @@ export {
 
 export { OuiHealth } from './health';
 
+export {
+  OuiInsightCard,
+  OuiInsightCallout,
+} from './headless';
+
 export { OuiHighlight } from './highlight';
 
 export { OuiHorizontalRule } from './horizontal_rule';

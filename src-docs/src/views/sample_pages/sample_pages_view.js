@@ -1338,6 +1338,7 @@ export const SamplePagesView = () => {
 
   return (
     <div
+      className="samplePagesWrapper"
       style={{
         display: 'flex',
         position: 'fixed',
@@ -1734,6 +1735,7 @@ export const SessionPagesView = () => {
 
   return (
     <div
+      className="samplePagesWrapper"
       style={{
         display: 'flex',
         position: 'fixed',

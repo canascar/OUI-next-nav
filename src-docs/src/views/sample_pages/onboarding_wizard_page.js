@@ -965,6 +965,8 @@ const RightPanelContent = ({
 // ─────────────────────────────────────────────
 
 export const OnboardingWizardPage = () => {
+  const [showIntro, setShowIntro] = useState(true);
+  const [introExiting, setIntroExiting] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [selections, setSelections] = useState({});
   const [confirmedSteps, setConfirmedSteps] = useState({});
@@ -976,6 +978,13 @@ export const OnboardingWizardPage = () => {
   const feedRef = useRef(null);
   const feedEndRef = useRef(null);
   const streamTimers = useRef([]);
+
+  const handleStartOnboarding = () => {
+    setIntroExiting(true);
+    setTimeout(() => {
+      setShowIntro(false);
+    }, 500);
+  };
 
   const totalSteps = STEPS.length;
   const totalMainSteps = STEPS[STEPS.length - 1].mainStep;
@@ -1433,6 +1442,61 @@ export const OnboardingWizardPage = () => {
 
     return null;
   };
+
+  if (showIntro) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        }}>
+        <SessionLeftNav
+          isEmptySession={true}
+          activeView="session"
+          disableActions={true}
+          onCreateSession={() => {}}
+          onBrowseSessions={() => {}}
+          onBrowseLibrary={() => {}}
+          onSelectSession={() => {}}
+        />
+        <div
+          style={{
+            flex: 1,
+            overflow: 'hidden',
+            display: 'flex',
+          }}>
+          <div
+            className="samplePagesContentPanel"
+            style={{ flex: 1, minWidth: 0, position: 'relative' }}>
+            <div className={`onboardWizard__intro${introExiting ? ' onboardWizard__intro--exiting' : ''}`}>
+              <div className="onboardWizard__introContent">
+                <OuiIcon type="logo_opensearch" size="xxl" />
+                <OuiSpacer size="l" />
+                <OuiTitle size="l">
+                  <h1>Welcome to OpenSearch</h1>
+                </OuiTitle>
+                <OuiSpacer size="s" />
+                <OuiText color="subdued">
+                  <p>Set up your observability pipeline in minutes. We'll guide you through connecting your data sources, configuring collectors, and getting insights from your telemetry.</p>
+                </OuiText>
+                <OuiSpacer size="xl" />
+                <button
+                  type="button"
+                  className="onboardWizard__introCta"
+                  onClick={handleStartOnboarding}>
+                  Get started
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div

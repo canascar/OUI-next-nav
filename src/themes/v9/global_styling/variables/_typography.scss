@@ -39,11 +39,11 @@
 }
 
 // sass-lint:disable quotes
-// v10 Blueprint Typography
-// Body/Titles: Outfit | Code/Labels: IBM Plex Mono
-$ouiFontFamily: #{"'Outfit', system-ui, sans-serif"} !default;
-$ouiFontFamilyDisplay: #{"'Outfit', system-ui, sans-serif"} !default;
-$ouiCodeFontFamily: #{"'IBM Plex Mono', ui-monospace, monospace"} !default;
+// Glass Theme Typography
+// Body/Titles: Plus Jakarta Sans | Numerics/Timestamps: Space Grotesk
+$ouiFontFamily: #{"'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"} !default;
+$ouiFontFamilyDisplay: #{"'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"} !default;
+$ouiCodeFontFamily: #{"'Space Grotesk', ui-monospace, 'SF Mono', monospace"} !default;
 // sass-lint:enable quotes
 
 // Careful using ligatures. Code editors like ACE will often error because of width calculations

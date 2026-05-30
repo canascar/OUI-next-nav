@@ -9,15 +9,15 @@
  * GitHub history for details.
  */
 
-// Borders
+// Borders — Glass Theme
 
 $ouiBorderWidthThin: 1px !default;
 $ouiBorderWidthThick: 2px !default;
 
-$ouiBorderColor: $ouiColorLightShade !default;
-$ouiBorderRadius: 0 !default;
-$ouiBorderRadiusSmall: 0 !default;
-$ouiBorderRadiusLarge: 0 !default;
+$ouiBorderColor: #ececef !default;
+$ouiBorderRadius: 12px !default;
+$ouiBorderRadiusSmall: 6px !default;
+$ouiBorderRadiusLarge: 18px !default;
 $ouiBorderThick: $ouiBorderWidthThick solid $ouiBorderColor !default;
 $ouiBorderThin: $ouiBorderWidthThin solid $ouiBorderColor !default;
 $ouiBorderEditable: $ouiBorderWidthThick dotted $ouiBorderColor !default;

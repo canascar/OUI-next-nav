@@ -19,8 +19,8 @@ $ouiButtonColorDisabled: tintOrShade($ouiColorPrimary, 60%, 60%) !default;
 $ouiButtonColorDisabledText: makeDisabledContrastColor($ouiButtonColorDisabled) !default;
 $ouiButtonColorGhostDisabled: lightOrDarkTheme($ouiColorDarkShade, $ouiColorLightShade) !default;
 
-// v10 Blueprint: Square buttons — no border-radius
-$ouiButtonBorderRadius: 0 !default;
+// Glass Theme: Pill buttons — full border-radius
+$ouiButtonBorderRadius: 999px !default;
 
 // Add transition support
 // sass-lint:disable indentation

@@ -43,35 +43,21 @@ export const LoginPage = ({ onLogin }) => {
     onLogin();
   };
 
-  // v10 Blueprint tokens
-  const bgColor = isDark ? '#0d3057' : '#eef2f7';
-  const panelBg = isDark ? 'rgba(10, 37, 69, 0.55)' : 'rgba(255, 255, 255, 0.85)';
-  const inkGhost = isDark ? 'rgba(207, 228, 247, 0.16)' : 'rgba(13, 48, 87, 0.14)';
-  const inkFade = isDark ? 'rgba(207, 228, 247, 0.34)' : 'rgba(13, 48, 87, 0.32)';
-  const cyanDim = isDark ? 'rgba(93, 217, 255, 0.45)' : 'rgba(31, 108, 181, 0.40)';
-  const gridColor = isDark ? 'rgba(207, 228, 247, 0.03)' : 'rgba(13, 48, 87, 0.03)';
+  // Glass theme tokens
+  const bgColor = isDark ? '#0c0d12' : '#f8f7fc';
+  const panelBg = isDark ? '#15161a' : '#ffffff';
+  const borderColor = isDark ? '#23252b' : '#ececef';
 
-  // v10 grid: simple 40px squares
-  const gridBackground = `
-    linear-gradient(to right, ${gridColor} 1px, transparent 1px),
-    linear-gradient(to bottom, ${gridColor} 1px, transparent 1px)
-  `;
-
-  // Corner tick style helper
-  const tick = (top, left, right, bottom, accent) => ({
-    position: 'absolute',
-    width: 6,
-    height: 6,
-    pointerEvents: 'none',
-    ...(top !== undefined && { top }),
-    ...(bottom !== undefined && { bottom }),
-    ...(left !== undefined && { left }),
-    ...(right !== undefined && { right }),
-    ...(top !== undefined && left !== undefined && { borderTop: `1px solid ${accent ? cyanDim : inkFade}`, borderLeft: `1px solid ${accent ? cyanDim : inkFade}` }),
-    ...(top !== undefined && right !== undefined && { borderTop: `1px solid ${inkFade}`, borderRight: `1px solid ${inkFade}` }),
-    ...(bottom !== undefined && left !== undefined && { borderBottom: `1px solid ${accent ? cyanDim : inkFade}`, borderLeft: `1px solid ${accent ? cyanDim : inkFade}` }),
-    ...(bottom !== undefined && right !== undefined && { borderBottom: `1px solid ${inkFade}`, borderRight: `1px solid ${inkFade}` }),
-  });
+  // Glass canvas gradient (indigo/violet corner blobs)
+  const bgGradient = isDark
+    ? `radial-gradient(ellipse 40% 35% at 0% 0%, hsla(245, 80%, 28%, 0.40), transparent 60%),
+       radial-gradient(ellipse 35% 30% at 100% 8%, hsla(215, 90%, 22%, 0.35), transparent 60%),
+       radial-gradient(ellipse 35% 30% at 100% 100%, hsla(260, 80%, 22%, 0.40), transparent 60%),
+       radial-gradient(ellipse 35% 30% at 5% 100%, hsla(230, 80%, 22%, 0.40), transparent 60%)`
+    : `radial-gradient(ellipse 40% 35% at 0% 0%, hsla(245, 80%, 90%, 0.55), transparent 60%),
+       radial-gradient(ellipse 35% 30% at 100% 8%, hsla(215, 90%, 92%, 0.45), transparent 60%),
+       radial-gradient(ellipse 35% 30% at 100% 100%, hsla(260, 80%, 92%, 0.45), transparent 60%),
+       radial-gradient(ellipse 35% 30% at 5% 100%, hsla(230, 80%, 92%, 0.40), transparent 60%)`;
 
   return (
     <div
@@ -83,8 +69,8 @@ export const LoginPage = ({ onLogin }) => {
         minHeight: '100vh',
         position: 'relative',
         backgroundColor: bgColor,
-        backgroundImage: gridBackground,
-        backgroundSize: '40px 40px',
+        backgroundImage: bgGradient,
+        backgroundAttachment: 'fixed',
       }}>
 
       {/* Back arrow */}
@@ -110,20 +96,16 @@ export const LoginPage = ({ onLogin }) => {
       />
 
       <div style={{ width: 440, maxWidth: '90vw', position: 'relative', zIndex: 1 }}>
-        {/* Panel — v10 style: square, hairline border, corner ticks, no shadow */}
+        {/* Panel — Glass style: rounded, hairline border, feather shadow */}
         <div
           style={{
             position: 'relative',
             background: panelBg,
-            border: `1px solid ${inkGhost}`,
+            border: `1px solid ${borderColor}`,
+            borderRadius: 12,
             padding: '48px 40px',
+            boxShadow: '0 1px 2px rgba(15,15,15,0.04), 0 8px 24px rgba(15,15,15,0.04)',
           }}>
-          {/* Corner ticks */}
-          <span style={tick(-1, -1, undefined, undefined, true)} />
-          <span style={tick(-1, undefined, -1, undefined, false)} />
-          <span style={tick(undefined, -1, undefined, -1, true)} />
-          <span style={tick(undefined, undefined, -1, -1, false)} />
-
           {/* Logo */}
           <OuiFlexGroup justifyContent="center" gutterSize="none">
             <OuiFlexItem grow={false}>
@@ -133,12 +115,12 @@ export const LoginPage = ({ onLogin }) => {
                 style={
                   isDark
                     ? {
-                        '--ouiLogoPrimary': '#0284C7',
-                        '--ouiLogoSecondary': '#BAE6FD',
+                        '--ouiLogoPrimary': '#818cf8',
+                        '--ouiLogoSecondary': '#a5b4fc',
                       }
                     : {
-                        '--ouiLogoPrimary': '#075985',
-                        '--ouiLogoSecondary': '#082F49',
+                        '--ouiLogoPrimary': '#4f46e5',
+                        '--ouiLogoSecondary': '#6366f1',
                       }
                 }
               />

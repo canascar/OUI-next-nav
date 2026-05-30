@@ -9,12 +9,14 @@
  * GitHub history for details.
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useCallback } from 'react';
 
 import {
   OuiButtonIcon,
   OuiCompressedTextArea,
   OuiIcon,
+  OuiInsightCard,
+  OuiInsightCallout,
   OuiTab,
   OuiTabs,
   OuiText,
@@ -483,6 +485,14 @@ export const EmptySessionPage = ({
   const [inputFocused, setInputFocused] = useState(false);
   const inputActive = inputHovered || inputFocused;
   const [hoveredCard, setHoveredCard] = useState(null);
+  const [scrolledFromTop, setScrolledFromTop] = useState(false);
+  const scrollRef = useRef(null);
+
+  const handleScroll = useCallback(() => {
+    if (scrollRef.current) {
+      setScrolledFromTop(scrollRef.current.scrollTop > 0);
+    }
+  }, []);
 
   // Build a flat searchable list from all chip data + SOURCE_PAGE_MOCK
   const allSearchableItems = useMemo(() => {
@@ -516,65 +526,84 @@ export const EmptySessionPage = ({
         <div className="emptySessionPage__twoCol">
           {/* Left column — AI-generated reading paragraph with inline widgets */}
           <div className="emptySessionPage__leftCol">
-            {/* Mascot */}
-            <div className="emptySessionPage__avatarWrap">
-              <Mascot size={52} idle bob={false} follow={false} />
-            </div>
-
-            {/* Paragraph briefing */}
-            <div className="emptySessionPage__briefing">
+            {/* Mascot + Title — inline, fixed above scroll */}
+            <div className="emptySessionPage__headerRow">
+              <div className="emptySessionPage__avatarWrap">
+                <Mascot size={32} idle bob={false} follow={false} />
+              </div>
               <OuiTitle size="m">
                 <h1>Good morning, John</h1>
               </OuiTitle>
+            </div>
 
-              <OuiText size="s">
-                <p>All 247 services are running normally. I found 3 items that need your attention:</p>
-                <p>An alert triggered 15 minutes ago — <strong>Payment service P99 latency breach</strong>. P99 crossed 2,000ms with connection pool exhaustion on 3 of 4 pods. I've started an investigation and identified a likely root cause.</p>
-              </OuiText>
+            {/* Scrollable content */}
+            <div
+              ref={scrollRef}
+              onScroll={handleScroll}
+              className={`emptySessionPage__scrollContent${scrolledFromTop ? '' : ' emptySessionPage__scrollContent--top'}`}>
+              {/* Paragraph briefing */}
+              <div className="emptySessionPage__briefing">
+                <OuiText size="s">
+                  <p>All 247 services are running normally. I found 3 items that need your attention:</p>
+                  <p>An alert triggered 15 minutes ago — <strong>Payment service P99 latency breach</strong>. P99 crossed 2,000ms with connection pool exhaustion on 3 of 4 pods. I've started an investigation and identified a likely root cause.</p>
+                </OuiText>
 
-              {/* Card widget 1 */}
-              <button
-                type="button"
-                className={`emptySessionPage__activityRow emptySessionPage__activityRow--warning${dismissingItems.has('insight-1') ? ' emptySessionPage__activityRow--dismissing' : ''}`}
-                onClick={() => onSelectSession(CHIP_DATA.activity[0].sessionId)}
-                onMouseEnter={() => setHoveredCard('latency')}
-                onMouseLeave={() => setHoveredCard(null)}>
-                <span className="emptySessionPage__activityRowTitle">{CHIP_DATA.activity[0].title}</span>
-                <span className="emptySessionPage__activityRowSubtitle">{CHIP_DATA.activity[0].subtitle}</span>
-              </button>
+                {/* Card widget 1 */}
+                <OuiInsightCallout
+                  title={CHIP_DATA.activity[0].title}
+                  subtitle={CHIP_DATA.activity[0].subtitle}
+                  severity="warning"
+                  isDismissing={dismissingItems.has('insight-1')}
+                  onClick={() => onSelectSession(CHIP_DATA.activity[0].sessionId)}
+                  onMouseEnter={() => setHoveredCard('latency')}
+                  onMouseLeave={() => setHoveredCard(null)}
+                />
 
-              <OuiText size="s" style={{ marginTop: 16 }}>
-                <p>Sicheng also shared a related finding — checkout error rate spiked to 12.4% around the same time. This may be connected to the latency issue above. You can review it here:</p>
-              </OuiText>
+                <OuiText size="s" style={{ marginTop: 16 }}>
+                  <p>Sicheng also shared a related finding — checkout error rate spiked to 12.4% around the same time. This may be connected to the latency issue above. You can review it here:</p>
+                </OuiText>
 
-              {/* Card widget 2 */}
-              <button
-                type="button"
-                className={`emptySessionPage__activityRow${dismissingItems.has('insight-2') ? ' emptySessionPage__activityRow--dismissing' : ''}`}
-                onClick={() => onSelectSession(CHIP_DATA.activity[1].sessionId)}
-                onMouseEnter={() => setHoveredCard('error-rate')}
-                onMouseLeave={() => setHoveredCard(null)}>
-                <span className="emptySessionPage__activityRowTitle">{CHIP_DATA.activity[1].title}</span>
-                <span className="emptySessionPage__activityRowSubtitle">{CHIP_DATA.activity[1].subtitle}</span>
-              </button>
+                {/* Card widget 2 */}
+                <OuiInsightCallout
+                  title={CHIP_DATA.activity[1].title}
+                  subtitle={CHIP_DATA.activity[1].subtitle}
+                  isDismissing={dismissingItems.has('insight-2')}
+                  onClick={() => onSelectSession(CHIP_DATA.activity[1].sessionId)}
+                  onMouseEnter={() => setHoveredCard('error-rate')}
+                  onMouseLeave={() => setHoveredCard(null)}
+                />
 
-              <OuiText size="s" style={{ marginTop: 16 }}>
-                <p>On a positive note, a DNS resolution timeout from earlier today has been resolved after the upstream fix was deployed. No further action needed.</p>
-              </OuiText>
+                <OuiText size="s" style={{ marginTop: 16 }}>
+                  <p>On a positive note, a DNS resolution timeout from earlier today has been resolved after the upstream fix was deployed. No further action needed.</p>
+                </OuiText>
 
-              {/* Card widget 3 — placeholder */}
-              <button
-                type="button"
-                className="emptySessionPage__activityRow"
-                onMouseEnter={() => setHoveredCard('dns')}
-                onMouseLeave={() => setHoveredCard(null)}>
-                <span className="emptySessionPage__activityRowTitle">DNS Resolution Timeout</span>
-                <span className="emptySessionPage__activityRowSubtitle">Resolved · 3 hours ago</span>
-              </button>
+                {/* Card widget 3 — placeholder */}
+                <OuiInsightCallout
+                  title="DNS Resolution Timeout"
+                  subtitle="Resolved · 3 hours ago"
+                  severity="success"
+                  onMouseEnter={() => setHoveredCard('dns')}
+                  onMouseLeave={() => setHoveredCard(null)}
+                />
 
-              <OuiText size="s" style={{ marginTop: 16 }}>
-                <p>That's everything for now. Let me know if you'd like me to dig deeper into any of these, or ask me anything below.</p>
-              </OuiText>
+                <OuiText size="s" style={{ marginTop: 16 }}>
+                  <p>That's everything for now. Let me know if you'd like me to dig deeper into any of these, or ask me anything below.</p>
+                </OuiText>
+              </div>
+            </div>
+
+            {/* Chat input — fixed at bottom of container */}
+            <div className="emptySessionPage__inlineInput">
+              <DualPurposeInput
+                onStartThread={onStartThread}
+                onOpenPage={onOpenPage}
+                onSearchChange={setSearchQuery}
+                onFocus={() => setInputFocused(true)}
+                onBlur={() => setInputFocused(false)}
+                onHoverStart={() => setInputHovered(true)}
+                onHoverEnd={() => setInputHovered(false)}
+                borderActive={inputActive}
+              />
             </div>
           </div>
 
@@ -582,8 +611,7 @@ export const EmptySessionPage = ({
           <div className="emptySessionPage__rightCol">
             <div className={`emptySessionPage__rightGrid${hoveredCard ? ` emptySessionPage__rightGrid--highlight-${hoveredCard}` : ''}`}>
               {/* Card 1: Top services by fault rate */}
-              <div className="emptySessionPage__favoritePanel" data-card="services">
-                <div className="emptySessionPage__favoritePanelTitle">Top services by fault rate</div>
+              <OuiInsightCard title="Top services by fault rate" data-card="services">
                 <div className="emptySessionPage__favoritePanelTable">
                   <div className="emptySessionPage__favoritePanelHeader">
                     <span>Service</span><span>Fault rate</span>
@@ -601,11 +629,10 @@ export const EmptySessionPage = ({
                     <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '14.29%' }} /></div><span>14.29%</span></div>
                   </div>
                 </div>
-              </div>
+              </OuiInsightCard>
 
               {/* Card 2: Connection timeout errors (saved query) */}
-              <button type="button" className="emptySessionPage__savedQueryCard" data-card="timeout" onClick={() => onOpenPage('discover-log')}>
-                <div className="emptySessionPage__favoritePanelTitle">Connection timeout errors</div>
+              <OuiInsightCard title="Connection timeout errors" isClickable data-card="timeout" onClick={() => onOpenPage('discover-log')}>
                 <code className="emptySessionPage__savedQueryCode">source=logs | where severity=&quot;ERROR&quot;</code>
                 <div className="emptySessionPage__savedQueryBody">
                   <div className="emptySessionPage__savedQueryChart">
@@ -619,33 +646,31 @@ export const EmptySessionPage = ({
                     <span className="emptySessionPage__savedQueryTrend">↑ +312%</span>
                   </div>
                 </div>
-              </button>
+              </OuiInsightCard>
 
               {/* Card 3: Recent alerts */}
-              <div className="emptySessionPage__favoritePanel" data-card="alerts">
-                <div className="emptySessionPage__favoritePanelTitle">Recent alerts</div>
+              <OuiInsightCard title="Recent alerts" data-card="alerts">
                 <div className="emptySessionPage__favoritePanelTable">
                   <div className="emptySessionPage__favoritePanelHeader">
                     <span>Alert</span><span>Status</span>
                   </div>
                   <div className="emptySessionPage__favoritePanelRow" data-row="latency-alert">
                     <span className="emptySessionPage__favoritePanelLink--static">P99 latency breach</span>
-                    <span style={{ color: '#ED6F73', fontSize: '11px', fontWeight: 600 }}>Critical</span>
+                    <span style={{ color: '#dc2626', fontSize: '11px', fontWeight: 600 }}>Critical</span>
                   </div>
                   <div className="emptySessionPage__favoritePanelRow">
                     <span className="emptySessionPage__favoritePanelLink--static">Disk usage warning</span>
-                    <span style={{ color: '#CDA849', fontSize: '11px', fontWeight: 600 }}>Warning</span>
+                    <span style={{ color: '#d97706', fontSize: '11px', fontWeight: 600 }}>Warning</span>
                   </div>
                   <div className="emptySessionPage__favoritePanelRow" data-row="error-rate-alert">
                     <span className="emptySessionPage__favoritePanelLink--static">Error rate spike</span>
-                    <span style={{ color: '#ED6F73', fontSize: '11px', fontWeight: 600 }}>Critical</span>
+                    <span style={{ color: '#dc2626', fontSize: '11px', fontWeight: 600 }}>Critical</span>
                   </div>
                 </div>
-              </div>
+              </OuiInsightCard>
 
               {/* Card 4: Deployment timeline (bar chart) */}
-              <div className="emptySessionPage__favoritePanel">
-                <div className="emptySessionPage__favoritePanelTitle">Deployment timeline</div>
+              <OuiInsightCard title="Deployment timeline">
                 <div style={{ height: 120 }}>
                   <Chart>
                     <Settings showLegend={false} />
@@ -670,11 +695,10 @@ export const EmptySessionPage = ({
                     />
                   </Chart>
                 </div>
-              </div>
+              </OuiInsightCard>
 
               {/* Card 5: Resource utilization (line chart) */}
-              <div className="emptySessionPage__favoritePanel">
-                <div className="emptySessionPage__favoritePanelTitle">Resource utilization</div>
+              <OuiInsightCard title="Resource utilization">
                 <div style={{ height: 120 }}>
                   <Chart>
                     <Settings showLegend={false} />
@@ -698,29 +722,25 @@ export const EmptySessionPage = ({
                     />
                   </Chart>
                 </div>
-              </div>
+              </OuiInsightCard>
 
               {/* Card 6: Open a page */}
-              <button type="button" className="emptySessionPage__favoritePanel emptySessionPage__favoritePanel--action" onClick={() => onOpenPage('new-tab', 'New Tab')}>
-                <OuiIcon type="plusInCircle" size="l" color="subdued" />
-                <span className="emptySessionPage__openPageLabel">Open a page</span>
-              </button>
+              <OuiInsightCard variant="add" onClick={() => onOpenPage('new-tab', 'New Tab')}>
+                <div className="emptySessionPage__addCardHeader">
+                  <span className="emptySessionPage__addCardIcon">
+                    <OuiIcon type="plus" size="m" color="ghost" />
+                  </span>
+                  <span className="emptySessionPage__addCardTitle">Open another page</span>
+                </div>
+                <div className="emptySessionPage__addCardChips">
+                  <button type="button" className="emptySessionPage__addCardChip" onClick={(e) => { e.stopPropagation(); onOpenPage('dashboards'); }}>Dashboard</button>
+                  <button type="button" className="emptySessionPage__addCardChip" onClick={(e) => { e.stopPropagation(); onOpenPage('logs'); }}>Saved log</button>
+                  <button type="button" className="emptySessionPage__addCardChip" onClick={(e) => { e.stopPropagation(); onOpenPage('app-perf-traces'); }}>Trace</button>
+                  <button type="button" className="emptySessionPage__addCardChip" onClick={(e) => { e.stopPropagation(); onOpenPage('alerts'); }}>Alert</button>
+                </div>
+              </OuiInsightCard>
             </div>
           </div>
-        </div>
-
-        {/* Textarea — full width below columns */}
-        <div className="emptySessionPage__bottomInput">
-          <DualPurposeInput
-            onStartThread={onStartThread}
-            onOpenPage={onOpenPage}
-            onSearchChange={setSearchQuery}
-            onFocus={() => setInputFocused(true)}
-            onBlur={() => setInputFocused(false)}
-            onHoverStart={() => setInputHovered(true)}
-            onHoverEnd={() => setInputHovered(false)}
-            borderActive={inputActive}
-          />
         </div>
       </div>
     </div>

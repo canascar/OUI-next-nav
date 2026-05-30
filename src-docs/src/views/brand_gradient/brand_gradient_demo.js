@@ -28,7 +28,7 @@ const GradientCard = ({ variant, isDark }) => (
     variant={variant}
     isDark={isDark}
     style={{
-      borderRadius: 8,
+      borderRadius: 12,
       padding: 32,
       display: 'flex',
       alignItems: 'center',
@@ -91,7 +91,7 @@ export default () => {
         variant="vivid"
         isDark={isDark}
         style={{
-          borderRadius: 8,
+          borderRadius: 12,
           padding: 48,
           display: 'flex',
           alignItems: 'center',
@@ -99,13 +99,13 @@ export default () => {
         }}>
         <div style={{ textAlign: 'center' }}>
           <OuiTitle size="l">
-            <h2 style={{ color: isDark ? '#E2E4E5' : '#1a1a1a' }}>
+            <h2 style={{ color: isDark ? '#fafafa' : '#0a0a0a' }}>
               Welcome to OpenSearch
             </h2>
           </OuiTitle>
           <OuiSpacer size="s" />
           <OuiText color="subdued">
-            <p>Brand gradient backgrounds for login pages, hero sections, and more.</p>
+            <p>Glass gradient backgrounds for login pages, hero sections, and more.</p>
           </OuiText>
         </div>
       </OuiBrandGradient>

@@ -30,49 +30,141 @@
 @import 'breadcrumbs';
 @import 'tabs';
 
-// Logo colors - Agentic OSD Utility palette
+// Glass Theme — Design tokens as CSS custom properties
 :root {
-  // v10 Blueprint — Design tokens
-  --v10-font-sans: 'Outfit', system-ui, sans-serif;
-  --v10-font-mono: 'IBM Plex Mono', ui-monospace, monospace;
-  --v10-radius: 0;
-  --v10-grid-fine-step: 16px;
-  --v10-grid-major-step: 80px;
-  --v10-motion-theme: 200ms ease;
-  --v10-motion-default: 150ms ease-out;
+  // ---- Type families ----
+  --g-font-sans: #{$ouiFontFamily};
+  --g-font-mono: #{$ouiCodeFontFamily};
 
-  // v10 color tokens (theme-aware)
-  --v10-bg: #{$ouiPageBackgroundColor};
-  --v10-bg-deep: #{$ouiColorLightestShade};
-  --v10-panel: #{lightOrDarkTheme(rgba(255, 255, 255, 0.85), rgba(10, 37, 69, 0.55))};
-  --v10-panel-solid: #{$ouiColorEmptyShade};
-  --v10-ink: #{$ouiTextColor};
-  --v10-ink-bright: #{$ouiTitleColor};
-  --v10-ink-dim: #{lightOrDarkTheme(rgba(13, 48, 87, 0.62), rgba(207, 228, 247, 0.62))};
-  --v10-ink-fade: #{lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34))};
-  --v10-ink-ghost: #{lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16))};
-  --v10-cyan: #{$ouiColorPrimary};
-  --v10-cyan-dim: #{lightOrDarkTheme(rgba(31, 108, 181, 0.40), rgba(93, 217, 255, 0.45))};
-  --v10-cyan-soft: #{lightOrDarkTheme(rgba(31, 108, 181, 0.08), rgba(93, 217, 255, 0.10))};
-  --v10-amber: #{$ouiColorWarning};
-  --v10-amber-dim: #{lightOrDarkTheme(rgba(196, 122, 31, 0.45), rgba(255, 184, 107, 0.45))};
-  --v10-amber-soft: #{lightOrDarkTheme(rgba(196, 122, 31, 0.10), rgba(255, 184, 107, 0.12))};
-  --v10-green: #{$ouiColorSuccess};
-  --v10-green-dim: #{lightOrDarkTheme(rgba(46, 139, 111, 0.45), rgba(123, 224, 168, 0.45))};
-  --v10-green-soft: #{lightOrDarkTheme(rgba(46, 139, 111, 0.08), rgba(123, 224, 168, 0.10))};
-  --v10-red: #{$ouiColorDanger};
-  --v10-red-dim: #{lightOrDarkTheme(rgba(197, 57, 97, 0.45), rgba(255, 122, 122, 0.45))};
-  --v10-red-soft: #{lightOrDarkTheme(rgba(197, 57, 97, 0.08), rgba(255, 122, 122, 0.10))};
-  --v10-grid-fine: #{lightOrDarkTheme(rgba(13, 48, 87, 0.05), rgba(207, 228, 247, 0.05))};
-  --v10-grid-major: #{lightOrDarkTheme(rgba(13, 48, 87, 0.10), rgba(207, 228, 247, 0.10))};
-  --v10-input-bg: #{lightOrDarkTheme(rgba(255, 255, 255, 0.70), rgba(10, 37, 69, 0.45))};
-  --v10-code-bg: #{lightOrDarkTheme(rgba(13, 48, 87, 0.05), rgba(10, 37, 69, 0.70))};
-  --v10-scroll-thumb: #{lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.22))};
-  --v10-scroll-thumb-hover: #{lightOrDarkTheme(rgba(13, 48, 87, 0.24), rgba(207, 228, 247, 0.38))};
+  // ---- Type scale ----
+  --g-text-hero:    34px;
+  --g-text-display: 25px;
+  --g-text-title:   21px;
+  --g-text-lg:      16px;
+  --g-text-body:    14.5px;
+  --g-text-ui:      14px;
+  --g-text-sm:      13.5px;
+  --g-text-meta:    12.5px;
+  --g-text-xs:      11.5px;
+  --g-text-micro:   10.5px;
+
+  // ---- Canvas ----
+  --g-bg: #{$ouiPageBackgroundColor};
+  --g-bg-gradient:
+    radial-gradient(ellipse 40% 35% at 0% 0%, hsl(245 80% 90% / 0.55), transparent 60%),
+    radial-gradient(ellipse 35% 30% at 100% 8%, hsl(215 90% 92% / 0.45), transparent 60%),
+    radial-gradient(ellipse 35% 30% at 100% 100%, hsl(260 80% 92% / 0.45), transparent 60%),
+    radial-gradient(ellipse 35% 30% at 5% 100%, hsl(230 80% 92% / 0.40), transparent 60%);
+
+  // ---- Surfaces ----
+  --g-surface: #{$ouiColorEmptyShade};
+  --g-surface-muted: #f7f7f5;
+  --g-surface-subtle: #{$ouiColorLightestShade};
+  --g-surface-border: #{$ouiColorLightShade};
+  --g-surface-border-strong: #e0e0e4;
+
+  // ---- Frosted glass ----
+  --g-glass: rgba(255, 255, 255, 0.62);
+  --g-glass-hi: rgba(255, 255, 255, 0.85);
+  --g-glass-border: rgba(255, 255, 255, 0.9);
+  --g-glass-blur: blur(24px) saturate(160%);
+
+  // ---- Ink ramp ----
+  --g-ink: #{$ouiTextColor};
+  --g-ink-bright: #{$ouiTitleColor};
+  --g-ink-soft: rgba(10, 10, 10, 0.66);
+  --g-ink-mute: rgba(10, 10, 10, 0.46);
+  --g-ink-fade: rgba(10, 10, 10, 0.30);
+  --g-ink-ghost: rgba(10, 10, 10, 0.10);
+  --g-hairline: rgba(10, 10, 10, 0.07);
+
+  // ---- Accent: indigo / violet ----
+  --g-accent: #{$ouiColorPrimary};
+  --g-accent-bright: #4f46e5;
+  --g-accent-dim: rgba(99, 102, 241, 0.50);
+  --g-accent-soft: rgba(99, 102, 241, 0.10);
+  --g-accent-tint: rgba(99, 102, 241, 0.18);
+  --g-accent-ring: rgba(99, 102, 241, 0.22);
+
+  // ---- Avatar gradient ring ----
+  --g-ring-from: hsl(245 90% 78%);
+  --g-ring-to: hsl(210 95% 80%);
+
+  // ---- Status ----
+  --g-success: #{$ouiColorSuccess};
+  --g-success-soft: rgba(16, 185, 129, 0.10);
+  --g-warn: #{$ouiColorWarning};
+  --g-warn-soft: rgba(217, 119, 6, 0.10);
+  --g-danger: #{$ouiColorDanger};
+  --g-danger-soft: rgba(220, 38, 38, 0.10);
+  --g-info: #0284c7;
+  --g-info-soft: rgba(2, 132, 199, 0.10);
+
+  // ---- Radii ----
+  --g-radius-xs: #{$ouiBorderRadiusSmall};
+  --g-radius-sm: 8px;
+  --g-radius-md: 10px;
+  --g-radius-lg: #{$ouiBorderRadius};
+  --g-radius-xl: 14px;
+  --g-radius-2xl: #{$ouiBorderRadiusLarge};
+  --g-radius-pill: 999px;
+
+  // ---- Spacing ----
+  --g-space-1: 4px;
+  --g-space-2: 8px;
+  --g-space-3: 12px;
+  --g-space-4: 16px;
+  --g-space-5: 20px;
+  --g-space-6: 24px;
+  --g-space-7: 32px;
+  --g-space-8: 40px;
+
+  // ---- Shadows ----
+  --g-shadow-surface: #{$ouiShadow1};
+  --g-shadow-surface-hi: #{$ouiShadow2};
+  --g-shadow-glass: 0 2px 6px rgba(15, 15, 15, 0.06), 0 16px 36px rgba(15, 15, 15, 0.08);
+  --g-shadow-widget: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 2px rgba(15, 15, 15, 0.04), 0 10px 30px -18px rgba(31, 31, 60, 0.18);
+  --g-shadow-panel: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 24px 60px -30px rgba(31, 31, 60, 0.28);
+  --g-glow-accent: 0 8px 22px -10px var(--g-accent-bright);
+
+  // ---- Motion ----
+  --g-dur-fast: 120ms;
+  --g-dur-normal: 180ms;
+  --g-dur-slow: 280ms;
+  --g-dur-stream: 460ms;
+  --g-ease-out: cubic-bezier(.2, .7, .2, 1);
+  --g-ease-std: cubic-bezier(.4, 0, .2, 1);
+
+  // ---- OUI token remap ----
+  --oui-page-bg: var(--g-bg);
+  --oui-color-empty-shade: var(--g-surface);
+  --oui-color-lightest-shade: var(--g-surface-subtle);
+  --oui-color-light-shade: var(--g-surface-border);
+  --oui-border-color: var(--g-surface-border);
+  --oui-color-ink: var(--g-ink-bright);
+  --oui-text: var(--g-ink);
+  --oui-title: var(--g-ink-bright);
+  --oui-text-subdued: var(--g-ink-mute);
+  --oui-color-primary: var(--g-accent);
+  --oui-link: var(--g-accent-bright);
+  --oui-color-danger: var(--g-danger);
+  --oui-color-warning: var(--g-warn);
+  --oui-color-success: var(--g-success);
+  --oui-color-secondary: var(--g-success);
+  --oui-color-accent: var(--g-accent);
+  --oui-font-body: var(--g-font-sans);
+  --oui-font-display: var(--g-font-sans);
+  --oui-font-code: var(--g-font-mono);
+  --oui-font-eyebrow: var(--g-font-mono);
+  --oui-border-radius: var(--g-radius-lg);
+  --oui-border-radius-small: var(--g-radius-xs);
+  --oui-border-radius-card: var(--g-radius-lg);
+  --oui-border-radius-large: var(--g-radius-2xl);
+  --oui-border-radius-pill: var(--g-radius-pill);
 
   // Logo colors
-  --ouiLogoPrimary: #{lightOrDarkTheme(#075985, #0284C7)};
-  --ouiLogoSecondary: #{lightOrDarkTheme(#082F49, #BAE6FD)};
+  --ouiLogoPrimary: #{lightOrDarkTheme(#4f46e5, #818cf8)};
+  --ouiLogoSecondary: #{lightOrDarkTheme(#6366f1, #a5b4fc)};
 
   // OUI component color aliases
   --ouiColorDarkShade: #{$ouiColorDarkShade};
@@ -84,21 +176,30 @@
   --ouiColorPrimary: #{$ouiColorPrimary};
 
   // Nav popover item hover/active states
-  --navItemHover: #{lightOrDarkTheme(rgba(31, 108, 181, 0.08), rgba(93, 217, 255, 0.10))};
-  --navItemActive: #{lightOrDarkTheme(rgba(31, 108, 181, 0.15), rgba(93, 217, 255, 0.20))};
+  --navItemHover: #{lightOrDarkTheme(rgba(99, 102, 241, 0.06), rgba(165, 180, 252, 0.10))};
+  --navItemActive: #{lightOrDarkTheme(rgba(99, 102, 241, 0.12), rgba(165, 180, 252, 0.18))};
 }
 
-// v10 Scrollbar styles
-*::-webkit-scrollbar { width: 8px; height: 8px; }
+// Glass scrollbar styles — thin floating inset pill
+*::-webkit-scrollbar { width: 9px; height: 9px; }
 *::-webkit-scrollbar-track { background: transparent; }
-*::-webkit-scrollbar-thumb { background: var(--v10-scroll-thumb); border-radius: 0; }
-*::-webkit-scrollbar-thumb:hover { background: var(--v10-scroll-thumb-hover); }
+*::-webkit-scrollbar-thumb {
+  background: #{lightOrDarkTheme(rgba(40, 34, 68, 0.16), rgba(255, 255, 255, 0.16))};
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background-clip: padding-box;
+  min-height: 40px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #{lightOrDarkTheme(#6366f1, #a5b4fc)};
+  border-width: 2px;
+}
 
 // Popover panel border
 .ouiPopover__panel,
 .ouiPopover__panel.ouiPanel {
-  border: 1px solid $ouiBorderColor !important;
-  border-radius: 0 !important;
+  border: 1px solid #{lightOrDarkTheme(#ececef, #23252b)} !important;
+  border-radius: $ouiBorderRadius !important;
 }
 
 // Avatar popover: force to right of left nav
@@ -110,8 +211,8 @@
 
 // Datepicker popover border
 .react-datepicker-popper .react-datepicker {
-  border: 1px solid $ouiBorderColor;
-  border-radius: 0;
+  border: 1px solid #{lightOrDarkTheme(#ececef, #23252b)};
+  border-radius: $ouiBorderRadius;
 }
 
 // Resizable panels - transparent background
@@ -125,33 +226,31 @@
 // Start cards hover/active states
 .ouiPanel.startCard {
   cursor: pointer;
-  transition: border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease, transform 200ms ease !important;
+  transition: border-color 180ms ease, box-shadow 280ms var(--g-ease-out),
+              background-color 180ms ease, transform 280ms var(--g-ease-out) !important;
 
   &:hover {
     border-color: $ouiColorPrimary !important;
     box-shadow: 0 0 0 1px $ouiColorPrimary, 0 4px 12px rgba($ouiColorPrimary, 0.15) !important;
-    background-color: rgba($ouiColorPrimary, 0.12) !important;
+    background-color: rgba($ouiColorPrimary, 0.06) !important;
     transform: translateY(-1px);
   }
 
   &:active {
     border-color: $ouiColorPrimary !important;
     box-shadow: 0 0 0 2px $ouiColorPrimary, 0 2px 8px rgba($ouiColorPrimary, 0.2) !important;
-    background-color: rgba($ouiColorPrimary, 0.18) !important;
-    transform: translateY(-1px);
+    background-color: rgba($ouiColorPrimary, 0.10) !important;
+    transform: translateY(0);
   }
 }
 
-// Documentation side navigation - blue-tinted transparent background
+// Documentation side navigation — frosted glass
 .guideSideNav {
   background: #{lightOrDarkTheme(
-    rgba($ouiColorLightestShade, 0.3),
-    rgba($ouiColorLightestShade, 0.3)
+    rgba(255, 255, 255, 0.62),
+    rgba(255, 255, 255, 0.045)
   )} !important;
-  backdrop-filter: blur(8px);
-  border-right: 1px solid #{lightOrDarkTheme(
-    rgba($ouiColorPrimary, 0.08),
-    rgba($ouiColorPrimary, 0.15)
-  )};
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+  border-right: 1px solid #{lightOrDarkTheme(#ececef, #23252b)};
 }
-

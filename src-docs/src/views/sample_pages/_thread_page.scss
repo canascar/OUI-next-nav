@@ -555,13 +555,17 @@
   }
 }
 
-// Input area at bottom
+// Input area at bottom — fixed to viewport
 .threadPage__inputArea {
-  padding: 8px 8px 8px;
-  flex-shrink: 0;
+  position: fixed;
+  bottom: 40px;
+  left: 72px;
+  right: 24px;
+  padding: 0 8px;
   max-width: 1000px;
-  width: 100%;
+  width: calc(100% - 72px - 48px);
   margin: 0 auto;
+  z-index: 10;
 }
 
 // Body: flex row holding conversation + optional canvas flyout

@@ -24,7 +24,7 @@ export const BrandGradientExample = {
       text: (
         <p>
           <strong>OuiBrandGradient</strong> provides branded gradient
-          backgrounds using the OpenSearch brand blues. It supports three
+          backgrounds using the Glass theme&apos;s indigo/violet corner blobs. It supports three
           variants: <code>subtle</code> for ambient page backgrounds,{' '}
           <code>vivid</code> for hero sections and login pages, and{' '}
           <code>radial</code> for focused centered layouts. Each variant

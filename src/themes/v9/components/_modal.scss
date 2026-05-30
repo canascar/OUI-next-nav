@@ -5,50 +5,31 @@
 
 // sass-lint:disable no-important, no-color-literals
 
+// Glass Theme — Modals: rounded, hairline border, feather shadow, no corner ticks
 .ouiModal {
-  border-radius: 0 !important;
+  border-radius: $ouiBorderRadius !important;
   overflow: visible !important;
-  border: 1px solid lightOrDarkTheme(rgba(13, 48, 87, 0.30), rgba(207, 228, 247, 0.30)) !important;
-  box-shadow: 0 8px 32px lightOrDarkTheme(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.3)) !important;
+  border: 1px solid lightOrDarkTheme(#ececef, #23252b) !important;
+  box-shadow: 0 4px 12px rgba(15, 15, 15, 0.06), 0 24px 48px rgba(15, 15, 15, 0.06) !important;
 
-  // Corner ticks — top-left + top-right
+  // No corner ticks
   &::before {
-    content: '' !important;
-    position: absolute !important;
-    top: -1px !important;
-    left: -1px !important;
-    right: -1px !important;
-    bottom: -1px !important;
-    pointer-events: none !important;
-    z-index: 10 !important;
-    background:
-      // Top-left
-      linear-gradient(lightOrDarkTheme(rgba(31, 108, 181, 0.45), rgba(93, 217, 255, 0.45)), lightOrDarkTheme(rgba(31, 108, 181, 0.45), rgba(93, 217, 255, 0.45))) no-repeat 0 0 / 8px 1.5px,
-      linear-gradient(lightOrDarkTheme(rgba(31, 108, 181, 0.45), rgba(93, 217, 255, 0.45)), lightOrDarkTheme(rgba(31, 108, 181, 0.45), rgba(93, 217, 255, 0.45))) no-repeat 0 0 / 1.5px 8px,
-      // Top-right
-      linear-gradient(lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34)), lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34))) no-repeat 100% 0 / 8px 1.5px,
-      linear-gradient(lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34)), lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34))) no-repeat 100% 0 / 1.5px 8px,
-      // Bottom-left
-      linear-gradient(lightOrDarkTheme(rgba(31, 108, 181, 0.45), rgba(93, 217, 255, 0.45)), lightOrDarkTheme(rgba(31, 108, 181, 0.45), rgba(93, 217, 255, 0.45))) no-repeat 0 100% / 8px 1.5px,
-      linear-gradient(lightOrDarkTheme(rgba(31, 108, 181, 0.45), rgba(93, 217, 255, 0.45)), lightOrDarkTheme(rgba(31, 108, 181, 0.45), rgba(93, 217, 255, 0.45))) no-repeat 0 100% / 1.5px 8px,
-      // Bottom-right
-      linear-gradient(lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34)), lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34))) no-repeat 100% 100% / 8px 1.5px,
-      linear-gradient(lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34)), lightOrDarkTheme(rgba(13, 48, 87, 0.32), rgba(207, 228, 247, 0.34))) no-repeat 100% 100% / 1.5px 8px !important;
+    display: none !important;
   }
 
-  // Keep inner content clipped
+  // Keep inner content clipped with rounded corners
   > div {
     overflow: hidden !important;
-    border-radius: 0 !important;
+    border-radius: $ouiBorderRadius !important;
   }
 }
 
 .ouiModalHeader {
-  border-bottom-color: lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16)) !important;
+  border-bottom-color: lightOrDarkTheme(#ececef, #23252b) !important;
 }
 
 .ouiModalFooter {
-  border-top-color: lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16)) !important;
+  border-top-color: lightOrDarkTheme(#ececef, #23252b) !important;
 }
 
 // sass-lint:enable no-important, no-color-literals

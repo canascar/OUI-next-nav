@@ -15,12 +15,12 @@ $ouiFormControlHeight: $ouiSizeXXL !default;
 $ouiFormControlCompressedHeight: $ouiSizeXL !default;
 $ouiFormControlPadding: $ouiSizeM !default;
 $ouiFormControlCompressedPadding: $ouiSizeS !default;
-$ouiFormControlBorderRadius: 0 !default;
-$ouiFormControlCompressedBorderRadius: 0 !default;
+$ouiFormControlBorderRadius: 10px !default;
+$ouiFormControlCompressedBorderRadius: 8px !default;
 
 $ouiRadioSize: $ouiSize !default;
 $ouiCheckBoxSize: $ouiSize !default;
-$ouiCheckboxBorderRadius: 0 !default;
+$ouiCheckboxBorderRadius: 3px !default;
 
 // Add transition support
 // sass-lint:disable indentation

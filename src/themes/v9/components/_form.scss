@@ -12,6 +12,15 @@
 .ouiFilePicker:not(.ouiFilePicker--large) > .ouiFilePicker__prompt {
   height: $ouiSizeXXL !important;
 }
+
+// File picker border radius — medium for all variants
+.ouiFilePicker .ouiFilePicker__wrap {
+  border-radius: $ouiFormControlBorderRadius !important;
+}
+
+.ouiFilePicker--large .ouiFilePicker__prompt {
+  border-radius: $ouiFormControlBorderRadius !important;
+}
 // sass-lint:enable no-important
 
 // Apply consistent border radius to group form control layouts
@@ -75,12 +84,12 @@
 }
 // sass-lint:enable no-important
 
-// Remove border-radius from dropdown/select option items
+// Dropdown option items get small radius for hover states
 .ouiComboBoxOption,
 .ouiSelectableListItem,
 .ouiContextMenuItem,
 .ouiFilterSelectItem {
-  border-radius: 0 !important; // sass-lint:disable-line no-important
+  border-radius: $ouiBorderRadiusSmall !important; // sass-lint:disable-line no-important
 }
 
 // Ensure standalone form inputs inherit the v9 border radius and background
@@ -395,7 +404,7 @@
 .ouiTextArea,
 .ouiDatePopoverButton,
 .ouiSuperDatePicker__prettyFormat {
-  transition: box-shadow 200ms cubic-bezier(0.22, 0.61, 0.36, 1), background-color 150ms ease-in-out, transform 200ms cubic-bezier(0.22, 0.61, 0.36, 1) !important;
+  transition: border-color 150ms ease, box-shadow 200ms cubic-bezier(0.22, 0.61, 0.36, 1), background-color 150ms ease-in-out, transform 200ms cubic-bezier(0.22, 0.61, 0.36, 1) !important;
 }
 
 .ouiFieldText:hover,
@@ -423,7 +432,7 @@
 .ouiFieldPassword:hover,
 .ouiSelect:hover,
 .ouiTextArea:hover {
-  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)), inset 0 0 0 1px $ouiFormBorderColor !important;
+  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)) !important;
 }
 
 .ouiFieldText:focus,
@@ -432,7 +441,8 @@
 .ouiFieldPassword:focus,
 .ouiSelect:focus,
 .ouiTextArea:focus {
-  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)), inset 0 -1px 0 0 $ouiColorPrimary !important;
+  border-color: $ouiColorPrimary !important;
+  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)) !important;
 }
 
 .ouiFieldText:active,
@@ -441,7 +451,7 @@
 .ouiFieldPassword:active,
 .ouiSelect:active,
 .ouiTextArea:active {
-  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)), inset 0 0 0 1px $ouiFormBorderColor !important;
+  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)) !important;
 }
 // sass-lint:enable no-important, no-color-literals
 
@@ -509,7 +519,7 @@
   }
 
   &:focus-within {
-    border-bottom: 1px solid $ouiColorPrimary !important;
+    border-color: $ouiColorPrimary !important;
   }
 }
 // sass-lint:enable no-important
@@ -574,73 +584,29 @@
 // sass-lint:enable no-important
 
 // ============================================================
-// CORNER MARKS — Technical/blueprint corner decorations on form inputs
+// CORNER MARKS — Removed for Glass theme (clean rounded corners)
 // ============================================================
 
 // sass-lint:disable no-important
 .ouiFormControlLayout {
   position: relative !important;
 
-  // Corner marks — L-shaped brackets outside each corner
+  // No corner marks in Glass theme
   &::before,
   &::after {
-    content: '' !important;
-    position: absolute !important;
-    width: 12px !important;
-    height: 12px !important;
-    pointer-events: none !important;
-    z-index: 2 !important;
-  }
-
-  // Top-left corner (outside)
-  &::before {
-    top: -4px !important;
-    left: -4px !important;
-    border-top: 2px solid $ouiColorMediumShade !important;
-    border-left: 2px solid $ouiColorMediumShade !important;
-  }
-
-  // Bottom-right corner (outside)
-  &::after {
-    bottom: -4px !important;
-    right: -4px !important;
-    border-bottom: 2px solid $ouiColorMediumShade !important;
-    border-right: 2px solid $ouiColorMediumShade !important;
+    display: none !important;
   }
 }
 
-// Additional corners via the inner child (top-right, bottom-left)
+// Remove inner child corner marks too
 .ouiFormControlLayout > .ouiFormControlLayout__childrenWrapper {
-  position: relative !important;
-
   &::before,
   &::after {
-    content: '' !important;
-    position: absolute !important;
-    width: 12px !important;
-    height: 12px !important;
-    pointer-events: none !important;
-    z-index: 2 !important;
-  }
-
-  // Top-right corner (outside)
-  &::before {
-    top: -4px !important;
-    right: -4px !important;
-    border-top: 2px solid $ouiColorMediumShade !important;
-    border-right: 2px solid $ouiColorMediumShade !important;
-  }
-
-  // Bottom-left corner (outside)
-  &::after {
-    bottom: -4px !important;
-    left: -4px !important;
-    border-bottom: 2px solid $ouiColorMediumShade !important;
-    border-left: 2px solid $ouiColorMediumShade !important;
+    display: none !important;
   }
 }
 
-// For form rows with labels, apply corners to the outer .ouiFormRow instead
+// For form rows with labels
 .ouiFormRow {
   position: relative !important;
 }
