@@ -1367,7 +1367,7 @@ export const SamplePagesView = () => {
         style={{
           flex: 1,
           overflow: 'hidden',
-          padding: '8px 8px 8px 0',
+          padding: '16px',
           display: 'flex',
         }}>
         <div
