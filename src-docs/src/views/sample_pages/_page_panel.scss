@@ -22,7 +22,7 @@
   min-width: 0;
   height: 100%;
   overflow: hidden;
-  background-color: $ouiColorEmptyShade;
+  background-color: transparent;
   border-radius: 0;
   position: relative;
 }
@@ -368,12 +368,58 @@
   flex-direction: column;
   align-items: stretch;
   gap: 8px;
-  padding: 8px;
+  padding: 4px 8px;
   background-color: $ouiColorEmptyShade;
-  border-radius: 8px;
+  border-radius: 14px;
+  border: 1px solid transparent;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   width: 208px;
-  transition: width 250ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition: width 250ms cubic-bezier(0.22, 0.61, 0.36, 1), border-color 200ms ease, box-shadow 250ms ease, transform 250ms ease;
+
+  &:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    transform: translateY(-1px);
+  }
+
+  &:focus-within {
+    border-color: $ouiColorPrimary;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    transform: translateY(-1px);
+  }
+
+  // No borders on any form elements inside the floating bar
+  .ouiFormControlLayout,
+  .ouiFieldText,
+  .ouiFieldSearch,
+  .ouiTextArea {
+    border: none !important; // sass-lint:disable-line no-important
+    box-shadow: none !important; // sass-lint:disable-line no-important
+    background-color: transparent !important; // sass-lint:disable-line no-important
+    background-image: none !important; // sass-lint:disable-line no-important
+    transform: none !important; // sass-lint:disable-line no-important
+    border-bottom: none !important; // sass-lint:disable-line no-important
+
+    &:hover,
+    &:focus,
+    &:focus-within,
+    &:active {
+      border: none !important; // sass-lint:disable-line no-important
+      border-bottom: none !important; // sass-lint:disable-line no-important
+      box-shadow: none !important; // sass-lint:disable-line no-important
+      background-image: none !important; // sass-lint:disable-line no-important
+      transform: none !important; // sass-lint:disable-line no-important
+    }
+
+    &::after,
+    &::before {
+      display: none !important; // sass-lint:disable-line no-important
+    }
+  }
+
+  // Kill the focus underline on the layout wrapper
+  .ouiFormControlLayout__childrenWrapper::after {
+    display: none !important; // sass-lint:disable-line no-important
+  }
 }
 
 .pagePanel__floatingBar--expanded {
@@ -407,6 +453,8 @@
 .pagePanel__floatingSearch {
   cursor: pointer;
   background-color: $ouiFormBackgroundColor !important;
+  border: none !important;
+  box-shadow: none !important;
   flex: 1;
   min-width: 0;
 
@@ -415,6 +463,13 @@
     width: 100% !important;
     max-width: 100% !important;
     flex: 1 !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .ouiFieldText {
+    border: none !important;
+    box-shadow: none !important;
   }
 }
 

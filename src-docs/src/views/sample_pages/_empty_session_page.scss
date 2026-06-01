@@ -54,14 +54,32 @@
   }
 }
 
-// Header row — mascot + title side by side
+// Header row — mascot + online status side by side
 .emptySessionPage__headerRow {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
   max-width: 700px;
-  padding-bottom: 16px;
+  padding-bottom: 8px;
+  flex-shrink: 0;
+}
+
+// Online status label
+.emptySessionPage__onlineStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: $ouiFontSizeXS;
+  font-weight: $ouiFontWeightMedium;
+  color: $ouiColorMediumShade;
+}
+
+.emptySessionPage__onlineDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: $ouiColorSuccess;
   flex-shrink: 0;
 }
 
@@ -107,6 +125,13 @@
   padding-bottom: 16px;
   margin: auto 0;
   overflow: hidden;
+
+  > .ouiTitle {
+    width: 100%;
+    max-width: 700px;
+    padding-bottom: 12px;
+    flex-shrink: 0;
+  }
 }
 
 // Scrollable content wrapper

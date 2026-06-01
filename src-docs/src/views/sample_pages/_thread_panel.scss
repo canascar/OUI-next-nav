@@ -22,11 +22,11 @@
   backdrop-filter: blur(24px) saturate(160%);
   border-radius: 12px;
   flex-shrink: 0;
-  padding-right: 8px;
+  padding: 0;
 
   // When minimized, remove padding so it collapses fully
   .sessionContainer--chatMinimized & {
-    padding-right: 0;
+    padding: 0;
   }
 }
 

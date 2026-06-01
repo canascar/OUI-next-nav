@@ -77,13 +77,28 @@ export default () => (
 
       <OuiFlexItem grow={1}>
         <OuiInsightCard variant="add" onClick={() => {}}>
-          <OuiIcon type="plus" size="l" color="primary" />
-          <OuiSpacer size="xs" />
-          <OuiText size="xs" color="subdued">
-            <span style={{ fontFamily: 'var(--g-font-mono)', textTransform: 'uppercase', letterSpacing: '1.1px', fontSize: 10.5 }}>
-              Open a page
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+            <span style={{
+              display: 'grid',
+              placeItems: 'center',
+              width: 40,
+              height: 40,
+              borderRadius: 10,
+              background: 'var(--g-accent, #6366f1)',
+              flexShrink: 0,
+            }}>
+              <OuiIcon type="plus" size="m" color="ghost" />
             </span>
-          </OuiText>
+            <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--g-ink-bright, #000)' }}>
+              Open another page
+            </span>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            <span className="ouiInsightCard__chip">Dashboard</span>
+            <span className="ouiInsightCard__chip">Saved log</span>
+            <span className="ouiInsightCard__chip">Trace</span>
+            <span className="ouiInsightCard__chip">Alert</span>
+          </div>
         </OuiInsightCard>
       </OuiFlexItem>
     </OuiFlexGroup>

@@ -526,15 +526,19 @@ export const EmptySessionPage = ({
         <div className="emptySessionPage__twoCol">
           {/* Left column — AI-generated reading paragraph with inline widgets */}
           <div className="emptySessionPage__leftCol">
-            {/* Mascot + Title — inline, fixed above scroll */}
+            {/* Mascot + status — above title */}
             <div className="emptySessionPage__headerRow">
               <div className="emptySessionPage__avatarWrap">
                 <Mascot size={32} idle bob={false} follow={false} />
               </div>
-              <OuiTitle size="m">
-                <h1>Good morning, John</h1>
-              </OuiTitle>
+              <span className="emptySessionPage__onlineStatus">
+                <span className="emptySessionPage__onlineDot" />
+                Olly is online
+              </span>
             </div>
+            <OuiTitle size="m">
+              <h1>Good morning, John</h1>
+            </OuiTitle>
 
             {/* Scrollable content */}
             <div

@@ -318,7 +318,7 @@ export const PagePanel = ({
               <OllyAvatar size={28} highlight={true} />
             </button>
             <OuiFieldText
-              placeholder="Ask AI anything"
+              placeholder="Ask Olly anything"
               value={floatingInput}
               onChange={(e) => setFloatingInput(e.target.value)}
               onFocus={() => setIsFloatingExpanded(true)}

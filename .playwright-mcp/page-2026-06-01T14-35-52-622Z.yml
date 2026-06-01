@@ -1,0 +1,117 @@
+- generic [ref=e3]:
+  - navigation "Session navigation" [ref=e4]:
+    - img [ref=e6]
+    - generic [ref=e10]:
+      - button "New session" [ref=e12] [cursor=pointer]:
+        - img
+      - button "All sessions" [ref=e17] [cursor=pointer]:
+        - img
+      - button "Library" [ref=e19] [cursor=pointer]:
+        - img
+    - generic [ref=e20]:
+      - button "Workspace" [ref=e24] [cursor=pointer]:
+        - img
+      - button "Developer tools" [ref=e27] [cursor=pointer]:
+        - img
+      - button "Settings" [ref=e31] [cursor=pointer]:
+        - img
+      - generic "OS" [ref=e35]:
+        - generic [ref=e36]: O
+  - generic [ref=e40]:
+    - generic [ref=e41]:
+      - generic [ref=e42]:
+        - img "mascot · comma" [ref=e44]:
+          - img [ref=e45]
+        - heading "Good morning, John" [level=1] [ref=e51]
+      - generic [ref=e53]:
+        - generic [ref=e54]:
+          - paragraph [ref=e55]: "All 247 services are running normally. I found 3 items that need your attention:"
+          - paragraph [ref=e56]:
+            - text: An alert triggered 15 minutes ago —
+            - strong [ref=e57]: Payment service P99 latency breach
+            - text: . P99 crossed 2,000ms with connection pool exhaustion on 3 of 4 pods. I've started an investigation and identified a likely root cause.
+        - button "Latency Spike Investigation Created by AI · 15 min ago" [ref=e58] [cursor=pointer]:
+          - generic [ref=e59]: Latency Spike Investigation
+          - generic [ref=e60]: Created by AI · 15 min ago
+        - paragraph [ref=e62]: "Sicheng also shared a related finding — checkout error rate spiked to 12.4% around the same time. This may be connected to the latency issue above. You can review it here:"
+        - button "Error Rate Spike — Checkout Service Shared by team · 2 hours ago" [ref=e63] [cursor=pointer]:
+          - generic [ref=e64]: Error Rate Spike — Checkout Service
+          - generic [ref=e65]: Shared by team · 2 hours ago
+        - paragraph [ref=e67]: On a positive note, a DNS resolution timeout from earlier today has been resolved after the upstream fix was deployed. No further action needed.
+        - button "DNS Resolution Timeout Resolved · 3 hours ago" [ref=e68] [cursor=pointer]:
+          - generic [ref=e69]: DNS Resolution Timeout
+          - generic [ref=e70]: Resolved · 3 hours ago
+        - paragraph [ref=e72]: That's everything for now. Let me know if you'd like me to dig deeper into any of these, or ask me anything below.
+      - generic [ref=e75]:
+        - textbox "Ask AI anything, or type to search a page" [active] [ref=e76]
+        - generic:
+          - button "Add attachment" [ref=e77] [cursor=pointer]:
+            - img
+          - button "Send" [disabled] [ref=e78]:
+            - img
+    - generic [ref=e80]:
+      - generic [ref=e81]:
+        - generic [ref=e83]: Top services by fault rate
+        - generic [ref=e85]:
+          - generic [ref=e86]:
+            - generic [ref=e87]: Service
+            - generic [ref=e88]: Fault rate
+          - generic [ref=e89]:
+            - button "checkout" [ref=e90] [cursor=pointer]
+            - generic [ref=e94]: 66.67%
+          - generic [ref=e95]:
+            - generic [ref=e96]: frontend
+            - generic [ref=e100]: 14.49%
+          - generic [ref=e101]:
+            - generic [ref=e102]: frontend-proxy
+            - generic [ref=e106]: 14.29%
+      - button "Connection timeout errors source=logs | where severity=\"ERROR\" 847 ↑ +312%" [ref=e107] [cursor=pointer]:
+        - generic [ref=e109]: Connection timeout errors
+        - generic [ref=e110]:
+          - code [ref=e111]: source=logs | where severity="ERROR"
+          - generic [ref=e112]:
+            - img [ref=e114]
+            - generic [ref=e117]:
+              - generic [ref=e118]: "847"
+              - generic [ref=e119]: ↑ +312%
+      - generic [ref=e120]:
+        - generic [ref=e122]: Recent alerts
+        - generic [ref=e124]:
+          - generic [ref=e125]:
+            - generic [ref=e126]: Alert
+            - generic [ref=e127]: Status
+          - generic [ref=e128]:
+            - generic [ref=e129]: P99 latency breach
+            - generic [ref=e130]: Critical
+          - generic [ref=e131]:
+            - generic [ref=e132]: Disk usage warning
+            - generic [ref=e133]: Warning
+          - generic [ref=e134]:
+            - generic [ref=e135]: Error rate spike
+            - generic [ref=e136]: Critical
+      - generic [ref=e137]:
+        - generic [ref=e139]: Deployment timeline
+        - generic [ref=e146]:
+          - figure:
+            - generic [ref=e148]:
+              - term [ref=e149]: "Chart type:"
+              - definition [ref=e150]: bar chart
+          - img
+      - generic [ref=e151]:
+        - generic [ref=e153]: Resource utilization
+        - generic [ref=e160]:
+          - figure:
+            - generic [ref=e162]:
+              - term [ref=e163]: "Chart type:"
+              - definition [ref=e164]: line chart
+          - img
+      - button "Open another page Dashboard Saved log Trace Alert" [ref=e165] [cursor=pointer]:
+        - generic [ref=e166]:
+          - generic [ref=e167]:
+            - img [ref=e169]
+            - generic [ref=e171]: Open another page
+          - generic [ref=e172]:
+            - button "Dashboard" [ref=e173]
+            - button "Saved log" [ref=e174]
+            - button "Trace" [ref=e175]
+            - button "Alert" [ref=e176]

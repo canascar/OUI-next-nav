@@ -693,50 +693,10 @@
   display: flex;
   flex-direction: column;
 
-  // Animated border — conic gradient rotating around on hover/focus
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    border: 1px solid transparent;
-    background:
-      conic-gradient(from var(--v10-border-angle, 0deg), $ouiColorPrimary, transparent 30%, transparent 70%, $ouiColorPrimary) border-box;
-    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    opacity: 0;
-    transition: opacity 400ms ease-out;
-    animation: v10BorderRotate 3s linear infinite;
-  }
-
-  &:hover::before {
-    opacity: 1;
-    transition: opacity 150ms ease-in;
-  }
-
-  &:has(textarea:focus)::before {
-    opacity: 1;
-    transition: opacity 150ms ease-in;
-  }
-
-  // Bottom accent line on focus
+  // No animated pseudo-elements
+  &::before,
   &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background-color: $ouiColorPrimary;
-    z-index: 2;
-    opacity: 0;
-    transition: opacity 300ms ease;
-  }
-
-  &:has(textarea:focus)::after {
-    opacity: 1;
+    display: none;
   }
 
   // Ensure no extra space below the textarea
@@ -749,19 +709,26 @@
   }
 }
 
-// Remove default textarea border so the wrapper controls it
+// Textarea — rounded, simple border that changes color on hover/focus
 .threadPage__textarea textarea {
   padding-bottom: 36px;
-  border-color: lightOrDarkTheme(rgba(13, 48, 87, 0.14), rgba(207, 228, 247, 0.16));
-  transition: border-color 200ms ease;
+  border-radius: $ouiFormControlBorderRadius !important;
+  border: 1px solid lightOrDarkTheme(#ececef, #23252b) !important;
+  background-color: lightOrDarkTheme($ouiColorEmptyShade, #15161a) !important;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+
+  &:hover {
+    border-color: lightOrDarkTheme(#e0e0e4, #2e3037) !important;
+  }
 
   &:focus {
-    border-color: transparent;
+    border-color: $ouiColorPrimary !important;
+    box-shadow: 0 0 0 1px $ouiColorPrimary !important;
   }
 }
 
 .threadPage__inputWrapper:hover .threadPage__textarea textarea:not(:focus) {
-  border-color: transparent;
+  border-color: lightOrDarkTheme(#e0e0e4, #2e3037) !important;
 }
 
 // Plus (bottom-left) and send (bottom-right) inside the textarea
