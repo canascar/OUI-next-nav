@@ -35,12 +35,13 @@
 .sessionContainer__pagePanelWrap {
   height: 100%;
   min-width: 0;
-  overflow: hidden;
+  overflow: visible;
   border: none;
   border-radius: 12px;
   background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.62), rgba(21, 22, 26, 0.85));
   -webkit-backdrop-filter: blur(24px) saturate(160%);
   backdrop-filter: blur(24px) saturate(160%);
+  position: relative;
 }
 
 // Hide left border when canvas is full width (chat minimized)
@@ -113,5 +114,43 @@
   to {
     opacity: 1;
     transform: translateX(0);
+  }
+}
+
+// ============================================================
+// OLLY CHAT PILL — positioned at bottom-right of session container
+// ============================================================
+.sessionContainer__ollyChatPill {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  z-index: 20;
+  animation: ollyChatPillEnter 500ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.sessionContainer__ollyChatPill--exiting {
+  animation: ollyChatPillExit 300ms ease-in both;
+  pointer-events: none;
+}
+
+@keyframes ollyChatPillEnter {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ollyChatPillExit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(40px);
   }
 }

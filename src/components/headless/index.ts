@@ -16,3 +16,5 @@ export {
   OuiInsightCalloutProps,
   OuiInsightCalloutSeverity,
 } from './insight_callout';
+
+export { OuiOllyChatPill, OuiOllyChatPillProps } from './olly_chat_pill';

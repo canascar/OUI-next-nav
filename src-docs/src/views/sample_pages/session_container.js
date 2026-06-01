@@ -13,12 +13,14 @@ import React, { useCallback, useRef, useState, useEffect } from 'react';
 
 import {
   OuiButtonIcon,
+  OuiOllyChatPill,
   OuiPopover,
   OuiToolTip,
 } from '../../../../src/components';
 import { ThreadPanel } from './thread_panel';
 import { ResizeHandle } from './resize_handle';
 import { PagePanel, PAGE_TAB_ICONS } from './page_panel';
+import { Mascot } from '../../../../olly-mascot/Mascot';
 
 /**
  * SessionContainer — Two side-by-side panels, each with their own header.
@@ -224,6 +226,9 @@ export const SessionContainer = ({
   const isFullScreen = threadPanelState === 'full-screen';
   const isSideBySide = threadPanelState === 'side-by-side';
 
+  // Olly chat pill — show/hide based on minimized state
+  const showPill = isMinimized;
+
   // Calculate explicit widths for both panes
   // Left pane: 0% when minimized, threadPanelWidth% when side-by-side, ~100% when full-screen
   // Right pane: gets the rest
@@ -370,6 +375,18 @@ export const SessionContainer = ({
             />
           </div>
         </div>
+      {/* Olly chat pill — rendered inside page panel wrap for positioning */}
+      {showPill && (
+        <OuiOllyChatPill
+          className={`sessionContainer__ollyChatPill`}
+          avatar={<Mascot size={28} idle bob={false} follow={false} />}
+          message={aiButtonHighlight && aiPopoverVisible && aiPopoverText ? aiPopoverText : undefined}
+          isHighlighted={aiButtonHighlight}
+          onDismiss={handleDismissAiPopover}
+          onSubmit={(val) => handleExpandChat(val)}
+          onActivate={() => handleExpandChat()}
+        />
+      )}
       </div>
 
     </div>

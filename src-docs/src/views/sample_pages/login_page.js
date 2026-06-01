@@ -115,12 +115,12 @@ export const LoginPage = ({ onLogin }) => {
                 style={
                   isDark
                     ? {
-                        '--ouiLogoPrimary': '#818cf8',
-                        '--ouiLogoSecondary': '#a5b4fc',
+                        '--ouiLogoPrimary': '#0284C7',
+                        '--ouiLogoSecondary': '#BAE6FD',
                       }
                     : {
-                        '--ouiLogoPrimary': '#4f46e5',
-                        '--ouiLogoSecondary': '#6366f1',
+                        '--ouiLogoPrimary': '#075985',
+                        '--ouiLogoSecondary': '#082F49',
                       }
                 }
               />

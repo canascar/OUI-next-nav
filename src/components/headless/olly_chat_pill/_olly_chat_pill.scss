@@ -1,0 +1,135 @@
+/*!
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// OuiOllyChatPill — Floating chat pill with avatar + input
+// Frosted glass container, expands on focus, primary border on focus-within.
+
+.ouiOllyChatPill {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 4px 8px;
+  background-color: $ouiColorEmptyShade;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: auto;
+  transition:
+    width 400ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    max-width 400ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    border-color 250ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 300ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 300ms cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  &:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    transform: translateY(-1px);
+  }
+
+  &:focus-within {
+    width: 400px;
+    border-color: $ouiColorPrimary;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    transform: translateY(-1px);
+  }
+}
+
+// Expanded state (has message) — already at max width, no resize on focus
+.ouiOllyChatPill--expanded {
+  width: 400px;
+
+  &:focus-within {
+    width: 400px;
+  }
+}
+
+// Input row — avatar + text input
+.ouiOllyChatPill__inputRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// Avatar button
+.ouiOllyChatPill__avatar {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
+.ouiOllyChatPill__avatar--highlight {
+  animation: ollyChatPillPulse 2s ease-in-out infinite;
+}
+
+@keyframes ollyChatPillPulse {
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: 0 0 0 4px rgba($ouiColorPrimary, 0.15); }
+}
+
+// Text input — borderless, transparent
+.ouiOllyChatPill__input {
+  appearance: none;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: $ouiFontFamily;
+  font-size: $ouiFontSizeS;
+  color: $ouiTextColor;
+  width: 100%;
+  min-width: 200px;
+  padding: 6px 0;
+
+  &::placeholder {
+    color: $ouiColorMediumShade;
+  }
+}
+
+// Message bubble (proactive insight)
+.ouiOllyChatPill__message {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 10px;
+  background: lightOrDarkTheme(rgba($ouiColorPrimary, 0.04), rgba($ouiColorPrimary, 0.08));
+  transition: background-color 150ms ease;
+
+  &:hover {
+    background: lightOrDarkTheme(rgba($ouiColorPrimary, 0.08), rgba($ouiColorPrimary, 0.12));
+  }
+}
+
+.ouiOllyChatPill__messageText {
+  flex: 1;
+  font-size: $ouiFontSizeXS;
+  color: $ouiTextColor;
+  line-height: 1.4;
+  margin: 0;
+}
+
+// Dismiss button
+.ouiOllyChatPill__dismiss {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  color: $ouiColorMediumShade;
+  flex-shrink: 0;
+
+  &:hover {
+    color: $ouiTextColor;
+  }
+}

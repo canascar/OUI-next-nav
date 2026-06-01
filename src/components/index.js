@@ -207,6 +207,7 @@ export { OuiHealth } from './health';
 export {
   OuiInsightCard,
   OuiInsightCallout,
+  OuiOllyChatPill,
 } from './headless';
 
 export { OuiHighlight } from './highlight';

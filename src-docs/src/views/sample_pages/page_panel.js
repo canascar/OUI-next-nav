@@ -12,7 +12,6 @@
 import React, { useRef, useState } from 'react';
 import {
   OuiButtonIcon,
-  OuiFieldText,
   OuiIcon,
   OuiPopover,
   OuiToolTip,
@@ -220,8 +219,6 @@ export const PagePanel = ({
   onQueryExecute,
 }) => {
   const activeTab = tabs.find((tab) => tab.id === activeTabId);
-  const [floatingInput, setFloatingInput] = useState('');
-  const [isFloatingExpanded, setIsFloatingExpanded] = useState(false);
   const [ollyHovered, setOllyHovered] = useState(false);
 
   /** Render the content for the active tab */
@@ -287,56 +284,6 @@ export const PagePanel = ({
         aria-label={activeTab ? activeTab.title : 'No tab selected'}>
         {renderTabContent()}
       </div>
-      {onExpandChat && (
-        <div
-          className={`pagePanel__floatingBar${(aiButtonHighlight && aiButtonMessage) || isFloatingExpanded ? ' pagePanel__floatingBar--expanded' : ''}`}
-          onMouseEnter={() => setOllyHovered(true)}
-          onMouseLeave={() => setOllyHovered(false)}>
-          {aiButtonHighlight && aiButtonMessage && (
-            <div className="pagePanel__aiPopover" onClick={onExpandChat}>
-              <div className="pagePanel__aiPopoverInner">
-                <p className="pagePanel__aiPopoverText">{aiButtonMessage}</p>
-              </div>
-              <button
-                type="button"
-                className="pagePanel__floatingDismiss"
-                aria-label="Dismiss"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDismissAiPopover && onDismissAiPopover();
-                }}>
-                <OuiIcon type="cross" size="s" />
-              </button>
-            </div>
-          )}
-          <div className="pagePanel__floatingInputRow">
-            <button
-              type="button"
-              className={`pagePanel__floatingMascot${aiButtonHighlight ? ' pagePanel__floatingMascot--highlight' : ''}`}
-              aria-label="Open AI chat"
-              onClick={onExpandChat}>
-              <OllyAvatar size={28} highlight={true} />
-            </button>
-            <OuiFieldText
-              placeholder="Ask Olly anything"
-              value={floatingInput}
-              onChange={(e) => setFloatingInput(e.target.value)}
-              onFocus={() => setIsFloatingExpanded(true)}
-              onBlur={() => { if (!floatingInput.trim()) setIsFloatingExpanded(false); }}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && floatingInput.trim()) {
-                  e.preventDefault();
-                  onExpandChat(floatingInput.trim());
-                  setFloatingInput('');
-                  setIsFloatingExpanded(false);
-                }
-              }}
-              className="pagePanel__floatingSearch"
-              compressed
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 };

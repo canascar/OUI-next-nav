@@ -131,6 +131,8 @@ import { InsightCardExample } from './views/headless/insight_card_example';
 
 import { InsightCalloutExample } from './views/headless/insight_callout_example';
 
+import { OllyChatPillExample } from './views/headless/olly_chat_pill_example';
+
 import { HighlightAndMarkExample } from './views/highlight_and_mark/highlight_and_mark_example';
 
 import { HorizontalRuleExample } from './views/horizontal_rule/horizontal_rule_example';
@@ -480,6 +482,7 @@ const navigation = [
     items: [
       InsightCardExample,
       InsightCalloutExample,
+      OllyChatPillExample,
     ].map((example) => createExample(example)),
   },
   {
