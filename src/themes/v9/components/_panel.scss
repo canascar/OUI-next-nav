@@ -14,29 +14,39 @@
   border-radius: $ouiBorderRadius !important;
 }
 
-// Panel background — solid surface
+// Panel background — solid in light, glassy in dark
 .ouiPanel--plain,
 .ouiPanel--subdued {
   background-color: lightOrDarkTheme(
     #ffffff,
-    #15161a
+    rgba(33, 22, 56, 0.55)
   ) !important;
-  border: 1px solid lightOrDarkTheme(#ececef, #23252b) !important;
-  box-shadow: 0 1px 2px rgba(15, 15, 15, 0.04), 0 8px 24px rgba(15, 15, 15, 0.04) !important;
+  border: 1px solid lightOrDarkTheme(#ececef, rgba(255, 255, 255, 0.10)) !important;
+  box-shadow: lightOrDarkTheme(
+    #{0 1px 2px rgba(15, 15, 15, 0.04), 0 8px 24px rgba(15, 15, 15, 0.04)},
+    #{inset 0 1px 0 rgba(255, 255, 255, 0.10), 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3)}
+  ) !important;
+  -webkit-backdrop-filter: lightOrDarkTheme(none, blur(18px) saturate(150%)) !important;
+  backdrop-filter: lightOrDarkTheme(none, blur(18px) saturate(150%)) !important;
 }
 
-// Cards — same solid treatment
+// Cards — solid in light, glassy in dark
 .ouiCard {
   background-color: lightOrDarkTheme(
     #ffffff,
-    #15161a
+    rgba(33, 22, 56, 0.55)
   ) !important;
-  border: 1px solid lightOrDarkTheme(#ececef, #23252b) !important;
+  border: 1px solid lightOrDarkTheme(#ececef, rgba(255, 255, 255, 0.10)) !important;
   border-radius: $ouiBorderRadius !important;
-  box-shadow: 0 1px 2px rgba(15, 15, 15, 0.04), 0 8px 24px rgba(15, 15, 15, 0.04) !important;
+  box-shadow: lightOrDarkTheme(
+    #{0 1px 2px rgba(15, 15, 15, 0.04), 0 8px 24px rgba(15, 15, 15, 0.04)},
+    #{inset 0 1px 0 rgba(255, 255, 255, 0.10), 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3)}
+  ) !important;
+  -webkit-backdrop-filter: lightOrDarkTheme(none, blur(18px) saturate(150%)) !important;
+  backdrop-filter: lightOrDarkTheme(none, blur(18px) saturate(150%)) !important;
 }
 
-// Remove corner ticks from v10 — Glass uses clean rounded corners
+// Remove corner ticks — Glass uses clean rounded corners
 .ouiPanel:not(.ouiPopover__panel):not(.ouiToolTip):not(.ouiFlyout),
 .ouiCard {
   &::before,
