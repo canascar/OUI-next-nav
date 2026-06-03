@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 
 import {
   OuiCompressedFieldSearch,
@@ -75,6 +75,77 @@ export const LibraryPage = ({ onSelectPage }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const listRef = useRef(null);
+  const pageRef = useRef(null);
+  const chipsRef = useRef(null);
+
+  // Detect overflow on filter chips and set data-fade attribute
+  useEffect(() => {
+    const chips = chipsRef.current;
+    if (!chips) return;
+
+    const updateFade = () => {
+      const { scrollLeft, scrollWidth, clientWidth } = chips;
+      const hasOverflow = scrollWidth > clientWidth;
+      if (!hasOverflow) {
+        chips.removeAttribute('data-fade');
+        return;
+      }
+      const atStart = scrollLeft <= 1;
+      const atEnd = scrollLeft + clientWidth >= scrollWidth - 1;
+      if (atStart && atEnd) chips.removeAttribute('data-fade');
+      else if (atStart) chips.setAttribute('data-fade', 'right');
+      else if (atEnd) chips.setAttribute('data-fade', 'left');
+      else chips.setAttribute('data-fade', 'both');
+    };
+
+    updateFade();
+    chips.addEventListener('scroll', updateFade, { passive: true });
+    window.addEventListener('resize', updateFade);
+    return () => {
+      chips.removeEventListener('scroll', updateFade);
+      window.removeEventListener('resize', updateFade);
+    };
+  }, [activeTab]);
+
+  // Fade items that are within 175px of the top of the scroll container
+  useEffect(() => {
+    const container = pageRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      if (!listRef.current) return;
+      const scrolled = container.scrollTop > 0;
+      if (!scrolled) {
+        // Reset all items to full opacity when not scrolled
+        listRef.current.querySelectorAll('.emptySessionPage__listItem').forEach((el) => {
+          el.style.opacity = '';
+        });
+        return;
+      }
+
+      const CUTOFF = 160; // items at or above this viewport Y are fully hidden
+      const FADE_ZONE = 50; // items fade in over this distance below the cutoff
+
+      listRef.current.querySelectorAll('.emptySessionPage__listItem').forEach((el) => {
+        const itemRect = el.getBoundingClientRect();
+        const itemTop = itemRect.top;
+
+        if (itemTop + itemRect.height <= CUTOFF) {
+          // Entire item is above cutoff — fully hidden
+          el.style.opacity = '0';
+        } else if (itemTop < CUTOFF + FADE_ZONE) {
+          // Item is in the fade zone — interpolate
+          const progress = (itemTop - CUTOFF) / FADE_ZONE;
+          el.style.opacity = String(Math.max(0, Math.min(1, progress)));
+        } else {
+          el.style.opacity = '';
+        }
+      });
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleItemHover = useCallback((hoveredIndex) => {
     if (!listRef.current) return;
@@ -117,7 +188,7 @@ export const LibraryPage = ({ onSelectPage }) => {
   });
 
   return (
-    <div className="libraryPage">
+    <div className="libraryPage" ref={pageRef}>
       {/* Fixed header: title, search, filters */}
       <div className="libraryPage__headerFixed">
         <div className="libraryPage__headerInner">
@@ -138,7 +209,7 @@ export const LibraryPage = ({ onSelectPage }) => {
           </div>
 
           <div className="libraryPage__tabs">
-            <div className="emptySessionPage__chips">
+            <div className="emptySessionPage__chips" ref={chipsRef}>
               {TABS.map((tab) => (
                 <button
                   key={tab.id}
@@ -188,7 +259,7 @@ export const LibraryPage = ({ onSelectPage }) => {
                 )}
               </button>
             ))
-          )}}
+          )}
         </div>
       </div>
     </div>

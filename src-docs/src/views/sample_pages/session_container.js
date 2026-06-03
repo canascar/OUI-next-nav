@@ -56,7 +56,7 @@ export const SessionContainer = ({
   const triggerAnimation = useCallback(() => {
     setIsAnimating(true);
     if (animTimerRef.current) clearTimeout(animTimerRef.current);
-    animTimerRef.current = setTimeout(() => setIsAnimating(false), 300);
+    animTimerRef.current = setTimeout(() => setIsAnimating(false), 550);
   }, []);
 
   useEffect(() => {
@@ -383,15 +383,18 @@ export const SessionContainer = ({
         </div>
       {/* Olly chat pill — rendered inside page panel wrap for positioning */}
       {showPill && (
-        <OuiOllyChatPill
-          className={`sessionContainer__ollyChatPill`}
-          avatar={<Mascot size={28} idle bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />}
-          message={aiButtonHighlight && aiPopoverVisible && aiPopoverText ? aiPopoverText : undefined}
-          isHighlighted={aiButtonHighlight}
-          onDismiss={handleDismissAiPopover}
-          onSubmit={(val) => handleExpandChat(val)}
-          onActivate={() => handleExpandChat()}
-        />
+        <div className="sessionContainer__ollyChatPill">
+          <OuiOllyChatPill
+            avatar={<Mascot size={28} idle bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />}
+            avatarHover={<Mascot size={28} expression="happy" idle={false} bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />}
+            message={aiButtonHighlight && aiPopoverVisible && aiPopoverText ? aiPopoverText : undefined}
+            isHighlighted={aiButtonHighlight}
+            onDismiss={handleDismissAiPopover}
+            onSubmit={(val) => handleExpandChat(val)}
+            onActivate={() => handleExpandChat()}
+          />
+        </div>
+      )}
       )}
       </div>
 

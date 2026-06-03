@@ -20,18 +20,8 @@
   transform: translateY(0);
   overflow: hidden;
 
-  // Animated bottom border
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    width: 0;
-    height: 2px;
-    background-color: $ouiColorPrimary;
-    border-radius: 1px;
-    transition: width 250ms ease, left 250ms ease;
-  }
+  // Animated bottom border — removed for Glass theme (clean pill shape, no underline)
+  // &::after { ... }
 
   &:hover,
   &:focus-within {
@@ -39,11 +29,6 @@
     box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25));
     background-color: $ouiFormBackgroundColor;
     border-color: $ouiColorPrimary;
-  }
-
-  &:focus-within::after {
-    width: 100%;
-    left: 0;
   }
 }
 

@@ -208,6 +208,7 @@ export {
   OuiInsightCard,
   OuiInsightCallout,
   OuiOllyChatPill,
+  OuiSessionRecents,
 } from './headless';
 
 export { OuiHighlight } from './highlight';

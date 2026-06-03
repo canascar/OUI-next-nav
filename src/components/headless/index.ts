@@ -18,3 +18,5 @@ export {
 } from './insight_callout';
 
 export { OuiOllyChatPill, OuiOllyChatPillProps } from './olly_chat_pill';
+
+export { OuiSessionRecents } from './session_recents';

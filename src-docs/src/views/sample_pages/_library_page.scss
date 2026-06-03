@@ -22,9 +22,11 @@
   position: relative;
   background-color: $ouiPageBackgroundColor;
   background-image: lightOrDarkTheme(
-    unquote("radial-gradient(ellipse 50% 45% at 0% 0%, hsla(245, 85%, 90%, 0.65), transparent 65%), radial-gradient(ellipse 45% 38% at 100% 5%, hsla(215, 90%, 92%, 0.55), transparent 60%), radial-gradient(ellipse 50% 50% at 50% 50%, hsla(260, 70%, 94%, 0.35), transparent 70%), radial-gradient(ellipse 42% 38% at 95% 95%, hsla(270, 80%, 92%, 0.55), transparent 60%), radial-gradient(ellipse 40% 35% at 5% 100%, hsla(230, 80%, 92%, 0.50), transparent 60%)"),
-    unquote("radial-gradient(ellipse 50% 45% at 0% 0%, hsla(268, 80%, 32%, 0.55), transparent 65%), radial-gradient(ellipse 45% 38% at 100% 5%, hsla(250, 75%, 28%, 0.48), transparent 60%), radial-gradient(ellipse 50% 50% at 50% 50%, hsla(270, 60%, 22%, 0.30), transparent 70%), radial-gradient(ellipse 42% 38% at 95% 95%, hsla(285, 75%, 28%, 0.50), transparent 60%), radial-gradient(ellipse 40% 35% at 5% 100%, hsla(258, 70%, 26%, 0.48), transparent 60%)")
+    unquote("radial-gradient(ellipse 45% 38% at 8% 12%, hsla(245, 60%, 82%, 0.55), transparent 55%), radial-gradient(ellipse 38% 30% at 92% 8%, hsla(220, 55%, 84%, 0.45), transparent 50%), radial-gradient(ellipse 55% 50% at 50% 45%, hsla(250, 25%, 80%, 0.50), transparent 65%), radial-gradient(ellipse 40% 34% at 75% 70%, hsla(265, 50%, 84%, 0.45), transparent 55%), radial-gradient(ellipse 42% 36% at 20% 80%, hsla(235, 45%, 83%, 0.42), transparent 55%), radial-gradient(ellipse 34% 28% at 60% 20%, hsla(255, 35%, 86%, 0.38), transparent 50%), radial-gradient(ellipse 30% 25% at 35% 65%, hsla(240, 40%, 85%, 0.35), transparent 50%)"),
+    unquote("radial-gradient(ellipse 48% 40% at 8% 12%, hsla(258, 35%, 42%, 0.55), transparent 55%), radial-gradient(ellipse 40% 32% at 92% 8%, hsla(240, 30%, 40%, 0.48), transparent 50%), radial-gradient(ellipse 60% 54% at 50% 45%, hsla(248, 15%, 46%, 0.50), transparent 65%), radial-gradient(ellipse 42% 35% at 75% 70%, hsla(275, 32%, 42%, 0.48), transparent 55%), radial-gradient(ellipse 44% 38% at 20% 80%, hsla(245, 28%, 40%, 0.45), transparent 55%), radial-gradient(ellipse 36% 30% at 60% 20%, hsla(252, 22%, 44%, 0.40), transparent 50%), radial-gradient(ellipse 32% 27% at 35% 65%, hsla(262, 25%, 43%, 0.38), transparent 50%)")
   );
+
+  // Top fade handled by JS scroll handler (per-item opacity)
 }
 
 .libraryPage__content {
@@ -41,7 +43,7 @@
   left: 0;
   right: 0;
   z-index: 10;
-  padding: 0 $ouiSizeL $ouiSizeL;
+  padding: 0 $ouiSizeL $ouiSizeS;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -75,6 +77,22 @@
     }
   }
 
+  // Fade edges only when overflowing — toggled via data attribute from JS
+  .emptySessionPage__chips[data-fade="both"] {
+    -webkit-mask-image: linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent);
+    mask-image: linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent);
+  }
+
+  .emptySessionPage__chips[data-fade="left"] {
+    -webkit-mask-image: linear-gradient(to right, transparent, black 24px);
+    mask-image: linear-gradient(to right, transparent, black 24px);
+  }
+
+  .emptySessionPage__chips[data-fade="right"] {
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
+    mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
+  }
+
   .emptySessionPage__chip {
     flex: 0 0 auto;
   }
@@ -84,7 +102,14 @@
   display: flex;
   flex-direction: column;
   gap: $ouiSizeS;
+
+  .emptySessionPage__listItem {
+    transition: opacity 100ms ease-out, background-color 200ms ease, border-color 200ms ease, transform 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
 }
+
+// Top fade — no longer needed, handled by JS scroll handler
+// .libraryPage__topFade { ... }
 
 .libraryPage__empty {
   text-align: center;

@@ -483,6 +483,18 @@ export const EmptySessionPage = ({
   const mascotColor = isDark ? ['#FFFFFF', '#D9DEE5'] : ['#14558E', '#153A5A'];
   const mascotEyeColor = isDark ? '#181028' : '#fff';
 
+  const [greeting] = useState(() => {
+    const greetings = [
+      'Good morning, John',
+      'What are you working on John?',
+      'Where should we start today John?',
+      'Hey hey, John!',
+      '¯\\_(ツ)_/¯',
+      "What's for today John?",
+    ];
+    return greetings[Math.floor(Math.random() * greetings.length)];
+  });
+
   const [activeChip, setActiveChip] = useState('activity');
   const [searchQuery, setSearchQuery] = useState('');
   const [dismissedItems, setDismissedItems] = useState(new Set());
@@ -492,6 +504,7 @@ export const EmptySessionPage = ({
   const inputActive = inputHovered || inputFocused;
   const [hoveredCard, setHoveredCard] = useState(null);
   const [scrolledFromTop, setScrolledFromTop] = useState(false);
+  const [mascotExpression, setMascotExpression] = useState(undefined);
   const scrollRef = useRef(null);
   const briefingRef = useRef(null);
 
@@ -568,8 +581,21 @@ export const EmptySessionPage = ({
           <div className="emptySessionPage__leftCol">
             {/* Mascot + status — above title */}
             <div className="emptySessionPage__headerRow">
-              <div className="emptySessionPage__avatarWrap">
-                <Mascot size={32} idle bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />
+              <div
+                className="emptySessionPage__avatarWrap"
+                onMouseDown={(e) => {
+                  e.currentTarget.style.transform = 'scale(0.85)';
+                  setMascotExpression('heart');
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  setMascotExpression(undefined);
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  setMascotExpression(undefined);
+                }}>
+                <Mascot size={32} expression={mascotExpression} idle={!mascotExpression} bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />
               </div>
               <span className="emptySessionPage__onlineStatus">
                 <span className="emptySessionPage__onlineDot" />
@@ -577,20 +603,16 @@ export const EmptySessionPage = ({
               </span>
             </div>
             <OuiTitle size="m">
-              <h1>Good morning, John</h1>
+              <h1>{greeting}</h1>
             </OuiTitle>
 
-            {/* Scrollable content */}
-            <div
-              ref={scrollRef}
-              onScroll={handleScroll}
-              className={`emptySessionPage__scrollContent${scrolledFromTop ? '' : ' emptySessionPage__scrollContent--top'}`}>
-              <div className="emptySessionPage__briefing">
-                <OuiText size="s">
-                  <p>All 247 services are running normally. I found 3 items that need your attention. Let me know if you'd like me to dig deeper into any of these, or ask me anything below.</p>
-                </OuiText>
-              </div>
-            </div>
+            <OuiText size="s" style={{ maxWidth: 640, width: '100%', marginLeft: 'auto' }}>
+              <p>
+                <span className="emptySessionPage__textLine" style={{ animationDelay: '1400ms' }}>All <strong>247 services</strong> are running normally.</span>
+                <span className="emptySessionPage__textLine" style={{ animationDelay: '2000ms' }}>I found <strong>3 items</strong> that need your attention.</span>
+                <span className="emptySessionPage__textLine" style={{ animationDelay: '2600ms' }}>Let me know if you'd like me to dig deeper into any of these, or ask me anything below.</span>
+              </p>
+            </OuiText>
 
             {/* Chat input — fixed at bottom of container */}
             <div className="emptySessionPage__inlineInput">
@@ -633,8 +655,9 @@ export const EmptySessionPage = ({
                 <OuiText size="s">
                   <p><strong>Payment service P99 latency breach</strong></p>
                   <p>P99 crossed 2,000ms with connection pool exhaustion on 3 of 4 pods. I've started an investigation and identified a likely root cause.</p>
-                  <p style={{ fontSize: 10.5, color: 'rgba(250, 250, 250, 0.85)' }}>Created by AI · 15 min ago</p>
+                  <p style={{ fontSize: 10.5, opacity: 0.6 }}>Created by AI · 15 min ago</p>
                 </OuiText>
+                <span className="emptySessionPage__briefingArrow">→</span>
               </div>
 
               <div className="emptySessionPage__briefingSeparator" />
@@ -648,8 +671,9 @@ export const EmptySessionPage = ({
                 <OuiText size="s">
                   <p><strong>Error Rate Spike — Checkout Service</strong></p>
                   <p>Checkout error rate spiked to 12.4% around the same time. Auth-service deployment regression identified.</p>
-                  <p style={{ fontSize: 10.5, color: 'rgba(250, 250, 250, 0.85)' }}>Shared by team · 2 hours ago</p>
+                  <p style={{ fontSize: 10.5, opacity: 0.6 }}>Shared by team · 2 hours ago</p>
                 </OuiText>
+                <span className="emptySessionPage__briefingArrow">→</span>
               </div>
 
               <div className="emptySessionPage__briefingSeparator" />
@@ -662,8 +686,9 @@ export const EmptySessionPage = ({
                 <OuiText size="s">
                   <p><strong>DNS Resolution Timeout</strong></p>
                   <p>Resolved after the upstream fix was deployed. No further action needed.</p>
-                  <p style={{ fontSize: 10.5, color: 'rgba(250, 250, 250, 0.85)' }}>Resolved · 3 hours ago</p>
+                  <p style={{ fontSize: 10.5, opacity: 0.6 }}>Resolved · 3 hours ago</p>
                 </OuiText>
+                <span className="emptySessionPage__briefingArrow">→</span>
               </div>
             </div>
           </div>

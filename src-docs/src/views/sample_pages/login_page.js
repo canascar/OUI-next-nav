@@ -45,21 +45,29 @@ export const LoginPage = ({ onLogin }) => {
 
   // Glass theme tokens
   const bgColor = isDark ? '#0d0818' : '#f8f7fc';
-  const panelBg = isDark ? '#181028' : '#ffffff';
-  const borderColor = isDark ? '#2c2042' : '#ececef';
+  const panelBg = isDark
+    ? 'rgba(24, 16, 40, 0.55)'
+    : 'rgba(255, 255, 255, 0.62)';
+  const borderColor = isDark
+    ? 'rgba(255, 255, 255, 0.10)'
+    : 'rgba(255, 255, 255, 0.9)';
 
-  // Glass canvas gradient (enhanced indigo/violet blobs)
+  // Glass canvas gradient (fractal satin — layered shimmer)
   const bgGradient = isDark
-    ? `radial-gradient(ellipse 50% 45% at 0% 0%, hsla(268, 80%, 32%, 0.55), transparent 65%),
-       radial-gradient(ellipse 45% 38% at 100% 5%, hsla(250, 75%, 28%, 0.48), transparent 60%),
-       radial-gradient(ellipse 50% 50% at 50% 50%, hsla(270, 60%, 22%, 0.30), transparent 70%),
-       radial-gradient(ellipse 42% 38% at 95% 95%, hsla(285, 75%, 28%, 0.50), transparent 60%),
-       radial-gradient(ellipse 40% 35% at 5% 100%, hsla(258, 70%, 26%, 0.48), transparent 60%)`
-    : `radial-gradient(ellipse 50% 45% at 0% 0%, hsla(245, 85%, 90%, 0.65), transparent 65%),
-       radial-gradient(ellipse 45% 38% at 100% 5%, hsla(215, 90%, 92%, 0.55), transparent 60%),
-       radial-gradient(ellipse 50% 50% at 50% 50%, hsla(260, 70%, 94%, 0.35), transparent 70%),
-       radial-gradient(ellipse 42% 38% at 95% 95%, hsla(270, 80%, 92%, 0.55), transparent 60%),
-       radial-gradient(ellipse 40% 35% at 5% 100%, hsla(230, 80%, 92%, 0.50), transparent 60%)`;
+    ? `radial-gradient(ellipse 38% 30% at 8% 12%, hsla(258, 35%, 42%, 0.55), transparent 55%),
+       radial-gradient(ellipse 30% 24% at 92% 8%, hsla(240, 30%, 40%, 0.48), transparent 50%),
+       radial-gradient(ellipse 50% 44% at 50% 45%, hsla(248, 15%, 46%, 0.50), transparent 65%),
+       radial-gradient(ellipse 32% 26% at 75% 70%, hsla(275, 32%, 42%, 0.48), transparent 55%),
+       radial-gradient(ellipse 34% 28% at 20% 80%, hsla(245, 28%, 40%, 0.45), transparent 55%),
+       radial-gradient(ellipse 26% 22% at 60% 20%, hsla(252, 22%, 44%, 0.40), transparent 50%),
+       radial-gradient(ellipse 24% 20% at 35% 65%, hsla(262, 25%, 43%, 0.38), transparent 50%)`
+    : `radial-gradient(ellipse 35% 28% at 8% 12%, hsla(245, 60%, 82%, 0.55), transparent 55%),
+       radial-gradient(ellipse 28% 22% at 92% 8%, hsla(220, 55%, 84%, 0.45), transparent 50%),
+       radial-gradient(ellipse 45% 40% at 50% 45%, hsla(250, 25%, 80%, 0.50), transparent 65%),
+       radial-gradient(ellipse 30% 25% at 75% 70%, hsla(265, 50%, 84%, 0.45), transparent 55%),
+       radial-gradient(ellipse 32% 28% at 20% 80%, hsla(235, 45%, 83%, 0.42), transparent 55%),
+       radial-gradient(ellipse 25% 20% at 60% 20%, hsla(255, 35%, 86%, 0.38), transparent 50%),
+       radial-gradient(ellipse 22% 18% at 35% 65%, hsla(240, 40%, 85%, 0.35), transparent 50%)`;
 
   return (
     <div
@@ -98,15 +106,19 @@ export const LoginPage = ({ onLogin }) => {
       />
 
       <div style={{ width: 440, maxWidth: '90vw', position: 'relative', zIndex: 1 }}>
-        {/* Panel — Glass style: rounded, hairline border, feather shadow */}
+        {/* Panel — Frosted glass: translucent, blur, hairline border, elevated shadow */}
         <div
           style={{
             position: 'relative',
             background: panelBg,
+            backdropFilter: 'blur(24px) saturate(160%)',
+            WebkitBackdropFilter: 'blur(24px) saturate(160%)',
             border: `1px solid ${borderColor}`,
             borderRadius: 12,
             padding: '48px 40px',
-            boxShadow: '0 1px 2px rgba(15,15,15,0.04), 0 8px 24px rgba(15,15,15,0.04)',
+            boxShadow: isDark
+              ? '0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.3), 0 24px 48px rgba(0,0,0,0.2)'
+              : '0 1px 2px rgba(15,15,15,0.04), 0 8px 24px rgba(15,15,15,0.06), 0 24px 48px rgba(15,15,15,0.04)',
           }}>
           {/* Logo */}
           <OuiFlexGroup justifyContent="center" gutterSize="none">

@@ -692,6 +692,20 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  border: 1px solid $ouiFormBorderColor;
+  border-radius: $ouiFormControlBorderRadius;
+  background-color: $ouiFormBackgroundColor;
+  overflow: hidden;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+
+  &:hover {
+    border-color: lightOrDarkTheme(#e0e0e4, lighten($ouiFormBorderColor, 8%));
+  }
+
+  &:focus-within {
+    border-color: $ouiColorPrimary;
+    box-shadow: 0 4px 12px lightOrDarkTheme(rgba(99, 102, 241, 0.12), rgba(0, 0, 0, 0.25));
+  }
 
   // No animated pseudo-elements
   &::before,
@@ -699,9 +713,13 @@
     display: none;
   }
 
-  // Ensure no extra space below the textarea
+  // Remove layout border — wrapper handles it
   .ouiFormControlLayout {
     margin-bottom: 0;
+    border: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+    overflow: visible !important;
   }
 
   .ouiTextArea {
@@ -709,26 +727,19 @@
   }
 }
 
-// Textarea — rounded, simple border that changes color on hover/focus
-.threadPage__textarea textarea {
+// Textarea — no border, transparent bg (wrapper handles border)
+.threadPage__textarea textarea,
+textarea.threadPage__textarea {
   padding-bottom: 36px;
   border-radius: $ouiFormControlBorderRadius !important;
-  border: 1px solid lightOrDarkTheme(#ececef, #2c2042) !important;
-  background-color: lightOrDarkTheme($ouiColorEmptyShade, #181028) !important;
-  transition: border-color 200ms ease, box-shadow 200ms ease;
-
-  &:hover {
-    border-color: lightOrDarkTheme(#e0e0e4, #392a54) !important;
-  }
-
-  &:focus {
-    border-color: $ouiColorPrimary !important;
-    box-shadow: 0 0 0 1px $ouiColorPrimary !important;
-  }
+  border: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
 }
 
-.threadPage__inputWrapper:hover .threadPage__textarea textarea:not(:focus) {
-  border-color: lightOrDarkTheme(#e0e0e4, #392a54) !important;
+.threadPage__inputWrapper:hover .threadPage__textarea textarea:not(:focus),
+.threadPage__inputWrapper:hover textarea.threadPage__textarea:not(:focus) {
+  border: none !important;
 }
 
 // Plus (bottom-left) and send (bottom-right) inside the textarea

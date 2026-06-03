@@ -78,6 +78,9 @@ export default () => {
         <OuiFlexItem>
           <GradientCard variant="radial" isDark={isDark} />
         </OuiFlexItem>
+        <OuiFlexItem>
+          <GradientCard variant="satin" isDark={isDark} />
+        </OuiFlexItem>
       </OuiFlexGroup>
 
       <OuiSpacer size="xl" />
@@ -88,7 +91,7 @@ export default () => {
       <OuiSpacer size="m" />
 
       <OuiBrandGradient
-        variant="vivid"
+        variant="satin"
         isDark={isDark}
         style={{
           borderRadius: 12,
@@ -105,7 +108,7 @@ export default () => {
           </OuiTitle>
           <OuiSpacer size="s" />
           <OuiText color="subdued">
-            <p>Glass gradient backgrounds for login pages, hero sections, and more.</p>
+            <p>Brand gradient backgrounds for login pages, hero sections, and more.</p>
           </OuiText>
         </div>
       </OuiBrandGradient>

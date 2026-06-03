@@ -12,6 +12,7 @@ import React, {
 } from 'react';
 import classNames from 'classnames';
 import { CommonProps } from '../../common';
+import { OuiToolTip } from '../../tool_tip';
 
 export interface OuiOllyChatPillProps
   extends CommonProps,
@@ -24,6 +25,10 @@ export interface OuiOllyChatPillProps
    * Avatar/icon element rendered to the left of the input.
    */
   avatar?: ReactNode;
+  /**
+   * Avatar element rendered when the pill is hovered (e.g. different expression).
+   */
+  avatarHover?: ReactNode;
   /**
    * Optional message displayed above the input (e.g. proactive AI insight).
    */
@@ -49,6 +54,7 @@ export interface OuiOllyChatPillProps
 export const OuiOllyChatPill: FunctionComponent<OuiOllyChatPillProps> = ({
   placeholder = 'Ask Olly anything',
   avatar,
+  avatarHover,
   message,
   onDismiss,
   onSubmit,
@@ -59,6 +65,15 @@ export const OuiOllyChatPill: FunctionComponent<OuiOllyChatPillProps> = ({
 }) => {
   const [value, setValue] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  // Auto-focus input when expanded
+  React.useEffect(() => {
+    if (isExpanded && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isExpanded]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -83,7 +98,11 @@ export const OuiOllyChatPill: FunctionComponent<OuiOllyChatPillProps> = ({
   );
 
   return (
-    <div className={classes} {...rest}>
+    <div
+      className={classes}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      {...rest}>
       {message && (
         <div className="ouiOllyChatPill__message" onClick={() => onActivate && onActivate()}>
           <p className="ouiOllyChatPill__messageText">{message}</p>
@@ -103,15 +122,24 @@ export const OuiOllyChatPill: FunctionComponent<OuiOllyChatPillProps> = ({
       )}
       <div className="ouiOllyChatPill__inputRow">
         {avatar && (
-          <button
-            type="button"
-            className={`ouiOllyChatPill__avatar${isHighlighted ? ' ouiOllyChatPill__avatar--highlight' : ''}`}
-            aria-label="Open chat"
-            onClick={() => onActivate && onActivate()}>
-            {avatar}
-          </button>
+          <OuiToolTip content="Open chat" position="top" delay="long">
+            <button
+              type="button"
+              className={`ouiOllyChatPill__avatar${isHighlighted ? ' ouiOllyChatPill__avatar--highlight' : ''}${!isExpanded ? ' ouiOllyChatPill__avatar--static' : ''}`}
+              aria-label="Open chat"
+              onMouseDown={(e) => {
+                // Prevent input blur so the click registers
+                if (isExpanded) e.preventDefault();
+              }}
+              onClick={() => {
+                if (onActivate) onActivate();
+              }}>
+              {isHovered && avatarHover ? avatarHover : avatar}
+            </button>
+          </OuiToolTip>
         )}
         <input
+          ref={inputRef}
           type="text"
           className="ouiOllyChatPill__input"
           placeholder={placeholder}

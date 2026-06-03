@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useContext } from 'react';
 import { GuidePage } from '../../components';
 import {
   OuiText,
@@ -15,6 +15,7 @@ import {
   OuiCode,
 } from '../../../../src/components';
 import { Mascot as MascotSVG } from '../../../../olly-mascot/Mascot';
+import { ThemeContext } from '../../components/with_theme';
 
 const expressions = [
   {
@@ -197,6 +198,12 @@ const principles = [
 ];
 
 export const MascotGuidelinesView = () => {
+  const themeContext = useContext(ThemeContext);
+  const isDark = themeContext.theme === 'v9-dark';
+  const mascotColor = isDark ? ['#FFFFFF', '#D9DEE5'] : ['#14558E', '#153A5A'];
+  const mascotEyeColor = isDark ? '#181028' : '#fff';
+  const goldColor = ['#B8860B', '#8B6914'];
+
   return (
     <GuidePage title="Agentic Mascot Guidelines">
       {/* Page intro */}
@@ -229,7 +236,8 @@ export const MascotGuidelinesView = () => {
               <MascotSVG
                 size={56}
                 expression={expr.name.toLowerCase()}
-                color={expr.name === 'WOW' ? ['#B8860B', '#8B6914'] : undefined}
+                color={expr.name === 'WOW' ? goldColor : mascotColor}
+                eyeColor={expr.name === 'WOW' ? '#fff' : mascotEyeColor}
                 idle={false}
                 follow={false}
                 bob={false}
@@ -353,7 +361,7 @@ export const MascotGuidelinesView = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>
-                <MascotSVG size={parseInt(step.size)} expression="comma" />
+                <MascotSVG size={parseInt(step.size)} expression="comma" color={mascotColor} eyeColor={mascotEyeColor} />
               </OuiFlexItem>
               <OuiFlexItem grow={false} style={{ minWidth: 60 }}>
                 <OuiCode>{step.size}</OuiCode>
@@ -395,7 +403,8 @@ export const MascotGuidelinesView = () => {
                 <MascotSVG
                   size={40}
                   expression={moment.expression}
-                  color={moment.gold ? ['#B8860B', '#8B6914'] : undefined}
+                  color={moment.gold ? goldColor : mascotColor}
+                  eyeColor={moment.gold ? '#fff' : mascotEyeColor}
                   idle={moment.idle || false}
                   follow={false}
                   bob={false}
