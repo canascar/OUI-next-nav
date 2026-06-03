@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 
 import {
   OuiCompressedFieldSearch,
@@ -74,6 +74,39 @@ const TABS = [
 export const LibraryPage = ({ onSelectPage }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('all');
+  const listRef = useRef(null);
+
+  const handleItemHover = useCallback((hoveredIndex) => {
+    if (!listRef.current) return;
+    const items = listRef.current.querySelectorAll('.emptySessionPage__listItem');
+    items.forEach((el, i) => {
+      const distance = Math.abs(i - hoveredIndex);
+      let scale = 1;
+      if (distance === 0) scale = 1.03;
+      else if (distance === 1) scale = 1.015;
+      else if (distance === 2) scale = 1.005;
+      else scale = 1;
+      el.style.transform = `scale(${scale})`;
+    });
+  }, []);
+
+  const handleItemMouseDown = useCallback((pressedIndex) => {
+    if (!listRef.current) return;
+    const items = listRef.current.querySelectorAll('.emptySessionPage__listItem');
+    items.forEach((el, i) => {
+      const distance = Math.abs(i - pressedIndex);
+      let scale = 1;
+      if (distance === 0) scale = 0.97;
+      else if (distance === 1) scale = 0.985;
+      else if (distance === 2) scale = 0.995;
+      else scale = 1;
+      el.style.transform = `scale(${scale})`;
+    });
+  }, []);
+
+  const handleItemMouseUp = useCallback((hoveredIndex) => {
+    handleItemHover(hoveredIndex);
+  }, [handleItemHover]);
 
   const filteredItems = LIBRARY_OBJECTS.filter((item) => {
     const matchesSearch = !searchQuery.trim() ||
@@ -85,47 +118,65 @@ export const LibraryPage = ({ onSelectPage }) => {
 
   return (
     <div className="libraryPage">
-      <div className="libraryPage__content">
-        <div className="libraryPage__header">
-          <OuiTitle size="s">
-            <h2>Library</h2>
-          </OuiTitle>
-        </div>
+      {/* Fixed header: title, search, filters */}
+      <div className="libraryPage__headerFixed">
+        <div className="libraryPage__headerInner">
+          <div className="libraryPage__header">
+            <OuiTitle size="s">
+              <h2>Library</h2>
+            </OuiTitle>
+          </div>
 
-        <div className="libraryPage__search">
-          <OuiCompressedFieldSearch
-            placeholder="Search assets..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            fullWidth
-            aria-label="Search assets"
-          />
-        </div>
+          <div className="libraryPage__search">
+            <OuiCompressedFieldSearch
+              placeholder="Search assets..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              fullWidth
+              aria-label="Search assets"
+            />
+          </div>
 
-        <div className="libraryPage__tabs">
-          <div className="emptySessionPage__chips">
-            {TABS.map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                className={`emptySessionPage__chip${activeTab === tab.id ? ' emptySessionPage__chip--active' : ''}`}
-                onClick={() => setActiveTab(tab.id)}>
-                <OuiIcon type={tab.icon} size="m" />
-                <span>{tab.label}</span>
-              </button>
-            ))}
+          <div className="libraryPage__tabs">
+            <div className="emptySessionPage__chips">
+              {TABS.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  className={`emptySessionPage__chip${activeTab === tab.id ? ' emptySessionPage__chip--active' : ''}`}
+                  onClick={() => setActiveTab(tab.id)}>
+                  <OuiIcon type={tab.icon} size="m" />
+                  <span>{tab.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
+      </div>
 
-        <div className="libraryPage__items">
+      {/* Scrollable content */}
+      <div className="libraryPage__content">
+        <div
+          className="libraryPage__items"
+          onMouseLeave={() => {
+            if (listRef.current) {
+              listRef.current.querySelectorAll('.emptySessionPage__listItem').forEach((el) => {
+                el.style.transform = '';
+              });
+            }
+          }}
+          ref={listRef}>
           {filteredItems.length === 0 ? (
             <p className="libraryPage__empty">No objects match your search.</p>
           ) : (
-            filteredItems.map((item) => (
+            filteredItems.map((item, index) => (
               <button
                 key={item.key}
                 className="emptySessionPage__listItem"
-                onClick={() => onSelectPage(item.pageKey, item.title)}>
+                onClick={() => onSelectPage(item.pageKey, item.title)}
+                onMouseEnter={() => handleItemHover(index)}
+                onMouseDown={() => handleItemMouseDown(index)}
+                onMouseUp={() => handleItemMouseUp(index)}>
                 <span className="emptySessionPage__listItemContent">
                   <span className="emptySessionPage__listItemTitle">{item.title}</span>
                   <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
@@ -137,7 +188,7 @@ export const LibraryPage = ({ onSelectPage }) => {
                 )}
               </button>
             ))
-          )}
+          )}}
         </div>
       </div>
     </div>

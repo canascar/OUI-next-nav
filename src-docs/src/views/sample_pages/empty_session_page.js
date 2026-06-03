@@ -493,11 +493,45 @@ export const EmptySessionPage = ({
   const [hoveredCard, setHoveredCard] = useState(null);
   const [scrolledFromTop, setScrolledFromTop] = useState(false);
   const scrollRef = useRef(null);
+  const briefingRef = useRef(null);
 
   const handleScroll = useCallback(() => {
     if (scrollRef.current) {
       setScrolledFromTop(scrollRef.current.scrollTop > 0);
     }
+  }, []);
+
+  const handleBriefingHover = useCallback((hoveredIndex) => {
+    if (!briefingRef.current) return;
+    const items = briefingRef.current.querySelectorAll('.emptySessionPage__briefingItem');
+    const separators = briefingRef.current.querySelectorAll('.emptySessionPage__briefingSeparator');
+    items.forEach((el, i) => {
+      const distance = Math.abs(i - hoveredIndex);
+      let scale = 1;
+      if (distance === 0) scale = 1.03;
+      else if (distance === 1) scale = 1.015;
+      else if (distance === 2) scale = 1.005;
+      el.style.transform = `scale(${scale})`;
+    });
+    separators.forEach((el, i) => {
+      const distBefore = Math.abs(i - hoveredIndex);
+      const distAfter = Math.abs(i + 1 - hoveredIndex);
+      const minDist = Math.min(distBefore, distAfter);
+      el.style.opacity = minDist === 0 ? '0' : '1';
+    });
+  }, []);
+
+  const handleBriefingMouseDown = useCallback((pressedIndex) => {
+    if (!briefingRef.current) return;
+    const items = briefingRef.current.querySelectorAll('.emptySessionPage__briefingItem');
+    items.forEach((el, i) => {
+      const distance = Math.abs(i - pressedIndex);
+      let scale = 1;
+      if (distance === 0) scale = 0.97;
+      else if (distance === 1) scale = 0.985;
+      else if (distance === 2) scale = 0.995;
+      el.style.transform = `scale(${scale})`;
+    });
   }, []);
 
   // Build a flat searchable list from all chip data + SOURCE_PAGE_MOCK
@@ -551,53 +585,9 @@ export const EmptySessionPage = ({
               ref={scrollRef}
               onScroll={handleScroll}
               className={`emptySessionPage__scrollContent${scrolledFromTop ? '' : ' emptySessionPage__scrollContent--top'}`}>
-              {/* Paragraph briefing */}
               <div className="emptySessionPage__briefing">
                 <OuiText size="s">
-                  <p>All 247 services are running normally. I found 3 items that need your attention:</p>
-                  <p>An alert triggered 15 minutes ago — <strong>Payment service P99 latency breach</strong>. P99 crossed 2,000ms with connection pool exhaustion on 3 of 4 pods. I've started an investigation and identified a likely root cause.</p>
-                </OuiText>
-
-                {/* Card widget 1 */}
-                <OuiInsightCallout
-                  title={CHIP_DATA.activity[0].title}
-                  subtitle={CHIP_DATA.activity[0].subtitle}
-                  severity="warning"
-                  isDismissing={dismissingItems.has('insight-1')}
-                  onClick={() => onSelectSession(CHIP_DATA.activity[0].sessionId)}
-                  onMouseEnter={() => setHoveredCard('latency')}
-                  onMouseLeave={() => setHoveredCard(null)}
-                />
-
-                <OuiText size="s" style={{ marginTop: 16 }}>
-                  <p>Sicheng also shared a related finding — checkout error rate spiked to 12.4% around the same time. This may be connected to the latency issue above. You can review it here:</p>
-                </OuiText>
-
-                {/* Card widget 2 */}
-                <OuiInsightCallout
-                  title={CHIP_DATA.activity[1].title}
-                  subtitle={CHIP_DATA.activity[1].subtitle}
-                  isDismissing={dismissingItems.has('insight-2')}
-                  onClick={() => onSelectSession(CHIP_DATA.activity[1].sessionId)}
-                  onMouseEnter={() => setHoveredCard('error-rate')}
-                  onMouseLeave={() => setHoveredCard(null)}
-                />
-
-                <OuiText size="s" style={{ marginTop: 16 }}>
-                  <p>On a positive note, a DNS resolution timeout from earlier today has been resolved after the upstream fix was deployed. No further action needed.</p>
-                </OuiText>
-
-                {/* Card widget 3 — placeholder */}
-                <OuiInsightCallout
-                  title="DNS Resolution Timeout"
-                  subtitle="Resolved · 3 hours ago"
-                  severity="success"
-                  onMouseEnter={() => setHoveredCard('dns')}
-                  onMouseLeave={() => setHoveredCard(null)}
-                />
-
-                <OuiText size="s" style={{ marginTop: 16 }}>
-                  <p>That's everything for now. Let me know if you'd like me to dig deeper into any of these, or ask me anything below.</p>
+                  <p>All 247 services are running normally. I found 3 items that need your attention. Let me know if you'd like me to dig deeper into any of these, or ask me anything below.</p>
                 </OuiText>
               </div>
             </div>
@@ -617,138 +607,64 @@ export const EmptySessionPage = ({
             </div>
           </div>
 
-          {/* Right column — 2x3 grid of cards */}
+          {/* Right column — briefing items */}
           <div className="emptySessionPage__rightCol">
-            <div className={`emptySessionPage__rightGrid${hoveredCard ? ` emptySessionPage__rightGrid--highlight-${hoveredCard}` : ''}`}>
-              {/* Card 1: Top services by fault rate */}
-              <OuiInsightCard title="Top services by fault rate" data-card="services">
-                <div className="emptySessionPage__favoritePanelTable">
-                  <div className="emptySessionPage__favoritePanelHeader">
-                    <span>Service</span><span>Fault rate</span>
-                  </div>
-                  <div className="emptySessionPage__favoritePanelRow" data-row="checkout">
-                    <button type="button" className="emptySessionPage__favoritePanelLink" onClick={() => onOpenPage('service-detail', 'Service: checkout')}>checkout</button>
-                    <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '66.67%' }} /></div><span>66.67%</span></div>
-                  </div>
-                  <div className="emptySessionPage__favoritePanelRow">
-                    <span className="emptySessionPage__favoritePanelLink--static">frontend</span>
-                    <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '14.49%' }} /></div><span>14.49%</span></div>
-                  </div>
-                  <div className="emptySessionPage__favoritePanelRow">
-                    <span className="emptySessionPage__favoritePanelLink--static">frontend-proxy</span>
-                    <div className="emptySessionPage__favoritePanelBar"><div className="emptySessionPage__favoritePanelBarTrack"><div className="emptySessionPage__favoritePanelBarFill" style={{ width: '14.29%' }} /></div><span>14.29%</span></div>
-                  </div>
-                </div>
-              </OuiInsightCard>
+            <div
+              className="emptySessionPage__briefing"
+              style={{ padding: 24, gap: 0 }}
+              ref={briefingRef}
+              onMouseLeave={() => {
+                if (briefingRef.current) {
+                  briefingRef.current.querySelectorAll('.emptySessionPage__briefingItem').forEach(el => { el.style.transform = ''; });
+                  briefingRef.current.querySelectorAll('.emptySessionPage__briefingSeparator').forEach(el => { el.style.opacity = ''; });
+                }
+              }}>
+              <div className="emptySessionPage__briefingTitle">
+                <h5>Recent</h5>
+                <span className="emptySessionPage__briefingCount">3</span>
+              </div>
 
-              {/* Card 2: Connection timeout errors (saved query) */}
-              <OuiInsightCard title="Connection timeout errors" isClickable data-card="timeout" onClick={() => onOpenPage('discover-log')}>
-                <code className="emptySessionPage__savedQueryCode">source=logs | where severity=&quot;ERROR&quot;</code>
-                <div className="emptySessionPage__savedQueryBody">
-                  <div className="emptySessionPage__savedQueryChart">
-                    <svg viewBox="0 0 120 48" preserveAspectRatio="none" className="emptySessionPage__savedQuerySvg">
-                      <path d="M0,42 L8,41 L16,39 L24,38 L32,36 L40,33 L48,30 L56,27 L64,21 L72,18 L80,12 L88,9 L96,6 L104,4 L112,3 L120,1" fill="none" stroke="currentColor" strokeWidth="2" />
-                      <path d="M0,42 L8,41 L16,39 L24,38 L32,36 L40,33 L48,30 L56,27 L64,21 L72,18 L80,12 L88,9 L96,6 L104,4 L112,3 L120,1 L120,48 L0,48 Z" fill="currentColor" opacity="0.1" />
-                    </svg>
-                  </div>
-                  <div className="emptySessionPage__savedQueryRight">
-                    <span className="emptySessionPage__savedQueryValue">847</span>
-                    <span className="emptySessionPage__savedQueryTrend">↑ +312%</span>
-                  </div>
-                </div>
-              </OuiInsightCard>
+              <div
+                className="emptySessionPage__briefingItem"
+                onClick={() => onSelectSession(CHIP_DATA.activity[0].sessionId)}
+                onMouseEnter={() => handleBriefingHover(0)}
+                onMouseDown={() => handleBriefingMouseDown(0)}
+                onMouseUp={() => handleBriefingHover(0)}>
+                <OuiText size="s">
+                  <p><strong>Payment service P99 latency breach</strong></p>
+                  <p>P99 crossed 2,000ms with connection pool exhaustion on 3 of 4 pods. I've started an investigation and identified a likely root cause.</p>
+                  <p style={{ fontSize: 10.5, color: 'rgba(250, 250, 250, 0.85)' }}>Created by AI · 15 min ago</p>
+                </OuiText>
+              </div>
 
-              {/* Card 3: Recent alerts */}
-              <OuiInsightCard title="Recent alerts" data-card="alerts">
-                <div className="emptySessionPage__favoritePanelTable">
-                  <div className="emptySessionPage__favoritePanelHeader">
-                    <span>Alert</span><span>Status</span>
-                  </div>
-                  <div className="emptySessionPage__favoritePanelRow" data-row="latency-alert">
-                    <span className="emptySessionPage__favoritePanelLink--static">P99 latency breach</span>
-                    <span style={{ color: '#dc2626', fontSize: '11px', fontWeight: 600 }}>Critical</span>
-                  </div>
-                  <div className="emptySessionPage__favoritePanelRow">
-                    <span className="emptySessionPage__favoritePanelLink--static">Disk usage warning</span>
-                    <span style={{ color: '#d97706', fontSize: '11px', fontWeight: 600 }}>Warning</span>
-                  </div>
-                  <div className="emptySessionPage__favoritePanelRow" data-row="error-rate-alert">
-                    <span className="emptySessionPage__favoritePanelLink--static">Error rate spike</span>
-                    <span style={{ color: '#dc2626', fontSize: '11px', fontWeight: 600 }}>Critical</span>
-                  </div>
-                </div>
-              </OuiInsightCard>
+              <div className="emptySessionPage__briefingSeparator" />
 
-              {/* Card 4: Deployment timeline (bar chart) */}
-              <OuiInsightCard title="Deployment timeline">
-                <div style={{ height: 120 }}>
-                  <Chart>
-                    <Settings showLegend={false} />
-                    <Axis id="bottom" position="bottom" tickFormat={(d) => `${d}h`} />
-                    <Axis id="left" position="left" hide />
-                    <BarSeries
-                      id="deployments"
-                      xScaleType={ScaleType.Linear}
-                      yScaleType={ScaleType.Linear}
-                      xAccessor="x"
-                      yAccessors={['y']}
-                      data={[
-                        { x: 1, y: 0 },
-                        { x: 4, y: 1 },
-                        { x: 6, y: 0 },
-                        { x: 8, y: 2 },
-                        { x: 12, y: 1 },
-                        { x: 16, y: 0 },
-                        { x: 20, y: 1 },
-                        { x: 24, y: 0 },
-                      ]}
-                    />
-                  </Chart>
-                </div>
-              </OuiInsightCard>
+              <div
+                className="emptySessionPage__briefingItem"
+                onClick={() => onSelectSession(CHIP_DATA.activity[1].sessionId)}
+                onMouseEnter={() => handleBriefingHover(1)}
+                onMouseDown={() => handleBriefingMouseDown(1)}
+                onMouseUp={() => handleBriefingHover(1)}>
+                <OuiText size="s">
+                  <p><strong>Error Rate Spike — Checkout Service</strong></p>
+                  <p>Checkout error rate spiked to 12.4% around the same time. Auth-service deployment regression identified.</p>
+                  <p style={{ fontSize: 10.5, color: 'rgba(250, 250, 250, 0.85)' }}>Shared by team · 2 hours ago</p>
+                </OuiText>
+              </div>
 
-              {/* Card 5: Resource utilization (line chart) */}
-              <OuiInsightCard title="Resource utilization">
-                <div style={{ height: 120 }}>
-                  <Chart>
-                    <Settings showLegend={false} />
-                    <Axis id="bottom" position="bottom" tickFormat={(d) => `${d}m`} />
-                    <Axis id="left" position="left" tickFormat={(d) => `${d}%`} domain={{ min: 0, max: 100 }} />
-                    <LineSeries
-                      id="cpu"
-                      xScaleType={ScaleType.Linear}
-                      yScaleType={ScaleType.Linear}
-                      xAccessor="x"
-                      yAccessors={['y']}
-                      data={[
-                        { x: 0, y: 45 },
-                        { x: 10, y: 48 },
-                        { x: 20, y: 52 },
-                        { x: 30, y: 58 },
-                        { x: 40, y: 55 },
-                        { x: 50, y: 62 },
-                        { x: 60, y: 62 },
-                      ]}
-                    />
-                  </Chart>
-                </div>
-              </OuiInsightCard>
+              <div className="emptySessionPage__briefingSeparator" />
 
-              {/* Card 6: Open a page */}
-              <OuiInsightCard variant="add" onClick={() => onOpenPage('new-tab', 'New Tab')}>
-                <div className="emptySessionPage__addCardHeader">
-                  <span className="emptySessionPage__addCardIcon">
-                    <OuiIcon type="plus" size="m" color="ghost" />
-                  </span>
-                  <span className="emptySessionPage__addCardTitle">Open another page</span>
-                </div>
-                <div className="emptySessionPage__addCardChips">
-                  <button type="button" className="emptySessionPage__addCardChip" onClick={(e) => { e.stopPropagation(); onOpenPage('dashboards'); }}>Dashboard</button>
-                  <button type="button" className="emptySessionPage__addCardChip" onClick={(e) => { e.stopPropagation(); onOpenPage('logs'); }}>Saved log</button>
-                  <button type="button" className="emptySessionPage__addCardChip" onClick={(e) => { e.stopPropagation(); onOpenPage('app-perf-traces'); }}>Trace</button>
-                  <button type="button" className="emptySessionPage__addCardChip" onClick={(e) => { e.stopPropagation(); onOpenPage('alerts'); }}>Alert</button>
-                </div>
-              </OuiInsightCard>
+              <div
+                className="emptySessionPage__briefingItem"
+                onMouseEnter={() => handleBriefingHover(2)}
+                onMouseDown={() => handleBriefingMouseDown(2)}
+                onMouseUp={() => handleBriefingHover(2)}>
+                <OuiText size="s">
+                  <p><strong>DNS Resolution Timeout</strong></p>
+                  <p>Resolved after the upstream fix was deployed. No further action needed.</p>
+                  <p style={{ fontSize: 10.5, color: 'rgba(250, 250, 250, 0.85)' }}>Resolved · 3 hours ago</p>
+                </OuiText>
+              </div>
             </div>
           </div>
         </div>

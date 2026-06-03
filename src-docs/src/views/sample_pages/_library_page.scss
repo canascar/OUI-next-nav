@@ -18,8 +18,13 @@
   width: 100%;
   height: 100%;
   padding: $ouiSizeL $ouiSizeL $ouiSizeL $ouiSizeL;
-  overflow: hidden;
+  overflow-y: auto;
+  position: relative;
   background-color: $ouiPageBackgroundColor;
+  background-image: lightOrDarkTheme(
+    unquote("radial-gradient(ellipse 50% 45% at 0% 0%, hsla(245, 85%, 90%, 0.65), transparent 65%), radial-gradient(ellipse 45% 38% at 100% 5%, hsla(215, 90%, 92%, 0.55), transparent 60%), radial-gradient(ellipse 50% 50% at 50% 50%, hsla(260, 70%, 94%, 0.35), transparent 70%), radial-gradient(ellipse 42% 38% at 95% 95%, hsla(270, 80%, 92%, 0.55), transparent 60%), radial-gradient(ellipse 40% 35% at 5% 100%, hsla(230, 80%, 92%, 0.50), transparent 60%)"),
+    unquote("radial-gradient(ellipse 50% 45% at 0% 0%, hsla(268, 80%, 32%, 0.55), transparent 65%), radial-gradient(ellipse 45% 38% at 100% 5%, hsla(250, 75%, 28%, 0.48), transparent 60%), radial-gradient(ellipse 50% 50% at 50% 50%, hsla(270, 60%, 22%, 0.30), transparent 70%), radial-gradient(ellipse 42% 38% at 95% 95%, hsla(285, 75%, 28%, 0.50), transparent 60%), radial-gradient(ellipse 40% 35% at 5% 100%, hsla(258, 70%, 26%, 0.48), transparent 60%)")
+  );
 }
 
 .libraryPage__content {
@@ -27,8 +32,24 @@
   max-width: 832px;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  overflow: hidden;
+  margin: 0 auto;
+}
+
+.libraryPage__headerFixed {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: 0 $ouiSizeL $ouiSizeL;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.libraryPage__headerInner {
+  width: 100%;
+  max-width: 832px;
 }
 
 .libraryPage__header {
@@ -63,11 +84,6 @@
   display: flex;
   flex-direction: column;
   gap: $ouiSizeS;
-  overflow-y: auto;
-  flex: 1;
-  min-height: 0;
-  margin-right: -#{$ouiSizeL};
-  padding-right: $ouiSizeL;
 }
 
 .libraryPage__empty {
