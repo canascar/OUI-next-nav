@@ -44,20 +44,22 @@ export const LoginPage = ({ onLogin }) => {
   };
 
   // Glass theme tokens
-  const bgColor = isDark ? '#0c0d12' : '#f8f7fc';
-  const panelBg = isDark ? '#15161a' : '#ffffff';
-  const borderColor = isDark ? '#23252b' : '#ececef';
+  const bgColor = isDark ? '#0d0818' : '#f8f7fc';
+  const panelBg = isDark ? '#181028' : '#ffffff';
+  const borderColor = isDark ? '#2c2042' : '#ececef';
 
-  // Glass canvas gradient (indigo/violet corner blobs)
+  // Glass canvas gradient (enhanced indigo/violet blobs)
   const bgGradient = isDark
-    ? `radial-gradient(ellipse 40% 35% at 0% 0%, hsla(245, 80%, 28%, 0.40), transparent 60%),
-       radial-gradient(ellipse 35% 30% at 100% 8%, hsla(215, 90%, 22%, 0.35), transparent 60%),
-       radial-gradient(ellipse 35% 30% at 100% 100%, hsla(260, 80%, 22%, 0.40), transparent 60%),
-       radial-gradient(ellipse 35% 30% at 5% 100%, hsla(230, 80%, 22%, 0.40), transparent 60%)`
-    : `radial-gradient(ellipse 40% 35% at 0% 0%, hsla(245, 80%, 90%, 0.55), transparent 60%),
-       radial-gradient(ellipse 35% 30% at 100% 8%, hsla(215, 90%, 92%, 0.45), transparent 60%),
-       radial-gradient(ellipse 35% 30% at 100% 100%, hsla(260, 80%, 92%, 0.45), transparent 60%),
-       radial-gradient(ellipse 35% 30% at 5% 100%, hsla(230, 80%, 92%, 0.40), transparent 60%)`;
+    ? `radial-gradient(ellipse 50% 45% at 0% 0%, hsla(268, 80%, 32%, 0.55), transparent 65%),
+       radial-gradient(ellipse 45% 38% at 100% 5%, hsla(250, 75%, 28%, 0.48), transparent 60%),
+       radial-gradient(ellipse 50% 50% at 50% 50%, hsla(270, 60%, 22%, 0.30), transparent 70%),
+       radial-gradient(ellipse 42% 38% at 95% 95%, hsla(285, 75%, 28%, 0.50), transparent 60%),
+       radial-gradient(ellipse 40% 35% at 5% 100%, hsla(258, 70%, 26%, 0.48), transparent 60%)`
+    : `radial-gradient(ellipse 50% 45% at 0% 0%, hsla(245, 85%, 90%, 0.65), transparent 65%),
+       radial-gradient(ellipse 45% 38% at 100% 5%, hsla(215, 90%, 92%, 0.55), transparent 60%),
+       radial-gradient(ellipse 50% 50% at 50% 50%, hsla(260, 70%, 94%, 0.35), transparent 70%),
+       radial-gradient(ellipse 42% 38% at 95% 95%, hsla(270, 80%, 92%, 0.55), transparent 60%),
+       radial-gradient(ellipse 40% 35% at 5% 100%, hsla(230, 80%, 92%, 0.50), transparent 60%)`;
 
   return (
     <div

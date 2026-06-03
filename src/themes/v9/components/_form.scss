@@ -76,10 +76,10 @@
 // Make append/prepend labels more visible in dark mode
 .ouiFormControlLayout--group > .ouiFormControlLayout__prepend,
 .ouiFormControlLayout--group > .ouiFormControlLayout__append {
-  background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.03), rgba(207, 228, 247, 0.08)) !important;
+  background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.03), rgba(250, 250, 250, 0.08)) !important;
 
   .ouiFormLabel {
-    color: lightOrDarkTheme(inherit, rgba(207, 228, 247, 0.85)) !important;
+    color: lightOrDarkTheme(inherit, rgba(250, 250, 250, 0.85)) !important;
   }
 }
 // sass-lint:enable no-important
@@ -165,7 +165,7 @@
 .ouiComboBoxOption:hover,
 .ouiComboBoxOption:focus {
   // sass-lint:disable no-important
-  background-color: lightOrDarkTheme(rgba(46, 74, 143, .08), rgba(122, 159, 212, .12)) !important;
+  background-color: lightOrDarkTheme(rgba(99, 102, 241, .08), rgba(165, 180, 252, .12)) !important;
   // sass-lint:enable no-important
 }
 
@@ -176,7 +176,7 @@
 // sass-lint:disable no-important
 .ouiTableRow:hover .ouiTableRowCell,
 .ouiTableRow-isClickable:hover .ouiTableRowCell {
-  background-color: lightOrDarkTheme(rgba(46, 74, 143, .06), rgba(122, 159, 212, .10)) !important;
+  background-color: lightOrDarkTheme(rgba(99, 102, 241, .06), rgba(165, 180, 252, .10)) !important;
 }
 // sass-lint:enable no-important
 
@@ -189,8 +189,8 @@
     0 2px 12px rgba(0, 0, 0, 0.12) #{','} 0 1px 4px rgba(0, 0, 0, 0.08)
   ) !important;
   border: 1px solid lightOrDarkTheme(
-    rgba(46, 74, 143, 0.08),
-    rgba(122, 159, 212, 0.12)
+    rgba(99, 102, 241, 0.08),
+    rgba(165, 180, 252, 0.12)
   ) !important;
 }
 
@@ -206,7 +206,7 @@
 
 .ouiFormControlLayout--group:hover,
 .ouiFormControlLayout--group:focus-within {
-  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)) !important;
+  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(99, 102, 241, 0.12), rgba(0, 0, 0, 0.25)) !important;
   transform: translateY(-1px) !important;
 }
 
@@ -264,15 +264,16 @@
 }
 // sass-lint:enable no-important, no-color-literals, leading-zero
 
-// Backdrop on modal and flyout overlays — no blur
+// Backdrop on modal and flyout overlays — translucent with blur
 // sass-lint:disable no-important, no-color-literals
 .ouiOverlayMask {
-  backdrop-filter: none;
-  background-color: rgba(red($ouiPageBackgroundColor), green($ouiPageBackgroundColor), blue($ouiPageBackgroundColor), .95) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  background-color: rgba(red($ouiPageBackgroundColor), green($ouiPageBackgroundColor), blue($ouiPageBackgroundColor), .60) !important;
 }
 
 .ouiFlyout {
-  border-color: lightOrDarkTheme(rgba(13, 48, 87, 0.30), rgba(207, 228, 247, 0.30)) !important;
+  border-color: lightOrDarkTheme(rgba(10, 10, 10, 0.30), rgba(250, 250, 250, 0.30)) !important;
 }
 // sass-lint:enable no-important, no-color-literals
 
@@ -372,7 +373,7 @@
 // Outline buttons hover - subtle lift with soft shadow
 .ouiButton:not(.ouiButton--fill):not(.ouiButton-isDisabled):hover,
 .ouiButton:not(.ouiButton--fill):not(.ouiButton-isDisabled):focus {
-  box-shadow: 0 4px 12px rgba(46, 74, 143, 0.15) !important;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15) !important;
   transform: translateY(-2px) !important;
 }
 
@@ -432,7 +433,7 @@
 .ouiFieldPassword:hover,
 .ouiSelect:hover,
 .ouiTextArea:hover {
-  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)) !important;
+  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(99, 102, 241, 0.12), rgba(0, 0, 0, 0.25)) !important;
 }
 
 .ouiFieldText:focus,
@@ -442,7 +443,7 @@
 .ouiSelect:focus,
 .ouiTextArea:focus {
   border-color: $ouiColorPrimary !important;
-  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)) !important;
+  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(99, 102, 241, 0.12), rgba(0, 0, 0, 0.25)) !important;
 }
 
 .ouiFieldText:active,
@@ -451,7 +452,7 @@
 .ouiFieldPassword:active,
 .ouiSelect:active,
 .ouiTextArea:active {
-  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)) !important;
+  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(99, 102, 241, 0.12), rgba(0, 0, 0, 0.25)) !important;
 }
 // sass-lint:enable no-important, no-color-literals
 
@@ -483,7 +484,7 @@
 
 .ouiDatePopoverButton:hover,
 .ouiDatePopoverButton:focus {
-  box-shadow: 0 4px 12px rgba(46, 74, 143, 0.15) !important;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15) !important;
   transform: translateY(-1px) !important;
 }
 
@@ -515,7 +516,7 @@
   &:hover,
   &:focus-within {
     transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25)) !important;
+    box-shadow: 0 4px 12px lightOrDarkTheme(rgba(99, 102, 241, 0.12), rgba(0, 0, 0, 0.25)) !important;
   }
 
   &:focus-within {

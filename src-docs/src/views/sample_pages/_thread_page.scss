@@ -713,12 +713,12 @@
 .threadPage__textarea textarea {
   padding-bottom: 36px;
   border-radius: $ouiFormControlBorderRadius !important;
-  border: 1px solid lightOrDarkTheme(#ececef, #23252b) !important;
-  background-color: lightOrDarkTheme($ouiColorEmptyShade, #15161a) !important;
+  border: 1px solid lightOrDarkTheme(#ececef, #2c2042) !important;
+  background-color: lightOrDarkTheme($ouiColorEmptyShade, #181028) !important;
   transition: border-color 200ms ease, box-shadow 200ms ease;
 
   &:hover {
-    border-color: lightOrDarkTheme(#e0e0e4, #2e3037) !important;
+    border-color: lightOrDarkTheme(#e0e0e4, #392a54) !important;
   }
 
   &:focus {
@@ -728,7 +728,7 @@
 }
 
 .threadPage__inputWrapper:hover .threadPage__textarea textarea:not(:focus) {
-  border-color: lightOrDarkTheme(#e0e0e4, #2e3037) !important;
+  border-color: lightOrDarkTheme(#e0e0e4, #392a54) !important;
 }
 
 // Plus (bottom-left) and send (bottom-right) inside the textarea

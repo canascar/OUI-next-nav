@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useState, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useMemo, useRef, useCallback, useContext } from 'react';
 
 import {
   OuiButtonIcon,
@@ -35,6 +35,7 @@ import {
 import { SOURCE_PAGE_MOCK } from './session_models';
 import { OllyAvatar } from './olly_avatar';
 import { Mascot } from '../../../../olly-mascot/Mascot';
+import { ThemeContext } from '../../components/with_theme';
 
 /**
  * Quick access shortcut definitions.
@@ -477,6 +478,11 @@ export const EmptySessionPage = ({
   favoriteItems = [],
   systemAlert = null,
 }) => {
+  const themeContext = useContext(ThemeContext);
+  const isDark = themeContext.theme === 'v9-dark';
+  const mascotColor = isDark ? ['#FFFFFF', '#D9DEE5'] : ['#14558E', '#153A5A'];
+  const mascotEyeColor = isDark ? '#181028' : '#fff';
+
   const [activeChip, setActiveChip] = useState('activity');
   const [searchQuery, setSearchQuery] = useState('');
   const [dismissedItems, setDismissedItems] = useState(new Set());
@@ -529,7 +535,7 @@ export const EmptySessionPage = ({
             {/* Mascot + status — above title */}
             <div className="emptySessionPage__headerRow">
               <div className="emptySessionPage__avatarWrap">
-                <Mascot size={32} idle bob={false} follow={false} />
+                <Mascot size={32} idle bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />
               </div>
               <span className="emptySessionPage__onlineStatus">
                 <span className="emptySessionPage__onlineDot" />

@@ -11,7 +11,7 @@
   position: relative;
   border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.10));
   border-radius: $ouiBorderRadius;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.85), rgba(21, 22, 26, 0.85));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.70), rgba(24, 16, 40, 0.70));
   -webkit-backdrop-filter: blur(20px) saturate(150%);
   backdrop-filter: blur(20px) saturate(150%);
   padding: $ouiSize;
@@ -135,7 +135,7 @@
 .ouiInsightCard__chip {
   display: inline-block;
   border: 1px solid $ouiColorLightShade;
-  background: lightOrDarkTheme(#f7f7f5, #1b1d22);
+  background: lightOrDarkTheme(#f7f7f5, #1f1633);
   border-radius: 999px;
   padding: 6px 16px;
   font-size: $ouiFontSizeS;
@@ -145,8 +145,8 @@
   transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
 
   &:hover {
-    background: lightOrDarkTheme(#ececef, #23252b);
-    border-color: lightOrDarkTheme(#e0e0e4, #2e3037);
+    background: lightOrDarkTheme(#ececef, #2c2042);
+    border-color: lightOrDarkTheme(#e0e0e4, #392a54);
     color: $ouiTextColor;
   }
 }

@@ -198,7 +198,7 @@
 // Popover panel border
 .ouiPopover__panel,
 .ouiPopover__panel.ouiPanel {
-  border: 1px solid #{lightOrDarkTheme(#ececef, #23252b)} !important;
+  border: 1px solid #{lightOrDarkTheme(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.12))} !important;
   border-radius: $ouiBorderRadius !important;
 }
 

@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useCallback, useRef, useState, useEffect } from 'react';
+import React, { useCallback, useRef, useState, useEffect, useContext } from 'react';
 
 import {
   OuiButtonIcon,
@@ -21,6 +21,7 @@ import { ThreadPanel } from './thread_panel';
 import { ResizeHandle } from './resize_handle';
 import { PagePanel, PAGE_TAB_ICONS } from './page_panel';
 import { Mascot } from '../../../../olly-mascot/Mascot';
+import { ThemeContext } from '../../components/with_theme';
 
 /**
  * SessionContainer — Two side-by-side panels, each with their own header.
@@ -226,6 +227,11 @@ export const SessionContainer = ({
   const isFullScreen = threadPanelState === 'full-screen';
   const isSideBySide = threadPanelState === 'side-by-side';
 
+  const themeContext = useContext(ThemeContext);
+  const isDark = themeContext.theme === 'v9-dark';
+  const mascotColor = isDark ? ['#FFFFFF', '#D9DEE5'] : ['#14558E', '#153A5A'];
+  const mascotEyeColor = isDark ? '#181028' : '#fff';
+
   // Olly chat pill — show/hide based on minimized state
   const showPill = isMinimized;
 
@@ -379,7 +385,7 @@ export const SessionContainer = ({
       {showPill && (
         <OuiOllyChatPill
           className={`sessionContainer__ollyChatPill`}
-          avatar={<Mascot size={28} idle bob={false} follow={false} />}
+          avatar={<Mascot size={28} idle bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />}
           message={aiButtonHighlight && aiPopoverVisible && aiPopoverText ? aiPopoverText : undefined}
           isHighlighted={aiButtonHighlight}
           onDismiss={handleDismissAiPopover}

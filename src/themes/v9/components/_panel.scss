@@ -58,12 +58,15 @@
 // Popover panel — frosted glass (floating)
 .ouiPopover__panel,
 .ouiPopover__panel.ouiPanel {
-  background: lightOrDarkTheme(rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.045)) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
-  backdrop-filter: blur(24px) saturate(160%) !important;
-  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.10)) !important;
+  background: lightOrDarkTheme(rgba(255, 255, 255, 0.62), rgba(24, 16, 40, 0.55)) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(185%) !important;
+  backdrop-filter: blur(30px) saturate(185%) !important;
+  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.12)) !important;
   border-radius: $ouiBorderRadius !important;
-  box-shadow: 0 2px 6px rgba(15, 15, 15, 0.06), 0 16px 36px rgba(15, 15, 15, 0.08) !important;
+  box-shadow: lightOrDarkTheme(
+    #{inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 2px 6px rgba(15, 15, 15, 0.06), 0 16px 36px rgba(15, 15, 15, 0.08)},
+    #{inset 0 1px 0 rgba(255, 255, 255, 0.10), 0 2px 6px rgba(0, 0, 0, 0.4), 0 16px 36px rgba(0, 0, 0, 0.45)}
+  ) !important;
 }
 
 // Datepicker popover
