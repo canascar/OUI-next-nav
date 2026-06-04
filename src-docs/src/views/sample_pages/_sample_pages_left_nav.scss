@@ -17,9 +17,27 @@
 @mixin brandGradient {
   background-color: $ouiPageBackgroundColor;
   background-image: lightOrDarkTheme(
-    unquote("radial-gradient(ellipse 80% 70% at 0% 0%, hsla(245, 40%, 82%, 0.35), transparent 70%), radial-gradient(ellipse 70% 60% at 100% 10%, hsla(210, 30%, 84%, 0.35), transparent 70%), radial-gradient(ellipse 90% 80% at 50% 100%, hsla(220, 20%, 86%, 0.3), transparent 70%), radial-gradient(ellipse 60% 50% at 80% 80%, hsla(250, 25%, 83%, 0.25), transparent 70%), radial-gradient(ellipse 100% 60% at 50% 40%, hsla(0, 0%, 92%, 0.25), transparent 65%)"),
-    unquote("radial-gradient(ellipse 80% 70% at 0% 0%, hsla(250, 35%, 38%, 0.4), transparent 70%), radial-gradient(ellipse 70% 60% at 100% 10%, hsla(220, 25%, 42%, 0.35), transparent 70%), radial-gradient(ellipse 90% 80% at 50% 100%, hsla(240, 20%, 36%, 0.3), transparent 70%), radial-gradient(ellipse 60% 50% at 80% 80%, hsla(260, 25%, 36%, 0.3), transparent 70%), radial-gradient(ellipse 100% 60% at 50% 40%, hsla(0, 0%, 50%, 0.15), transparent 65%)")
+    unquote("radial-gradient(ellipse 80% 70% at 0% 0%, hsla(245, 45%, 78%, 0.42), transparent 65%), radial-gradient(ellipse 60% 55% at 95% 5%, hsla(210, 30%, 82%, 0.36), transparent 60%), radial-gradient(ellipse 50% 45% at 12% 85%, hsla(230, 25%, 84%, 0.32), transparent 60%), radial-gradient(ellipse 90% 80% at 50% 100%, hsla(220, 20%, 85%, 0.32), transparent 70%), radial-gradient(ellipse 55% 50% at 75% 55%, hsla(260, 25%, 82%, 0.28), transparent 60%), radial-gradient(ellipse 42% 38% at 35% 20%, hsla(0, 0%, 88%, 0.36), transparent 55%), radial-gradient(ellipse 48% 42% at 80% 30%, hsla(0, 0%, 90%, 0.32), transparent 55%), radial-gradient(ellipse 65% 50% at 25% 50%, hsla(220, 10%, 90%, 0.26), transparent 60%), radial-gradient(ellipse 100% 55% at 50% 40%, hsla(0, 0%, 94%, 0.28), transparent 65%)"),
+    unquote("radial-gradient(ellipse 80% 70% at 0% 0%, hsla(255, 40%, 34%, 0.48), transparent 65%), radial-gradient(ellipse 60% 55% at 95% 5%, hsla(230, 28%, 36%, 0.4), transparent 60%), radial-gradient(ellipse 50% 45% at 12% 85%, hsla(245, 22%, 32%, 0.38), transparent 60%), radial-gradient(ellipse 90% 80% at 50% 100%, hsla(240, 20%, 30%, 0.32), transparent 70%), radial-gradient(ellipse 55% 50% at 75% 55%, hsla(270, 25%, 33%, 0.32), transparent 60%), radial-gradient(ellipse 42% 38% at 35% 20%, hsla(0, 0%, 55%, 0.2), transparent 55%), radial-gradient(ellipse 48% 42% at 80% 30%, hsla(0, 0%, 52%, 0.18), transparent 55%), radial-gradient(ellipse 65% 50% at 25% 50%, hsla(220, 8%, 48%, 0.16), transparent 60%), radial-gradient(ellipse 100% 55% at 50% 40%, hsla(0, 0%, 52%, 0.16), transparent 65%)")
   );
+}
+
+// BRAND GRADIENT BLUR OVERLAY — frosted layer above the gradient
+// Apply this mixin to add a blurred overlay that softens the blobs
+@mixin brandGradientBlur {
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: lightOrDarkTheme(
+      rgba(255, 255, 255, 0.15),
+      rgba(0, 0, 0, 0.1)
+    );
+    backdrop-filter: blur(60px) saturate(120%);
+    -webkit-backdrop-filter: blur(60px) saturate(120%);
+    pointer-events: none;
+    z-index: 0;
+  }
 }
 
 // Fixed-width popover panel for nav popovers (tools, workspace, apps)
@@ -864,6 +882,7 @@
 // Outer wrapper — Glass canvas gradient background (satin silver wash)
 .samplePagesWrapper {
   @include brandGradient;
+  @include brandGradientBlur;
   position: relative;
 
   // Satin glare overlay — animated shimmer
@@ -970,6 +989,7 @@
 // Login page — uses brand gradient
 .loginPage {
   @include brandGradient;
+  @include brandGradientBlur;
   position: relative;
 
   &::after {

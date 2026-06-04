@@ -175,7 +175,7 @@
 // Message bubble (proactive insight)
 .ouiOllyChatPill__message {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
   padding: 8px 12px;
   cursor: pointer;
@@ -209,19 +209,45 @@
   margin: 0;
 }
 
-// Dismiss button
-.ouiOllyChatPill__dismiss {
+// Quick reply buttons
+.ouiOllyChatPill__quickReplies {
+  display: flex;
+  gap: 6px;
+  padding: 0 4px;
+}
+
+.ouiOllyChatPill__quickReply {
   appearance: none;
-  border: none;
-  background: none;
-  padding: 0;
-  cursor: pointer;
-  font-size: 16px;
-  line-height: 1;
+  border: 1px solid $ouiColorLightShade;
+  border-radius: 999px;
+  background: transparent;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-family: inherit;
+  font-weight: 500;
   color: $ouiColorMediumShade;
-  flex-shrink: 0;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
 
   &:hover {
-    color: $ouiTextColor;
+    border-color: $ouiColorPrimary;
+    color: $ouiColorPrimary;
+    background: rgba($ouiColorPrimary, 0.06);
   }
+
+  &--primary {
+    border-color: rgba($ouiColorPrimary, 0.4);
+    color: $ouiColorPrimary;
+
+    &:hover {
+      border-color: $ouiColorPrimary;
+      background: rgba($ouiColorPrimary, 0.1);
+    }
+  }
+}
+
+// Dismiss button — uses OuiButtonIcon, just align it
+.ouiOllyChatPill__dismiss {
+  flex-shrink: 0;
+  align-self: center;
 }

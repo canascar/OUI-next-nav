@@ -421,10 +421,14 @@ export const SessionContainer = ({
             avatar={<Mascot size={28} idle bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />}
             avatarHover={<Mascot size={28} expression="happy" idle={false} bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />}
             message={aiButtonHighlight && aiPopoverVisible && aiPopoverText ? aiPopoverText : undefined}
+            quickReplies={aiButtonHighlight && aiPopoverVisible && aiPopoverText ? [
+              { label: 'Yes, investigate', primary: true },
+              { label: 'Show me the data' },
+            ] : undefined}
             isHighlighted={aiButtonHighlight}
             onDismiss={handleDismissAiPopover}
             onSubmit={(val) => handleExpandChat(val)}
-            onActivate={() => handleExpandChat()}
+            onActivate={(val) => handleExpandChat(val)}
           />
         </div>
       )}

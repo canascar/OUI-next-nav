@@ -13,6 +13,7 @@ import React, {
 import classNames from 'classnames';
 import { CommonProps } from '../../common';
 import { OuiToolTip } from '../../tool_tip';
+import { OuiButtonIcon } from '../../button';
 
 export interface OuiOllyChatPillProps
   extends CommonProps,
@@ -33,6 +34,10 @@ export interface OuiOllyChatPillProps
    * Optional message displayed above the input (e.g. proactive AI insight).
    */
   message?: ReactNode;
+  /**
+   * Quick reply options shown below the message. Array of { label, primary? }.
+   */
+  quickReplies?: Array<{ label: string; primary?: boolean }>;
   /**
    * Callback when the user dismisses the message.
    */
@@ -56,6 +61,7 @@ export const OuiOllyChatPill: FunctionComponent<OuiOllyChatPillProps> = ({
   avatar,
   avatarHover,
   message,
+  quickReplies,
   onDismiss,
   onSubmit,
   onActivate,
@@ -109,10 +115,12 @@ export const OuiOllyChatPill: FunctionComponent<OuiOllyChatPillProps> = ({
         <div className="ouiOllyChatPill__message" onClick={() => onActivate && onActivate()}>
           <p className="ouiOllyChatPill__messageText">{message}</p>
           {onDismiss && (
-            <button
-              type="button"
-              className="ouiOllyChatPill__dismiss"
+            <OuiButtonIcon
+              iconType="cross"
               aria-label="Dismiss"
+              size="xs"
+              color="text"
+              className="ouiOllyChatPill__dismiss"
               onClick={(e) => {
                 e.stopPropagation();
                 setIsDismissing(true);
@@ -120,10 +128,25 @@ export const OuiOllyChatPill: FunctionComponent<OuiOllyChatPillProps> = ({
                   setIsDismissing(false);
                   onDismiss();
                 }, 400);
-              }}>
-              ×
-            </button>
+              }}
+            />
           )}
+        </div>
+      )}
+      {message && !isDismissing && quickReplies && quickReplies.length > 0 && (
+        <div className="ouiOllyChatPill__quickReplies">
+          {quickReplies.map((reply, i) => (
+            <button
+              key={i}
+              type="button"
+              className={`ouiOllyChatPill__quickReply${reply.primary ? ' ouiOllyChatPill__quickReply--primary' : ''}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onActivate) onActivate(reply.label);
+              }}>
+              {reply.label}
+            </button>
+          ))}
         </div>
       )}
       <div className="ouiOllyChatPill__inputRow">
