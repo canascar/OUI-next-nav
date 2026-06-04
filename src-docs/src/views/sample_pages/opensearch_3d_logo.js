@@ -163,7 +163,7 @@ export const OpenSearch3DLogo = ({ size = 240 }) => {
     // Animate with physics
     const animate = () => {
       frameRef.current = requestAnimationFrame(animate);
-      time += 0.004;
+      time += 0.012;
 
       if (!hasInteracted) {
         // Gentle sway — oscillate back and forth (slow)
