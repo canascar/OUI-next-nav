@@ -11,6 +11,17 @@
 
 // sass-lint:disable no-misspelled-properties, no-color-literals, leading-zero
 
+// ============================================================
+// BRAND GRADIENT MIXIN — Single source for all sample page backgrounds
+// ============================================================
+@mixin brandGradient {
+  background-color: $ouiPageBackgroundColor;
+  background-image: lightOrDarkTheme(
+    unquote("radial-gradient(ellipse 80% 70% at 0% 0%, hsla(245, 40%, 82%, 0.35), transparent 70%), radial-gradient(ellipse 70% 60% at 100% 10%, hsla(210, 30%, 84%, 0.35), transparent 70%), radial-gradient(ellipse 90% 80% at 50% 100%, hsla(220, 20%, 86%, 0.3), transparent 70%), radial-gradient(ellipse 60% 50% at 80% 80%, hsla(250, 25%, 83%, 0.25), transparent 70%), radial-gradient(ellipse 100% 60% at 50% 40%, hsla(0, 0%, 92%, 0.25), transparent 65%)"),
+    unquote("radial-gradient(ellipse 80% 70% at 0% 0%, hsla(250, 35%, 38%, 0.4), transparent 70%), radial-gradient(ellipse 70% 60% at 100% 10%, hsla(220, 25%, 42%, 0.35), transparent 70%), radial-gradient(ellipse 90% 80% at 50% 100%, hsla(240, 20%, 36%, 0.3), transparent 70%), radial-gradient(ellipse 60% 50% at 80% 80%, hsla(260, 25%, 36%, 0.3), transparent 70%), radial-gradient(ellipse 100% 60% at 50% 40%, hsla(0, 0%, 50%, 0.15), transparent 65%)")
+  );
+}
+
 // Fixed-width popover panel for nav popovers (tools, workspace, apps)
 .samplePagesLeftNav__popoverPanel {
   width: 280px;
@@ -323,6 +334,7 @@
   align-items: center;
   height: 100%;
   z-index: 2;
+  animation: contentPanelFadeIn 400ms ease-out both;
 }
 
 // Logo header (collapsed)
@@ -849,28 +861,48 @@
 // CONTENT PANEL (white rounded wrapper for page content)
 // ============================================================
 
-// Outer wrapper — Glass canvas gradient background (fractal satin)
+// Outer wrapper — Glass canvas gradient background (satin silver wash)
 .samplePagesWrapper {
-  background-color: $ouiPageBackgroundColor;
-  background-image:
-    lightOrDarkTheme(
-      unquote("radial-gradient(ellipse 45% 38% at 8% 12%, hsla(245, 60%, 82%, 0.55), transparent 55%), radial-gradient(ellipse 38% 30% at 92% 8%, hsla(220, 55%, 84%, 0.45), transparent 50%), radial-gradient(ellipse 55% 50% at 50% 45%, hsla(250, 25%, 80%, 0.50), transparent 65%), radial-gradient(ellipse 40% 34% at 75% 70%, hsla(265, 50%, 84%, 0.45), transparent 55%), radial-gradient(ellipse 42% 36% at 20% 80%, hsla(235, 45%, 83%, 0.42), transparent 55%), radial-gradient(ellipse 34% 28% at 60% 20%, hsla(255, 35%, 86%, 0.38), transparent 50%), radial-gradient(ellipse 30% 25% at 35% 65%, hsla(240, 40%, 85%, 0.35), transparent 50%)"),
-      unquote("radial-gradient(ellipse 48% 40% at 8% 12%, hsla(258, 35%, 42%, 0.55), transparent 55%), radial-gradient(ellipse 40% 32% at 92% 8%, hsla(240, 30%, 40%, 0.48), transparent 50%), radial-gradient(ellipse 60% 54% at 50% 45%, hsla(248, 15%, 46%, 0.50), transparent 65%), radial-gradient(ellipse 42% 35% at 75% 70%, hsla(275, 32%, 42%, 0.48), transparent 55%), radial-gradient(ellipse 44% 38% at 20% 80%, hsla(245, 28%, 40%, 0.45), transparent 55%), radial-gradient(ellipse 36% 30% at 60% 20%, hsla(252, 22%, 44%, 0.40), transparent 50%), radial-gradient(ellipse 32% 27% at 35% 65%, hsla(262, 25%, 43%, 0.38), transparent 50%)")
+  @include brandGradient;
+  position: relative;
+
+  // Satin glare overlay — animated shimmer
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: lightOrDarkTheme(
+      linear-gradient(125deg, transparent 30%, rgba(255, 255, 255, 0.03) 38%, rgba(255, 255, 255, 0.07) 50%, rgba(255, 255, 255, 0.03) 62%, transparent 70%),
+      linear-gradient(125deg, transparent 30%, rgba(255, 255, 255, 0.015) 38%, rgba(255, 255, 255, 0.035) 50%, rgba(255, 255, 255, 0.015) 62%, transparent 70%)
     );
+    background-size: 400% 100%;
+    animation: satinGlare 60s linear infinite;
+    z-index: 0;
+  }
+}
+
+@keyframes satinGlare {
+  0% { background-position: 300% 0; opacity: 0; }
+  15% { opacity: 1; }
+  70% { opacity: 1; }
+  90% { background-position: 0% 0; opacity: 0; }
+  100% { background-position: 0% 0; opacity: 0; }
 }
 
 .samplePagesContentPanel {
   height: 100%;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.62), rgba(24, 16, 40, 0.55));
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  backdrop-filter: blur(24px) saturate(160%);
-  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.10));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0.04));
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.08));
   border-radius: 12px;
   overflow: hidden;
   box-shadow: lightOrDarkTheme(
     #{0 1px 2px rgba(15, 15, 15, 0.04), 0 8px 24px rgba(15, 15, 15, 0.04)},
-    #{inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3)}
+    #{inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.4)}
   );
+  animation: contentPanelFadeIn 500ms ease-out both;
 
   // No border-radius when onboarding welcome is showing
   &:has(.onboardWizard__intro) {
@@ -921,5 +953,36 @@
   to {
     width: 0;
     opacity: 0;
+  }
+}
+
+@keyframes contentPanelFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Login page — uses brand gradient
+.loginPage {
+  @include brandGradient;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: lightOrDarkTheme(
+      linear-gradient(125deg, transparent 40%, rgba(255, 255, 255, 0.08) 45%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.08) 55%, transparent 60%),
+      linear-gradient(125deg, transparent 40%, rgba(255, 255, 255, 0.03) 45%, rgba(255, 255, 255, 0.06) 50%, rgba(255, 255, 255, 0.03) 55%, transparent 60%)
+    );
+    background-size: 300% 100%;
+    animation: satinGlare 60s linear infinite;
+    z-index: 0;
   }
 }

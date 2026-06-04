@@ -266,4 +266,25 @@
     border-radius: $ouiButtonBorderRadius !important;
   }
 }
+
+// Empty buttons — smooth hover transitions
+.ouiButtonEmpty,
+.ouiSmallButtonEmpty,
+.ouiButtonEmpty__content,
+.ouiSmallButtonEmpty__content {
+  transition: color 180ms ease,
+              background-color 180ms ease,
+              transform 200ms cubic-bezier(.2, .7, .2, 1) !important;
+}
+
+.ouiButtonEmpty:hover:not(:disabled),
+.ouiSmallButtonEmpty:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.ouiButtonEmpty:active:not(:disabled),
+.ouiSmallButtonEmpty:active:not(:disabled) {
+  transform: translateY(0);
+}
+
 // sass-lint:enable no-important, no-color-literals

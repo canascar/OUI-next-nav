@@ -263,6 +263,11 @@
 
 .dashboardPage__content {
   max-width: 1200px;
+
+  // Allow cards to size naturally instead of stretching to equal height
+  .ouiFlexGroup {
+    align-items: flex-start;
+  }
 }
 
 .dashboardPage__alertList {

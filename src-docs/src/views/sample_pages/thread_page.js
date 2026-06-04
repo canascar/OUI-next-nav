@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useContext } from 'react';
 
 import {
   OuiButtonIcon,
@@ -34,6 +34,8 @@ import {
 
 import { DetailPageHeader } from './detail_page_header';
 import { ProgressTracker } from './progress_tracker';
+import { Mascot } from '../../../../olly-mascot/Mascot';
+import { ThemeContext } from '../../components/with_theme';
 import {
   Chart,
   Settings,
@@ -1498,6 +1500,11 @@ export const ThreadPage = ({
   onPageChange,
   onNavigate,
 }) => {
+  const themeContext = useContext(ThemeContext);
+  const isDark = themeContext.theme === 'v9-dark';
+  const mascotColor = isDark ? ['#FFFFFF', '#D9DEE5'] : ['#14558E', '#153A5A'];
+  const mascotEyeColor = isDark ? '#181028' : '#fff';
+
   const threadKey = selectedItem || (onNavigate ? null : 'latency-spike');
   const thread = (threadKey && THREADS[threadKey]) || NEW_THREAD;
   const initialMessages = pendingMessages || thread.messages;
@@ -2113,6 +2120,29 @@ export const ThreadPage = ({
           <div className="threadPage__feed" ref={feedRef}>
             {messages.length === 0 && !isTyping && (
               <div className="threadPage__emptyState">
+                <div
+                  className="threadPage__emptyMascot threadPage__emptyMascot--popIn"
+                  ref={(el) => {
+                    if (el && !el.dataset.ready) {
+                      el.addEventListener('animationend', () => {
+                        el.classList.remove('threadPage__emptyMascot--popIn');
+                        el.classList.add('threadPage__emptyMascot--ready');
+                        el.dataset.ready = 'true';
+                      }, { once: true });
+                    }
+                  }}
+                  onMouseDown={(e) => {
+                    e.currentTarget.classList.add('threadPage__emptyMascot--squish');
+                  }}
+                  onMouseUp={(e) => {
+                    e.currentTarget.classList.remove('threadPage__emptyMascot--squish');
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.classList.remove('threadPage__emptyMascot--squish');
+                  }}
+                  style={{ cursor: 'pointer' }}>
+                  <Mascot size={48} expression={undefined} idle bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />
+                </div>
                 <h3 className="threadPage__emptyTitle">How can I help?</h3>
                 <div className="threadPage__emptySuggestions">
                   <button

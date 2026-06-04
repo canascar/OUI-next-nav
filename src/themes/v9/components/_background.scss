@@ -5,25 +5,18 @@
 
 // sass-lint:disable no-color-literals, leading-zero, no-trailing-zero, no-important
 
-// Glass Theme — Enhanced canvas gradients for glass UI
+// Glass Theme — Canvas gradient applied to html (uses same values as brandGradient mixin in sample pages)
 
 @if (lightness($ouiPageBackgroundColor) < 50) {
-  // ============================================================
-  // DARK MODE — Deep violet canvas with vivid gradient blobs
-  // ============================================================
+  // DARK MODE
   html {
     background-color: $ouiPageBackgroundColor;
     background-image:
-      // Top-left: warm violet bloom (larger, stronger)
-      radial-gradient(ellipse 50% 45% at 0% 0%, hsl(268, 80%, 32%, 0.55), transparent 65%),
-      // Top-right: cool indigo
-      radial-gradient(ellipse 45% 38% at 100% 5%, hsl(250, 75%, 28%, 0.48), transparent 60%),
-      // Center: subtle warm glow (makes glass surfaces pop)
-      radial-gradient(ellipse 50% 50% at 50% 50%, hsl(270, 60%, 22%, 0.30), transparent 70%),
-      // Bottom-right: magenta-violet
-      radial-gradient(ellipse 42% 38% at 95% 95%, hsl(285, 75%, 28%, 0.50), transparent 60%),
-      // Bottom-left: deep blue-violet
-      radial-gradient(ellipse 40% 35% at 5% 100%, hsl(258, 70%, 26%, 0.48), transparent 60%);
+      radial-gradient(ellipse 80% 70% at 0% 0%, hsla(250, 35%, 38%, 0.4), transparent 70%),
+      radial-gradient(ellipse 70% 60% at 100% 10%, hsla(220, 25%, 42%, 0.35), transparent 70%),
+      radial-gradient(ellipse 90% 80% at 50% 100%, hsla(240, 20%, 36%, 0.3), transparent 70%),
+      radial-gradient(ellipse 60% 50% at 80% 80%, hsla(260, 25%, 36%, 0.3), transparent 70%),
+      radial-gradient(ellipse 100% 60% at 50% 40%, hsla(0, 0%, 50%, 0.15), transparent 65%);
     background-attachment: fixed;
     min-height: 100vh;
     color: $ouiTextColor;
@@ -42,22 +35,15 @@
   }
 
 } @else {
-  // ============================================================
-  // LIGHT MODE — Opal canvas with enhanced indigo/violet blobs
-  // ============================================================
+  // LIGHT MODE
   html {
     background-color: $ouiPageBackgroundColor;
     background-image:
-      // Top-left: indigo bloom (larger, more vibrant)
-      radial-gradient(ellipse 50% 45% at 0% 0%, hsl(245, 85%, 90%, 0.65), transparent 65%),
-      // Top-right: sky blue
-      radial-gradient(ellipse 45% 38% at 100% 5%, hsl(215, 90%, 92%, 0.55), transparent 60%),
-      // Center: warm lavender glow
-      radial-gradient(ellipse 50% 50% at 50% 50%, hsl(260, 70%, 94%, 0.35), transparent 70%),
-      // Bottom-right: violet
-      radial-gradient(ellipse 42% 38% at 95% 95%, hsl(270, 80%, 92%, 0.55), transparent 60%),
-      // Bottom-left: periwinkle
-      radial-gradient(ellipse 40% 35% at 5% 100%, hsl(230, 80%, 92%, 0.50), transparent 60%);
+      radial-gradient(ellipse 80% 70% at 0% 0%, hsla(245, 40%, 82%, 0.35), transparent 70%),
+      radial-gradient(ellipse 70% 60% at 100% 10%, hsla(210, 30%, 84%, 0.35), transparent 70%),
+      radial-gradient(ellipse 90% 80% at 50% 100%, hsla(220, 20%, 86%, 0.3), transparent 70%),
+      radial-gradient(ellipse 60% 50% at 80% 80%, hsla(250, 25%, 83%, 0.25), transparent 70%),
+      radial-gradient(ellipse 100% 60% at 50% 40%, hsla(0, 0%, 92%, 0.25), transparent 65%);
     background-attachment: fixed;
     min-height: 100vh;
     color: $ouiTextColor;

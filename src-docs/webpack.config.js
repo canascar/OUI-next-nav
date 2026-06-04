@@ -114,6 +114,13 @@ const webpackConfig = {
         },
       },
       {
+        test: /\.glb$/,
+        loader: 'file-loader',
+        options: {
+          esModule: false,
+        },
+      },
+      {
         test: /\.(png|jp(e*)g|svg|gif)$/,
         loader: 'url-loader',
         options: {

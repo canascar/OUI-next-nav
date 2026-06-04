@@ -20,11 +20,8 @@
   padding: $ouiSizeL $ouiSizeL $ouiSizeL $ouiSizeL;
   overflow-y: auto;
   position: relative;
-  background-color: $ouiPageBackgroundColor;
-  background-image: lightOrDarkTheme(
-    unquote("radial-gradient(ellipse 45% 38% at 8% 12%, hsla(245, 60%, 82%, 0.55), transparent 55%), radial-gradient(ellipse 38% 30% at 92% 8%, hsla(220, 55%, 84%, 0.45), transparent 50%), radial-gradient(ellipse 55% 50% at 50% 45%, hsla(250, 25%, 80%, 0.50), transparent 65%), radial-gradient(ellipse 40% 34% at 75% 70%, hsla(265, 50%, 84%, 0.45), transparent 55%), radial-gradient(ellipse 42% 36% at 20% 80%, hsla(235, 45%, 83%, 0.42), transparent 55%), radial-gradient(ellipse 34% 28% at 60% 20%, hsla(255, 35%, 86%, 0.38), transparent 50%), radial-gradient(ellipse 30% 25% at 35% 65%, hsla(240, 40%, 85%, 0.35), transparent 50%)"),
-    unquote("radial-gradient(ellipse 48% 40% at 8% 12%, hsla(258, 35%, 42%, 0.55), transparent 55%), radial-gradient(ellipse 40% 32% at 92% 8%, hsla(240, 30%, 40%, 0.48), transparent 50%), radial-gradient(ellipse 60% 54% at 50% 45%, hsla(248, 15%, 46%, 0.50), transparent 65%), radial-gradient(ellipse 42% 35% at 75% 70%, hsla(275, 32%, 42%, 0.48), transparent 55%), radial-gradient(ellipse 44% 38% at 20% 80%, hsla(245, 28%, 40%, 0.45), transparent 55%), radial-gradient(ellipse 36% 30% at 60% 20%, hsla(252, 22%, 44%, 0.40), transparent 50%), radial-gradient(ellipse 32% 27% at 35% 65%, hsla(262, 25%, 43%, 0.38), transparent 50%)")
-  );
+  @include brandGradient;
+  animation: screenFadeIn 500ms ease-out both;
 
   // Top fade handled by JS scroll handler (per-item opacity)
 }
@@ -68,6 +65,7 @@
   .emptySessionPage__chips {
     flex-wrap: nowrap;
     overflow-x: auto;
+    overflow-y: hidden;
     justify-content: flex-start;
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -104,7 +102,18 @@
   gap: $ouiSizeS;
 
   .emptySessionPage__listItem {
-    transition: opacity 100ms ease-out, background-color 200ms ease, border-color 200ms ease, transform 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    background: lightOrDarkTheme(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.04));
+    border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.06));
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    transition: background-color 200ms ease, border-color 200ms ease, transform 250ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 250ms ease, opacity 100ms ease-out;
+
+    &:hover {
+      background: lightOrDarkTheme(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.07));
+      border-color: lightOrDarkTheme(rgba(99, 102, 241, 0.3), rgba(165, 180, 252, 0.2));
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
+    }
   }
 }
 
@@ -116,4 +125,15 @@
   padding: $ouiSizeXL 0;
   color: $ouiColorMediumShade;
   font-size: $ouiFontSizeS;
+}
+
+@keyframes screenFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

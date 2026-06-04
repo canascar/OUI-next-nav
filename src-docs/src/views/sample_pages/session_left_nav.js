@@ -288,7 +288,7 @@ export const SessionLeftNav = ({
           onMouseEnter={() => openNavPopover('profile')}
           onMouseLeave={() => closeNavPopover()}>
           <OuiPopover
-            button={<OuiAvatar name="OS" size="s" />}
+            button={<OuiAvatar name="John" size="s" color="#F8A5C2" />}
             isOpen={navPopover === 'profile'}
             closePopover={() => setNavPopover(null)}
             anchorPosition="rightDown"

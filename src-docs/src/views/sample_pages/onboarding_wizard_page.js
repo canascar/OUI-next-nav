@@ -9,11 +9,12 @@
  * GitHub history for details.
  */
 
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo, useContext } from 'react';
 
 import {
   OuiButtonIcon,
   OuiIcon,
+  OuiSmallButtonEmpty,
   OuiText,
   OuiTitle,
   OuiSpacer,
@@ -25,6 +26,9 @@ import {
 } from '../../../../src/components';
 
 import { SessionLeftNav } from './session_left_nav';
+import { Mascot } from '../../../../olly-mascot/Mascot';
+import { ThemeContext } from '../../components/with_theme';
+import { OpenSearch3DLogo } from './opensearch_3d_logo';
 
 /**
  * STEPS CONFIGURATION
@@ -43,7 +47,7 @@ const STEPS = [
     mainStep: 1,
     subStep: 1,
     question:
-      'Welcome to OpenSearch for Observability. I\u2019ll help you set up your data. What would you like to observe?',
+      'Welcome to OpenSearch Observability. I\u2019m Olly, I\u2019ll help you set up your data. What would you like to observe?',
     optionType: 'chips',
     options: [
       { key: 'application', label: 'Instrument application' },
@@ -501,7 +505,7 @@ const TelemetryStoragePanel = ({ selectedOption }) => {
             : ''
         }`}>
         <div className="onboardWizard__storageCardHeader">
-          <OuiIcon type={recommendation.icon} size="l" />
+          <OuiIcon type={recommendation.icon} size="xl" />
           <div>
             <OuiText size="s">
               <strong>{recommendation.type}</strong>
@@ -965,6 +969,11 @@ const RightPanelContent = ({
 // ─────────────────────────────────────────────
 
 export const OnboardingWizardPage = () => {
+  const themeContext = useContext(ThemeContext);
+  const isDark = themeContext.theme === 'v9-dark';
+  const mascotColor = isDark ? ['#FFFFFF', '#D9DEE5'] : ['#14558E', '#153A5A'];
+  const mascotEyeColor = isDark ? '#181028' : '#fff';
+
   const [showIntro, setShowIntro] = useState(true);
   const [introExiting, setIntroExiting] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -992,7 +1001,7 @@ export const OnboardingWizardPage = () => {
   const currentSelection = selections[currentStep] ?? step.defaultSelection ?? null;
   const isConfirmed = !!confirmedSteps[currentStep];
 
-  // Stream the current step's question text when step changes
+  // Stream the current step's question text when step changes — character by character
   useEffect(() => {
     // Clear previous timers
     streamTimers.current.forEach(clearTimeout);
@@ -1002,21 +1011,26 @@ export const OnboardingWizardPage = () => {
     const fullText = step.dynamicQuestion
       ? step.dynamicQuestion(selections)
       : step.question;
-    const tokens = fullText.split(/(\s+)/);
     setStreamedText('');
     setIsStreaming(true);
 
-    let built = '';
-    tokens.forEach((token, i) => {
-      const timer = setTimeout(() => {
-        built += token;
-        setStreamedText(built);
-        if (i === tokens.length - 1) {
-          setIsStreaming(false);
-        }
-      }, i * 30);
-      streamTimers.current.push(timer);
-    });
+    const CHAR_SPEED = 22; // ms per character
+    const MASCOT_PULSE_DURATION = 3000; // mascot pops in and pulses for 3s before typing starts
+    let charIdx = 0;
+
+    const typeNext = () => {
+      if (charIdx < fullText.length) {
+        charIdx++;
+        setStreamedText(fullText.slice(0, charIdx));
+        const timer = setTimeout(typeNext, CHAR_SPEED);
+        streamTimers.current.push(timer);
+      } else {
+        setIsStreaming(false);
+      }
+    };
+
+    const startTimer = setTimeout(typeNext, MASCOT_PULSE_DURATION);
+    streamTimers.current.push(startTimer);
 
     return () => {
       streamTimers.current.forEach(clearTimeout);
@@ -1059,7 +1073,7 @@ export const OnboardingWizardPage = () => {
         feedEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
       }
     });
-  }, [currentStep, isConfirmed, isProcessing, streamedText]);
+  }, [currentStep, isConfirmed, isProcessing, isStreaming, streamedText]);
 
   const handleChipSelect = useCallback(
     (key) => {
@@ -1279,19 +1293,24 @@ export const OnboardingWizardPage = () => {
     // Current step: assistant question (with typing animation)
     messages.push(
       <div key={`q-${currentStep}`} className="threadPage__message threadPage__message--assistant">
-        <div className="threadPage__bubble threadPage__bubble--assistant">
-          <OuiText size="s">
-            {streamedText.split('\n\n').map((paragraph, idx) => (
-              <p key={idx}>{paragraph}</p>
-            ))}
-          </OuiText>
-          {!isStreaming && !isConfirmed && (
-            <>
-              <OuiSpacer size="m" />
-              {/* Render interactive options after typing completes */}
-              {renderOptions()}
-            </>
-          )}
+        <div className="onboardWizard__assistantRow">
+          <div className={`onboardWizard__assistantAvatar onboardWizard__assistantAvatar--popIn${isStreaming && !streamedText ? ' onboardWizard__assistantAvatar--pulsing' : ''}`}>
+            <Mascot size={28} idle bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />
+          </div>
+          <div className="threadPage__bubble threadPage__bubble--assistant">
+            {streamedText && (
+              <OuiText size="s">
+                {streamedText.split('\n\n').map((paragraph, idx) => (
+                  <p key={idx}>{paragraph}{isStreaming && idx === streamedText.split('\n\n').length - 1 && <span className="onboardWizard__typeCursor" />}</p>
+                ))}
+              </OuiText>
+            )}
+            {!isStreaming && !isConfirmed && (
+              <div className="onboardWizard__optionsReveal onboardWizard__optionsReveal--inline">
+                {renderOptions()}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -1474,7 +1493,7 @@ export const OnboardingWizardPage = () => {
             style={{ flex: 1, minWidth: 0, position: 'relative' }}>
             <div className={`onboardWizard__intro${introExiting ? ' onboardWizard__intro--exiting' : ''}`}>
               <div className="onboardWizard__introContent">
-                <OuiIcon type="logo_opensearch" size="xxl" />
+                <OpenSearch3DLogo size={320} />
                 <OuiSpacer size="l" />
                 <OuiTitle size="l">
                   <h1>Welcome to OpenSearch</h1>
@@ -1490,6 +1509,13 @@ export const OnboardingWizardPage = () => {
                   onClick={handleStartOnboarding}>
                   Get started
                 </button>
+                <OuiSpacer size="m" />
+                <OuiSmallButtonEmpty
+                  iconType="arrowRight"
+                  iconSide="right"
+                  onClick={() => { window.location.hash = '/sample-pages'; }}>
+                  Skip onboarding
+                </OuiSmallButtonEmpty>
               </div>
             </div>
           </div>
@@ -1633,6 +1659,16 @@ export const OnboardingWizardPage = () => {
                   allSelections={selections}
                 />
               </div>
+            </div>
+
+            {/* Skip onboarding — bottom right */}
+            <div className="onboardWizard__skipLink--fixed">
+              <OuiSmallButtonEmpty
+                iconType="arrowRight"
+                iconSide="right"
+                onClick={() => { window.location.hash = '/sample-pages'; }}>
+                Skip onboarding
+              </OuiSmallButtonEmpty>
             </div>
           </div>
         </div>

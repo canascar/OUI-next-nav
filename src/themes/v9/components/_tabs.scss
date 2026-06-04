@@ -10,8 +10,11 @@
 
 // Tab list — muted track container
 .ouiTabs {
-  background-color: lightOrDarkTheme(#fbfbf9, #101115) !important;
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.04)) !important;
   border-radius: $ouiBorderRadius !important;
+  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.06)) !important;
+  backdrop-filter: blur(12px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(140%) !important;
   padding: 4px !important;
   gap: 4px;
   border: 1px solid lightOrDarkTheme(#ececef, #23252b) !important;
@@ -44,15 +47,13 @@
     display: none !important;
   }
 
-  // Selected tab — elevated pill
+  // Selected tab — elevated pill with clear distinction
   &.ouiTab-isSelected {
-    background-color: lightOrDarkTheme(#ffffff, #15161a) !important;
+    background-color: lightOrDarkTheme(#ffffff, rgba(255, 255, 255, 0.12)) !important;
     color: $ouiTextColor !important;
-    // sass-lint:disable indentation
-    box-shadow:
-    0 1px 2px 0 rgba(0, 0, 0, .06),
-    0 1px 3px 0 rgba(0, 0, 0, .1) !important;
-    // sass-lint:enable indentation
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+    border: 1px solid lightOrDarkTheme(rgba(99, 102, 241, 0.3), rgba(99, 102, 241, 0.4)) !important;
+    font-weight: 600 !important;
   }
 
   // Hover state for unselected tabs

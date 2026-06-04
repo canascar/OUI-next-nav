@@ -181,6 +181,11 @@
   padding-bottom: 32px;
   width: 100%;
   max-width: 640px;
+
+  // Space between tabs and content below
+  .ouiTabs {
+    margin-bottom: 8px;
+  }
 }
 
 .emptySessionPage__rightCol {
@@ -1393,29 +1398,70 @@ textarea.emptySessionPage__textarea {
   transition: opacity 200ms ease;
 }
 
-// Sequential text line reveal — blur in + expand
+// Sequential text line reveal — typewriter (JS-driven)
 .emptySessionPage__textLine {
   display: block;
-  opacity: 0;
-  filter: blur(6px);
+  min-height: 0;
   max-height: 0;
+  opacity: 0;
   overflow: hidden;
-  animation: textLineReveal 800ms ease-out forwards;
+  transition: max-height 300ms ease, opacity 80ms ease;
+
+  &--visible {
+    opacity: 1;
+    max-height: 3em;
+  }
+
+  // Blinking cursor on active line
+  &--active::after {
+    content: '';
+    display: inline-block;
+    width: 2px;
+    height: 0.9em;
+    margin-left: 1px;
+    background-color: $ouiColorPrimary;
+    vertical-align: text-bottom;
+    border-radius: 1px;
+    animation: emptySessionCursor 600ms step-end infinite;
+  }
 }
 
-@keyframes textLineReveal {
-  0% {
-    opacity: 0;
-    filter: blur(6px);
-    max-height: 0;
+@keyframes emptySessionCursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+// Organic spinner — morphing blob
+.emptySessionPage__textSpinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $ouiColorPrimary, lighten($ouiColorPrimary, 18%));
+  vertical-align: middle;
+  animation: emptySessionBlobMorph 2s ease-in-out infinite;
+}
+
+@keyframes emptySessionBlobMorph {
+  0%, 100% {
+    border-radius: 50% 40% 60% 50% / 50% 50% 40% 60%;
+    transform: scale(1) rotate(0deg);
+    opacity: 0.7;
   }
-  30% {
-    max-height: 40px;
-  }
-  100% {
+  25% {
+    border-radius: 40% 60% 50% 50% / 60% 40% 50% 50%;
+    transform: scale(1.1) rotate(90deg);
     opacity: 1;
-    filter: blur(0);
-    max-height: 40px;
+  }
+  50% {
+    border-radius: 60% 50% 40% 50% / 50% 60% 50% 40%;
+    transform: scale(0.9) rotate(180deg);
+    opacity: 0.8;
+  }
+  75% {
+    border-radius: 50% 50% 60% 40% / 40% 50% 60% 50%;
+    transform: scale(1.05) rotate(270deg);
+    opacity: 1;
   }
 }
 
@@ -1463,6 +1509,14 @@ textarea.emptySessionPage__textarea {
   to {
     opacity: 1;
   }
+}
+
+// Insights grid in right panel
+.emptySessionPage__insightsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 8px;
 }
 
 // Responsive: stack columns vertically below 800px

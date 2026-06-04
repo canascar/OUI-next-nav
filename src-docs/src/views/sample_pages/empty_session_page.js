@@ -505,8 +505,84 @@ export const EmptySessionPage = ({
   const [hoveredCard, setHoveredCard] = useState(null);
   const [scrolledFromTop, setScrolledFromTop] = useState(false);
   const [mascotExpression, setMascotExpression] = useState(undefined);
+  const [rightPanelTab, setRightPanelTab] = useState('recent');
   const scrollRef = useRef(null);
   const briefingRef = useRef(null);
+
+  // Typewriter for text lines
+  const textLines = useMemo(() => [
+    { text: 'All 247 services are running normally.', boldStart: 4, boldEnd: 16 },
+    { text: 'I found 3 items that need your attention.', boldStart: 8, boldEnd: 15 },
+    { text: "Let me know if you'd like me to dig deeper into any of these, or ask me anything below.", boldStart: -1, boldEnd: -1 },
+  ], []);
+  const [typedLines, setTypedLines] = useState(['', '', '']);
+  const [typingLineIdx, setTypingLineIdx] = useState(-1);
+  const [spinningLineIdx, setSpinningLineIdx] = useState(-1);
+  const [typingDone, setTypingDone] = useState(false);
+  const typeTimers = useRef([]);
+
+  React.useEffect(() => {
+    typeTimers.current.forEach(clearTimeout);
+    typeTimers.current = [];
+
+    const CHAR_SPEED = 18;
+    const LINE_PAUSE = 300;
+    const SPIN_DURATION = 2000;
+    const INITIAL_DELAY = 1200;
+    let lineIdx = 0;
+    let charIdx = 0;
+
+    const typeNext = () => {
+      if (lineIdx >= textLines.length) {
+        setTypingDone(true);
+        setTypingLineIdx(-1);
+        setSpinningLineIdx(-1);
+        return;
+      }
+      if (charIdx < textLines[lineIdx].text.length) {
+        charIdx++;
+        const li = lineIdx;
+        const ci = charIdx;
+        setTypedLines(prev => {
+          const next = [...prev];
+          next[li] = textLines[li].text.slice(0, ci);
+          return next;
+        });
+        setTypingLineIdx(lineIdx);
+        const timer = setTimeout(typeNext, CHAR_SPEED);
+        typeTimers.current.push(timer);
+      } else {
+        lineIdx++;
+        charIdx = 0;
+        if (lineIdx < textLines.length) {
+          // Show spinner before next line
+          setTypingLineIdx(-1);
+          setSpinningLineIdx(lineIdx);
+          const timer = setTimeout(() => {
+            setSpinningLineIdx(-1);
+            typeNext();
+          }, SPIN_DURATION);
+          typeTimers.current.push(timer);
+        } else {
+          setTypingDone(true);
+          setTypingLineIdx(-1);
+          setSpinningLineIdx(-1);
+        }
+      }
+    };
+
+    // Show spinner before first line
+    const startTimer = setTimeout(() => {
+      setSpinningLineIdx(0);
+      const spinTimer = setTimeout(() => {
+        setSpinningLineIdx(-1);
+        typeNext();
+      }, SPIN_DURATION);
+      typeTimers.current.push(spinTimer);
+    }, INITIAL_DELAY);
+    typeTimers.current.push(startTimer);
+    return () => typeTimers.current.forEach(clearTimeout);
+  }, [textLines]);
 
   const handleScroll = useCallback(() => {
     if (scrollRef.current) {
@@ -608,9 +684,27 @@ export const EmptySessionPage = ({
 
             <OuiText size="s" style={{ maxWidth: 640, width: '100%', marginLeft: 'auto' }}>
               <p>
-                <span className="emptySessionPage__textLine" style={{ animationDelay: '1400ms' }}>All <strong>247 services</strong> are running normally.</span>
-                <span className="emptySessionPage__textLine" style={{ animationDelay: '2000ms' }}>I found <strong>3 items</strong> that need your attention.</span>
-                <span className="emptySessionPage__textLine" style={{ animationDelay: '2600ms' }}>Let me know if you'd like me to dig deeper into any of these, or ask me anything below.</span>
+                {textLines.map((line, i) => {
+                  const typed = typedLines[i];
+                  const isSpinning = spinningLineIdx === i;
+                  let content;
+                  if (typed) {
+                    if (line.boldStart >= 0 && typed.length > line.boldStart) {
+                      const before = typed.slice(0, line.boldStart);
+                      const boldPart = typed.slice(line.boldStart, Math.min(typed.length, line.boldEnd));
+                      const after = typed.length > line.boldEnd ? typed.slice(line.boldEnd) : '';
+                      content = <>{before}<strong>{boldPart}</strong>{after}</>;
+                    } else {
+                      content = typed;
+                    }
+                  }
+                  return (
+                    <span key={i} className={`emptySessionPage__textLine${typed || isSpinning ? ' emptySessionPage__textLine--visible' : ''}${typingLineIdx === i ? ' emptySessionPage__textLine--active' : ''}`}>
+                      {isSpinning && !typed && <span className="emptySessionPage__textSpinner" />}
+                      {content}
+                    </span>
+                  );
+                })}
               </p>
             </OuiText>
 
@@ -641,11 +735,17 @@ export const EmptySessionPage = ({
                   briefingRef.current.querySelectorAll('.emptySessionPage__briefingSeparator').forEach(el => { el.style.opacity = ''; });
                 }
               }}>
-              <div className="emptySessionPage__briefingTitle">
-                <h5>Recent</h5>
-                <span className="emptySessionPage__briefingCount">3</span>
-              </div>
+              <OuiTabs size="s" display="condensed" style={{ maxWidth: 'fit-content' }}>
+                <OuiTab isSelected={rightPanelTab === 'recent'} onClick={() => setRightPanelTab('recent')}>
+                  Recent (3)
+                </OuiTab>
+                <OuiTab isSelected={rightPanelTab === 'insights'} onClick={() => setRightPanelTab('insights')}>
+                  Insights
+                </OuiTab>
+              </OuiTabs>
 
+              {rightPanelTab === 'recent' && (
+                <>
               <div
                 className="emptySessionPage__briefingItem"
                 onClick={() => onSelectSession(CHIP_DATA.activity[0].sessionId)}
@@ -690,6 +790,37 @@ export const EmptySessionPage = ({
                 </OuiText>
                 <span className="emptySessionPage__briefingArrow">→</span>
               </div>
+                </>
+              )}
+
+              {rightPanelTab === 'insights' && (
+                <div className="emptySessionPage__insightsGrid">
+                  <OuiInsightCard title="P99 Latency" titleExtra={<span style={{ color: '#d97706', fontWeight: 600, fontSize: 12 }}>2,041ms</span>}>
+                    <svg viewBox="0 0 200 40" style={{ width: '100%', height: 40 }}>
+                      <polyline fill="none" stroke="#d97706" strokeWidth="2" strokeLinejoin="round" points="0,30 20,28 40,26 60,24 80,22 100,20 120,18 140,14 160,8 180,4 200,2" />
+                      <polyline fill="none" stroke="rgba(217,119,6,0.2)" strokeWidth="1" strokeDasharray="3,3" points="0,20 200,20" />
+                    </svg>
+                  </OuiInsightCard>
+                  <OuiInsightCard title="Error Rate" titleExtra={<span style={{ color: '#dc2626', fontWeight: 600, fontSize: 12 }}>12.4%</span>}>
+                    <svg viewBox="0 0 200 40" style={{ width: '100%', height: 40 }}>
+                      <polyline fill="none" stroke="#dc2626" strokeWidth="2" strokeLinejoin="round" points="0,35 20,34 40,32 60,30 80,28 100,30 120,20 140,10 160,6 180,8 200,5" />
+                      <polyline fill="none" stroke="rgba(220,38,38,0.2)" strokeWidth="1" strokeDasharray="3,3" points="0,28 200,28" />
+                    </svg>
+                  </OuiInsightCard>
+                  <OuiInsightCard title="Throughput" titleExtra={<span style={{ color: '#10b981', fontWeight: 600, fontSize: 12 }}>1.2k rps</span>}>
+                    <svg viewBox="0 0 200 40" style={{ width: '100%', height: 40 }}>
+                      <polyline fill="none" stroke="#10b981" strokeWidth="2" strokeLinejoin="round" points="0,20 20,18 40,22 60,19 80,21 100,17 120,20 140,18 160,19 180,20 200,18" />
+                      <polyline fill="none" stroke="rgba(16,185,129,0.2)" strokeWidth="1" strokeDasharray="3,3" points="0,20 200,20" />
+                    </svg>
+                  </OuiInsightCard>
+                  <OuiInsightCard title="CPU Utilization" titleExtra={<span style={{ color: '#6366f1', fontWeight: 600, fontSize: 12 }}>67%</span>}>
+                    <svg viewBox="0 0 200 40" style={{ width: '100%', height: 40 }}>
+                      <polyline fill="none" stroke="#6366f1" strokeWidth="2" strokeLinejoin="round" points="0,25 20,22 40,24 60,20 80,18 100,22 120,16 140,14 160,18 180,15 200,13" />
+                      <polyline fill="none" stroke="rgba(99,102,241,0.2)" strokeWidth="1" strokeDasharray="3,3" points="0,20 200,20" />
+                    </svg>
+                  </OuiInsightCard>
+                </div>
+              )}
             </div>
           </div>
         </div>

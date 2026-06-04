@@ -62,6 +62,42 @@
   gap: $ouiSize;
 }
 
+.threadPage__emptyMascot {
+  transform-origin: center center;
+  cursor: pointer;
+}
+
+// Pop-in on load, then squish on click via JS classes
+.threadPage__emptyMascot--popIn {
+  animation: threadMascotPopIn 500ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.threadPage__emptyMascot--ready {
+  animation: none;
+  opacity: 1;
+  transition: transform 650ms cubic-bezier(0.2, 1.5, 0.3, 1);
+}
+
+.threadPage__emptyMascot--squish {
+  transform: scale(0.72) !important;
+  transition: transform 80ms ease-in !important;
+}
+
+@keyframes threadMascotPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(-10deg);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.1) rotate(3deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
 .threadPage__emptyTitle {
   font-size: $ouiFontSizeL;
   font-weight: $ouiFontWeightMedium;

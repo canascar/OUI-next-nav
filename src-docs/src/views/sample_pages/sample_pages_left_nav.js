@@ -44,6 +44,7 @@ import {
   OuiResizableButton,
 } from '../../../../src/components';
 import { ThemeContext } from '../../components/with_theme';
+import { Mascot } from '../../../../olly-mascot/Mascot';
 import { ALL_DRAGGABLE_ITEMS } from './nav_layout_utils';
 
 const NAV_ITEMS = [
@@ -1742,7 +1743,7 @@ const ProfilePopoverContent = () => {
   return (
     <div className="samplePagesLeftNav__toolsPopover">
       <div className="samplePagesLeftNav__profilePopoverHeader">
-        <OuiAvatar name="OS" size="s" />
+        <OuiAvatar name="John" size="s" color="#F8A5C2" />
         <span className="samplePagesLeftNav__profilePopoverName">John</span>
       </div>
       <div className="samplePagesLeftNav__toolsPopoverContent">
@@ -2103,6 +2104,8 @@ export const SamplePagesLeftNav = ({
 }) => {
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
+  const mascotColor = isDark ? ['#FFFFFF', '#D9DEE5'] : ['#14558E', '#153A5A'];
+  const mascotEyeColor = isDark ? '#181028' : '#fff';
   const [appearanceSelection, setAppearanceSelection] = useState(
     isDark ? 'v9-dark' : 'v9-light'
   );
@@ -2833,7 +2836,7 @@ export const SamplePagesLeftNav = ({
               onMouseEnter={() => openNavPopover('profile')}
               onMouseLeave={() => closeNavPopover()}>
               <OuiPopover
-                button={<OuiAvatar name="OS" size="s" />}
+                button={<OuiAvatar name="John" size="s" color="#F8A5C2" />}
                 isOpen={navPopover === 'profile'}
                 closePopover={() => setNavPopover(null)}
                 anchorPosition="upCenter"
@@ -3104,7 +3107,7 @@ export const SamplePagesLeftNav = ({
           onMouseEnter={() => openNavPopover('profile')}
           onMouseLeave={() => closeNavPopover()}>
           <OuiPopover
-            button={<OuiAvatar name="OS" size="s" />}
+            button={<OuiAvatar name="John" size="s" color="#F8A5C2" />}
             isOpen={navPopover === 'profile'}
             closePopover={() => setNavPopover(null)}
             anchorPosition="rightDown"
