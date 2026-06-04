@@ -1,0 +1,22 @@
+[    1587ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[    1588ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[    1605ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[    1899ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[   69781ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[   76004ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[   76005ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[   76111ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[   81705ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[   81903ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[   81903ms] [WARNING] [HMR] Error: Aborted because ./views/guidelines/mascot_guidelines.js is not accepted
+Update propagation: ./views/guidelines/mascot_guidelines.js -> ./routes.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828463:31)
+    at http://localhost:8030/bundle.js:828132:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828131:54)
+    at http://localhost:8030/bundle.js:828102:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828057:48)
+    at http://localhost:8030/bundle.js:828100:24 @ http://localhost:8030/bundle.js:532335

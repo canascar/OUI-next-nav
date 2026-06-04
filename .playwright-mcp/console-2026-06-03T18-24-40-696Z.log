@@ -1,0 +1,30 @@
+[      85ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:8030/favicon.ico:0
+[   42887ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[   67179ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[   67179ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[   67397ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[   91309ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[   91431ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  115961ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  116419ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[  116419ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_dark.scss @ http://localhost:8030/bundle.js:532333
+[  116419ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_light.scss @ http://localhost:8030/bundle.js:532333
+[  116419ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_dark.scss @ http://localhost:8030/bundle.js:532333
+[  116419ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_light.scss @ http://localhost:8030/bundle.js:532333
+[  116419ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[  116419ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[  116680ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[  116680ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_dark.scss @ http://localhost:8030/bundle.js:532333
+[  116680ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_light.scss @ http://localhost:8030/bundle.js:532333
+[  116680ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_dark.scss @ http://localhost:8030/bundle.js:532333
+[  116681ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_light.scss @ http://localhost:8030/bundle.js:532333
+[  116681ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[  116681ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[  116966ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[  116966ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_dark.scss @ http://localhost:8030/bundle.js:532333
+[  116966ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_light.scss @ http://localhost:8030/bundle.js:532333
+[  116966ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_dark.scss @ http://localhost:8030/bundle.js:532333
+[  116966ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_light.scss @ http://localhost:8030/bundle.js:532333
+[  116966ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[  116966ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[  116966ms] [LOG] [HMR] App is up to date. @ http://localhost:8030/bundle.js:532333

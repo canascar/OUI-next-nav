@@ -1,0 +1,220 @@
+[  106444ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  127134ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  127134ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[  127454ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[  127454ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[  127454ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[  127454ms] [LOG] [HMR] App is up to date. @ http://localhost:8030/bundle.js:532333
+[  164589ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  184637ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  184637ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[  184774ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  204983ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  205115ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  229295ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  229579ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[  229579ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[  229579ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[  229787ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[  229787ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[  229787ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[  230118ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[  230118ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_dark.scss @ http://localhost:8030/bundle.js:532333
+[  230118ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_light.scss @ http://localhost:8030/bundle.js:532333
+[  230118ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_dark.scss @ http://localhost:8030/bundle.js:532333
+[  230118ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_light.scss @ http://localhost:8030/bundle.js:532333
+[  230118ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[  230118ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[  230118ms] [LOG] [HMR] App is up to date. @ http://localhost:8030/bundle.js:532333
+[  271090ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[  271091ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[  271105ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[  271396ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[  363264ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  390032ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  390033ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[  390338ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  415247ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  415676ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[  415676ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_dark.scss @ http://localhost:8030/bundle.js:532333
+[  415676ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_light.scss @ http://localhost:8030/bundle.js:532333
+[  415676ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_dark.scss @ http://localhost:8030/bundle.js:532333
+[  415676ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_light.scss @ http://localhost:8030/bundle.js:532333
+[  415676ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[  415676ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[  416040ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[  416041ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_dark.scss @ http://localhost:8030/bundle.js:532333
+[  416041ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_light.scss @ http://localhost:8030/bundle.js:532333
+[  416041ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_dark.scss @ http://localhost:8030/bundle.js:532333
+[  416041ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_light.scss @ http://localhost:8030/bundle.js:532333
+[  416041ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[  416041ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[  416041ms] [LOG] [HMR] App is up to date. @ http://localhost:8030/bundle.js:532333
+[  443018ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[  443019ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[  443035ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[  443344ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[  522825ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  543209ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  543210ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[  543492ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[  543492ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[  543492ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[  543492ms] [LOG] [HMR] App is up to date. @ http://localhost:8030/bundle.js:532333
+[  744628ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  771143ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  771143ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[  771508ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  796242ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  796388ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  821352ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  821822ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[  821822ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_dark.scss @ http://localhost:8030/bundle.js:532333
+[  821822ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_light.scss @ http://localhost:8030/bundle.js:532333
+[  821822ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_dark.scss @ http://localhost:8030/bundle.js:532333
+[  821822ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_light.scss @ http://localhost:8030/bundle.js:532333
+[  821822ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[  821822ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[  822085ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[  822085ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_dark.scss @ http://localhost:8030/bundle.js:532333
+[  822086ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_light.scss @ http://localhost:8030/bundle.js:532333
+[  822086ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_dark.scss @ http://localhost:8030/bundle.js:532333
+[  822086ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_light.scss @ http://localhost:8030/bundle.js:532333
+[  822086ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[  822086ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[  822326ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[  822326ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_dark.scss @ http://localhost:8030/bundle.js:532333
+[  822326ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_light.scss @ http://localhost:8030/bundle.js:532333
+[  822327ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_dark.scss @ http://localhost:8030/bundle.js:532333
+[  822327ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_light.scss @ http://localhost:8030/bundle.js:532333
+[  822327ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[  822327ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[  822327ms] [LOG] [HMR] App is up to date. @ http://localhost:8030/bundle.js:532333
+[  903996ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  931140ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  931140ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[  931328ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  956796ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  957046ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  963356ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  963937ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[  963937ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_dark.scss @ http://localhost:8030/bundle.js:532333
+[  963937ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_light.scss @ http://localhost:8030/bundle.js:532333
+[  963937ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_dark.scss @ http://localhost:8030/bundle.js:532333
+[  963937ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_light.scss @ http://localhost:8030/bundle.js:532333
+[  963937ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[  963938ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[  964256ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[  964256ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_dark.scss @ http://localhost:8030/bundle.js:532333
+[  964256ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_light.scss @ http://localhost:8030/bundle.js:532333
+[  964256ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_dark.scss @ http://localhost:8030/bundle.js:532333
+[  964256ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_light.scss @ http://localhost:8030/bundle.js:532333
+[  964257ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[  964257ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[  964271ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[  964271ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/library_page.js is not accepted
+Update propagation: ./views/sample_pages/library_page.js -> ./views/sample_pages/sample_pages_view.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828516:31)
+    at http://localhost:8030/bundle.js:828185:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828184:54)
+    at http://localhost:8030/bundle.js:828155:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828110:48)
+    at http://localhost:8030/bundle.js:828153:24 @ http://localhost:8030/bundle.js:532335
+[  966264ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[  966265ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[  966282ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[  966647ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[ 1098663ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[ 1106059ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[ 1106059ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[ 1106334ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[ 1106334ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/library_page.js is not accepted
+Update propagation: ./views/sample_pages/library_page.js -> ./views/sample_pages/sample_pages_view.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828519:31)
+    at http://localhost:8030/bundle.js:828188:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828187:54)
+    at http://localhost:8030/bundle.js:828158:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828113:48)
+    at http://localhost:8030/bundle.js:828156:24 @ http://localhost:8030/bundle.js:532335
+[ 1108320ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[ 1108322ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[ 1108337ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[ 1108638ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[ 1109937ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[ 1116863ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[ 1116863ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[ 1117254ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[ 1123534ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[ 1123888ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[ 1123888ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/library_page.js is not accepted
+Update propagation: ./views/sample_pages/library_page.js -> ./views/sample_pages/sample_pages_view.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828519:31)
+    at http://localhost:8030/bundle.js:828188:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828187:54)
+    at http://localhost:8030/bundle.js:828158:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828113:48)
+    at http://localhost:8030/bundle.js:828156:24 @ http://localhost:8030/bundle.js:532335
+[ 1126387ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[ 1126388ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[ 1126402ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[ 1126730ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[ 1151474ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[ 1151474ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[ 1151826ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[ 1179113ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[ 1179820ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[ 1179820ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_dark.scss @ http://localhost:8030/bundle.js:532333
+[ 1179820ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_light.scss @ http://localhost:8030/bundle.js:532333
+[ 1179820ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_dark.scss @ http://localhost:8030/bundle.js:532333
+[ 1179820ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_light.scss @ http://localhost:8030/bundle.js:532333
+[ 1179820ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[ 1179820ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[ 1180096ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[ 1180096ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/library_page.js is not accepted
+Update propagation: ./views/sample_pages/library_page.js -> ./views/sample_pages/sample_pages_view.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828560:31)
+    at http://localhost:8030/bundle.js:828229:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828228:54)
+    at http://localhost:8030/bundle.js:828199:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828154:48)
+    at http://localhost:8030/bundle.js:828197:24 @ http://localhost:8030/bundle.js:532335
+[ 1181946ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[ 1181947ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[ 1181962ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[ 1182285ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[ 1274108ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[ 1281468ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[ 1281468ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[ 1282049ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[ 1282049ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/empty_session_page.js is not accepted
+Update propagation: ./views/sample_pages/empty_session_page.js -> ./views/sample_pages/sample_pages_view.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828557:31)
+    at http://localhost:8030/bundle.js:828226:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828225:54)
+    at http://localhost:8030/bundle.js:828196:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828151:48)
+    at http://localhost:8030/bundle.js:828194:24 @ http://localhost:8030/bundle.js:532335
+[ 1290348ms] Invalid or unexpected token

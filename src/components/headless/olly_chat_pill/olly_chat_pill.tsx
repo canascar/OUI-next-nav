@@ -66,6 +66,7 @@ export const OuiOllyChatPill: FunctionComponent<OuiOllyChatPillProps> = ({
   const [value, setValue] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [isDismissing, setIsDismissing] = useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   // Auto-focus input when expanded
@@ -91,8 +92,9 @@ export const OuiOllyChatPill: FunctionComponent<OuiOllyChatPillProps> = ({
   const classes = classNames(
     'ouiOllyChatPill',
     {
-      'ouiOllyChatPill--expanded': isExpanded || !!message,
+      'ouiOllyChatPill--expanded': isExpanded || !!message || isDismissing,
       'ouiOllyChatPill--highlighted': isHighlighted,
+      'ouiOllyChatPill--dismissing': isDismissing,
     },
     className
   );
@@ -103,7 +105,7 @@ export const OuiOllyChatPill: FunctionComponent<OuiOllyChatPillProps> = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       {...rest}>
-      {message && (
+      {message && !isDismissing && (
         <div className="ouiOllyChatPill__message" onClick={() => onActivate && onActivate()}>
           <p className="ouiOllyChatPill__messageText">{message}</p>
           {onDismiss && (
@@ -113,7 +115,11 @@ export const OuiOllyChatPill: FunctionComponent<OuiOllyChatPillProps> = ({
               aria-label="Dismiss"
               onClick={(e) => {
                 e.stopPropagation();
-                onDismiss();
+                setIsDismissing(true);
+                setTimeout(() => {
+                  setIsDismissing(false);
+                  onDismiss();
+                }, 400);
               }}>
               ×
             </button>

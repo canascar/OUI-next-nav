@@ -52,6 +52,39 @@ export const SessionContainer = ({
     return () => clearTimeout(timer);
   }, []);
 
+  // Proactive message — trigger when session loads with canvas open + chat minimized (e.g. from library)
+  const proactiveTriggeredRef = useRef(false);
+  useEffect(() => {
+    if (
+      threadPanelState === 'minimized' &&
+      session.tabs &&
+      session.tabs.length > 0 &&
+      !session.threadKey &&
+      !proactiveTriggeredRef.current
+    ) {
+      proactiveTriggeredRef.current = true;
+      const proactiveMessage = 'I noticed you opened this page. Want me to summarize the key metrics or help you explore the data?';
+      const proactiveTimer = setTimeout(() => {
+        setAiButtonHighlight(true);
+        setAiPopoverVisible(true);
+        setAiPopoverText('');
+        setPendingAiResponse({ prompt: '', response: proactiveMessage });
+
+        // Stream word by word
+        const words = proactiveMessage.split(' ');
+        let built = '';
+        words.forEach((word, i) => {
+          const timer = setTimeout(() => {
+            built += (i === 0 ? '' : ' ') + word;
+            setAiPopoverText(built);
+          }, i * 40);
+          streamTimersRef.current.push(timer);
+        });
+      }, 2000);
+      return () => clearTimeout(proactiveTimer);
+    }
+  }, [threadPanelState, session.tabs, session.threadKey]);
+
   // Trigger animation; auto-clear after 300ms
   const triggerAnimation = useCallback(() => {
     setIsAnimating(true);

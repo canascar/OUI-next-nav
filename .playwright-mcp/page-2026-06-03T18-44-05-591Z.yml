@@ -1,0 +1,215 @@
+- generic [ref=e61]:
+  - navigation "Session navigation" [ref=e62]:
+    - img [ref=e64]
+    - generic [ref=e68]:
+      - button "New session" [ref=e70] [cursor=pointer]:
+        - img
+      - button "All sessions" [ref=e75] [cursor=pointer]:
+        - img
+      - button "Library" [ref=e77] [cursor=pointer]:
+        - img
+    - generic [ref=e78]:
+      - button "Workspace" [ref=e82] [cursor=pointer]:
+        - img
+      - button "Developer tools" [ref=e85] [cursor=pointer]:
+        - img
+      - button "Settings" [ref=e89] [cursor=pointer]:
+        - img
+      - generic "OS" [ref=e93]:
+        - generic [ref=e94]: O
+  - generic [ref=e96]:
+    - generic:
+      - generic [ref=e97]:
+        - generic [ref=e98]:
+          - img [ref=e99]
+          - generic "Click to rename" [ref=e101]: Latency Spike Investigation
+        - generic [ref=e102]:
+          - button "Share" [ref=e104] [cursor=pointer]:
+            - img
+          - button "Minimize" [ref=e106] [cursor=pointer]:
+            - img
+          - button "Full screen" [ref=e108] [cursor=pointer]:
+            - img
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - generic [ref=e109]:
+                - generic [ref=e110]:
+                  - generic:
+                    - paragraph: "An alert has been triggered: P99 latency on the payment service exceeded 2,000ms for the past 15 minutes. I am starting an investigation."
+                    - paragraph: "I pulled the service metrics and correlated them with recent deployment events. Here is what I am seeing:"
+                  - generic:
+                    - generic:
+                      - button "View as page"
+                    - button "Payment service alert — P99 latency breach Triggered at 14:32 UTC. P99 latency crossed the 2,000ms threshold on 3 of 4 pods. No recent deploys in the last 6 hours." [ref=e111] [cursor=pointer]:
+                      - generic:
+                        - strong [ref=e112]: Payment service alert — P99 latency breach
+                        - generic:
+                          - generic:
+                            - paragraph: Triggered at 14:32 UTC. P99 latency crossed the 2,000ms threshold on 3 of 4 pods. No recent deploys in the last 6 hours.
+                  - strong [ref=e114]: "Metric: payment-service P99 latency"
+                  - generic:
+                    - button "Helpful":
+                      - img
+                    - button "Not helpful":
+                      - img
+                - generic [ref=e115]:
+                  - generic:
+                    - paragraph: "Based on the timing and pattern, I have two hypotheses:"
+                    - paragraph: "Hypothesis 1: Downstream dependency bottleneck"
+                    - paragraph: The latency spike correlates with elevated connection wait times to the inventory service, which started returning slower responses around 14:20 UTC.
+                  - generic:
+                    - generic:
+                      - button "View as page"
+                    - button "Inventory service dependency analysis Connection pool saturation, response time degradation, and queue depth trends for the inventory service over the last 4 hours." [ref=e116] [cursor=pointer]:
+                      - generic:
+                        - strong [ref=e117]: Inventory service dependency analysis
+                        - generic:
+                          - generic:
+                            - paragraph: Connection pool saturation, response time degradation, and queue depth trends for the inventory service over the last 4 hours.
+                  - generic:
+                    - button "Helpful":
+                      - img
+                    - button "Not helpful":
+                      - img
+                - generic [ref=e118]:
+                  - generic:
+                    - paragraph: "Hypothesis 2: Connection pool exhaustion"
+                    - paragraph: The payment service's outbound connection pool is at 98% utilization. Requests are queuing rather than failing fast, which inflates P99 without raising error rates. This would explain why error rates look normal while latency is spiking.
+                  - generic:
+                    - generic:
+                      - button "View as page"
+                    - button "Payment service connection pool metrics Pool utilization, acquire wait time, and active connection count for the payment service over the last 4 hours." [ref=e119] [cursor=pointer]:
+                      - generic:
+                        - strong [ref=e120]: Payment service connection pool metrics
+                        - generic:
+                          - generic:
+                            - paragraph: Pool utilization, acquire wait time, and active connection count for the payment service over the last 4 hours.
+                  - generic:
+                    - button "Helpful":
+                      - img
+                    - button "Not helpful":
+                      - img
+                - generic [ref=e121]:
+                  - generic:
+                    - paragraph: "Here are the recommended next steps to confirm and mitigate:"
+                    - list [ref=e122]:
+                      - listitem: Check the inventory service connection pool configuration.
+                      - listitem: Increase the pool max from 50 to 150 to relieve backpressure.
+                      - listitem: Enable circuit breaker on the payment→inventory call path.
+                    - paragraph: "I have prepared a script to apply the connection pool fix:"
+                  - generic [ref=e123]:
+                    - strong [ref=e124]: apply-fix.sh
+                    - generic:
+                      - generic [ref=e125]:
+                        - code:
+                          - generic: "#!/bin/bash"
+                          - generic: "# Patch payment-service connection pool and restart"
+                          - generic: kubectl patch configmap payment-service-config \
+                          - generic: "-n production \\"
+                          - generic: "--type merge \\"
+                          - generic: "-p '{\"data\":{\"POOL_MAX_CONNECTIONS\":\"150\",\"POOL_ACQUIRE_TIMEOUT\":\"5s\"}}'"
+                          - generic: kubectl rollout restart deployment/payment-service -n production
+                          - generic: kubectl rollout status deployment/payment-service -n production --timeout=120s
+                          - generic: echo "Done. Monitoring P99 latency for recovery..."
+                      - button "Copy" [ref=e129] [cursor=pointer]:
+                        - img
+                  - generic:
+                    - button "Helpful":
+                      - img
+                    - button "Not helpful":
+                      - img
+                - generic [ref=e130]:
+                  - generic:
+                    - paragraph: Summary
+                    - paragraph: "Payment-service P99 latency breached 2,000ms due to connection pool exhaustion on 3 of 4 pods. The outbound pool hit 98% utilization, causing requests to queue rather than fail fast. No recent deployments contributed. Root cause: pool max of 50 connections was insufficient under current load. Fix applied: pool max increased to 150 with a 5s acquire timeout, and pods restarted. Latency is expected to recover within 2–3 minutes."
+                  - generic:
+                    - button "Helpful":
+                      - img
+                    - button "Not helpful":
+                      - img
+              - generic [ref=e131]:
+                - generic:
+                  - button "Show me the recent logs for the payment service" [ref=e132] [cursor=pointer]:
+                    - generic [ref=e133]:
+                      - img [ref=e134]
+                      - generic: Show me the recent logs for the payment service
+                  - button "Analyze the trace spans for the payment service" [ref=e136] [cursor=pointer]:
+                    - generic [ref=e137]:
+                      - img [ref=e138]
+                      - generic: Analyze the trace spans for the payment service
+                - generic:
+                  - textbox "Ask anything. Type / for actions." [ref=e140]
+                  - generic:
+                    - button "Add attachment":
+                      - img
+                    - button "Send message" [disabled] [ref=e141]:
+                      - img
+    - generic [ref=e142]:
+      - region "Page panel" [ref=e144]:
+        - generic [ref=e145]:
+          - img [ref=e147] [cursor=pointer]
+          - tablist "Open pages" [ref=e149]:
+            - 'tab "Alert: P95 Latency > 2s" [selected] [ref=e150] [cursor=pointer]':
+              - img [ref=e151]
+              - generic [ref=e153]: "Alert: P95 Latency > 2s"
+              - 'button "Close Alert: P95 Latency > 2s" [ref=e154]':
+                - img [ref=e155]
+            - tab "Inventory service dependency analysis" [ref=e158] [cursor=pointer]:
+              - img [ref=e159]
+              - generic [ref=e161]: Inventory service dependency analysis
+            - tab "Payment service connection pool metrics" [ref=e163] [cursor=pointer]:
+              - img [ref=e164]
+              - generic [ref=e166]: Payment service connection pool metrics
+            - button "Add new tab" [ref=e168] [cursor=pointer]:
+              - img
+          - button "Browse all tabs" [ref=e172] [cursor=pointer]:
+            - img
+        - 'tabpanel "Alert: P95 Latency > 2s" [ref=e173]':
+          - generic [ref=e174]:
+            - generic [ref=e175]:
+              - generic [ref=e176]: "Alert: P95 Latency > 2s"
+              - button "Settings" [ref=e179] [cursor=pointer]:
+                - img
+            - generic [ref=e181]:
+              - generic [ref=e182]:
+                - generic [ref=e184]:
+                  - strong [ref=e187]: 2,340ms
+                  - generic [ref=e189]: P99 latency
+                - generic [ref=e191]:
+                  - strong [ref=e193]: "> 2,000ms"
+                  - generic [ref=e195]: for 15 min
+                - generic [ref=e197]:
+                  - strong [ref=e199]: 3 of 4 pods
+                  - generic [ref=e201]: breaching
+                - generic [ref=e203]:
+                  - strong [ref=e205]: —
+                  - generic [ref=e207]: notification target
+              - generic [ref=e209]:
+                - strong [ref=e211]: "Metric: payment-service P99 latency"
+                - generic [ref=e218]:
+                  - figure:
+                    - generic [ref=e220]:
+                      - term [ref=e221]: "Chart type:"
+                      - definition [ref=e222]: line chart
+                  - img
+              - generic [ref=e224]:
+                - img [ref=e225]
+                - generic [ref=e227]: Alarm triggered at May 13, 02:32 PM UTC — payment-service P99 crossed 2,000ms threshold
+              - generic [ref=e229]:
+                - heading "Summary" [level=4] [ref=e230]
+                - paragraph [ref=e231]: payment-service P99 latency on production cluster
+                - heading "Recommendation" [level=4] [ref=e232]
+                - list [ref=e233]:
+                  - listitem [ref=e234]: Check recent deployments to the affected service for regressions.
+                  - listitem [ref=e235]: Review upstream dependency health and connection pool metrics.
+                  - listitem [ref=e236]: Inspect application logs for error patterns correlated with the latency increase.
+                  - listitem [ref=e237]: Consider scaling the service if the issue is load-related.
+                  - listitem [ref=e238]: If this is a known issue, acknowledge the alert and update the runbook.
+      - generic [ref=e240]:
+        - button "Open chat" [ref=e242]:
+          - img "mascot · comma" [ref=e243]:
+            - img [ref=e244]
+        - textbox "Ask Olly anything" [ref=e250]
+      - text: ")}"

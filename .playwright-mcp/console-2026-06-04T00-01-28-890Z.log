@@ -1,0 +1,478 @@
+[   39641ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[   48395ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[   48395ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[   48749ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[   48749ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/empty_session_page.js is not accepted
+Update propagation: ./views/sample_pages/empty_session_page.js -> ./views/sample_pages/sample_pages_view.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828783:31)
+    at http://localhost:8030/bundle.js:828452:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828451:54)
+    at http://localhost:8030/bundle.js:828422:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828377:48)
+    at http://localhost:8030/bundle.js:828420:24 @ http://localhost:8030/bundle.js:532335
+[   51288ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[   51289ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[   51306ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[   51636ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[   95168ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  103296ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  103296ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[  103573ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[  103573ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/empty_session_page.js is not accepted
+Update propagation: ./views/sample_pages/empty_session_page.js -> ./views/sample_pages/sample_pages_view.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828783:31)
+    at http://localhost:8030/bundle.js:828452:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828451:54)
+    at http://localhost:8030/bundle.js:828422:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828377:48)
+    at http://localhost:8030/bundle.js:828420:24 @ http://localhost:8030/bundle.js:532335
+[  106586ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[  106587ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[  106604ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[  106977ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[  107063ms] ReferenceError: typeKey is not defined
+    at EmptySessionPage (http://localhost:8030/bundle.js:783894:7)
+    at renderWithHooks (http://localhost:8030/bundle.js:446410:18)
+    at mountIndeterminateComponent (http://localhost:8030/bundle.js:448944:13)
+    at beginWork$1 (http://localhost:8030/bundle.js:450312:16)
+    at HTMLUnknownElement.callCallback (http://localhost:8030/bundle.js:430481:14)
+    at Object.invokeGuardedCallbackDev (http://localhost:8030/bundle.js:430530:16)
+    at invokeGuardedCallback (http://localhost:8030/bundle.js:430585:31)
+    at beginWork$$1 (http://localhost:8030/bundle.js:455930:7)
+    at performUnitOfWork (http://localhost:8030/bundle.js:454848:12)
+    at workLoopSync (http://localhost:8030/bundle.js:454821:22)
+[  107031ms] [ERROR] The above error occurred in the <EmptySessionPage> component:
+    in EmptySessionPage (created by SessionPagesView)
+    in div (created by SessionPagesView)
+    in div (created by SessionPagesView)
+    in SessionPagesView (created by Context.Consumer)
+    in LinkWrapper (created by Context.Consumer)
+    in Route
+    in Switch
+    in Router
+    in ThemeProvider
+    in Provider
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://fb.me/react-error-boundaries to learn more about error boundaries. @ http://localhost:8030/bundle.js:451992
+[  107063ms] ReferenceError: typeKey is not defined
+    at EmptySessionPage (http://localhost:8030/bundle.js:783894:7)
+    at renderWithHooks (http://localhost:8030/bundle.js:446410:18)
+    at mountIndeterminateComponent (http://localhost:8030/bundle.js:448944:13)
+    at beginWork$1 (http://localhost:8030/bundle.js:450312:16)
+    at HTMLUnknownElement.callCallback (http://localhost:8030/bundle.js:430481:14)
+    at Object.invokeGuardedCallbackDev (http://localhost:8030/bundle.js:430530:16)
+    at invokeGuardedCallback (http://localhost:8030/bundle.js:430585:31)
+    at beginWork$$1 (http://localhost:8030/bundle.js:455930:7)
+    at performUnitOfWork (http://localhost:8030/bundle.js:454848:12)
+    at workLoopSync (http://localhost:8030/bundle.js:454821:22)
+[  108604ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[  108605ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[  108607ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[  108838ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[  108886ms] ReferenceError: typeKey is not defined
+    at EmptySessionPage (http://localhost:8030/bundle.js:783894:7)
+    at renderWithHooks (http://localhost:8030/bundle.js:446410:18)
+    at mountIndeterminateComponent (http://localhost:8030/bundle.js:448944:13)
+    at beginWork$1 (http://localhost:8030/bundle.js:450312:16)
+    at HTMLUnknownElement.callCallback (http://localhost:8030/bundle.js:430481:14)
+    at Object.invokeGuardedCallbackDev (http://localhost:8030/bundle.js:430530:16)
+    at invokeGuardedCallback (http://localhost:8030/bundle.js:430585:31)
+    at beginWork$$1 (http://localhost:8030/bundle.js:455930:7)
+    at performUnitOfWork (http://localhost:8030/bundle.js:454848:12)
+    at workLoopSync (http://localhost:8030/bundle.js:454821:22)
+[  108875ms] [ERROR] The above error occurred in the <EmptySessionPage> component:
+    in EmptySessionPage (created by SessionPagesView)
+    in div (created by SessionPagesView)
+    in div (created by SessionPagesView)
+    in SessionPagesView (created by Context.Consumer)
+    in LinkWrapper (created by Context.Consumer)
+    in Route
+    in Switch
+    in Router
+    in ThemeProvider
+    in Provider
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://fb.me/react-error-boundaries to learn more about error boundaries. @ http://localhost:8030/bundle.js:451992
+[  108886ms] ReferenceError: typeKey is not defined
+    at EmptySessionPage (http://localhost:8030/bundle.js:783894:7)
+    at renderWithHooks (http://localhost:8030/bundle.js:446410:18)
+    at mountIndeterminateComponent (http://localhost:8030/bundle.js:448944:13)
+    at beginWork$1 (http://localhost:8030/bundle.js:450312:16)
+    at HTMLUnknownElement.callCallback (http://localhost:8030/bundle.js:430481:14)
+    at Object.invokeGuardedCallbackDev (http://localhost:8030/bundle.js:430530:16)
+    at invokeGuardedCallback (http://localhost:8030/bundle.js:430585:31)
+    at beginWork$$1 (http://localhost:8030/bundle.js:455930:7)
+    at performUnitOfWork (http://localhost:8030/bundle.js:454848:12)
+    at workLoopSync (http://localhost:8030/bundle.js:454821:22)
+[  117577ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[  117578ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[  117580ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[  117807ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[  117841ms] ReferenceError: typeKey is not defined
+    at EmptySessionPage (http://localhost:8030/bundle.js:783894:7)
+    at renderWithHooks (http://localhost:8030/bundle.js:446410:18)
+    at mountIndeterminateComponent (http://localhost:8030/bundle.js:448944:13)
+    at beginWork$1 (http://localhost:8030/bundle.js:450312:16)
+    at HTMLUnknownElement.callCallback (http://localhost:8030/bundle.js:430481:14)
+    at Object.invokeGuardedCallbackDev (http://localhost:8030/bundle.js:430530:16)
+    at invokeGuardedCallback (http://localhost:8030/bundle.js:430585:31)
+    at beginWork$$1 (http://localhost:8030/bundle.js:455930:7)
+    at performUnitOfWork (http://localhost:8030/bundle.js:454848:12)
+    at workLoopSync (http://localhost:8030/bundle.js:454821:22)
+[  117841ms] [ERROR] The above error occurred in the <EmptySessionPage> component:
+    in EmptySessionPage (created by SessionPagesView)
+    in div (created by SessionPagesView)
+    in div (created by SessionPagesView)
+    in SessionPagesView (created by Context.Consumer)
+    in LinkWrapper (created by Context.Consumer)
+    in Route
+    in Switch
+    in Router
+    in ThemeProvider
+    in Provider
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://fb.me/react-error-boundaries to learn more about error boundaries. @ http://localhost:8030/bundle.js:451992
+[  117842ms] ReferenceError: typeKey is not defined
+    at EmptySessionPage (http://localhost:8030/bundle.js:783894:7)
+    at renderWithHooks (http://localhost:8030/bundle.js:446410:18)
+    at mountIndeterminateComponent (http://localhost:8030/bundle.js:448944:13)
+    at beginWork$1 (http://localhost:8030/bundle.js:450312:16)
+    at HTMLUnknownElement.callCallback (http://localhost:8030/bundle.js:430481:14)
+    at Object.invokeGuardedCallbackDev (http://localhost:8030/bundle.js:430530:16)
+    at invokeGuardedCallback (http://localhost:8030/bundle.js:430585:31)
+    at beginWork$$1 (http://localhost:8030/bundle.js:455930:7)
+    at performUnitOfWork (http://localhost:8030/bundle.js:454848:12)
+    at workLoopSync (http://localhost:8030/bundle.js:454821:22)
+[  146147ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  153577ms] [ERROR] [webpack-dev-server] Errors while compiling. Reload prevented. @ http://localhost:8030/bundle.js:530986
+[  153578ms] [ERROR] [webpack-dev-server] ERROR in ./views/sample_pages/empty_session_page.js
+Module build failed (from ../../node_modules/babel-loader/lib/index.js):
+SyntaxError: /Users/canascar/Documents/vibe/kiro/oui-headless/src-docs/src/views/sample_pages/empty_session_page.js: Missing initializer in destructuring declaration. (594:14)
+
+  592 |     typingRef.current = () => clearTimeout(timeout);
+  593 |     return () => { cancelled = true; clearTimeout(timeout); };
+> 594 |   }, [typeKey]);
+      |               ^
+  595 |
+  596 |   const handleScroll = useCallback(() => {
+  597 |     if (scrollRef.current) {
+    at constructor (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:363:19)
+    at TypeScriptParserMixin.raise (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:6612:19)
+    at TypeScriptParserMixin.parseVar (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:13320:16)
+    at TypeScriptParserMixin.parseVarStatement (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:13163:10)
+    at TypeScriptParserMixin.parseVarStatement (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:9449:31)
+    at TypeScriptParserMixin.parseStatementContent (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:12784:23)
+    at TypeScriptParserMixin.parseStatementContent (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:9483:18)
+    at TypeScriptParserMixin.parseStatementLike (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:12699:17)
+    at TypeScriptParserMixin.parseStatementListItem (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:12679:17)
+    at TypeScriptParserMixin.parseExportDeclaration (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:13863:17)
+    at TypeScriptParserMixin.parseExportDeclaration (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:9608:85)
+    at TypeScriptParserMixin.maybeParseExportDeclaration (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:13822:31)
+    at TypeScriptParserMixin.parseExport (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:13741:29)
+    at TypeScriptParserMixin.parseExport (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:9426:20)
+    at TypeScriptParserMixin.parseStatementContent (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:12811:27)
+    at TypeScriptParserMixin.parseStatementContent (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:9483:18)
+    at TypeScriptParserMixin.parseStatementLike (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:12699:17)
+    at TypeScriptParserMixin.parseModuleItem (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:12676:17)
+    at TypeScriptParserMixin.parseBlockOrModuleBlockBody (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:13249:36)
+    at TypeScriptParserMixin.parseBlockBody (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:13242:10)
+    at TypeScriptParserMixin.parseProgram (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:12555:10)
+    at TypeScriptParserMixin.parseTopLevel (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:12545:25)
+    at TypeScriptParserMixin.parse (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:14423:10)
+    at TypeScriptParserMixin.parse (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:10100:18)
+    at parse (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/parser/lib/index.js:14457:38)
+    at parser (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/core/lib/parser/index.js:41:34)
+    at parser.next (<anonymous>)
+    at normalizeFile (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+    at normalizeFile.next (<anonymous>)
+    at run (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/core/lib/transformation/index.js:22:50)
+    at run.next (<anonymous>)
+    at transform (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/@babel/core/lib/transform.js:22:33)
+    at transform.next (<anonymous>)
+    at step (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/gensync/index.js:261:32)
+    at /Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/gensync/index.js:273:13
+    at async.call.result.err.err (/Users/canascar/Documents/vibe/kiro/oui-headless/node_modules/gensync/index.js:223:11) @ http://localhost:8030/bundle.js:530986
+[  181578ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  188151ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  188152ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[  188268ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[  188268ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/empty_session_page.js is not accepted
+Update propagation: ./views/sample_pages/empty_session_page.js -> ./views/sample_pages/sample_pages_view.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828785:31)
+    at http://localhost:8030/bundle.js:828454:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828453:54)
+    at http://localhost:8030/bundle.js:828424:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828379:48)
+    at http://localhost:8030/bundle.js:828422:24 @ http://localhost:8030/bundle.js:532335
+[  191860ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[  191861ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[  191880ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[  192210ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[  192255ms] ReferenceError: currentLine is not defined
+    at EmptySessionPage (http://localhost:8030/bundle.js:783903:57)
+    at renderWithHooks (http://localhost:8030/bundle.js:446410:18)
+    at mountIndeterminateComponent (http://localhost:8030/bundle.js:448944:13)
+    at beginWork$1 (http://localhost:8030/bundle.js:450312:16)
+    at HTMLUnknownElement.callCallback (http://localhost:8030/bundle.js:430481:14)
+    at Object.invokeGuardedCallbackDev (http://localhost:8030/bundle.js:430530:16)
+    at invokeGuardedCallback (http://localhost:8030/bundle.js:430585:31)
+    at beginWork$$1 (http://localhost:8030/bundle.js:455930:7)
+    at performUnitOfWork (http://localhost:8030/bundle.js:454848:12)
+    at workLoopSync (http://localhost:8030/bundle.js:454821:22)
+[  192256ms] [ERROR] The above error occurred in the <EmptySessionPage> component:
+    in EmptySessionPage (created by SessionPagesView)
+    in div (created by SessionPagesView)
+    in div (created by SessionPagesView)
+    in SessionPagesView (created by Context.Consumer)
+    in LinkWrapper (created by Context.Consumer)
+    in Route
+    in Switch
+    in Router
+    in ThemeProvider
+    in Provider
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://fb.me/react-error-boundaries to learn more about error boundaries. @ http://localhost:8030/bundle.js:451992
+[  192256ms] ReferenceError: currentLine is not defined
+    at EmptySessionPage (http://localhost:8030/bundle.js:783903:57)
+    at renderWithHooks (http://localhost:8030/bundle.js:446410:18)
+    at mountIndeterminateComponent (http://localhost:8030/bundle.js:448944:13)
+    at beginWork$1 (http://localhost:8030/bundle.js:450312:16)
+    at HTMLUnknownElement.callCallback (http://localhost:8030/bundle.js:430481:14)
+    at Object.invokeGuardedCallbackDev (http://localhost:8030/bundle.js:430530:16)
+    at invokeGuardedCallback (http://localhost:8030/bundle.js:430585:31)
+    at beginWork$$1 (http://localhost:8030/bundle.js:455930:7)
+    at performUnitOfWork (http://localhost:8030/bundle.js:454848:12)
+    at workLoopSync (http://localhost:8030/bundle.js:454821:22)
+[  202072ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  226731ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  226732ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[  227148ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[  227148ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/empty_session_page.js is not accepted
+Update propagation: ./views/sample_pages/empty_session_page.js -> ./views/sample_pages/sample_pages_view.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828682:31)
+    at http://localhost:8030/bundle.js:828351:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828350:54)
+    at http://localhost:8030/bundle.js:828321:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828276:48)
+    at http://localhost:8030/bundle.js:828319:24 @ http://localhost:8030/bundle.js:532335
+[  229301ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[  229302ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[  229318ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[  229649ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[  240384ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  246773ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  246774ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[  246938ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[  246938ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/onboarding_wizard_page.js is not accepted
+Update propagation: ./views/sample_pages/onboarding_wizard_page.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828655:31)
+    at http://localhost:8030/bundle.js:828324:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828323:54)
+    at http://localhost:8030/bundle.js:828294:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828249:48)
+    at http://localhost:8030/bundle.js:828292:24 @ http://localhost:8030/bundle.js:532335
+[  249651ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[  249652ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[  249668ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[  250006ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[  253532ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  259686ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  259687ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[  259816ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[  259816ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/onboarding_wizard_page.js is not accepted
+Update propagation: ./views/sample_pages/onboarding_wizard_page.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828663:31)
+    at http://localhost:8030/bundle.js:828332:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828331:54)
+    at http://localhost:8030/bundle.js:828302:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828257:48)
+    at http://localhost:8030/bundle.js:828300:24 @ http://localhost:8030/bundle.js:532335
+[  261635ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[  261636ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[  261651ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[  261958ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[  263715ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  270717ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  270717ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[  270954ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[  270954ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/onboarding_wizard_page.js is not accepted
+Update propagation: ./views/sample_pages/onboarding_wizard_page.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828686:31)
+    at http://localhost:8030/bundle.js:828355:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828354:54)
+    at http://localhost:8030/bundle.js:828325:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828280:48)
+    at http://localhost:8030/bundle.js:828323:24 @ http://localhost:8030/bundle.js:532335
+[  273401ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[  273402ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[  273416ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[  273736ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[  273841ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  301134ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  301135ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[  301898ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[  301898ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_dark.scss @ http://localhost:8030/bundle.js:532333
+[  301898ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_light.scss @ http://localhost:8030/bundle.js:532333
+[  301898ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_dark.scss @ http://localhost:8030/bundle.js:532333
+[  301898ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_light.scss @ http://localhost:8030/bundle.js:532333
+[  301898ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[  301898ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[  301898ms] [LOG] [HMR] App is up to date. @ http://localhost:8030/bundle.js:532333
+[  361060ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  388272ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  388272ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[  389066ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[  389066ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/onboarding_wizard_page.js is not accepted
+Update propagation: ./views/sample_pages/onboarding_wizard_page.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828698:31)
+    at http://localhost:8030/bundle.js:828367:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828366:54)
+    at http://localhost:8030/bundle.js:828337:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828292:48)
+    at http://localhost:8030/bundle.js:828335:24 @ http://localhost:8030/bundle.js:532335
+[  391917ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[  391918ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[  391935ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[  392276ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[  458468ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  464765ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  464766ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[  465001ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[  465001ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/onboarding_wizard_page.js is not accepted
+Update propagation: ./views/sample_pages/onboarding_wizard_page.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828622:31)
+    at http://localhost:8030/bundle.js:828291:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828290:54)
+    at http://localhost:8030/bundle.js:828261:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828216:48)
+    at http://localhost:8030/bundle.js:828259:24 @ http://localhost:8030/bundle.js:532335
+[  467792ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[  467793ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[  467809ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[  468144ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[  477181ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  483461ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  483461ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[  483583ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[  483583ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/onboarding_wizard_page.js is not accepted
+Update propagation: ./views/sample_pages/onboarding_wizard_page.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828621:31)
+    at http://localhost:8030/bundle.js:828290:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828289:54)
+    at http://localhost:8030/bundle.js:828260:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828215:48)
+    at http://localhost:8030/bundle.js:828258:24 @ http://localhost:8030/bundle.js:532335
+[  486281ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[  486281ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[  486296ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[  486593ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[  488413ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  494651ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  494651ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[  494868ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[  494868ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/onboarding_wizard_page.js is not accepted
+Update propagation: ./views/sample_pages/onboarding_wizard_page.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828628:31)
+    at http://localhost:8030/bundle.js:828297:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828296:54)
+    at http://localhost:8030/bundle.js:828267:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828222:48)
+    at http://localhost:8030/bundle.js:828265:24 @ http://localhost:8030/bundle.js:532335
+[  497595ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[  497596ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[  497611ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[  497923ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[  505052ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  529879ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  529880ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[  530086ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  555408ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  555989ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[  555989ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_dark.scss @ http://localhost:8030/bundle.js:532333
+[  555989ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_light.scss @ http://localhost:8030/bundle.js:532333
+[  555989ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_dark.scss @ http://localhost:8030/bundle.js:532333
+[  555989ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_light.scss @ http://localhost:8030/bundle.js:532333
+[  555989ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[  555989ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[  556301ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[  556302ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_dark.scss @ http://localhost:8030/bundle.js:532333
+[  556302ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_light.scss @ http://localhost:8030/bundle.js:532333
+[  556302ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_dark.scss @ http://localhost:8030/bundle.js:532333
+[  556302ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_light.scss @ http://localhost:8030/bundle.js:532333
+[  556302ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[  556302ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[  556302ms] [LOG] [HMR] App is up to date. @ http://localhost:8030/bundle.js:532333
+[  597754ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  604208ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  604208ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[  604369ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[  604369ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/onboarding_wizard_page.js is not accepted
+Update propagation: ./views/sample_pages/onboarding_wizard_page.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828645:31)
+    at http://localhost:8030/bundle.js:828314:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828313:54)
+    at http://localhost:8030/bundle.js:828284:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828239:48)
+    at http://localhost:8030/bundle.js:828282:24 @ http://localhost:8030/bundle.js:532335
+[  606253ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[  606254ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[  606269ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[  606604ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681

@@ -1,0 +1,147 @@
+- generic [ref=e2]:
+  - generic [ref=e120]:
+    - generic [ref=e121]:
+      - link "OUI home" [ref=e123] [cursor=pointer]:
+        - /url: "#/"
+        - img "OpenSearch" [ref=e124]
+        - generic [ref=e128]:
+          - text: OpenSearch AUI
+          - generic "Beta" [ref=e129]
+      - button "Switch to dark mode" [ref=e132] [cursor=pointer]:
+        - img
+    - generic [ref=e133]:
+      - button "Sample Pages" [ref=e137] [cursor=pointer]:
+        - generic [ref=e138]:
+          - img [ref=e139]
+          - generic [ref=e141]: Sample Pages
+      - button "v9 Light" [ref=e145] [cursor=pointer]:
+        - generic [ref=e146]:
+          - img [ref=e147]
+          - generic [ref=e149]: v9 Light
+      - link "OUI GitHub repo" [ref=e152] [cursor=pointer]:
+        - /url: https://github.com/opensearch-project/oui
+        - img [ref=e156]
+      - link "OUI Figma component library" [ref=e160] [cursor=pointer]:
+        - /url: https://www.figma.com/community/file/1319043629276905995
+        - img [ref=e164]
+  - generic [ref=e165]:
+    - generic [ref=e167]:
+      - search [ref=e168]:
+        - generic [ref=e170]:
+          - searchbox "Search for a docs section" [ref=e171]
+          - generic:
+            - generic:
+              - img
+      - navigation "OUI" [ref=e173]:
+        - generic [ref=e174]:
+          - button "Guidelines" [ref=e176] [cursor=pointer]:
+            - generic [ref=e177]:
+              - generic "Guidelines" [ref=e178]
+              - img [ref=e179]
+          - button "Layout" [ref=e182] [cursor=pointer]:
+            - generic [ref=e183]:
+              - generic "Layout" [ref=e184]
+              - img [ref=e185]
+          - button "Navigation" [ref=e188] [cursor=pointer]:
+            - generic [ref=e189]:
+              - generic "Navigation" [ref=e190]
+              - img [ref=e191]
+          - button "Tabular content" [ref=e194] [cursor=pointer]:
+            - generic [ref=e195]:
+              - generic "Tabular content" [ref=e196]
+              - img [ref=e197]
+          - button "Display" [ref=e200] [cursor=pointer]:
+            - generic [ref=e201]:
+              - generic "Display" [ref=e202]
+              - img [ref=e203]
+          - button "Forms" [ref=e206] [cursor=pointer]:
+            - generic [ref=e207]:
+              - generic "Forms" [ref=e208]
+              - img [ref=e209]
+          - button "Editors & syntax" [ref=e212] [cursor=pointer]:
+            - generic [ref=e213]:
+              - generic "Editors & syntax" [ref=e214]
+              - img [ref=e215]
+          - button "Headless" [ref=e218] [cursor=pointer]:
+            - generic [ref=e219]:
+              - generic "Headless" [ref=e220]
+              - img [ref=e221]
+          - button "Utilities" [ref=e224] [cursor=pointer]:
+            - generic [ref=e225]:
+              - generic "Utilities" [ref=e226]
+              - img [ref=e227]
+          - button "Package" [ref=e230] [cursor=pointer]:
+            - generic [ref=e231]:
+              - generic "Package" [ref=e232]
+              - img [ref=e233]
+    - main [ref=e236]:
+      - generic [ref=e238]:
+        - heading "OpenSearch AUI" [level=1] [ref=e239]
+        - heading "The framework powering Agentic OpenSearch" [level=2] [ref=e241]
+        - generic [ref=e243]:
+          - paragraph [ref=e244]: The OpenSearch AUI framework (OUI) is the design library we use at the OpenSearch Project to build projects that share our aesthetics.
+          - generic [ref=e245]:
+            - link "Getting started" [ref=e247] [cursor=pointer]:
+              - /url: https://github.com/opensearch-project/oui/blob/main/wiki/consuming.md
+              - strong [ref=e248]: Getting started
+            - link "What's new" [ref=e250] [cursor=pointer]:
+              - /url: "#/package/changelog"
+              - strong [ref=e251]: What's new
+            - link "Contributing" [ref=e253] [cursor=pointer]:
+              - /url: https://github.com/opensearch-project/oui/blob/main/CONTRIBUTING.md
+              - strong [ref=e254]: Contributing
+      - generic [ref=e255]:
+        - generic [ref=e257]:
+          - generic [ref=e258]:
+            - img [ref=e260]
+            - generic [ref=e262]:
+              - text: Accessible to everyone
+              - paragraph [ref=e264]: Uses high contrast, color-blind safe palettes and tested with most assistive technology.
+          - generic [ref=e265]:
+            - img [ref=e267]
+            - generic [ref=e269]:
+              - text: Flexible and composable
+              - paragraph [ref=e271]: Configurable enough to meet the needs of a wide array of contexts while maintaining brand and low-level consistency.
+          - generic [ref=e272]:
+            - img [ref=e274]
+            - generic [ref=e276]:
+              - text: Well documented and tested
+              - paragraph [ref=e278]: Code is friendly to the novice and expert alike.
+        - generic [ref=e280]:
+          - generic [ref=e284]:
+            - link "Buttons" [ref=e286] [cursor=pointer]:
+              - /url: "#/navigation/button"
+            - paragraph [ref=e288]: Buttons for every usage you might need
+          - generic [ref=e292]:
+            - link "Cards" [ref=e294] [cursor=pointer]:
+              - /url: "#/display/card"
+            - paragraph [ref=e296]: Cards like these help you make repeatable content more presentable
+          - generic [ref=e300]:
+            - link "Flexible layouts" [ref=e302] [cursor=pointer]:
+              - /url: "#/layout/flex"
+            - paragraph [ref=e304]: Create layouts by using flex groups, grids, and items
+          - generic [ref=e308]:
+            - link "Forms" [ref=e310] [cursor=pointer]:
+              - /url: "#/forms/form-layouts"
+            - paragraph [ref=e312]: Input tags, layouts, and validation for your forms
+          - generic [ref=e316]:
+            - link "Icons" [ref=e318] [cursor=pointer]:
+              - /url: "#/display/icons"
+            - paragraph [ref=e320]: Our SVG icon library gives you full control over size and color
+          - generic [ref=e324]:
+            - link "Pages" [ref=e326] [cursor=pointer]:
+              - /url: "#/layout/page"
+            - paragraph [ref=e328]: Layout your whole application page with this component and its series of child components
+          - generic [ref=e332]:
+            - link "Tables" [ref=e334] [cursor=pointer]:
+              - /url: "#/tabular-content/tables"
+            - paragraph [ref=e336]: Build tables from individual components or high level wrappers
+          - generic [ref=e340]:
+            - link "Text" [ref=e342] [cursor=pointer]:
+              - /url: "#/display/text"
+            - paragraph [ref=e344]: Simple HTML text like paragraphs and lists are wrapped in a single text component for styling
+        - paragraph [ref=e350]:
+          - text: OUI is licensed under
+          - link "Apache License 2.0" [ref=e351] [cursor=pointer]:
+            - /url: https://github.com/opensearch-project/oui/blob/main/LICENSE
+          - text: "| © OpenSearch contributors, 2026."

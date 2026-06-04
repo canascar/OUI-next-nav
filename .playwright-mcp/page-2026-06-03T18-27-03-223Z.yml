@@ -1,0 +1,68 @@
+- generic [ref=e456]:
+  - navigation "Session navigation" [ref=e457]:
+    - img [ref=e459]
+    - generic [ref=e463]:
+      - button "New session" [ref=e465] [cursor=pointer]:
+        - img
+      - button "All sessions" [ref=e470] [cursor=pointer]:
+        - img
+      - button "Library" [ref=e472] [cursor=pointer]:
+        - img
+    - generic [ref=e473]:
+      - button "Workspace" [ref=e477] [cursor=pointer]:
+        - img
+      - button "Developer tools" [ref=e480] [cursor=pointer]:
+        - img
+      - button "Settings" [ref=e484] [cursor=pointer]:
+        - img
+      - generic "OS" [ref=e488]:
+        - generic [ref=e489]: O
+  - generic [ref=e552]:
+    - generic [ref=e553]:
+      - generic [ref=e554]:
+        - img "mascot · comma" [ref=e556]:
+          - img [ref=e557]
+        - generic [ref=e563]: Olly is online
+      - heading "Hey hey, John!" [level=1] [ref=e565]
+      - paragraph [ref=e567]:
+        - generic [ref=e568]:
+          - text: All
+          - strong [ref=e569]: 247 services
+          - text: are running normally.
+        - generic [ref=e570]:
+          - text: I found
+          - strong [ref=e571]: 3 items
+          - text: that need your attention.
+        - generic [ref=e572]: Let me know if you'd like me to dig deeper into any of these, or ask me anything below.
+      - generic [ref=e575]:
+        - textbox "Ask AI anything, or type to search a page" [active] [ref=e576]
+        - generic:
+          - button "Add attachment" [ref=e577] [cursor=pointer]:
+            - img
+          - button "Send" [disabled] [ref=e578]:
+            - img
+    - generic [ref=e580]:
+      - generic [ref=e581]:
+        - heading "Recent" [level=5] [ref=e582]
+        - generic [ref=e583]: "3"
+      - generic [ref=e584] [cursor=pointer]:
+        - generic [ref=e585]:
+          - paragraph [ref=e586]:
+            - strong [ref=e587]: Payment service P99 latency breach
+          - paragraph [ref=e588]: P99 crossed 2,000ms with connection pool exhaustion on 3 of 4 pods. I've started an investigation and identified a likely root cause.
+          - paragraph [ref=e589]: Created by AI · 15 min ago
+        - generic [ref=e590]: →
+      - generic [ref=e592] [cursor=pointer]:
+        - generic [ref=e593]:
+          - paragraph [ref=e594]:
+            - strong [ref=e595]: Error Rate Spike — Checkout Service
+          - paragraph [ref=e596]: Checkout error rate spiked to 12.4% around the same time. Auth-service deployment regression identified.
+          - paragraph [ref=e597]: Shared by team · 2 hours ago
+        - generic [ref=e598]: →
+      - generic [ref=e600] [cursor=pointer]:
+        - generic [ref=e601]:
+          - paragraph [ref=e602]:
+            - strong [ref=e603]: DNS Resolution Timeout
+          - paragraph [ref=e604]: Resolved after the upstream fix was deployed. No further action needed.
+          - paragraph [ref=e605]: Resolved · 3 hours ago
+        - generic [ref=e606]: →
