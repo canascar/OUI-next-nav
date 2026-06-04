@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 
 import {
   OuiCompressedFieldSearch,
@@ -52,12 +52,49 @@ export const SessionList = ({
   onCreateSession,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const listRef = useRef(null);
 
   const filteredSessions = searchQuery.trim()
     ? sessions.filter((s) =>
         s.title.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : sessions;
+
+  const handleItemHover = useCallback((hoveredIndex) => {
+    if (!listRef.current) return;
+    const items = listRef.current.querySelectorAll('.sessionList__card');
+    items.forEach((el, i) => {
+      const distance = Math.abs(i - hoveredIndex);
+      let scale = 1;
+      if (distance === 0) scale = 1.03;
+      else if (distance === 1) scale = 1.015;
+      else if (distance === 2) scale = 1.005;
+      el.style.transform = `scale(${scale})`;
+    });
+  }, []);
+
+  const handleItemMouseDown = useCallback((pressedIndex) => {
+    if (!listRef.current) return;
+    const items = listRef.current.querySelectorAll('.sessionList__card');
+    items.forEach((el, i) => {
+      const distance = Math.abs(i - pressedIndex);
+      let scale = 1;
+      if (distance === 0) scale = 0.97;
+      else if (distance === 1) scale = 0.985;
+      else if (distance === 2) scale = 0.995;
+      el.style.transform = `scale(${scale})`;
+    });
+  }, []);
+
+  const handleItemMouseUp = useCallback((hoveredIndex) => {
+    handleItemHover(hoveredIndex);
+  }, [handleItemHover]);
+
+  const handleListMouseLeave = useCallback(() => {
+    if (!listRef.current) return;
+    const items = listRef.current.querySelectorAll('.sessionList__card');
+    items.forEach((el) => { el.style.transform = ''; });
+  }, []);
 
   return (
     <div className="sessionList">
@@ -81,7 +118,7 @@ export const SessionList = ({
         </div>
 
         {/* Session cards */}
-        <div className="sessionList__cards">
+        <div className="sessionList__cards" ref={listRef} onMouseLeave={handleListMouseLeave}>
           {filteredSessions.length === 0 ? (
             <div className="sessionList__empty">
               <OuiText size="s" color="subdued">
@@ -89,7 +126,7 @@ export const SessionList = ({
               </OuiText>
             </div>
           ) : (
-            filteredSessions.map((session) => {
+            filteredSessions.map((session, index) => {
               const isActive = session.id === activeSessionId;
               return (
                 <button
@@ -98,6 +135,9 @@ export const SessionList = ({
                     isActive ? ' sessionList__card--active' : ''
                   }`}
                   onClick={() => onSelectSession(session.id)}
+                  onMouseEnter={() => handleItemHover(index)}
+                  onMouseDown={() => handleItemMouseDown(index)}
+                  onMouseUp={() => handleItemMouseUp(index)}
                   aria-label={`${isActive ? 'Active session: ' : ''}${
                     session.title
                   }`}

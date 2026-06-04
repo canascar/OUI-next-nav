@@ -188,6 +188,25 @@
   }
 }
 
+// Tab content panels — fade transition
+.emptySessionPage__briefingContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.emptySessionPage__briefingPanel {
+  opacity: 1;
+  transition: opacity 700ms cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  &--hidden {
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+    pointer-events: none;
+    transition: opacity 400ms cubic-bezier(0.25, 0.1, 0.25, 1), height 0ms 400ms;
+  }
+}
+
 .emptySessionPage__rightCol {
   display: flex;
   flex-direction: column;
@@ -196,7 +215,6 @@
   gap: 0;
   flex: 1;
   min-width: 0;
-  height: 100%;
   overflow-y: auto;
   padding: 24px;
   border-left: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.05), rgba(255, 255, 255, 0.05));
@@ -1511,12 +1529,58 @@ textarea.emptySessionPage__textarea {
   }
 }
 
+// After first load — no re-entry animations needed (panels stay mounted)
+.emptySessionPage__briefing--noAnim {
+  .emptySessionPage__briefingItem,
+  .emptySessionPage__briefingSeparator {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}
+
 // Insights grid in right panel
 .emptySessionPage__insightsGrid {
   display: flex;
   flex-direction: column;
   gap: 12px;
   padding-top: 8px;
+
+  &--2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .ouiInsightCard {
+    cursor: pointer;
+    transition: transform 250ms cubic-bezier(0.2, 0.7, 0.2, 1), border-color 200ms ease, box-shadow 250ms ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      border-color: lightOrDarkTheme(rgba(99, 102, 241, 0.3), rgba(165, 180, 252, 0.2));
+      box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
+
+      .emptySessionPage__insightInspect {
+        color: $ouiColorPrimary;
+      }
+    }
+
+    &:active {
+      transform: translateY(0) scale(0.98);
+    }
+  }
+}
+
+// Inspect label inside insight cards
+.emptySessionPage__insightInspect {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: $ouiFontSizeXS;
+  color: $ouiColorMediumShade;
+  transition: color 200ms ease;
 }
 
 // Responsive: stack columns vertically below 800px

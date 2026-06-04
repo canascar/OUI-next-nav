@@ -17,6 +17,7 @@ import {
   OuiIcon,
   OuiInsightCard,
   OuiInsightCallout,
+  OuiSmallButtonEmpty,
   OuiTab,
   OuiTabs,
   OuiText,
@@ -506,8 +507,16 @@ export const EmptySessionPage = ({
   const [scrolledFromTop, setScrolledFromTop] = useState(false);
   const [mascotExpression, setMascotExpression] = useState(undefined);
   const [rightPanelTab, setRightPanelTab] = useState('recent');
+  const [hasAnimatedBriefing, setHasAnimatedBriefing] = useState(false);
   const scrollRef = useRef(null);
   const briefingRef = useRef(null);
+  const insightsRef = useRef(null);
+
+  // Mark briefing animations as done after initial load
+  React.useEffect(() => {
+    const timer = setTimeout(() => setHasAnimatedBriefing(true), 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Typewriter for text lines
   const textLines = useMemo(() => [
@@ -623,6 +632,30 @@ export const EmptySessionPage = ({
     });
   }, []);
 
+  // Insight card hover — single card only, no proximity
+  const handleInsightHover = useCallback((hoveredIndex) => {
+    if (!insightsRef.current) return;
+    const cards = insightsRef.current.querySelectorAll('.ouiInsightCard');
+    cards.forEach((el, i) => {
+      el.style.transform = i === hoveredIndex ? 'scale(1.02)' : '';
+    });
+  }, []);
+
+  const handleInsightMouseDown = useCallback((pressedIndex) => {
+    if (!insightsRef.current) return;
+    const cards = insightsRef.current.querySelectorAll('.ouiInsightCard');
+    cards.forEach((el, i) => {
+      el.style.transform = i === pressedIndex ? 'scale(0.97)' : '';
+    });
+  }, []);
+
+  const handleInsightMouseLeave = useCallback(() => {
+    if (!insightsRef.current) return;
+    insightsRef.current.querySelectorAll('.ouiInsightCard').forEach((el) => {
+      el.style.transform = '';
+    });
+  }, []);
+
   // Build a flat searchable list from all chip data + SOURCE_PAGE_MOCK
   const allSearchableItems = useMemo(() => {
     const items = [];
@@ -726,7 +759,7 @@ export const EmptySessionPage = ({
           {/* Right column — briefing items */}
           <div className="emptySessionPage__rightCol">
             <div
-              className="emptySessionPage__briefing"
+              className={`emptySessionPage__briefing${hasAnimatedBriefing ? ' emptySessionPage__briefing--noAnim' : ''}`}
               style={{ padding: 24, gap: 0 }}
               ref={briefingRef}
               onMouseLeave={() => {
@@ -740,12 +773,12 @@ export const EmptySessionPage = ({
                   Recent (3)
                 </OuiTab>
                 <OuiTab isSelected={rightPanelTab === 'insights'} onClick={() => setRightPanelTab('insights')}>
-                  Insights
+                  Insights (5)
                 </OuiTab>
               </OuiTabs>
 
-              {rightPanelTab === 'recent' && (
-                <>
+              <div className="emptySessionPage__briefingContent">
+                <div className={`emptySessionPage__briefingPanel${rightPanelTab !== 'recent' ? ' emptySessionPage__briefingPanel--hidden' : ''}`}>
               <div
                 className="emptySessionPage__briefingItem"
                 onClick={() => onSelectSession(CHIP_DATA.activity[0].sessionId)}
@@ -790,37 +823,121 @@ export const EmptySessionPage = ({
                 </OuiText>
                 <span className="emptySessionPage__briefingArrow">→</span>
               </div>
-                </>
-              )}
+                </div>
 
-              {rightPanelTab === 'insights' && (
-                <div className="emptySessionPage__insightsGrid">
-                  <OuiInsightCard title="P99 Latency" titleExtra={<span style={{ color: '#d97706', fontWeight: 600, fontSize: 12 }}>2,041ms</span>}>
-                    <svg viewBox="0 0 200 40" style={{ width: '100%', height: 40 }}>
-                      <polyline fill="none" stroke="#d97706" strokeWidth="2" strokeLinejoin="round" points="0,30 20,28 40,26 60,24 80,22 100,20 120,18 140,14 160,8 180,4 200,2" />
-                      <polyline fill="none" stroke="rgba(217,119,6,0.2)" strokeWidth="1" strokeDasharray="3,3" points="0,20 200,20" />
-                    </svg>
+                <div className={`emptySessionPage__briefingPanel${rightPanelTab !== 'insights' ? ' emptySessionPage__briefingPanel--hidden' : ''}`}>
+                <div className="emptySessionPage__insightsGrid emptySessionPage__insightsGrid--2col" ref={insightsRef} onMouseLeave={handleInsightMouseLeave}>
+                  <OuiInsightCard title="Top services by fault rate" onMouseEnter={() => handleInsightHover(0)} onMouseDown={() => handleInsightMouseDown(0)} onMouseUp={() => handleInsightHover(0)}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600, opacity: 0.65, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                        <span>Service</span><span>Fault rate</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
+                        <span style={{ flex: '0 0 100px' }}>checkout</span>
+                        <span style={{ flex: 1, height: 8, borderRadius: 4, background: 'linear-gradient(90deg, #a5b4fc 66.67%, transparent 66.67%)' }} />
+                        <span style={{ fontWeight: 600 }}>66.67%</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
+                        <span style={{ flex: '0 0 100px' }}>frontend</span>
+                        <span style={{ flex: 1, height: 8, borderRadius: 4, background: 'linear-gradient(90deg, #a5b4fc 14.49%, transparent 14.49%)' }} />
+                        <span style={{ fontWeight: 600 }}>14.49%</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
+                        <span style={{ flex: '0 0 100px' }}>frontend-proxy</span>
+                        <span style={{ flex: 1, height: 8, borderRadius: 4, background: 'linear-gradient(90deg, #a5b4fc 14.29%, transparent 14.29%)' }} />
+                        <span style={{ fontWeight: 600 }}>14.29%</span>
+                      </div>
+                    </div>
+                  <div className="emptySessionPage__insightInspect"><OuiIcon type="inspect" size="s" /><span>Inspect</span></div>
                   </OuiInsightCard>
-                  <OuiInsightCard title="Error Rate" titleExtra={<span style={{ color: '#dc2626', fontWeight: 600, fontSize: 12 }}>12.4%</span>}>
-                    <svg viewBox="0 0 200 40" style={{ width: '100%', height: 40 }}>
-                      <polyline fill="none" stroke="#dc2626" strokeWidth="2" strokeLinejoin="round" points="0,35 20,34 40,32 60,30 80,28 100,30 120,20 140,10 160,6 180,8 200,5" />
-                      <polyline fill="none" stroke="rgba(220,38,38,0.2)" strokeWidth="1" strokeDasharray="3,3" points="0,28 200,28" />
+
+                  <OuiInsightCard title="Connection timeout errors" onMouseEnter={() => handleInsightHover(1)} onMouseDown={() => handleInsightMouseDown(1)} onMouseUp={() => handleInsightHover(1)}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
+                      <span style={{ color: '#d97706', fontWeight: 700, fontSize: 28, lineHeight: 1 }}>847</span>
+                      <span style={{ fontSize: 13, color: '#d97706', fontWeight: 600 }}>↑ 312%</span>
+                    </div>
+                    <svg viewBox="0 0 200 50" style={{ width: '100%', height: 50 }}>
+                      <defs><linearGradient id="connFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#d97706" stopOpacity="0.15"/><stop offset="100%" stopColor="#d97706" stopOpacity="0.01"/></linearGradient></defs>
+                      <path d="M0,48 C40,48 80,46 120,42 S170,20 200,10 V50 H0 Z" fill="url(#connFill)" />
+                      <path d="M0,48 C40,48 80,46 120,42 S170,20 200,10" fill="none" stroke="#d97706" strokeWidth="2.5" strokeLinecap="round" />
                     </svg>
+                  <div className="emptySessionPage__insightInspect"><OuiIcon type="inspect" size="s" /><span>Inspect</span></div>
                   </OuiInsightCard>
-                  <OuiInsightCard title="Throughput" titleExtra={<span style={{ color: '#10b981', fontWeight: 600, fontSize: 12 }}>1.2k rps</span>}>
-                    <svg viewBox="0 0 200 40" style={{ width: '100%', height: 40 }}>
-                      <polyline fill="none" stroke="#10b981" strokeWidth="2" strokeLinejoin="round" points="0,20 20,18 40,22 60,19 80,21 100,17 120,20 140,18 160,19 180,20 200,18" />
-                      <polyline fill="none" stroke="rgba(16,185,129,0.2)" strokeWidth="1" strokeDasharray="3,3" points="0,20 200,20" />
-                    </svg>
+
+                  <OuiInsightCard title="Recent alerts" onMouseEnter={() => handleInsightHover(2)} onMouseDown={() => handleInsightMouseDown(2)} onMouseUp={() => handleInsightHover(2)}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600, opacity: 0.65, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                        <span>Alert</span><span>Status</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                        <span>P99 latency breach</span><span style={{ color: '#f87171', fontWeight: 600 }}>Critical</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                        <span>Disk usage warning</span><span style={{ color: '#fbbf24', fontWeight: 600 }}>Warning</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                        <span>Error rate spike</span><span style={{ color: '#f87171', fontWeight: 600 }}>Critical</span>
+                      </div>
+                    </div>
+                  <div className="emptySessionPage__insightInspect"><OuiIcon type="inspect" size="s" /><span>Inspect</span></div>
                   </OuiInsightCard>
-                  <OuiInsightCard title="CPU Utilization" titleExtra={<span style={{ color: '#6366f1', fontWeight: 600, fontSize: 12 }}>67%</span>}>
-                    <svg viewBox="0 0 200 40" style={{ width: '100%', height: 40 }}>
-                      <polyline fill="none" stroke="#6366f1" strokeWidth="2" strokeLinejoin="round" points="0,25 20,22 40,24 60,20 80,18 100,22 120,16 140,14 160,18 180,15 200,13" />
-                      <polyline fill="none" stroke="rgba(99,102,241,0.2)" strokeWidth="1" strokeDasharray="3,3" points="0,20 200,20" />
+
+                  <OuiInsightCard title="Deployment timeline" onMouseEnter={() => handleInsightHover(3)} onMouseDown={() => handleInsightMouseDown(3)} onMouseUp={() => handleInsightHover(3)}>
+                    <svg viewBox="0 0 200 100" style={{ width: '100%', height: 100 }}>
+                      {/* Bars — wider, rounded top, spaced evenly */}
+                      <rect x="12" y="55" width="28" height="35" rx="4" fill="#34d399" />
+                      <rect x="50" y="30" width="28" height="60" rx="4" fill="#34d399" />
+                      <rect x="88" y="12" width="28" height="78" rx="4" fill="#34d399" />
+                      <rect x="126" y="38" width="28" height="52" rx="4" fill="#34d399" />
+                      <rect x="164" y="48" width="28" height="42" rx="4" fill="#34d399" />
+                      {/* X-axis labels */}
+                      <text x="26" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">1–3</text>
+                      <text x="64" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">5–7</text>
+                      <text x="102" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">9–11</text>
+                      <text x="140" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">13–15</text>
+                      <text x="178" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">17–23</text>
                     </svg>
+                  <div className="emptySessionPage__insightInspect"><OuiIcon type="inspect" size="s" /><span>Inspect</span></div>
+                  </OuiInsightCard>
+
+                  <OuiInsightCard title="Resource utilization" onMouseEnter={() => handleInsightHover(4)} onMouseDown={() => handleInsightMouseDown(4)} onMouseUp={() => handleInsightHover(4)} titleExtra={<span style={{ color: '#34d399', fontWeight: 700, fontSize: 18 }}>56%</span>}>
+                    <svg viewBox="0 0 220 100" style={{ width: '100%', height: 100 }}>
+                      {/* Grid lines */}
+                      <line x1="30" y1="10" x2="210" y2="10" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
+                      <line x1="30" y1="32" x2="210" y2="32" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
+                      <line x1="30" y1="54" x2="210" y2="54" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
+                      <line x1="30" y1="76" x2="210" y2="76" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
+                      {/* Y-axis labels */}
+                      <text x="22" y="13" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">100</text>
+                      <text x="22" y="35" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">75</text>
+                      <text x="22" y="57" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">50</text>
+                      <text x="22" y="79" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">25</text>
+                      <text x="22" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">0</text>
+                      {/* Area fill */}
+                      <defs><linearGradient id="resFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#34d399" stopOpacity="0.25"/><stop offset="100%" stopColor="#34d399" stopOpacity="0.03"/></linearGradient></defs>
+                      <path d="M40,58 L75,54 L110,50 L145,52 L175,46 L195,44 L210,46 V96 H40 Z" fill="url(#resFill)" />
+                      {/* Line */}
+                      <polyline fill="none" stroke="#34d399" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points="40,58 75,54 110,50 145,52 175,46 195,44 210,46" />
+                      {/* Dots */}
+                      <circle cx="40" cy="58" r="3" fill="#34d399" />
+                      <circle cx="75" cy="54" r="3" fill="#34d399" />
+                      <circle cx="110" cy="50" r="3" fill="#34d399" />
+                      <circle cx="145" cy="52" r="3" fill="#34d399" />
+                      <circle cx="175" cy="46" r="3" fill="#34d399" />
+                      <circle cx="195" cy="44" r="3" fill="#34d399" />
+                      <circle cx="210" cy="46" r="3" fill="#34d399" />
+                      {/* X-axis labels */}
+                      <text x="40" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">0m</text>
+                      <text x="85" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">15m</text>
+                      <text x="130" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">30m</text>
+                      <text x="175" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">45m</text>
+                      <text x="210" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">60m</text>
+                    </svg>
+                  <div className="emptySessionPage__insightInspect"><OuiIcon type="inspect" size="s" /><span>Inspect</span></div>
                   </OuiInsightCard>
                 </div>
-              )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
