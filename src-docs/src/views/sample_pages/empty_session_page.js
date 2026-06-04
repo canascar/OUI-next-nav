@@ -770,10 +770,10 @@ export const EmptySessionPage = ({
               }}>
               <OuiTabs size="s" display="condensed" style={{ maxWidth: 'fit-content' }}>
                 <OuiTab isSelected={rightPanelTab === 'recent'} onClick={() => setRightPanelTab('recent')}>
-                  Recent (3)
+                  Recent <span className="emptySessionPage__tabBadge">3</span>
                 </OuiTab>
                 <OuiTab isSelected={rightPanelTab === 'insights'} onClick={() => setRightPanelTab('insights')}>
-                  Insights (5)
+                  Insights <span className="emptySessionPage__tabBadge">5</span>
                 </OuiTab>
               </OuiTabs>
 

@@ -188,6 +188,23 @@
   }
 }
 
+// Tab count badge
+.emptySessionPage__tabBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  margin-left: 4px;
+  background: lightOrDarkTheme(rgba(99, 102, 241, 0.1), rgba(165, 180, 252, 0.15));
+  color: lightOrDarkTheme(rgba(99, 102, 241, 1), rgba(165, 180, 252, 1));
+}
+
 // Tab content panels — fade transition
 .emptySessionPage__briefingContent {
   display: flex;
