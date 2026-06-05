@@ -1433,6 +1433,15 @@ textarea.emptySessionPage__textarea {
   transition: opacity 200ms ease;
 }
 
+// Hide separators adjacent to hovered briefing items (pure CSS fallback)
+.emptySessionPage__briefingItem:hover + .emptySessionPage__briefingSeparator {
+  opacity: 0;
+}
+
+.emptySessionPage__briefingSeparator:has(+ .emptySessionPage__briefingItem:hover) {
+  opacity: 0;
+}
+
 // Sequential text line reveal — typewriter (JS-driven)
 .emptySessionPage__textLine {
   display: block;
@@ -1473,7 +1482,7 @@ textarea.emptySessionPage__textarea {
   height: 12px;
   border-radius: 50%;
   background: lightOrDarkTheme(
-    linear-gradient(135deg, #14558E, #1f7cbf),
+    linear-gradient(135deg, $ouiColorPrimary, lighten($ouiColorPrimary, 18%)),
     linear-gradient(135deg, $ouiColorPrimary, lighten($ouiColorPrimary, 18%))
   );
   vertical-align: middle;
@@ -1528,9 +1537,9 @@ textarea.emptySessionPage__textarea {
 }
 
 // Override: once the page has loaded, let JS control separator opacity freely
+// Remove blanket hover override — JS handles individual separator opacity
 .emptySessionPage__briefing:hover .emptySessionPage__briefingSeparator {
   animation: none;
-  opacity: 1;
 }
 
 // Stagger: title at 400ms, then items cascade
@@ -1551,10 +1560,15 @@ textarea.emptySessionPage__textarea {
 
 // After first load — no re-entry animations needed (panels stay mounted)
 .emptySessionPage__briefing--noAnim {
-  .emptySessionPage__briefingItem,
-  .emptySessionPage__briefingSeparator {
+  .emptySessionPage__briefingItem {
     animation: none !important;
     opacity: 1 !important;
+  }
+
+  .emptySessionPage__briefingSeparator {
+    animation: none !important;
+    // Default to visible; JS inline style overrides opacity on hover
+    opacity: 1;
   }
 }
 

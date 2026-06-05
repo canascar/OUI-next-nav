@@ -23,7 +23,7 @@ $ouiCallOutTypes: (
 .ouiCallOut {
   padding: calc($ouiSize * 1.25); // 20px for better breathing room
   border: 1px solid transparent; // All-around border instead of just left
-  border-radius: 0; // v10 Blueprint: square corners everywhere
+  border-radius: 18px; // Large rounded corners
   box-shadow: none; // v10: no drop shadows
   // border-left-width: 3px; // Thicker left border for accent
 

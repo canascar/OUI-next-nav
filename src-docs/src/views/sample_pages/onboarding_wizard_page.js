@@ -1493,7 +1493,9 @@ export const OnboardingWizardPage = () => {
             style={{ flex: 1, minWidth: 0, position: 'relative' }}>
             <div className={`onboardWizard__intro${introExiting ? ' onboardWizard__intro--exiting' : ''}`}>
               <div className="onboardWizard__introContent">
-                <OpenSearch3DLogo size={320} />
+                <div className="onboardWizard__logoGlow">
+                  <OpenSearch3DLogo size={320} />
+                </div>
                 <OuiSpacer size="l" />
                 <OuiTitle size="l">
                   <h1>Welcome to OpenSearch</h1>

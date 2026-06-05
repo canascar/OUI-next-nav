@@ -161,12 +161,16 @@ export const OpenSearch3DLogo = ({ size = 240 }) => {
     domElement.addEventListener('pointerleave', onPointerUp);
 
     // Animate with physics
+    const IDLE_THRESHOLD = 0.0001;
+    const RETURN_SPEED = 0.02;
+    let returningToIdle = false;
+
     const animate = () => {
       frameRef.current = requestAnimationFrame(animate);
       time += 0.012;
 
       if (!hasInteracted) {
-        // Gentle sway — oscillate back and forth (slow)
+        // Gentle sway — oscillate back and forth
         modelGroup.rotation.y = Math.sin(time) * 0.15;
         modelGroup.rotation.x = Math.sin(time * 0.7) * 0.04;
         modelGroup.rotation.z = Math.sin(time * 0.4) * 0.06;
@@ -180,6 +184,35 @@ export const OpenSearch3DLogo = ({ size = 240 }) => {
           velocity.x *= friction;
           velocity.y *= friction;
           velocity.z *= friction;
+
+          // Check if nearly stopped
+          const speed = Math.abs(velocity.x) + Math.abs(velocity.y) + Math.abs(velocity.z);
+          if (speed < IDLE_THRESHOLD && !returningToIdle) {
+            returningToIdle = true;
+          }
+        }
+
+        // Smoothly return to idle oscillation
+        if (returningToIdle && !isDragging) {
+          // Sync time to current Y rotation so oscillation continues from current position
+          // asin(rotation.y / 0.15) gives us where in the sine wave we are
+          const clampedY = Math.max(-1, Math.min(1, modelGroup.rotation.y / 0.15));
+          time = Math.asin(clampedY);
+
+          const targetY = Math.sin(time) * 0.15;
+          const targetX = Math.sin(time * 0.7) * 0.04;
+          const targetZ = Math.sin(time * 0.4) * 0.06;
+
+          modelGroup.rotation.x += (targetX - modelGroup.rotation.x) * RETURN_SPEED;
+          modelGroup.rotation.y += (targetY - modelGroup.rotation.y) * RETURN_SPEED;
+          modelGroup.rotation.z += (targetZ - modelGroup.rotation.z) * RETURN_SPEED;
+
+          // Once close enough, switch back to pure idle
+          const dist = Math.abs(modelGroup.rotation.y - targetY) + Math.abs(modelGroup.rotation.x - targetX);
+          if (dist < 0.005) {
+            hasInteracted = false;
+            returningToIdle = false;
+          }
         }
       }
 

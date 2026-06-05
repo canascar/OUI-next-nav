@@ -80,6 +80,31 @@
   padding: 40px;
 }
 
+// Purple glow behind 3D logo
+.onboardWizard__logoGlow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 450px;
+    height: 450px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(160, 140, 200, 0.22), transparent 70%);
+    filter: blur(40px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
 .onboardWizard__introCta {
   display: inline-flex;
   align-items: center;
