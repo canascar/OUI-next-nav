@@ -75,7 +75,7 @@ export const OpenSearch3DLogo = ({ size = 240 }) => {
 
     // Physics state
     const velocity = { x: 0, y: 0, z: 0 };
-    const friction = 0.995;
+    const friction = 0.96;
     let isDragging = false;
     let hasInteracted = false;
     let previousMouse = { x: 0, y: 0 };
@@ -162,7 +162,7 @@ export const OpenSearch3DLogo = ({ size = 240 }) => {
 
     // Animate with physics
     const IDLE_THRESHOLD = 0.0001;
-    const RETURN_SPEED = 0.02;
+    const RETURN_SPEED = 0.06;
     let returningToIdle = false;
 
     const animate = () => {
