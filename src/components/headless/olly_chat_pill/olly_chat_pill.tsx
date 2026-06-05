@@ -31,6 +31,10 @@ export interface OuiOllyChatPillProps
    */
   avatarHover?: ReactNode;
   /**
+   * Avatar element rendered when the input is focused (e.g. blink expression).
+   */
+  avatarFocused?: ReactNode;
+  /**
    * Optional message displayed above the input (e.g. proactive AI insight).
    */
   message?: ReactNode;
@@ -60,6 +64,7 @@ export const OuiOllyChatPill: FunctionComponent<OuiOllyChatPillProps> = ({
   placeholder = 'Ask Olly anything',
   avatar,
   avatarHover,
+  avatarFocused,
   message,
   quickReplies,
   onDismiss,
@@ -126,6 +131,7 @@ export const OuiOllyChatPill: FunctionComponent<OuiOllyChatPillProps> = ({
                 setIsDismissing(true);
                 setTimeout(() => {
                   setIsDismissing(false);
+                  setIsExpanded(false);
                   onDismiss();
                 }, 400);
               }}
@@ -154,7 +160,7 @@ export const OuiOllyChatPill: FunctionComponent<OuiOllyChatPillProps> = ({
           <OuiToolTip content="Open chat" position="top" delay="long">
             <button
               type="button"
-              className={`ouiOllyChatPill__avatar${isHighlighted ? ' ouiOllyChatPill__avatar--highlight' : ''}${!isExpanded ? ' ouiOllyChatPill__avatar--static' : ''}`}
+              className={`ouiOllyChatPill__avatar${(isHighlighted || isExpanded) ? ' ouiOllyChatPill__avatar--highlight' : ''}${(!isExpanded && !isHighlighted) ? ' ouiOllyChatPill__avatar--static' : ''}`}
               aria-label="Open chat"
               onMouseDown={(e) => {
                 // Prevent input blur so the click registers
@@ -163,7 +169,7 @@ export const OuiOllyChatPill: FunctionComponent<OuiOllyChatPillProps> = ({
               onClick={() => {
                 if (onActivate) onActivate();
               }}>
-              {isHovered && avatarHover ? avatarHover : avatar}
+              {isExpanded && avatarFocused ? avatarFocused : isHovered && avatarHover ? avatarHover : avatar}
             </button>
           </OuiToolTip>
         )}

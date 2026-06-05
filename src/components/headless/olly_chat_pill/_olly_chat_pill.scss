@@ -48,8 +48,15 @@
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     animation: ollyChatPillBorderSpin 6s linear infinite;
+    animation-play-state: paused;
     pointer-events: none;
     z-index: 0;
+  }
+
+  // Spin the border only when expanded or highlighted
+  &--expanded::before,
+  &--highlighted::before {
+    animation-play-state: running;
   }
 
   // Ensure content sits above the pseudo-element

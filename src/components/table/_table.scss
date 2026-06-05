@@ -96,6 +96,8 @@
 }
 
 .ouiTableRow {
+  transition: background-color 200ms ease;
+
   &:hover {
     background-color: $ouiTableHoverColor;
   }
@@ -114,7 +116,11 @@
   }
 
   &.ouiTableRow-isExpandedRow {
-    background-color: $ouiTableHoverColor;
+    background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.2));
+
+    .ouiTableRowCell {
+      background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.2));
+    }
 
     &.ouiTableRow-isSelectable .ouiTableCellContent {
       padding-left: $ouiTableCellCheckboxWidth + $ouiTableCellContentPadding;
@@ -243,12 +249,17 @@
 
 .ouiTableRow-isExpandedRow .ouiTableCellContent {
   overflow: hidden;
-  animation: $ouiAnimSpeedNormal $ouiAnimSlightResistance 1 normal forwards growExpandedRow;
+  animation: 700ms cubic-bezier(0.25, 0.1, 0.25, 1) 1 normal forwards growExpandedRow;
 }
 
 @keyframes growExpandedRow {
   0% {
     max-height: 0;
+    opacity: 0;
+  }
+
+  60% {
+    opacity: 1;
   }
 
   99% {
@@ -257,5 +268,6 @@
 
   100% {
     max-height: unset;
+    opacity: 1;
   }
 }

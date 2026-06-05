@@ -630,7 +630,7 @@ export const DiscoverPage = ({
       {/* Body: fields panel + resize handle + main content */}
       <div className="discoverPage__body" ref={bodyRef}>
         {/* Fields panel (left sidebar) */}
-        <div style={{ width: fieldsPanelWidth, flexShrink: 0 }}>
+        <div className={`discoverPage__fieldsPanelWrap${isDragging ? ' discoverPage__fieldsPanelWrap--dragging' : ''}`} style={{ width: fieldsPanelWidth, flexShrink: 0 }}>
           <FieldsPanel />
         </div>
 

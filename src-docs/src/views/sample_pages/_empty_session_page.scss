@@ -1472,7 +1472,10 @@ textarea.emptySessionPage__textarea {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: linear-gradient(135deg, $ouiColorPrimary, lighten($ouiColorPrimary, 18%));
+  background: lightOrDarkTheme(
+    linear-gradient(135deg, #14558E, #1f7cbf),
+    linear-gradient(135deg, $ouiColorPrimary, lighten($ouiColorPrimary, 18%))
+  );
   vertical-align: middle;
   animation: emptySessionBlobMorph 2s ease-in-out infinite;
 }

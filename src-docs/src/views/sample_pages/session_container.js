@@ -179,7 +179,9 @@ export const SessionContainer = ({
   }, [triggerAnimation, onUpdateSession, aiButtonHighlight, pendingAiResponse]);
 
   const handleDismissAiPopover = useCallback(() => {
+    setAiButtonHighlight(false);
     setAiPopoverVisible(false);
+    setPendingAiResponse(null);
     streamTimersRef.current.forEach(clearTimeout);
     streamTimersRef.current = [];
   }, []);
@@ -420,6 +422,7 @@ export const SessionContainer = ({
           <OuiOllyChatPill
             avatar={<Mascot size={28} idle bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />}
             avatarHover={<Mascot size={28} expression="happy" idle={false} bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />}
+            avatarFocused={<Mascot size={28} expression="blink" idle={false} bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />}
             message={aiButtonHighlight && aiPopoverVisible && aiPopoverText ? aiPopoverText : undefined}
             quickReplies={aiButtonHighlight && aiPopoverVisible && aiPopoverText ? [
               { label: 'Yes, investigate', primary: true },
