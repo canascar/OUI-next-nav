@@ -73,9 +73,10 @@ export const OpenSearch3DLogo = ({ size = 240 }) => {
     const modelGroup = new THREE.Group();
     scene.add(modelGroup);
 
-    // Physics state
+    // Physics — spring-based: always pulled toward idle oscillation
+    const springStrength = 0.002; // Pull toward home (softer = more travel)
+    const damping = 0.96; // Velocity decay (higher = more momentum on throw)
     const velocity = { x: 0, y: 0, z: 0 };
-    const friction = 0.96;
     let isDragging = false;
     let hasInteracted = false;
     let previousMouse = { x: 0, y: 0 };
@@ -144,10 +145,16 @@ export const OpenSearch3DLogo = ({ size = 240 }) => {
       const dy = e.clientY - previousMouse.y;
       previousMouse = { x: e.clientX, y: e.clientY };
 
-      const sensitivity = 0.005;
+      const sensitivity = 0.008;
+      // Directly rotate the object while dragging
+      modelGroup.rotation.y += dx * sensitivity;
+      modelGroup.rotation.x += dy * sensitivity;
+      modelGroup.rotation.z += dx * sensitivity * 0.2;
+
+      // Store velocity for throw momentum
       velocity.y = dx * sensitivity;
       velocity.x = dy * sensitivity;
-      velocity.z = dx * sensitivity * 0.3;
+      velocity.z = dx * sensitivity * 0.2;
     };
 
     const onPointerUp = () => {
@@ -160,61 +167,42 @@ export const OpenSearch3DLogo = ({ size = 240 }) => {
     domElement.addEventListener('pointerup', onPointerUp);
     domElement.addEventListener('pointerleave', onPointerUp);
 
-    // Animate with physics
-    const IDLE_THRESHOLD = 0.0001;
-    const RETURN_SPEED = 0.06;
-    let returningToIdle = false;
-
+    // Animate — spring physics always active
     const animate = () => {
       frameRef.current = requestAnimationFrame(animate);
       time += 0.012;
 
+      // Target = idle oscillation position
+      const targetY = Math.sin(time) * 0.15;
+      const targetX = Math.sin(time * 0.7) * 0.04;
+      const targetZ = Math.sin(time * 0.4) * 0.06;
+
       if (!hasInteracted) {
-        // Gentle sway — oscillate back and forth
-        modelGroup.rotation.y = Math.sin(time) * 0.15;
-        modelGroup.rotation.x = Math.sin(time * 0.7) * 0.04;
-        modelGroup.rotation.z = Math.sin(time * 0.4) * 0.06;
-      } else {
-        // Physics-based after interaction
+        // Pure idle — directly set position
+        modelGroup.rotation.y = targetY;
+        modelGroup.rotation.x = targetX;
+        modelGroup.rotation.z = targetZ;
+      } else if (!isDragging) {
+        // Spring force pulls toward target
+        const forceX = (targetX - modelGroup.rotation.x) * springStrength;
+        const forceY = (targetY - modelGroup.rotation.y) * springStrength;
+        const forceZ = (targetZ - modelGroup.rotation.z) * springStrength;
+
+        velocity.x += forceX;
+        velocity.y += forceY;
+        velocity.z += forceZ;
+
+        // Apply damping
+        velocity.x *= damping;
+        velocity.y *= damping;
+        velocity.z *= damping;
+
+        // Apply velocity
         modelGroup.rotation.x += velocity.x;
         modelGroup.rotation.y += velocity.y;
         modelGroup.rotation.z += velocity.z;
-
-        if (!isDragging) {
-          velocity.x *= friction;
-          velocity.y *= friction;
-          velocity.z *= friction;
-
-          // Check if nearly stopped
-          const speed = Math.abs(velocity.x) + Math.abs(velocity.y) + Math.abs(velocity.z);
-          if (speed < IDLE_THRESHOLD && !returningToIdle) {
-            returningToIdle = true;
-          }
-        }
-
-        // Smoothly return to idle oscillation
-        if (returningToIdle && !isDragging) {
-          // Sync time to current Y rotation so oscillation continues from current position
-          // asin(rotation.y / 0.15) gives us where in the sine wave we are
-          const clampedY = Math.max(-1, Math.min(1, modelGroup.rotation.y / 0.15));
-          time = Math.asin(clampedY);
-
-          const targetY = Math.sin(time) * 0.15;
-          const targetX = Math.sin(time * 0.7) * 0.04;
-          const targetZ = Math.sin(time * 0.4) * 0.06;
-
-          modelGroup.rotation.x += (targetX - modelGroup.rotation.x) * RETURN_SPEED;
-          modelGroup.rotation.y += (targetY - modelGroup.rotation.y) * RETURN_SPEED;
-          modelGroup.rotation.z += (targetZ - modelGroup.rotation.z) * RETURN_SPEED;
-
-          // Once close enough, switch back to pure idle
-          const dist = Math.abs(modelGroup.rotation.y - targetY) + Math.abs(modelGroup.rotation.x - targetX);
-          if (dist < 0.005) {
-            hasInteracted = false;
-            returningToIdle = false;
-          }
-        }
       }
+      // When dragging, rotation is set by pointer move (velocity accumulates for throw)
 
       renderer.render(scene, camera);
     };
