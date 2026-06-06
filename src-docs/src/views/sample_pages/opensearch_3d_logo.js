@@ -82,10 +82,14 @@ export const OpenSearch3DLogo = ({ size = 240 }) => {
     let previousMouse = { x: 0, y: 0 };
     let time = 0;
 
-    // Design palette
-    const palette = [
-      0x075985, 0x0284C7, 0x0EA5E9, 0x38BDF8, 0x7DD3FC, 0xBAE6FD,
+    // Design palette — light vs dark
+    const palettLight = [
+      0x1565C0, 0x0F3D5C, 0x1565C0, 0x0F3D5C, 0x1565C0, 0x0F3D5C,
     ];
+    const paletteDark = [
+      0x2B8BC7, 0x7DD3FC, 0x2B8BC7, 0x7DD3FC, 0x2B8BC7, 0x7DD3FC,
+    ];
+    const palette = isDarkRef.current ? paletteDark : palettLight;
 
     // Load GLB
     const loader = new GLTFLoader();
@@ -109,12 +113,12 @@ export const OpenSearch3DLogo = ({ size = 240 }) => {
       // No pre-rotation — let physics handle orientation
 
       // Apply glassy materials
-      const palette = [0x075985, 0x0284C7, 0x0EA5E9, 0x38BDF8, 0x7DD3FC, 0xBAE6FD];
+      const colors = isDarkRef.current ? paletteDark : palettLight;
       let meshIdx = 0;
       model.traverse((child) => {
         if (child.isMesh) {
           child.material = new THREE.MeshPhysicalMaterial({
-            color: palette[meshIdx % palette.length],
+            color: colors[meshIdx % colors.length],
             metalness: 0.1,
             roughness: 0.15,
             transmission: 0.3,
@@ -131,6 +135,19 @@ export const OpenSearch3DLogo = ({ size = 240 }) => {
 
       modelGroup.add(model);
     });
+
+    // Mouse tracking — passive tilt based on cursor position on page
+    const mouseTarget = { x: 0, y: 0 }; // normalized -1 to 1
+    const mouseCurrent = { x: 0, y: 0 }; // smoothed value
+    const mouseTrackStrength = 0.25; // how much Z rotation from mouse position
+    const mouseSmoothing = 0.08; // lerp factor per frame (lower = smoother)
+
+    const onWindowMouseMove = (e) => {
+      // Normalize mouse position to -1..1 relative to viewport center
+      mouseTarget.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseTarget.y = (e.clientY / window.innerHeight) * 2 - 1;
+    };
+    window.addEventListener('mousemove', onWindowMouseMove);
 
     // Mouse/touch interaction
     const onPointerDown = (e) => {
@@ -172,18 +189,27 @@ export const OpenSearch3DLogo = ({ size = 240 }) => {
       frameRef.current = requestAnimationFrame(animate);
       time += 0.012;
 
-      // Target = idle oscillation position
-      const targetY = Math.sin(time) * 0.15;
-      const targetX = Math.sin(time * 0.7) * 0.04;
-      const targetZ = Math.sin(time * 0.4) * 0.06;
+      // Smooth the mouse tracking (lerp toward target)
+      mouseCurrent.x += (mouseTarget.x - mouseCurrent.x) * mouseSmoothing;
+      mouseCurrent.y += (mouseTarget.y - mouseCurrent.y) * mouseSmoothing;
+
+      // Mouse-driven Z rotation offset (parallax tilt) — tilt toward mouse
+      const mouseZOffset = -mouseCurrent.x * mouseTrackStrength;
+      const mouseXOffset = mouseCurrent.y * mouseTrackStrength;
+      const mouseYOffset = mouseCurrent.x * mouseTrackStrength;
+
+      // Target = mouse tracking only (no idle oscillation)
+      const targetY = mouseYOffset;
+      const targetX = mouseXOffset;
+      const targetZ = mouseZOffset;
 
       if (!hasInteracted) {
-        // Pure idle — directly set position
+        // Pure idle — directly set position with mouse tracking
         modelGroup.rotation.y = targetY;
         modelGroup.rotation.x = targetX;
         modelGroup.rotation.z = targetZ;
       } else if (!isDragging) {
-        // Spring force pulls toward target
+        // Spring force pulls toward target (which now includes mouse offset)
         const forceX = (targetX - modelGroup.rotation.x) * springStrength;
         const forceY = (targetY - modelGroup.rotation.y) * springStrength;
         const forceZ = (targetZ - modelGroup.rotation.z) * springStrength;
@@ -210,6 +236,7 @@ export const OpenSearch3DLogo = ({ size = 240 }) => {
 
     // Cleanup
     return () => {
+      window.removeEventListener('mousemove', onWindowMouseMove);
       domElement.removeEventListener('pointerdown', onPointerDown);
       domElement.removeEventListener('pointermove', onPointerMove);
       domElement.removeEventListener('pointerup', onPointerUp);
@@ -220,7 +247,7 @@ export const OpenSearch3DLogo = ({ size = 240 }) => {
         container.removeChild(renderer.domElement);
       }
     };
-  }, [size]);
+  }, [size, isDark]);
 
   return (
     <div
