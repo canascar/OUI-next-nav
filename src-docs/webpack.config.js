@@ -53,7 +53,7 @@ const webpackConfig = {
   output: {
     path: path.resolve(__dirname, '../docs'),
     filename: `[name]${isProduction ? '.min' : ''}.js`,
-    publicPath: isProduction ? '/OUI-next-navigation/' : '/',
+    publicPath: isProduction ? './' : '/',
   },
 
   resolve: {
