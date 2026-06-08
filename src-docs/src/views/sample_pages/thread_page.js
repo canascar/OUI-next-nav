@@ -1488,6 +1488,13 @@ const CONCLUSION_MESSAGE = {
 
 const NEW_THREAD = { title: 'New thread', messages: [] };
 
+const EMPTY_CHAT_TITLES = [
+  'How can I help?',
+  'Ask and I will provide',
+  'Olly olly oxen free',
+  'What can I help you seek?',
+];
+
 export const ThreadPage = ({
   selectedItem,
   _onItemSelect,
@@ -1531,6 +1538,9 @@ export const ThreadPage = ({
   const [message, setMessage] = useState('');
   const sendRef = useRef(null);
   const lastProcessedInput = useRef(null);
+  const emptyChatTitle = useRef(
+    EMPTY_CHAT_TITLES[Math.floor(Math.random() * EMPTY_CHAT_TITLES.length)]
+  ).current;
 
   // When pendingInputValue changes, auto-send it
   useEffect(() => {
@@ -2143,7 +2153,7 @@ export const ThreadPage = ({
                   style={{ cursor: 'pointer' }}>
                   <Mascot size={48} expression={undefined} idle bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />
                 </div>
-                <h3 className="threadPage__emptyTitle">How can I help?</h3>
+                <h3 className="threadPage__emptyTitle">{emptyChatTitle}</h3>
                 <div className="threadPage__emptySuggestions">
                   <button
                     type="button"
