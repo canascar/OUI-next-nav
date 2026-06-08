@@ -21,7 +21,7 @@ const CANVAS_TITLES = [
   'Your canvas is ready',
   'Blank canvas ready for you',
   'Unlimited discoveries await',
-  'An empty canvas awaiting your data exploration',
+  'An empty canvas ready for data exploration',
   'This canvas is waiting for your visualizations',
   'Visualize more than this empty canvas',
   'A new canvas for opening searches',
