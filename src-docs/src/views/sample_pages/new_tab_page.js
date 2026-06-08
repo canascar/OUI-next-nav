@@ -15,6 +15,7 @@ import {
   OuiIcon,
 } from '../../../../src/components';
 import { SOURCE_PAGE_MOCK } from './session_models';
+import { OpenSearch3DLogo } from './opensearch_3d_logo';
 
 /**
  * Filter chips for the new tab page (no Recent tab).
@@ -62,6 +63,11 @@ export const NewTabPage = ({ onSelectPage }) => {
 
   return (
     <div className="newTabPage">
+      {/* 3D Logo */}
+      <div className="newTabPage__logoWrap">
+        <OpenSearch3DLogo size={160} />
+      </div>
+
       {/* Search field */}
       <OuiCompressedFieldSearch
         placeholder="Search pages..."

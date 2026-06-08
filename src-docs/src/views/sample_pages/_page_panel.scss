@@ -202,6 +202,16 @@
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  animation: pagePanelFadeIn 300ms ease-out both;
+}
+
+@keyframes pagePanelFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 // Empty state (no tabs open or page not found)

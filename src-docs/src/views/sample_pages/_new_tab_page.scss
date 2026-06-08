@@ -20,6 +20,25 @@
   margin: 0 auto;
   width: 100%;
   overflow-y: auto;
+  animation: newTabFadeIn 400ms ease-out both;
+}
+
+@keyframes newTabFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.newTabPage__logoWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 // Active/warning list item highlight

@@ -232,7 +232,7 @@ export const PagePanel = ({
     }
 
     if (activeTab.pageKey === 'new-tab') {
-      return <NewTabPage onSelectPage={onSelectPage} />;
+      return <NewTabPage key={activeTab.id} onSelectPage={onSelectPage} />;
     }
 
     const pageEntry = SOURCE_PAGE_MOCK[activeTab.pageKey];
@@ -280,6 +280,7 @@ export const PagePanel = ({
       />
       <div
         className="pagePanel__content"
+        key={activeTab ? activeTab.id : 'empty'}
         role="tabpanel"
         aria-label={activeTab ? activeTab.title : 'No tab selected'}>
         {renderTabContent()}
