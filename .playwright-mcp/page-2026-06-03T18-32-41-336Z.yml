@@ -1,0 +1,33 @@
+- generic [ref=e532]:
+  - link "Back to documentation" [ref=e533] [cursor=pointer]:
+    - /url: "#/"
+    - img
+  - button "Switch to light theme" [ref=e534] [cursor=pointer]:
+    - img
+  - generic [ref=e536]:
+    - img [ref=e539]
+    - heading "Log in to OpenSearch" [level=1] [ref=e544]
+    - paragraph [ref=e549]: If you have forgotten your username or password, contact your system administrator.
+    - generic [ref=e551]:
+      - generic [ref=e555]:
+        - textbox "Username" [ref=e556]
+        - generic:
+          - generic:
+            - img
+      - generic [ref=e560]:
+        - generic [ref=e561]:
+          - textbox "Password" [ref=e562]
+          - generic:
+            - generic:
+              - img
+        - 'button "Show password as plain text. Note: this will visually expose your password on the screen." [ref=e563] [cursor=pointer]':
+          - img
+      - button "Log in" [ref=e565] [cursor=pointer]:
+        - generic [ref=e567]: Log in
+      - button "Log in as anonymous" [ref=e569] [cursor=pointer]:
+        - generic [ref=e571]: Log in as anonymous
+    - separator [ref=e573]
+    - button "Log in with Google account" [ref=e575] [cursor=pointer]:
+      - generic [ref=e576]:
+        - img [ref=e577]
+        - generic [ref=e587]: Log in with Google account

@@ -1,0 +1,73 @@
+[  251394ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  258441ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  258441ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[  258648ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[  258648ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/onboarding_wizard_page.js is not accepted
+Update propagation: ./views/sample_pages/onboarding_wizard_page.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828645:31)
+    at http://localhost:8030/bundle.js:828314:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828313:54)
+    at http://localhost:8030/bundle.js:828284:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828239:48)
+    at http://localhost:8030/bundle.js:828282:24 @ http://localhost:8030/bundle.js:532335
+[  261772ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[  261773ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[  261791ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[  262124ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[  298249ms] [INFO] [webpack-dev-server] Disconnected! @ http://localhost:8030/bundle.js:530978
+[  298249ms] [INFO] [webpack-dev-server] Trying to reconnect... @ http://localhost:8030/bundle.js:530978
+[ 4153750ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[ 4161668ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[ 4161669ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[ 4161818ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[ 4161818ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/onboarding_wizard_page.js is not accepted
+Update propagation: ./views/sample_pages/onboarding_wizard_page.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828648:31)
+    at http://localhost:8030/bundle.js:828317:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828316:54)
+    at http://localhost:8030/bundle.js:828287:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828242:48)
+    at http://localhost:8030/bundle.js:828285:24 @ http://localhost:8030/bundle.js:532335
+[ 4163692ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[ 4163693ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[ 4163709ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[ 4164036ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[ 4174563ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[ 4182496ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[ 4182497ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[ 4182669ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[ 4210260ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[ 4210374ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[ 4239353ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[ 4239605ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[ 4239605ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/onboarding_wizard_page.js is not accepted
+Update propagation: ./views/sample_pages/onboarding_wizard_page.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828648:31)
+    at http://localhost:8030/bundle.js:828317:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828316:54)
+    at http://localhost:8030/bundle.js:828287:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828242:48)
+    at http://localhost:8030/bundle.js:828285:24 @ http://localhost:8030/bundle.js:532335
+[ 4243203ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[ 4243204ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[ 4243219ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[ 4243584ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[ 4353708ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[ 4353709ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[ 4353711ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[ 4353965ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681

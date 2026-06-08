@@ -1,0 +1,72 @@
+- generic [ref=e3]:
+  - navigation "Session navigation" [ref=e4]:
+    - img [ref=e6]
+    - generic [ref=e10]:
+      - button "New session" [ref=e12] [cursor=pointer]:
+        - img
+      - button "All sessions" [ref=e17] [cursor=pointer]:
+        - img
+      - button "Library" [ref=e19] [cursor=pointer]:
+        - img
+    - generic [ref=e20]:
+      - button "Workspace" [ref=e24] [cursor=pointer]:
+        - img
+      - button "Developer tools" [ref=e27] [cursor=pointer]:
+        - img
+      - button "Settings" [ref=e31] [cursor=pointer]:
+        - img
+      - img "mascot · comma" [ref=e35]:
+        - img [ref=e36]
+  - generic [ref=e45]:
+    - generic [ref=e46]:
+      - generic [ref=e47]:
+        - img "mascot · comma" [ref=e49]:
+          - img [ref=e50]
+        - generic [ref=e56]: Olly is online
+      - heading "Where should we start today John?" [level=1] [ref=e58]
+      - paragraph [ref=e60]:
+        - generic [ref=e61]: All 247 services are running normally.
+        - generic [ref=e62]: I found 3 items that need your attention.
+        - generic [ref=e63]: Let me know if you'd like me to dig deeper into any of these, or ask me anything below.
+      - generic [ref=e64]:
+        - button "Investigate latency spike" [ref=e65] [cursor=pointer]:
+          - img [ref=e66]
+          - generic [ref=e68]: Investigate latency spike
+        - button "View all alerts" [ref=e69] [cursor=pointer]:
+          - img [ref=e70]
+          - generic [ref=e72]: View all alerts
+        - button "Show services" [ref=e73] [cursor=pointer]:
+          - img [ref=e74]
+          - generic [ref=e76]: Show services
+      - generic [ref=e79]:
+        - textbox "Ask AI anything, or type to search a page" [active] [ref=e80]
+        - generic:
+          - button "Add attachment" [ref=e81] [cursor=pointer]:
+            - img
+          - button "Send" [disabled] [ref=e82]:
+            - img
+    - generic [ref=e84]:
+      - generic [ref=e85]:
+        - heading "Recent" [level=5] [ref=e86]
+        - generic [ref=e87]: "3"
+      - generic [ref=e88] [cursor=pointer]:
+        - generic [ref=e89]:
+          - paragraph [ref=e90]:
+            - strong [ref=e91]: Payment service P99 latency breach
+          - paragraph [ref=e92]: P99 crossed 2,000ms with connection pool exhaustion on 3 of 4 pods. I've started an investigation and identified a likely root cause.
+          - paragraph [ref=e93]: Created by AI · 15 min ago
+        - generic [ref=e94]: →
+      - generic [ref=e96] [cursor=pointer]:
+        - generic [ref=e97]:
+          - paragraph [ref=e98]:
+            - strong [ref=e99]: Error Rate Spike — Checkout Service
+          - paragraph [ref=e100]: Checkout error rate spiked to 12.4% around the same time. Auth-service deployment regression identified.
+          - paragraph [ref=e101]: Shared by team · 2 hours ago
+        - generic [ref=e102]: →
+      - generic [ref=e104] [cursor=pointer]:
+        - generic [ref=e105]:
+          - paragraph [ref=e106]:
+            - strong [ref=e107]: DNS Resolution Timeout
+          - paragraph [ref=e108]: Resolved after the upstream fix was deployed. No further action needed.
+          - paragraph [ref=e109]: Resolved · 3 hours ago
+        - generic [ref=e110]: →

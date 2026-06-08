@@ -1,0 +1,12 @@
+/*!
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// Utility classes for shadow levels — used by the elevation demo
+.ouiShadowLevel1 { @include ouiElevation(1); }
+.ouiShadowLevel2 { @include ouiElevation(2); }
+.ouiShadowLevel3 { @include ouiElevation(3); }
+.ouiShadowLevel4 { @include ouiElevation(4); }
+.ouiShadowLevel5 { @include ouiElevation(5); }
+.ouiShadowLevel6 { @include ouiElevation(6); }

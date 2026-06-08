@@ -1,0 +1,142 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+// sass-lint:disable no-misspelled-properties, no-color-literals, leading-zero
+
+// ============================================================
+// SESSION LEFT NAV — Uses same design as SamplePagesLeftNav collapsed
+// ============================================================
+
+.sessionLeftNav {
+  width: 48px;
+  min-width: 48px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.45), rgba(24, 16, 40, 0.70));
+  -webkit-backdrop-filter: blur(26px) saturate(175%);
+  backdrop-filter: blur(26px) saturate(175%);
+  border-right: 1px solid lightOrDarkTheme(#ececef, rgba(255, 255, 255, 0.08));
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+// Logo area — matches samplePagesLeftNav__header
+.sessionLeftNav__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 8px;
+  flex-shrink: 0;
+}
+
+// Primary action buttons — matches samplePagesLeftNav__items
+.sessionLeftNav__actions {
+  flex: 1 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  min-height: 0;
+}
+
+// Horizontal rule divider
+.sessionLeftNav__divider {
+  width: 50%;
+  height: 1px;
+  background-color: $ouiBorderColor;
+  margin: $ouiSizeS 0;
+}
+
+// Action button — matches samplePagesLeftNav__navItem
+.sessionLeftNav__actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 150ms ease-in-out;
+
+  &:hover {
+    background-color: rgba($ouiColorDarkestShade, 0.07);
+  }
+
+  &--active {
+    background-color: rgba($ouiColorPrimary, 0.1);
+
+    &:hover {
+      background-color: rgba($ouiColorPrimary, 0.15);
+    }
+  }
+
+  &[disabled],
+  &.ouiButtonIcon-isDisabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+// Wrapper for sessions button + badge
+.sessionLeftNav__sessionsButtonWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+// Notification badge — subdued gray style matching Figma
+.sessionLeftNav__badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 3px 7px;
+  border-radius: 4px;
+  background-color: $ouiColorLightShade;
+  font-size: 12px;
+  font-weight: 500;
+  color: $ouiTextColor;
+  line-height: 1;
+}
+
+// Footer — matches samplePagesLeftNav__footer
+.sessionLeftNav__footer {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+  gap: 16px;
+  width: 100%;
+}
+
+// Footer button — matches samplePagesLeftNav__footerItem
+.sessionLeftNav__footerButton {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sessionLeftNav__footer .ouiAvatar {
+  flex-shrink: 0;
+}

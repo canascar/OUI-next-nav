@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`OuiGlobalToastListItem is rendered 1`] = `
+<div
+  class="ouiGlobalToastListItem"
+>
+  Hi
+</div>
+`;

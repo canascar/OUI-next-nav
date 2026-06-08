@@ -1,0 +1,148 @@
+/*!
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// OuiInsightCard — Glass theme widget card
+// Solid surface with hairline border + feather shadow.
+// Frosted glass variant for floating/featured moments.
+
+.ouiInsightCard {
+  position: relative;
+  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.07));
+  border-radius: $ouiBorderRadius;
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.06));
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+  padding: 12px;
+  box-shadow: 0 1px 3px rgba(15, 15, 15, 0.03);
+  transition:
+    transform 280ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 280ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    border-color 180ms ease,
+    background-color 180ms ease;
+  appearance: none;
+  text-align: left;
+  width: 100%;
+  cursor: default;
+}
+
+// Clickable variant — border highlight on hover
+.ouiInsightCard--clickable {
+  cursor: pointer;
+
+  &:hover {
+    border-color: $ouiColorPrimary;
+  }
+
+  &:active {
+    border-color: $ouiColorPrimary;
+  }
+}
+
+// Glass variant — frosted backdrop
+.ouiInsightCard--glass {
+  background: rgba(255, 255, 255, 0.55);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  backdrop-filter: blur(22px) saturate(170%);
+  border-color: rgba(255, 255, 255, 0.75);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 1px 2px rgba(15, 15, 15, 0.04),
+    0 10px 30px -18px rgba(31, 31, 60, 0.18);
+}
+
+@if (lightness($ouiPageBackgroundColor) < 50) {
+  .ouiInsightCard--glass {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.10),
+      0 14px 36px -18px rgba(0, 0, 0, 0.5);
+  }
+}
+
+// Add variant — dashed border "open a page" tile
+.ouiInsightCard--add {
+  background: rgba(255, 255, 255, 0.58);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  backdrop-filter: blur(22px) saturate(170%);
+  border: 2px dashed rgba($ouiColorPrimary, 0.50);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 1px 2px rgba(15, 15, 15, 0.04),
+    0 8px 24px -18px rgba(31, 31, 60, 0.16);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.74);
+    border-color: $ouiColorPrimary;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 30px -18px $ouiColorPrimary;
+  }
+}
+
+@if (lightness($ouiPageBackgroundColor) < 50) {
+  .ouiInsightCard--add {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba($ouiColorPrimary, 0.35);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      0 1px 2px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.07);
+    }
+  }
+}
+
+// Header
+.ouiInsightCard__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $ouiSizeS;
+}
+
+.ouiInsightCard__title {
+  font-size: 14.5px;
+  font-weight: $ouiFontWeightSemiBold;
+  color: $ouiTitleColor;
+  letter-spacing: -0.15px;
+}
+
+.ouiInsightCard__titleExtra {
+  flex-shrink: 0;
+  margin-left: $ouiSizeS;
+}
+
+// Body
+.ouiInsightCard__body {
+  color: $ouiTextColor;
+  font-size: $ouiFontSizeS;
+  line-height: 1.5;
+}
+
+// Chip — pill-shaped shortcut buttons inside add variant
+.ouiInsightCard__chip {
+  display: inline-block;
+  border: 1px solid $ouiColorLightShade;
+  background: lightOrDarkTheme(#f7f7f5, #1f1633);
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-size: $ouiFontSizeS;
+  font-weight: $ouiFontWeightMedium;
+  color: $ouiColorMediumShade;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+
+  &:hover {
+    background: lightOrDarkTheme(#ececef, #2c2042);
+    border-color: lightOrDarkTheme(#e0e0e4, #392a54);
+    color: $ouiTextColor;
+  }
+}

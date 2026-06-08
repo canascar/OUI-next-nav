@@ -1,0 +1,54 @@
+[   39174ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[   45452ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[   45452ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[   45585ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[   45585ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/session_left_nav.js is not accepted
+Update propagation: ./views/sample_pages/session_left_nav.js -> ./views/sample_pages/onboarding_wizard_page.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828735:31)
+    at http://localhost:8030/bundle.js:828404:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828403:54)
+    at http://localhost:8030/bundle.js:828374:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828329:48)
+    at http://localhost:8030/bundle.js:828372:24 @ http://localhost:8030/bundle.js:532335
+[   47965ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[   47966ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[   47983ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[   48303ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[   48427ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:8030/favicon.ico:0
+[   49498ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[   56123ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[   56123ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[   56259ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[   56259ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/session_left_nav.js is not accepted
+Update propagation: ./views/sample_pages/session_left_nav.js -> ./views/sample_pages/onboarding_wizard_page.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828735:31)
+    at http://localhost:8030/bundle.js:828404:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828403:54)
+    at http://localhost:8030/bundle.js:828374:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828329:48)
+    at http://localhost:8030/bundle.js:828372:24 @ http://localhost:8030/bundle.js:532335
+[   58624ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[   58624ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[   58639ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[   58960ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[   68612ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[   75307ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[   75308ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[   75543ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[   75544ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/session_left_nav.js is not accepted
+Update propagation: ./views/sample_pages/session_left_nav.js -> ./views/sample_pages/onboarding_wizard_page.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828737:31)
+    at http://localhost:8030/bundle.js:828406:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828405:54)
+    at http://localhost:8030/bundle.js:828376:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828331:48)
+    at http://localhost:8030/bundle.js:828374:24 @ http://localhost:8030/bundle.js:532335

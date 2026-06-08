@@ -1,0 +1,1810 @@
+/*!
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+// ─────────────────────────────────────────────────────────────
+// v10 Blueprint — Empty Session Page
+// ─────────────────────────────────────────────────────────────
+
+.emptySessionPage {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  animation: emptySessionPageIn 800ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes emptySessionPageIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.emptySessionPage__panel {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border-radius: 0;
+  overflow: hidden;
+  position: relative;
+  background: transparent;
+}
+
+// ─── Header / Olly Avatar ───────────────────────────────────
+.emptySessionPage__header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  animation: emptySessionFadeIn 600ms ease 100ms both;
+}
+
+.emptySessionPage__avatarWrap {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-shrink: 0;
+  cursor: default;
+  transition: transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: center center;
+}
+
+// Header row — mascot + online status side by side
+.emptySessionPage__headerRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 640px;
+  padding-bottom: 4px;
+  flex-shrink: 0;
+}
+
+// Online status label
+.emptySessionPage__onlineStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: $ouiFontSizeXS;
+  font-weight: $ouiFontWeightMedium;
+  color: $ouiColorMediumShade;
+}
+
+.emptySessionPage__onlineDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: $ouiColorSuccess;
+  flex-shrink: 0;
+}
+
+
+.emptySessionPage__headerText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+// ─── Content container ──────────────────────────────────────
+.emptySessionPage__content {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 24px;
+  width: 100%;
+  max-width: 832px;
+  flex: 1;
+  min-height: 0;
+}
+
+// ─── Two-column layout ──────────────────────────────────────
+.emptySessionPage__twoCol {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.emptySessionPage__leftCol {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  flex: 1 1 50%;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  padding: 0 48px 16px;
+  overflow: hidden;
+  gap: 16px;
+
+  > .ouiTitle {
+    width: 100%;
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: 0;
+    padding-bottom: 4px;
+    flex-shrink: 0;
+  }
+}
+
+// Left column inner containers — align right within the column
+.emptySessionPage__headerRow,
+.emptySessionPage__inlineInput {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+// Briefing narrative — flowing prose in the left column
+.emptySessionPage__briefingNarrative {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: 0;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.emptySessionPage__narrativePara {
+  margin: 0;
+  padding: 0 0 16px;
+  font-size: $ouiFontSizeS;
+  line-height: 1.65;
+  color: $ouiTextColor;
+  opacity: 0;
+  animation: narrativeFadeIn 600ms ease-out forwards;
+
+  strong {
+    color: $ouiTitleColor;
+    font-weight: $ouiFontWeightSemiBold;
+  }
+
+  &--1 { animation-delay: 300ms; }
+  &--2 { animation-delay: 600ms; }
+  &--3 { animation-delay: 900ms; }
+  &--4 { animation-delay: 1200ms; }
+}
+
+@keyframes narrativeFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Inline link — bold + underline, clickable
+.emptySessionPage__narrativeLink {
+  font-weight: $ouiFontWeightSemiBold;
+  color: $ouiTitleColor;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  transition: color 150ms ease;
+
+  &:hover {
+    color: $ouiColorPrimary;
+  }
+
+  // Resolved — looks like a link but no hover highlight
+  &--resolved {
+    cursor: default;
+
+    &:hover {
+      color: $ouiTitleColor;
+    }
+  }
+}
+
+// ─── Session Preview (replaces right panel on hover) ──────────────────────
+.emptySessionPage__sessionPreview {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.emptySessionPage__previewSummary {
+  font-size: $ouiFontSizeS;
+  line-height: 1.5;
+  color: $ouiTextColor;
+  margin: 0;
+}
+
+.emptySessionPage__previewStats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.emptySessionPage__previewStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 6px;
+  border-radius: $ouiBorderRadiusSmall;
+  border: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.06), rgba(255, 255, 255, 0.06));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.04));
+
+  &--danger .emptySessionPage__previewStatValue { color: $ouiColorDanger; }
+  &--warning .emptySessionPage__previewStatValue { color: $ouiColorWarning; }
+  &--success .emptySessionPage__previewStatValue { color: $ouiColorSuccess; }
+  &--default .emptySessionPage__previewStatValue { color: $ouiTitleColor; }
+}
+
+.emptySessionPage__previewStatValue {
+  font-size: $ouiFontSizeM;
+  font-weight: $ouiFontWeightSemiBold;
+  line-height: 1;
+}
+
+.emptySessionPage__previewStatLabel {
+  font-size: 10px;
+  color: $ouiColorMediumShade;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-weight: $ouiFontWeightMedium;
+}
+
+.emptySessionPage__previewSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.emptySessionPage__previewSectionLabel {
+  font-size: 11px;
+  font-weight: $ouiFontWeightSemiBold;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: $ouiColorMediumShade;
+}
+
+.emptySessionPage__previewSectionText {
+  font-size: $ouiFontSizeS;
+  line-height: 1.5;
+  color: $ouiTextColor;
+  margin: 0;
+}
+
+.emptySessionPage__previewMeta {
+  font-size: 11px;
+  line-height: 1.4;
+  color: $ouiColorMediumShade;
+  margin: 0;
+  padding-top: 4px;
+  border-top: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.06), rgba(255, 255, 255, 0.06));
+}
+
+// Scrollable content wrapper
+.emptySessionPage__scrollContent {
+  min-height: 0;
+  max-width: 640px;
+  min-width: 200px;
+  width: 100%;
+  margin: 0 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 24px, black calc(100% - 24px), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent, black 24px, black calc(100% - 24px), transparent 100%);
+
+  // When not scrolled, no top fade
+  &--top {
+    -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 24px), transparent 100%);
+    mask-image: linear-gradient(to bottom, black calc(100% - 24px), transparent 100%);
+  }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.emptySessionPage__briefing {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 32px;
+  width: 100%;
+  max-width: 640px;
+
+  // Space between tabs and content below
+  .ouiTabs {
+    margin-bottom: 8px;
+  }
+}
+
+// Tab count badge
+.emptySessionPage__tabBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  margin-left: 4px;
+  background: lightOrDarkTheme(rgba(99, 102, 241, 0.1), rgba(165, 180, 252, 0.15));
+  color: lightOrDarkTheme(rgba(99, 102, 241, 1), rgba(165, 180, 252, 1));
+}
+
+// Tab content panels — fade transition.
+// Both panels share the same grid cell so the content area always reserves
+// the height of the taller panel; switching tabs no longer shifts layout.
+.emptySessionPage__briefingContent {
+  display: grid;
+}
+
+.emptySessionPage__briefingPanel {
+  grid-area: 1 / 1;
+  min-height: 0;
+  opacity: 1;
+  transition: opacity 400ms cubic-bezier(0.25, 0.1, 0.25, 1);
+
+  &--hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.emptySessionPage__rightCol {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0;
+  flex: 1 1 50%;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 24px;
+  border-left: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.05), rgba(255, 255, 255, 0.05));
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.emptySessionPage__rightGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+  gap: 8px;
+  min-height: 0;
+  isolation: isolate;
+
+  .emptySessionPage__favoritePanel,
+  .emptySessionPage__savedQueryCard,
+  .ouiInsightCard {
+    z-index: 1;
+    transition: opacity 250ms ease, border-color 250ms ease, transform 250ms ease;
+  }
+
+  // When a left card is hovered, dim all right cards by default
+  &[class*="--highlight-"] .emptySessionPage__favoritePanel,
+  &[class*="--highlight-"] .emptySessionPage__savedQueryCard,
+  &[class*="--highlight-"] .ouiInsightCard {
+    opacity: 0.4;
+  }
+
+  // Latency hover: highlight services + timeout cards
+  &--highlight-latency [data-card="services"],
+  &--highlight-latency [data-card="timeout"] {
+    opacity: 1 !important;
+    border-color: rgba($ouiColorPrimary, 0.4) !important;
+    transform: translateY(-2px) scale(1.01);
+  }
+  &--highlight-latency [data-card="services"] [data-row="checkout"] {
+    background-color: rgba($ouiColorWarning, 0.12);
+  }
+
+  // Error-rate hover: highlight alerts + services cards
+  &--highlight-error-rate [data-card="alerts"],
+  &--highlight-error-rate [data-card="services"] {
+    opacity: 1 !important;
+    border-color: rgba($ouiColorPrimary, 0.4) !important;
+    transform: translateY(-2px) scale(1.01);
+  }
+  &--highlight-error-rate [data-card="alerts"] [data-row="error-rate-alert"] {
+    background-color: rgba($ouiColorDanger, 0.12);
+  }
+  &--highlight-error-rate [data-card="services"] [data-row="checkout"] {
+    background-color: rgba($ouiColorWarning, 0.12);
+  }
+
+  // DNS hover: highlight alerts card
+  &--highlight-dns [data-card="alerts"] {
+    opacity: 1 !important;
+    border-color: rgba($ouiColorPrimary, 0.4) !important;
+    transform: translateY(-2px) scale(1.01);
+  }
+}
+
+.emptySessionPage__favoritePanel--action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  appearance: none;
+  border-style: dashed;
+  transition: background-color 200ms ease, border-color 200ms ease;
+
+  &:hover {
+    background-color: rgba($ouiColorPrimary, 0.08);
+    border-color: rgba($ouiColorPrimary, 0.3);
+  }
+}
+
+.emptySessionPage__openPageLabel {
+  font-family: $ouiCodeFontFamily;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: $ouiColorMediumShade;
+}
+
+// ─── Add card (Open another page) ──────────────────────────
+.emptySessionPage__addCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.emptySessionPage__addCardIcon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: $ouiColorPrimary;
+  flex-shrink: 0;
+}
+
+.emptySessionPage__addCardTitle {
+  font-size: 16px;
+  font-weight: $ouiFontWeightSemiBold;
+  color: $ouiTitleColor;
+}
+
+.emptySessionPage__addCardChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.emptySessionPage__addCardChip {
+  appearance: none;
+  border: 1px solid $ouiColorLightShade;
+  background: lightOrDarkTheme(#f7f7f5, #1f1633);
+  border-radius: 999px;
+  padding: 6px 16px;
+  font-size: $ouiFontSizeS;
+  font-weight: $ouiFontWeightMedium;
+  color: $ouiColorMediumShade;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+
+  &:hover {
+    background: lightOrDarkTheme(#ececef, #2c2042);
+    border-color: lightOrDarkTheme(#e0e0e4, #392a54);
+    color: $ouiTextColor;
+  }
+}
+
+// ─── Open a page card ───────────────────────────────────────
+.emptySessionPage__openPageCard {
+  display: flex;
+  flex-direction: column;
+  border: 1px dashed lightOrDarkTheme(rgba(10, 10, 10, 0.18), rgba(250, 250, 250, 0.18));
+  border-radius: 0;
+  padding: 16px;
+  gap: 12px;
+}
+
+.emptySessionPage__openPageHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: lightOrDarkTheme(rgba(10, 10, 10, 0.55), rgba(250, 250, 250, 0.55));
+}
+
+.emptySessionPage__openPageGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(5, 1fr);
+  gap: 12px;
+  height: 100%;
+}
+
+.emptySessionPage__openPageItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 8px;
+  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.07));
+  border-radius: $ouiBorderRadius;
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.06));
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: 0 1px 3px rgba(15, 15, 15, 0.03);
+  cursor: pointer;
+  font-size: $ouiFontSizeS;
+  font-weight: $ouiFontWeightMedium;
+  color: $ouiTitleColor;
+  appearance: none;
+  transition:
+    transform 280ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 280ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    border-color 180ms ease,
+    background-color 180ms ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: $ouiColorPrimary;
+    box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+  }
+}
+
+.emptySessionPage__welcomeCard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.emptySessionPage__activityRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 14px;
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.7), rgba(24, 16, 40, 0.4));
+  border: none;
+  border-left: 3px solid lightOrDarkTheme(rgba(10, 10, 10, 0.2), rgba(250, 250, 250, 0.3));
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 200ms ease, border-color 200ms ease;
+  appearance: none;
+
+  &:hover {
+    background-color: rgba($ouiColorPrimary, 0.06);
+    border-left-color: $ouiColorPrimary;
+  }
+
+  &--warning {
+    border-left-color: $ouiColorWarning;
+
+    &:hover {
+      border-left-color: $ouiColorWarning;
+      background-color: rgba($ouiColorWarning, 0.06);
+    }
+  }
+
+  &--dismissing {
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity 400ms ease, transform 400ms ease;
+  }
+}
+
+.emptySessionPage__activityRowTitle {
+  font-size: $ouiFontSizeS;
+  font-weight: 600;
+  color: $ouiColorPrimary;
+}
+
+.emptySessionPage__activityRowSubtitle {
+  font-size: $ouiFontSizeXS;
+  color: $ouiColorMediumShade;
+}
+
+.emptySessionPage__openPageCard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 20px;
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.5), rgba(24, 16, 40, 0.3));
+  border: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.08), rgba(250, 250, 250, 0.1));
+  cursor: pointer;
+  font-size: $ouiFontSizeS;
+  font-weight: $ouiFontWeightMedium;
+  color: $ouiTextColor;
+  transition: background-color 200ms ease, border-color 200ms ease;
+  appearance: none;
+
+  &:hover {
+    background-color: rgba($ouiColorPrimary, 0.08);
+    border-color: rgba($ouiColorPrimary, 0.3);
+  }
+}
+
+.emptySessionPage__bottomInput {
+  position: fixed;
+  bottom: 0;
+  left: 72px;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  padding: 16px 48px 24px;
+  z-index: 10;
+  background: linear-gradient(to top, $ouiPageBackgroundColor 60%, transparent 100%);
+
+  .emptySessionPage__inputWrap {
+    max-width: 800px;
+    width: 100%;
+  }
+}
+
+// Inline input — fixed at the bottom of the left column (not scrollable)
+.emptySessionPage__inlineInput {
+  width: 100%;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: 0;
+  padding-top: 8px;
+  flex-shrink: 0;
+
+  .emptySessionPage__inputWrap {
+    width: 100%;
+  }
+}
+
+// ─── Dual-purpose input ─────────────────────────────────────
+.emptySessionPage__inputWrap {
+  position: relative;
+  width: 100%;
+  animation: none;
+}
+
+.emptySessionPage__inputField {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid $ouiFormBorderColor;
+  border-radius: $ouiFormControlBorderRadius;
+  background-color: $ouiFormBackgroundColor;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+  overflow: hidden;
+
+  &:hover {
+    border-color: lightOrDarkTheme(#e0e0e4, lighten($ouiFormBorderColor, 8%));
+  }
+
+  &:focus-within {
+    border-color: $ouiColorPrimary;
+    box-shadow: 0 4px 12px lightOrDarkTheme(rgba(99, 102, 241, 0.12), rgba(0, 0, 0, 0.25));
+  }
+}
+
+// Textarea overrides — no border on the textarea itself (outer layout handles it)
+.emptySessionPage__textarea textarea,
+textarea.emptySessionPage__textarea {
+  padding-bottom: 44px;
+  padding-top: 16px;
+  min-height: 100px;
+  margin-bottom: 0;
+  border-radius: $ouiFormControlBorderRadius !important;
+  border: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  transition: none;
+}
+
+// Border active state — accent border fades in
+.emptySessionPage__inputWrap--borderActive .emptySessionPage__inputField {
+  border-color: $ouiColorPrimary;
+}
+
+// Remove the ouiFormControlLayout border inside the empty session input
+// — the inputField wrapper handles the border instead
+.emptySessionPage__inputField .ouiFormControlLayout {
+  border: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+  overflow: visible !important;
+}
+
+// No animated pseudo-elements
+.emptySessionPage__inputField::before,
+.emptySessionPage__inputField::after {
+  display: none;
+}
+
+.emptySessionPage__textarea .ouiFormControlLayout {
+  margin-bottom: 0;
+}
+
+.emptySessionPage__textarea .ouiTextArea {
+  margin-bottom: 0;
+  border-radius: $ouiFormControlBorderRadius !important;
+}
+
+// Plus (bottom-left) and send (bottom-right) inside the textarea
+.emptySessionPage__inputActions {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+  }
+}
+
+// Send button — round 30px
+.emptySessionPage__sendButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background-color: $ouiColorPrimary;
+  color: lightOrDarkTheme(#ffffff, #0d3057);
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+// ─── Filter chips / Tabs ────────────────────────────────────
+.emptySessionPage__chips {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+
+  // First child (icon-only button) stays fixed width, rest fill equally
+  .emptySessionPage__chip:not(.emptySessionPage__chip--iconOnly) {
+    flex: 1;
+  }
+}
+
+.emptySessionPage__chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 14px;
+  height: 36px;
+  background-color: transparent;
+  border: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.32), rgba(250, 250, 250, 0.34));
+  border-radius: 18px;
+  cursor: pointer;
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: lightOrDarkTheme(rgba(10, 10, 10, 0.62), rgba(250, 250, 250, 0.62));
+  white-space: nowrap;
+  transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out;
+  position: relative;
+
+  &:hover {
+    border-color: $ouiColorPrimary;
+    color: $ouiColorPrimary;
+  }
+
+  &--active {
+    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.08), rgba($ouiColorPrimary, 0.12));
+    border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.45), rgba($ouiColorPrimary, 0.45));
+    color: $ouiColorPrimary;
+  }
+
+  &--iconOnly {
+    flex: 0 0 36px;
+    width: 36px;
+    padding: 0;
+  }
+}
+
+.emptySessionPage__chipDot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 0;
+  background-color: $ouiColorAccent;
+}
+
+// ─── Section headers (// LABEL) ────────────────────────────
+.emptySessionPage__sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: $ouiColorPrimary;
+  margin-top: 20px;
+  padding: 8px 0 4px;
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  // Dashed rule stretching to fill
+  &::after {
+    content: '';
+    flex: 1;
+    height: 0;
+    border-top: 1px dashed lightOrDarkTheme(rgba(10, 10, 10, 0.14), rgba(250, 250, 250, 0.16));
+  }
+}
+
+// ─── Tab content / scrollable area ─────────────────────────
+.emptySessionPage__tabContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// ─── Activity cards (// LATEST) ─────────────────────────────
+.emptySessionPage__listItem {
+  display: flex;
+  align-items: center;
+  gap: $ouiSize;
+  width: 100%;
+  padding: 10px 20px;
+  border: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.14), rgba(250, 250, 250, 0.16));
+  border-radius: 12px;
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(24, 16, 40, 0.4));
+  cursor: pointer;
+  text-align: left;
+  font-size: $ouiFontSizeS;
+  color: $ouiTextColor;
+  position: relative;
+  transition: background-color 200ms ease, border-color 200ms ease, transform 350ms cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 300ms ease-out, max-height 300ms ease-out, margin 300ms ease-out, padding 300ms ease-out;
+
+  // No corner ticks
+  &::before {
+    display: none;
+  }
+
+  &:hover {
+    background-color: rgba($ouiColorPrimary, 0.08);
+    border-color: rgba($ouiColorPrimary, 0.3);
+  }
+
+  &--activityLayout {
+    position: relative;
+    flex-direction: column;
+    align-items: stretch;
+    min-height: 120px;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: none;
+    border-left: 2px solid $ouiColorWarning;
+    border-radius: 0;
+    padding: 16px;
+  }
+
+  &--dismissing {
+    opacity: 0;
+    transform: translateX(-100%);
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-color: transparent;
+    transition: transform 300ms ease-in, opacity 200ms ease-in,
+                max-height 200ms 250ms ease-out, padding 200ms 250ms,
+                margin 200ms 250ms, border-color 200ms 250ms;
+  }
+}
+
+// Corner ticks on activity cards
+.emptySessionPage__cardTicks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+  }
+
+  // Top-left — amber-dim
+  &::before {
+    top: -1px;
+    left: -1px;
+    border-top: 1.5px solid lightOrDarkTheme(rgba($ouiColorWarning, 0.45), rgba($ouiColorWarning, 0.45));
+    border-left: 1.5px solid lightOrDarkTheme(rgba($ouiColorWarning, 0.45), rgba($ouiColorWarning, 0.45));
+  }
+
+  // Top-right — ink-fade
+  &::after {
+    top: -1px;
+    right: -1px;
+    border-top: 1.5px solid lightOrDarkTheme(rgba(10, 10, 10, 0.32), rgba(250, 250, 250, 0.34));
+    border-right: 1.5px solid lightOrDarkTheme(rgba(10, 10, 10, 0.32), rgba(250, 250, 250, 0.34));
+  }
+}
+
+.emptySessionPage__cardTicksBottom {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+  }
+
+  // Bottom-left — amber-dim
+  &::before {
+    bottom: -1px;
+    left: -1px;
+    border-bottom: 1.5px solid lightOrDarkTheme(rgba($ouiColorWarning, 0.45), rgba($ouiColorWarning, 0.45));
+    border-left: 1.5px solid lightOrDarkTheme(rgba($ouiColorWarning, 0.45), rgba($ouiColorWarning, 0.45));
+  }
+
+  // Bottom-right — ink-fade
+  &::after {
+    bottom: -1px;
+    right: -1px;
+    border-bottom: 1.5px solid lightOrDarkTheme(rgba(10, 10, 10, 0.32), rgba(250, 250, 250, 0.34));
+    border-right: 1.5px solid lightOrDarkTheme(rgba(10, 10, 10, 0.32), rgba(250, 250, 250, 0.34));
+  }
+}
+
+// Generic corner ticks (cyan variant for panels)
+.emptySessionPage__cornerTicks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+  }
+
+  // Top-left — cyan-dim
+  &::before {
+    top: -1px;
+    left: -1px;
+    border-top: 1.5px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.45), rgba($ouiColorPrimary, 0.45));
+    border-left: 1.5px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.45), rgba($ouiColorPrimary, 0.45));
+  }
+
+  // Top-right — ink-fade
+  &::after {
+    top: -1px;
+    right: -1px;
+    border-top: 1.5px solid lightOrDarkTheme(rgba(10, 10, 10, 0.32), rgba(250, 250, 250, 0.34));
+    border-right: 1.5px solid lightOrDarkTheme(rgba(10, 10, 10, 0.32), rgba(250, 250, 250, 0.34));
+  }
+}
+
+.emptySessionPage__cornerTicksBottom {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+  }
+
+  // Bottom-left — cyan-dim
+  &::before {
+    bottom: -1px;
+    left: -1px;
+    border-bottom: 1.5px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.45), rgba($ouiColorPrimary, 0.45));
+    border-left: 1.5px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.45), rgba($ouiColorPrimary, 0.45));
+  }
+
+  // Bottom-right — ink-fade
+  &::after {
+    bottom: -1px;
+    right: -1px;
+    border-bottom: 1.5px solid lightOrDarkTheme(rgba(10, 10, 10, 0.32), rgba(250, 250, 250, 0.34));
+    border-right: 1.5px solid lightOrDarkTheme(rgba(10, 10, 10, 0.32), rgba(250, 250, 250, 0.34));
+  }
+}
+
+// ─── Activity card internals ────────────────────────────────
+.emptySessionPage__listItemClickable {
+  display: flex;
+  align-items: center;
+  gap: $ouiSize;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  font-size: $ouiFontSizeS;
+  color: $ouiTextColor;
+}
+
+.emptySessionPage__listItemDismiss {
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: lightOrDarkTheme(rgba(10, 10, 10, 0.62), rgba(250, 250, 250, 0.62));
+  background: none;
+  border: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.32), rgba(250, 250, 250, 0.34));
+  border-radius: 0;
+  padding: 4px 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+
+  &:hover {
+    border-color: $ouiColorPrimary;
+    color: $ouiColorPrimary;
+  }
+}
+
+.emptySessionPage__listItemEmpty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: $ouiSizeXL $ouiSize;
+  border: 1px dashed lightOrDarkTheme(rgba(10, 10, 10, 0.32), rgba(250, 250, 250, 0.34));
+  border-radius: 0;
+  color: lightOrDarkTheme(rgba(10, 10, 10, 0.62), rgba(250, 250, 250, 0.62));
+  font-size: $ouiFontSizeS;
+  background-color: transparent;
+}
+
+// ─── Discover / Monitor / More grid ─────────────────────────
+.emptySessionPage__discoverGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: $ouiSize;
+
+  &--3col {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+.emptySessionPage__discoverGridItem {
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeS;
+  padding: $ouiSize;
+  height: 64px;
+  border: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.14), rgba(250, 250, 250, 0.16));
+  border-radius: 12px;
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(24, 16, 40, 0.4));
+  cursor: pointer;
+  font-size: $ouiFontSizeS;
+  color: $ouiTextColor;
+  transition: background-color 200ms ease, border-color 200ms ease;
+
+  &:hover {
+    background-color: rgba($ouiColorPrimary, 0.08);
+    border-color: rgba($ouiColorPrimary, 0.3);
+  }
+
+  &--disabled {
+    cursor: default;
+    opacity: 1;
+    pointer-events: none;
+
+    &:hover {
+      background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(24, 16, 40, 0.4));
+      border-color: lightOrDarkTheme(rgba(10, 10, 10, 0.14), rgba(250, 250, 250, 0.16));
+    }
+  }
+}
+
+.emptySessionPage__activityCard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+}
+
+.emptySessionPage__activityCardHeader {
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeS;
+}
+
+.emptySessionPage__listItemTitle {
+  flex: 1;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: $ouiTitleColor;
+}
+
+.emptySessionPage__activityCard .emptySessionPage__listItemTitle {
+  font-weight: 600;
+}
+
+.emptySessionPage__listItemTime {
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: lightOrDarkTheme(rgba(10, 10, 10, 0.62), rgba(250, 250, 250, 0.62));
+  white-space: normal;
+  line-height: 1.4;
+}
+
+.emptySessionPage__listItemSummary {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 4px;
+  font-size: 13.5px;
+  color: lightOrDarkTheme(rgba(10, 10, 10, 0.62), rgba(250, 250, 250, 0.62));
+  line-height: 1.5;
+  margin-top: 4px;
+  white-space: normal;
+}
+
+// Metrics row in activity cards
+.emptySessionPage__activityCardPills {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 8px;
+  width: 100%;
+}
+
+.emptySessionPage__activityPill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 11px;
+  font-weight: 500;
+  color: lightOrDarkTheme(rgba(10, 10, 10, 0.62), rgba(250, 250, 250, 0.62));
+  line-height: 1.5;
+  width: 100%;
+}
+
+.emptySessionPage__activityPillText {
+  flex: 1;
+  min-width: 0;
+}
+
+.emptySessionPage__activityPillMeta {
+  flex-shrink: 0;
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: lightOrDarkTheme(rgba(10, 10, 10, 0.62), rgba(250, 250, 250, 0.62));
+  white-space: nowrap;
+}
+
+.emptySessionPage__listItemContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.emptySessionPage__listItemIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.emptySessionPage__listItemRight {
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeS;
+  flex-shrink: 0;
+}
+
+// ─── Side-by-side layout (SERVICE + SAVED QUERY) ────────────
+.emptySessionPage__sideBySide {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  align-items: stretch;
+}
+
+.emptySessionPage__sideBySideCol {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .emptySessionPage__sectionHeader {
+    margin-top: 0;
+  }
+
+  .emptySessionPage__savedQueryCard,
+  .emptySessionPage__favoritePanel {
+    flex: 1;
+  }
+}
+
+// ─── Saved Query card (matches favoritePanel) ──────────────
+.emptySessionPage__savedQueryCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.14), rgba(250, 250, 250, 0.16));
+  border-radius: 0;
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(24, 16, 40, 0.4));
+  padding: $ouiSize;
+  position: relative;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  appearance: none;
+  overflow: hidden;
+
+  &:hover {
+    background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.85), rgba(24, 16, 40, 0.6));
+  }
+}
+
+.emptySessionPage__savedQueryBody {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+}
+
+.emptySessionPage__savedQueryLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.emptySessionPage__savedQueryTitle {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: $ouiTitleColor;
+}
+
+.emptySessionPage__savedQueryCode {
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 11px;
+  color: lightOrDarkTheme(rgba(10, 10, 10, 0.62), rgba(250, 250, 250, 0.62));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.emptySessionPage__savedQueryChart {
+  flex: 1;
+  min-width: 0;
+  color: $ouiColorAccent;
+}
+
+.emptySessionPage__savedQuerySvg {
+  width: 100%;
+  height: 48px;
+}
+
+.emptySessionPage__savedQueryRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.emptySessionPage__savedQueryValue {
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: $ouiColorAccent;
+}
+
+.emptySessionPage__savedQueryTrend {
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 11px;
+  font-weight: 600;
+  color: $ouiColorAccent;
+}
+
+.emptySessionPage__savedQueryRange {
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: lightOrDarkTheme(rgba(10, 10, 10, 0.62), rgba(250, 250, 250, 0.62));
+}
+
+// ─── Favorite panel (table-style cards) ─────────────────────
+.emptySessionPage__favoritePanel {
+  border: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.14), rgba(250, 250, 250, 0.16));
+  border-radius: 0;
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(24, 16, 40, 0.4));
+  padding: $ouiSize;
+  position: relative;
+}
+
+.emptySessionPage__favoritePanelTitle {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: $ouiTitleColor;
+  margin-bottom: 12px;
+}
+
+.emptySessionPage__favoritePanelTable {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.emptySessionPage__favoritePanelHeader {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 8px;
+  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: lightOrDarkTheme(rgba(10, 10, 10, 0.62), rgba(250, 250, 250, 0.62));
+  padding-bottom: 8px;
+  border-bottom: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.14), rgba(250, 250, 250, 0.16));
+}
+
+.emptySessionPage__favoritePanelRow {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.14), rgba(250, 250, 250, 0.16));
+}
+
+.emptySessionPage__favoritePanelLink {
+  font-size: $ouiFontSizeXS;
+  color: $ouiColorPrimary;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &--static {
+    font-size: $ouiFontSizeXS;
+    color: $ouiColorPrimary;
+  }
+}
+
+.emptySessionPage__favoritePanelBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+
+  span {
+    font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
+    font-size: 11px;
+    color: lightOrDarkTheme(rgba(10, 10, 10, 0.62), rgba(250, 250, 250, 0.62));
+    white-space: nowrap;
+  }
+}
+
+.emptySessionPage__favoritePanelBarTrack {
+  flex: 1;
+  height: 6px;
+  background-color: lightOrDarkTheme(rgba(10, 10, 10, 0.08), rgba(250, 250, 250, 0.08));
+  border-radius: 0;
+  overflow: hidden;
+}
+
+.emptySessionPage__favoritePanelBarFill {
+  height: 100%;
+  background-color: $ouiColorPrimary;
+  border-radius: 0;
+}
+
+// Entrance animation for empty session elements
+@keyframes emptySessionFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Briefing title with count
+.emptySessionPage__briefingTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px 12px;
+
+  h5 {
+    font-size: $ouiFontSizeS;
+    font-weight: $ouiFontWeightSemiBold;
+    color: $ouiTextColor;
+    margin: 0;
+  }
+}
+
+.emptySessionPage__briefingCount {
+  font-size: 11px;
+  font-weight: $ouiFontWeightMedium;
+  color: $ouiColorMediumShade;
+  background: lightOrDarkTheme(rgba(10, 10, 10, 0.06), rgba(250, 250, 250, 0.08));
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+
+// Briefing item — clickable container in the right panel
+.emptySessionPage__briefingItem {
+  padding: 12px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: background-color 200ms ease, transform 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  .ouiText {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ouiText p {
+    margin-bottom: 2px;
+  }
+
+  .ouiText p:last-child {
+    margin-bottom: 0;
+    margin-top: 6px;
+  }
+
+  &:hover {
+    background-color: lightOrDarkTheme(rgba(99, 102, 241, 0.04), rgba(165, 180, 252, 0.06));
+  }
+}
+
+// Arrow indicator — shows on hover
+.emptySessionPage__briefingArrow {
+  flex-shrink: 0;
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: translateX(0);
+  transition: opacity 200ms ease-out, transform 200ms ease-out;
+  color: $ouiColorMediumShade;
+
+  .emptySessionPage__briefingItem:hover & {
+    opacity: 1;
+    transform: translateX(2px);
+    transition: opacity 200ms ease-in, transform 200ms ease-in;
+  }
+}
+
+// Separator between briefing items
+.emptySessionPage__briefingSeparator {
+  height: 1px;
+  margin: 0 16px;
+  background-color: lightOrDarkTheme(rgba(10, 10, 10, 0.07), rgba(250, 250, 250, 0.07));
+  transition: opacity 200ms ease;
+}
+
+// Hide separators adjacent to hovered briefing items (pure CSS fallback)
+.emptySessionPage__briefingItem:hover + .emptySessionPage__briefingSeparator {
+  opacity: 0;
+}
+
+.emptySessionPage__briefingSeparator:has(+ .emptySessionPage__briefingItem:hover) {
+  opacity: 0;
+}
+
+// Sequential text line reveal — typewriter (JS-driven)
+.emptySessionPage__textLine {
+  display: block;
+  min-height: 0;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 300ms ease, opacity 80ms ease;
+
+  &--visible {
+    opacity: 1;
+    max-height: 3em;
+  }
+
+  // Blinking cursor on active line
+  &--active::after {
+    content: '';
+    display: inline-block;
+    width: 2px;
+    height: 0.9em;
+    margin-left: 1px;
+    background-color: $ouiColorPrimary;
+    vertical-align: text-bottom;
+    border-radius: 1px;
+    animation: emptySessionCursor 600ms step-end infinite;
+  }
+}
+
+@keyframes emptySessionCursor {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+// Organic spinner — morphing blob
+.emptySessionPage__textSpinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: lightOrDarkTheme(
+    linear-gradient(135deg, $ouiColorPrimary, lighten($ouiColorPrimary, 18%)),
+    linear-gradient(135deg, $ouiColorPrimary, lighten($ouiColorPrimary, 18%))
+  );
+  vertical-align: middle;
+  animation: emptySessionBlobMorph 2s ease-in-out infinite;
+}
+
+@keyframes emptySessionBlobMorph {
+  0%, 100% {
+    border-radius: 50% 40% 60% 50% / 50% 50% 40% 60%;
+    transform: scale(1) rotate(0deg);
+    opacity: 0.7;
+  }
+  25% {
+    border-radius: 40% 60% 50% 50% / 60% 40% 50% 50%;
+    transform: scale(1.1) rotate(90deg);
+    opacity: 1;
+  }
+  50% {
+    border-radius: 60% 50% 40% 50% / 50% 60% 50% 40%;
+    transform: scale(0.9) rotate(180deg);
+    opacity: 0.8;
+  }
+  75% {
+    border-radius: 50% 50% 60% 40% / 40% 50% 60% 50%;
+    transform: scale(1.05) rotate(270deg);
+    opacity: 1;
+  }
+}
+
+// Right panel cascade fade-in — starts first
+.emptySessionPage__briefingTitle {
+  opacity: 0;
+  animation: briefingItemFadeIn 600ms ease-out 400ms forwards;
+}
+
+.emptySessionPage__briefingItem {
+  opacity: 0;
+  animation: briefingItemFadeIn 600ms ease-out forwards;
+  transition: background-color 200ms ease, transform 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.emptySessionPage__briefingSeparator {
+  opacity: 0;
+  animation: briefingItemFadeIn 600ms ease-out;
+  animation-fill-mode: none;
+  transition: opacity 200ms ease;
+}
+
+// After animation ends, separators should be visible (JS controls opacity on hover)
+.emptySessionPage__briefingSeparator {
+  animation-fill-mode: forwards;
+}
+
+// Override: once the page has loaded, let JS control separator opacity freely
+// Remove blanket hover override — JS handles individual separator opacity
+.emptySessionPage__briefing:hover .emptySessionPage__briefingSeparator {
+  animation: none;
+}
+
+// Stagger: title at 400ms, then items cascade
+.emptySessionPage__briefingItem:nth-child(2) { animation-delay: 600ms; }
+.emptySessionPage__briefingSeparator:nth-child(3) { animation-delay: 750ms; }
+.emptySessionPage__briefingItem:nth-child(4) { animation-delay: 900ms; }
+.emptySessionPage__briefingSeparator:nth-child(5) { animation-delay: 1050ms; }
+.emptySessionPage__briefingItem:nth-child(6) { animation-delay: 1200ms; }
+
+@keyframes briefingItemFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// After first load — no re-entry animations needed (panels stay mounted)
+.emptySessionPage__briefing--noAnim {
+  .emptySessionPage__briefingItem {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+
+  .emptySessionPage__briefingSeparator {
+    animation: none !important;
+    // Default to visible; JS inline style overrides opacity on hover
+    opacity: 1;
+  }
+}
+
+// Insights grid in right panel
+.emptySessionPage__insightsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 0;
+
+  &--2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .ouiInsightCard {
+    cursor: pointer;
+    transition: transform 250ms cubic-bezier(0.2, 0.7, 0.2, 1), border-color 200ms ease, box-shadow 250ms ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      border-color: lightOrDarkTheme(rgba(99, 102, 241, 0.3), rgba(165, 180, 252, 0.2));
+      box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
+
+      .emptySessionPage__insightInspect {
+        color: $ouiColorPrimary;
+      }
+    }
+
+    &:active {
+      transform: translateY(0) scale(0.98);
+    }
+  }
+}
+
+// Inspect label inside insight cards
+.emptySessionPage__insightInspect {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: $ouiFontSizeXS;
+  color: $ouiColorMediumShade;
+  transition: color 200ms ease;
+}
+
+// Responsive: stack columns vertically below 800px
+@media (max-width: 800px) {
+  .emptySessionPage__twoCol {
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .emptySessionPage__leftCol {
+    justify-content: center;
+    padding-top: 0;
+    align-items: center;
+    flex: none;
+    height: auto;
+  }
+
+  .emptySessionPage__rightCol {
+    justify-content: flex-start;
+    align-items: center;
+    flex: none;
+    height: auto;
+    border-left: none;
+    border-top: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.05), rgba(255, 255, 255, 0.05));
+  }
+}

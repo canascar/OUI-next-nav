@@ -1,0 +1,24 @@
+- generic [ref=e3]:
+  - navigation "Session navigation" [ref=e4]:
+    - img [ref=e6]
+    - generic [ref=e10]:
+      - button "New session" [disabled]:
+        - img
+      - button "All sessions" [disabled]:
+        - img
+      - button "Library" [disabled]:
+        - img
+    - generic [ref=e11]:
+      - button "Workspace" [disabled] [ref=e13]:
+        - img
+      - button "Developer tools" [ref=e16] [cursor=pointer]:
+        - img
+      - button "Settings" [ref=e20] [cursor=pointer]:
+        - img
+      - img "mascot · comma" [ref=e24]:
+        - img [ref=e25]
+  - generic [ref=e34]:
+    - img [ref=e35]
+    - heading "Welcome to OpenSearch" [level=1] [ref=e38]
+    - paragraph [ref=e42]: Set up your observability pipeline in minutes. We'll guide you through connecting your data sources, configuring collectors, and getting insights from your telemetry.
+    - button "Get started" [ref=e44] [cursor=pointer]

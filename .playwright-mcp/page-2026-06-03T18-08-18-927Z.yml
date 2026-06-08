@@ -1,0 +1,85 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - link "OUI home" [ref=e6] [cursor=pointer]:
+        - /url: "#/"
+        - img "OpenSearch" [ref=e7]
+        - generic [ref=e11]:
+          - text: OpenSearch AUI
+          - generic "Beta" [ref=e12]
+      - button "Switch to dark mode" [ref=e15] [cursor=pointer]:
+        - img
+    - generic [ref=e16]:
+      - button "Sample Pages" [ref=e20] [cursor=pointer]:
+        - generic [ref=e21]:
+          - img [ref=e22]
+          - generic [ref=e24]: Sample Pages
+      - button "Next Dark" [ref=e28] [cursor=pointer]:
+        - generic [ref=e29]:
+          - img [ref=e30]
+          - generic [ref=e32]: Next Dark
+      - link "OUI GitHub repo" [ref=e35] [cursor=pointer]:
+        - /url: https://github.com/opensearch-project/oui
+        - img [ref=e39]
+      - link "OUI Figma component library" [ref=e43] [cursor=pointer]:
+        - /url: https://www.figma.com/community/file/1319043629276905995
+        - img [ref=e47]
+  - generic [ref=e48]:
+    - generic [ref=e50]:
+      - search [ref=e51]:
+        - generic [ref=e53]:
+          - searchbox "Search for a docs section" [ref=e54]
+          - generic:
+            - generic:
+              - img
+      - navigation "OUI" [ref=e56]:
+        - generic [ref=e57]:
+          - button "Guidelines" [ref=e59] [cursor=pointer]:
+            - generic [ref=e60]:
+              - generic "Guidelines" [ref=e61]
+              - img [ref=e62]
+          - button "Layout" [ref=e65] [cursor=pointer]:
+            - generic [ref=e66]:
+              - generic "Layout" [ref=e67]
+              - img [ref=e68]
+          - button "Navigation" [ref=e71] [cursor=pointer]:
+            - generic [ref=e72]:
+              - generic "Navigation" [ref=e73]
+              - img [ref=e74]
+          - button "Tabular content" [ref=e77] [cursor=pointer]:
+            - generic [ref=e78]:
+              - generic "Tabular content" [ref=e79]
+              - img [ref=e80]
+          - button "Display" [ref=e83] [cursor=pointer]:
+            - generic [ref=e84]:
+              - generic "Display" [ref=e85]
+              - img [ref=e86]
+          - button "Forms" [ref=e89] [cursor=pointer]:
+            - generic [ref=e90]:
+              - generic "Forms" [ref=e91]
+              - img [ref=e92]
+          - button "Editors & syntax" [ref=e95] [cursor=pointer]:
+            - generic [ref=e96]:
+              - generic "Editors & syntax" [ref=e97]
+              - img [ref=e98]
+          - button "Headless" [ref=e101] [cursor=pointer]:
+            - generic [ref=e102]:
+              - generic "Headless" [ref=e103]
+              - img [ref=e104]
+          - button "Utilities" [ref=e107] [cursor=pointer]:
+            - generic [ref=e108]:
+              - generic "Utilities" [ref=e109]
+              - img [ref=e110]
+          - button "Package" [ref=e113] [cursor=pointer]:
+            - generic [ref=e114]:
+              - generic "Package" [ref=e115]
+              - img [ref=e116]
+    - generic [ref=e121]:
+      - heading "404" [level=1] [ref=e122]
+      - paragraph [ref=e123]:
+        - text: You visited a page which doesn’t exist, causing
+        - emphasis [ref=e124]: this
+        - text: page to exist. This page thanks you for summoning it into existence from the raw fabric of reality, but it thinks you may find another page more interesting. Might it suggest the
+        - link "home page" [ref=e125] [cursor=pointer]:
+          - /url: "#/"
+        - text: "?"

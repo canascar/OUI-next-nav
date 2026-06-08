@@ -1,0 +1,461 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+// sass-lint:disable no-misspelled-properties, no-color-literals, leading-zero
+
+// ============================================================
+// PAGE PANEL — Browser-like tabs and content area
+// ============================================================
+
+.pagePanel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+  background-color: transparent;
+  border-radius: 0;
+  position: relative;
+}
+
+// ============================================================
+// TAB BAR — Horizontal bar containing tabs and add button
+// ============================================================
+
+.pagePanel__tabBar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-bottom: 1px solid $ouiBorderColor;
+  flex-shrink: 0;
+  height: 48px;
+  padding: 0 0 0 $ouiSizeS;
+  gap: $ouiSizeS;
+
+  .sessionContainer--chatMinimized & {
+    padding-left: 0;
+  }
+}
+
+// Scrollable tab list container
+.pagePanel__tabList {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  align-items: center;
+  gap: $ouiSizeS;
+
+  // Hide scrollbar but keep scroll functionality
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    height: 2px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $ouiBorderColor;
+    border-radius: 2px;
+  }
+}
+
+// Separator between tabs
+.pagePanel__tabSeparator {
+  width: 1px;
+  height: 16px;
+  background-color: $ouiColorLightShade;
+  flex-shrink: 0;
+}
+
+// ============================================================
+// INDIVIDUAL TAB
+// ============================================================
+
+.pagePanel__tab {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: $ouiSizeS;
+  padding: $ouiSizeS $ouiSizeS;
+  cursor: pointer;
+  white-space: nowrap;
+  border-radius: 4px;
+  height: 32px;
+  transition: background-color 150ms ease-in-out;
+  flex-shrink: 0;
+  outline: none;
+
+  &:hover {
+    background-color: $ouiColorLightestShade;
+  }
+
+  &:focus {
+    background-color: $ouiColorLightestShade;
+  }
+
+  // Active tab — light background
+  &--active {
+    background-color: $ouiColorLightestShade;
+
+    &:hover {
+      background-color: darken($ouiColorLightestShade, 2%);
+    }
+  }
+}
+
+// Tab title text
+.pagePanel__tabTitle {
+  font-size: $ouiFontSizeXS;
+  color: $ouiTextColor;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Close button wrapper — visible only on active tab
+.pagePanel__tabClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: $ouiBorderRadius;
+
+  &:hover {
+    background-color: rgba($ouiColorDarkestShade, 0.1);
+  }
+}
+
+// ============================================================
+// ADD TAB BUTTON
+// ============================================================
+
+.pagePanel__addTabButton {
+  flex-shrink: 0;
+}
+
+// ============================================================
+// TAB LIST ACTION — far right list icon with border separator
+// ============================================================
+
+.pagePanel__tabListAction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  height: 100%;
+  border-left: 1px solid $ouiBorderColor;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+// Popover content listing all tabs
+.pagePanel__tabListPopover {
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+}
+
+.pagePanel__tabListItem {
+  display: block;
+  width: 100%;
+  padding: $ouiSizeS $ouiSizeM;
+  border: none;
+  background: none;
+  text-align: left;
+  font-size: $ouiFontSizeXS;
+  color: $ouiTextColor;
+  cursor: pointer;
+  border-radius: $ouiBorderRadius;
+
+  &:hover {
+    background-color: $ouiColorLightestShade;
+  }
+
+  &--active {
+    font-weight: 600;
+    background-color: rgba($ouiColorPrimary, 0.05);
+  }
+}
+
+// ============================================================
+// CONTENT AREA — Fills remaining space below tab bar
+// ============================================================
+
+.pagePanel__content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+// Empty state (no tabs open or page not found)
+.pagePanel__empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: $ouiSizeXL;
+  color: $ouiColorMediumShade;
+  font-size: $ouiFontSizeS;
+}
+
+// ============================================================
+// CANVAS PAGE WRAPPER — Wraps DetailPageHeader + page content
+// ============================================================
+
+.pagePanel__canvasWrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  position: relative;
+  background: transparent;
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// Scrollable canvas page content area
+.pagePanel__canvasContent {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px 24px 16px 16px;
+}
+
+// Override detailPageHeader inside pagePanel — no border, 16px lr padding
+.pagePanel .detailPageHeader__title {
+  border-bottom: none;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.pagePanel .detailPageHeader__actions {
+  border-bottom: none;
+  padding-right: 16px;
+}
+
+// AI button in tab bar (when chat minimized)
+.pagePanel__aiButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 48px;
+  padding: 0;
+  height: 100%;
+  border-right: 1px solid $ouiBorderColor;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  position: relative;
+
+  &--highlight {
+    animation: aiButtonPulse 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes aiButtonPulse {
+  0%, 100% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: rgba($ouiColorPrimary, 0.1);
+  }
+}
+
+// Floating AI popover below the generate icon
+.pagePanel__aiPopoverOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99;
+}
+
+.pagePanel__aiPopover {
+  position: relative;
+  cursor: pointer;
+
+  &:hover .pagePanel__floatingDismiss {
+    opacity: 1;
+  }
+}
+
+.pagePanel__floatingDismiss {
+  position: absolute;
+  top: -18px;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: $ouiColorEmptyShade;
+  border: 1px solid $ouiBorderColor;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 150ms ease;
+  z-index: 1;
+
+  &:hover {
+    background-color: $ouiColorLightestShade;
+  }
+}
+
+@keyframes aiGradientRotate {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+// Floating bar entrance — slide up from below with bounce
+@keyframes floatingBarEnter {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Floating bar exit — slide down out of view with fixed positioning
+@keyframes floatingBarExit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(48px);
+  }
+}
+
+.pagePanel__floatingBar--exiting {
+  animation: floatingBarExit 300ms ease-in both;
+  pointer-events: none;
+  z-index: 100;
+}
+
+@keyframes aiPopoverFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
+.pagePanel__aiPopoverInner {
+  background-color: transparent;
+  padding: 0;
+}
+
+.pagePanel__aiPopoverText {
+  font-size: $ouiFontSizeS;
+  color: $ouiTextColor;
+  line-height: 1.5;
+  margin: 0;
+  text-align: left;
+}
+
+@keyframes aiPopoverFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Floating chat bar — bottom-left of page panel (minimized state)
+.pagePanel__floatingBar {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  z-index: 10;
+
+  // Entrance animation — slide up from below with bounce
+  animation: floatingBarEnter 500ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+
+  // No borders on any form elements inside the floating bar
+  .ouiFormControlLayout,
+  .ouiFieldText,
+  .ouiFieldSearch,
+  .ouiTextArea {
+    border: none !important; // sass-lint:disable-line no-important
+    box-shadow: none !important; // sass-lint:disable-line no-important
+    background-color: transparent !important; // sass-lint:disable-line no-important
+    background-image: none !important; // sass-lint:disable-line no-important
+    transform: none !important; // sass-lint:disable-line no-important
+    border-bottom: none !important; // sass-lint:disable-line no-important
+
+    &:hover,
+    &:focus,
+    &:focus-within,
+    &:active {
+      border: none !important; // sass-lint:disable-line no-important
+      border-bottom: none !important; // sass-lint:disable-line no-important
+      box-shadow: none !important; // sass-lint:disable-line no-important
+      background-image: none !important; // sass-lint:disable-line no-important
+      transform: none !important; // sass-lint:disable-line no-important
+    }
+
+    &::after,
+    &::before {
+      display: none !important; // sass-lint:disable-line no-important
+    }
+  }
+
+  // Kill the focus underline on the layout wrapper
+  .ouiFormControlLayout__childrenWrapper::after {
+    display: none !important; // sass-lint:disable-line no-important
+  }
+}
+
+// Rotating highlight arc on OllyAvatar border
+.ollyAvatar__highlight {
+  transform-origin: 40px 40px;
+  animation: ollyHighlightSpin 2.5s linear infinite;
+}
+
+@keyframes ollyHighlightSpin {
+  0% {
+    transform: rotate(0deg);
+    opacity: 1;
+  }
+  40% {
+    transform: rotate(360deg);
+    opacity: 1;
+  }
+  45% {
+    transform: rotate(360deg);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(360deg);
+    opacity: 0;
+  }
+}
+
+

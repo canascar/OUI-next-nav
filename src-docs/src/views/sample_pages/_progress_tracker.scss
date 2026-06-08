@@ -1,0 +1,173 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+// Progress Tracker (Tool UI — OUI skin)
+
+.progressTracker {
+  padding: 0;
+  max-width: 600px;
+
+  &--collapsed {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.progressTracker__header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
+.progressTracker__elapsed {
+  font-size: $ouiFontSizeXS;
+  color: $ouiTextSubduedColor;
+  background-color: $ouiColorLightestShade;
+  padding: 2px 6px;
+  border-radius: $ouiBorderRadius;
+}
+
+.progressTracker--collapsedToggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 4px 0;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.progressTracker--expandedToggle {
+  cursor: pointer;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.progressTracker__collapseHint {
+  display: flex;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.progressTracker__steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.progressTracker__step {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+
+  &--completed {
+    opacity: 0.7;
+  }
+
+  &--pending {
+    opacity: 0.5;
+  }
+}
+
+.progressTracker__stepIcon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.progressTracker__stepContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.progressTracker__stepLabel {
+  font-weight: 500;
+}
+
+// Toggle (collapsed/expanded)
+.progressTracker__toggle {
+  cursor: pointer;
+}
+
+.progressTracker__toggleHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.progressTracker__toggleIcon {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  .progressTracker__toggleArrowDown,
+  .progressTracker__toggleArrowUp {
+    display: none;
+  }
+
+  .progressTracker__toggleCheck {
+    display: inline-block;
+  }
+}
+
+// Collapsed state: hover swaps check → down arrow
+.progressTracker__toggle:not(:has(.progressTracker__toggleBody)) {
+  .progressTracker__toggleHeader:hover .progressTracker__toggleIcon {
+    .progressTracker__toggleCheck {
+      display: none;
+    }
+
+    .progressTracker__toggleArrowDown {
+      display: inline-block;
+    }
+  }
+}
+
+// Expanded state: show up arrow instead of check
+.progressTracker__toggle:has(.progressTracker__toggleBody) {
+  .progressTracker__toggleIcon {
+    .progressTracker__toggleCheck {
+      display: none;
+    }
+
+    .progressTracker__toggleArrowUp {
+      display: inline-block;
+    }
+  }
+
+  // Hover: keep up arrow visible
+  .progressTracker__toggleHeader:hover .progressTracker__toggleIcon {
+    .progressTracker__toggleArrowUp {
+      display: inline-block;
+    }
+  }
+}
+
+.progressTracker__toggleBody {
+  margin-top: 10px;
+}

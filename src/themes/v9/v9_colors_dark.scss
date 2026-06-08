@@ -1,0 +1,151 @@
+/*!
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+// sass-lint:disable leading-zero, no-trailing-zero
+@import 'global_styling/functions/index';
+
+// These colors stay the same no matter the theme
+$ouiColorGhost: #FFF;
+$ouiColorInk: #0a0a0a;
+
+// Glass Theme — Dark
+
+// Core — indigo/violet accent palette (lighter for dark bg)
+$ouiColorPrimary: #a5b4fc;       // Indigo light
+$ouiColorSecondary: #34d399;     // Green
+$ouiColorAccent: #a5b4fc;        // Indigo light
+
+// Status
+$ouiColorSuccess: #34d399;       // Green
+$ouiColorWarning: #fbbf24;       // Amber
+$ouiColorDanger: #f87171;        // Red
+
+// Shades — Glass dark violet-tinted
+$ouiColorEmptyShade: #160e2a;             // Card surfaces (deep dark)
+$ouiColorLightestShade: #221840;          // Subtle backgrounds
+$ouiColorLightShade: #3d2d5c;             // Borders (clearly visible)
+$ouiColorMediumShade: rgba(250, 250, 250, 0.50); // Muted text
+$ouiColorDarkShade: #fafafa;              // Body text
+$ouiColorDarkestShade: #ffffff;           // Foreground text
+$ouiColorFullShade: #FFFFFF;              // Brightest foreground
+
+// Backgrounds
+$ouiPageBackgroundColor: #0d0818;         // Glass dark violet canvas
+$ouiColorHighlight: #1f1633;              // Elevated surface
+
+// Form input background
+$ouiFormBackgroundColor: #2c2042;
+
+// CodeBlock — Glass dark syntax palette
+$ouiCodeBlockCommentShade: rgba(250, 250, 250, 0.32); // ink-fade
+$ouiCodeBlockStringShade: #fbbf24;   // amber — strings
+$ouiCodeBlockNameShade: #a5b4fc;     // indigo — keywords/commands
+$ouiCodeBlockNumberShade: #34d399;   // green — numerics
+$ouiCodeBlockKeywordShade: #818cf8;  // indigo bright — keywords
+$ouiCodeBlockTypeShade: #a5b4fc;     // indigo
+$ouiCodeBlockTitleShade: #fafafa;    // ink
+
+// Variations from core
+$ouiTextColor: #fafafa;
+$ouiTitleColor: #FFFFFF;
+$ouiTextSubduedColor: rgba(250, 250, 250, 0.50);
+$ouiColorDisabled: $ouiColorLightestShade !default;
+
+// Contrasty text variants
+$ouiColorPrimaryText: makeHighContrastColor($ouiColorPrimary) !default;
+$ouiColorSecondaryText: makeHighContrastColor($ouiColorSecondary) !default;
+$ouiColorAccentText: makeHighContrastColor($ouiColorAccent) !default;
+$ouiColorWarningText: makeHighContrastColor($ouiColorWarning) !default;
+$ouiColorDangerText: makeHighContrastColor($ouiColorDanger) !default;
+$ouiColorDisabledText: rgba(250, 250, 250, 0.32) !default;
+$ouiColorSuccessText: $ouiColorSecondaryText !default;
+$ouiLinkColor: #818cf8 !default; // accent-bright
+
+// Charts
+$ouiColorChartLines: $ouiColorLightShade;
+$ouiColorChartBand: tint($ouiColorLightestShade, 2.5%);
+
+// Code
+$ouiCodeBlockBackgroundColor: $ouiColorLightestShade;
+
+// Shadows — Glass dark: feather-light with higher opacity
+$ouiShadowColor: rgba(0, 0, 0, 0.3);
+$ouiShadowColorLarge: rgba(0, 0, 0, 0.4);
+$ouiShadowOpacity: 0.30;
+
+$ouiShadowBase: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3);
+$ouiShadow1: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.3);
+$ouiShadow2: 0 4px 12px rgba(0, 0, 0, 0.4), 0 24px 48px rgba(0, 0, 0, 0.4);
+$ouiShadow3: 0 4px 12px rgba(0, 0, 0, 0.4), 0 24px 48px rgba(0, 0, 0, 0.4);
+$ouiShadow4: 0 4px 12px rgba(0, 0, 0, 0.4), 0 24px 48px rgba(0, 0, 0, 0.4);
+$ouiShadow5: 0 4px 12px rgba(0, 0, 0, 0.4), 0 24px 48px rgba(0, 0, 0, 0.4);
+
+// Border color
+$ouiBorderColor: #392a54;
+
+// Elevated surfaces
+$ouiBackgroundElevated: #1f1633;
+$ouiBorderElevated: #392a54;
+
+//CodeBlock Colors
+$ouiCodeBlockCommentColor: $ouiCodeBlockCommentShade;
+$ouiCodeBlockStringColor: $ouiCodeBlockStringShade;
+$ouiCodeBlockNameColor: $ouiCodeBlockNameShade;
+$ouiCodeBlockNumberColor: $ouiCodeBlockNumberShade;
+$ouiCodeBlockKeywordColor: $ouiCodeBlockKeywordShade;
+$ouiCodeBlockTypeColor: $ouiCodeBlockTypeShade;
+$ouiCodeBlockTitleColor: $ouiCodeBlockTitleShade;
+
+/* OUI -> EUI Aliases */
+$euiCodeBlockCommentColor: $ouiCodeBlockCommentColor;
+$euiCodeBlockStringColor: $ouiCodeBlockStringColor;
+$euiCodeBlockNameColor: $ouiCodeBlockNameColor;
+$euiCodeBlockNumberColor: $ouiCodeBlockNumberColor;
+$euiCodeBlockKeywordColor: $ouiCodeBlockKeywordColor;
+$euiCodeBlockTypeColor: $ouiCodeBlockTypeColor;
+$euiCodeBlockTitleColor: $ouiCodeBlockTitleColor;
+$euiColorGhost: $ouiColorGhost;
+$euiColorInk: $ouiColorInk;
+$euiColorPrimary: $ouiColorPrimary;
+$euiColorSecondary: $ouiColorSecondary;
+$euiColorAccent: $ouiColorAccent;
+$euiColorSuccess: $ouiColorSuccess;
+$euiColorWarning: $ouiColorWarning;
+$euiColorDanger: $ouiColorDanger;
+$euiColorEmptyShade: $ouiColorEmptyShade;
+$euiColorLightestShade: $ouiColorLightestShade;
+$euiColorLightShade: $ouiColorLightShade;
+$euiColorMediumShade: $ouiColorMediumShade;
+$euiColorDarkShade: $ouiColorDarkShade;
+$euiColorDarkestShade: $ouiColorDarkestShade;
+$euiColorFullShade: $ouiColorFullShade;
+$euiPageBackgroundColor: $ouiPageBackgroundColor;
+$euiColorHighlight: $ouiColorHighlight;
+$euiTextColor: $ouiTextColor;
+$euiTitleColor: $ouiTitleColor;
+$euiTextSubduedColor: $ouiTextSubduedColor;
+$euiColorDisabled: $ouiColorDisabled;
+$euiColorPrimaryText: $ouiColorPrimaryText;
+$euiColorSecondaryText: $ouiColorSecondaryText;
+$euiColorAccentText: $ouiColorAccentText;
+$euiColorWarningText: $ouiColorWarningText;
+$euiColorDangerText: $ouiColorDangerText;
+$euiColorDisabledText: $ouiColorDisabledText;
+$euiColorSuccessText: $ouiColorSuccessText;
+$euiLinkColor: $ouiLinkColor;
+$euiColorChartLines: $ouiColorChartLines;
+$euiColorChartBand: $ouiColorChartBand;
+$euiCodeBlockBackgroundColor: $ouiCodeBlockBackgroundColor;
+$euiShadowColor: $ouiShadowColor;
+$euiShadowColorLarge: $ouiShadowColorLarge;
+$euiBorderColor: $ouiBorderColor;
+$euiShadowOpacity: $ouiShadowOpacity;
+/* End of Aliases */

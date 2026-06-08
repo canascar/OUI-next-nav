@@ -1,0 +1,36 @@
+/*!
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// sass-lint:disable no-color-literals
+// OpenSearch logo colors
+// Light mode
+$ouiLogoPrimaryLight: #075985;
+$ouiLogoSecondaryLight: #082F49;
+// Dark mode
+$ouiLogoPrimaryDark: #0284C7;
+$ouiLogoSecondaryDark: #BAE6FD;
+// sass-lint:enable no-color-literals
+
+// Light mode defaults
+.ouiHeader--default,
+.samplePagesLeftNav {
+  --ouiLogoPrimary: #{$ouiLogoPrimaryLight};
+  --ouiLogoSecondary: #{$ouiLogoSecondaryLight};
+}
+
+// Dark header
+.ouiHeader--dark {
+  --ouiLogoPrimary: #{$ouiLogoPrimaryDark};
+  --ouiLogoSecondary: #{$ouiLogoSecondaryDark};
+}
+
+// Full dark page theme — default header and sidebar also get dark logo colors
+@if (lightness($ouiPageBackgroundColor) < 50) {
+  .ouiHeader--default,
+  .samplePagesLeftNav {
+    --ouiLogoPrimary: #{$ouiLogoPrimaryDark};
+    --ouiLogoSecondary: #{$ouiLogoSecondaryDark};
+  }
+}

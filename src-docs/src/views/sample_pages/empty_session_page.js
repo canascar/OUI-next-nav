@@ -1,0 +1,909 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+import React, { useState, useMemo, useRef, useCallback, useContext } from 'react';
+
+import {
+  OuiButtonIcon,
+  OuiCompressedTextArea,
+  OuiIcon,
+  OuiInsightCard,
+  OuiInsightCallout,
+  OuiSmallButtonEmpty,
+  OuiTab,
+  OuiTabs,
+  OuiText,
+  OuiTitle,
+} from '../../../../src/components';
+
+import {
+  Chart,
+  Settings,
+  Axis,
+  BarSeries,
+  LineSeries,
+  ScaleType,
+} from '@elastic/charts';
+
+import { SOURCE_PAGE_MOCK } from './session_models';
+import { OllyAvatar } from './olly_avatar';
+import { Mascot } from '../../../../olly-mascot/Mascot';
+import { ThemeContext } from '../../components/with_theme';
+
+/**
+ * Quick access shortcut definitions.
+ * Maps to existing OUI icon assets.
+ */
+
+/**
+ * Filter chips for the bottom section.
+ */
+const FILTER_CHIPS = [
+  { key: 'recent', label: null, icon: 'history', iconOnly: true },
+  { key: 'activity', label: 'Overview' },
+  { key: 'discover', label: 'Discover', icon: 'navDiscover' },
+  { key: 'monitor', label: 'Monitor', icon: 'navAlerting' },
+  { key: 'more', label: 'More', icon: 'apps' },
+];
+
+/**
+ * "Open a page" grid items. Clicking one opens the related page in a new session.
+ */
+const OPEN_PAGE_ITEMS = [
+  { label: 'Logs', pageKey: 'logs', icon: 'navDiscover' },
+  { label: 'Metrics', pageKey: 'metrics', icon: 'visArea' },
+  { label: 'Dashboards', pageKey: 'dashboards', icon: 'navDashboards' },
+  { label: 'Alerts', pageKey: 'alerts', icon: 'navAlerting' },
+  { label: 'Application Map', pageKey: 'app-map', icon: 'navServiceMap' },
+  { label: 'Application Services', pageKey: 'app-perf-services', icon: 'navOverview' },
+  { label: 'Application Traces', pageKey: 'app-traces', icon: 'apmTrace' },
+  { label: 'Forecasting', pageKey: 'forecasting', icon: 'visLine' },
+  { label: 'Agent traces', pageKey: 'app-traces', icon: 'apmTrace' },
+  { label: 'Agent spans', pageKey: 'agent-spans', icon: 'visTagCloud' },
+];
+
+/**
+ * Hover preview data for narrative links.
+ * Shown in the right panel when hovering a session link in the left column.
+ */
+const SESSION_PREVIEWS = {
+  'latency-spike-session': {
+    summary: 'Payment-service P99 crossed 2,000ms. Connection pool exhaustion identified on 3 of 4 pods.',
+    stats: [
+      { label: 'P99', value: '2,340ms', color: 'danger' },
+      { label: 'Errors', value: '0.2%', color: 'success' },
+      { label: 'Throughput', value: '1,240/s', color: 'default' },
+      { label: 'Pool Util', value: '98%', color: 'danger' },
+    ],
+    finding: 'Connection pool at 98% — requests queuing rather than failing fast. 847 connection-acquire-timeout entries in the last 30 min.',
+    action: 'Increase pool max 50 → 150, enable circuit breaker, add monitoring dashboard.',
+    meta: 'Created by AI · 15 min ago · Alert triggered · No recent deployments · 3 of 4 pods affected',
+  },
+  'error-rate-spike-session': {
+    summary: 'Checkout error rate spiked to 12.4%. Auth-service deployment regression identified — OIDC token validation timing out.',
+    stats: [
+      { label: 'Error Rate', value: '12.4%', color: 'danger' },
+      { label: 'P99', value: '890ms', color: 'warning' },
+      { label: 'Affected', value: 'checkout', color: 'default' },
+      { label: 'Deploy', value: '2h ago', color: 'warning' },
+    ],
+    finding: 'Auth-service v2.4.1 introduced a regression in OIDC token validation — tokens expire before refresh, causing cascading 401s on the checkout path.',
+    action: 'Rollback auth-service to v2.3.9, verify error rate normalizes, then hotfix the token refresh logic.',
+    meta: 'Shared by team · 2 hours ago · Deployment correlated · Checkout path affected',
+  },
+};
+
+/**
+ * Mock data for each filter chip.
+ */
+const CHIP_DATA = {
+  activity: [
+    {
+      key: 'insight-1',
+      title: 'Latency Spike Investigation',
+      subtitle: 'Created by AI · 15 min ago',
+      summary: 'Payment-service P99 crossed 2,000ms. Connection pool exhaustion identified on 3 of 4 pods with no recent deployments.',
+      meta: 'Alert: Payment service P99 latency breach',
+      icon: 'alert',
+      sessionId: 'latency-spike-session',
+    },
+    {
+      key: 'insight-2',
+      title: 'Error Rate Spike — Checkout Service',
+      subtitle: 'Shared by team · 2 hours ago',
+      summary: 'Checkout error rate jumped to 12.4%. Auth-service deployment regression identified — OIDC token validation timing out.',
+      meta: 'Shared from Sichenl',
+      icon: 'user',
+      sessionId: 'error-rate-spike-session',
+    },
+  ],
+  recent: [
+    { key: 'dash-1', title: 'System overview', subtitle: 'Dashboard · Updated 5 min ago' },
+    { key: 'log-5', title: 'Connection timeout errors', subtitle: 'Saved log · source=logs | where severity="ERROR"' },
+    { key: 'met-2', title: 'CPU utilization', subtitle: 'Saved metric · Updated 30 min ago' },
+    { key: 'dash-4', title: 'Payment service — connection pool', subtitle: 'Dashboard · Created from thread' },
+  ],
+  favorite: [
+    { key: 'fav-1', title: 'System overview', subtitle: 'Dashboard', pageKey: 'dashboards', typeIcon: 'navDashboards' },
+    { key: 'fav-2', title: 'Error rate by service', subtitle: 'Saved log', pageKey: 'logs', typeIcon: 'navDiscover' },
+  ],
+  discover: [
+    { key: 'log-1', title: 'Error rate by service', subtitle: 'source=logs | where level="ERROR"' },
+    { key: 'log-2', title: 'Auth failure events', subtitle: 'source=logs | where event="auth_fail"' },
+    { key: 'log-3', title: 'Slow query log', subtitle: 'source=logs | where duration > 5000' },
+    { key: 'log-4', title: 'Payment service timeout logs', subtitle: 'source=payment | where level="WARN"' },
+    { key: 'log-5b', title: 'Connection timeout errors', subtitle: 'source=logs | where severity="ERROR"' },
+  ],
+  monitor: [
+    { key: 'alert-1', title: 'CPU threshold exceeded', subtitle: 'Critical · 10 min ago' },
+    { key: 'alert-2', title: 'Disk usage warning', subtitle: 'Warning · 1 hour ago' },
+    { key: 'alert-3', title: 'Error rate spike', subtitle: 'Critical · 3 hours ago' },
+    { key: 'alert-4', title: 'Payment service P99 latency breach', subtitle: 'Critical · 15 min ago', meta: 'Active', icon: 'alert' },
+  ],
+  more: [
+    { key: 'other-1', title: 'Inventory service dependency map', subtitle: 'Notebook · Updated 2 hours ago' },
+    { key: 'other-2', title: 'Weekly capacity report', subtitle: 'Notebook · Updated 1 day ago' },
+    { key: 'other-3', title: 'Deployment rollback runbook', subtitle: 'Notebook · Updated 3 days ago' },
+  ],
+};
+
+/**
+ * Saved objects data for the bottom section when a quick access item is selected.
+ */
+const SAVED_OBJECTS = {
+  dashboards: {
+    items: [
+      { key: 'system-overview', title: 'System overview', subtitle: 'Updated 5 min ago' },
+      { key: 'web-traffic', title: 'Web traffic analytics', subtitle: 'Updated 15 min ago' },
+      { key: 'api-performance', title: 'API performance', subtitle: 'Updated 30 min ago' },
+      { key: 'payment-pool-dashboard', title: 'Payment service — connection pool', subtitle: 'Created from thread · just now' },
+    ],
+  },
+  logs: {
+    tabs: [
+      { id: 'saved-results', name: 'Saved results' },
+      { id: 'saved-query', name: 'Saved query' },
+    ],
+    tabItems: {
+      'saved-results': [
+        { key: 'error-rate', title: 'Error rate by service', subtitle: 'source=logs | where level="ERROR"' },
+        { key: 'auth-failures', title: 'Auth failure events', subtitle: 'source=logs | where event="auth_fail"' },
+        { key: 'slow-queries', title: 'Slow query log', subtitle: 'source=logs | where duration > 5000' },
+        { key: 'payment-timeout-logs', title: 'Payment service timeout logs', subtitle: 'source=payment | where level="WARN"' },
+        { key: 'connection-timeout-errors', title: 'Connection timeout errors', subtitle: 'source=logs | where severity="ERROR"' },
+      ],
+      'saved-query': [
+        { key: 'query-latency-by-host', title: 'Latency by host', subtitle: 'source=logs | stats avg(latency) by host' },
+        { key: 'query-5xx-responses', title: '5xx responses', subtitle: 'source=logs | where status >= 500 | stats count() by path' },
+        { key: 'query-top-users', title: 'Top users by request count', subtitle: 'source=logs | stats count() as requests by user' },
+      ],
+    },
+  },
+  metrics: {
+    tabs: [
+      { id: 'saved-results', name: 'Saved results' },
+      { id: 'saved-query', name: 'Saved query' },
+    ],
+    tabItems: {
+      'saved-results': [
+        { key: 'throughput', title: 'Throughput over time', subtitle: 'source=metrics | stats avg(throughput)' },
+        { key: 'cpu-utilization', title: 'CPU utilization', subtitle: 'source=metrics | stats avg(cpu) by host' },
+        { key: 'memory-pressure', title: 'Memory pressure', subtitle: 'source=metrics | stats max(mem_used)' },
+      ],
+      'saved-query': [
+        { key: 'query-disk-io', title: 'Disk I/O by volume', subtitle: 'source=metrics | stats avg(disk_io) by volume' },
+        { key: 'query-network-errors', title: 'Network error rate', subtitle: 'source=metrics | where net_errors > 0' },
+        { key: 'query-gc-pauses', title: 'GC pause duration', subtitle: 'source=metrics | stats max(gc_pause_ms) by service' },
+      ],
+    },
+  },
+};
+
+/**
+ * SystemCallout — Displays a system alert with red left border and pink background.
+ *
+ * @param {Object} props
+ * @param {import('./session_models').SystemAlert} props.alert
+ * @param {(pageKey: string) => void} props.onAction
+ */
+const SystemCallout = ({ alert, onAction }) => {
+  if (!alert) return null;
+
+  return (
+    <div className="emptySessionPage__callout" role="alert">
+      <div className="emptySessionPage__calloutBorder" />
+      <div className="emptySessionPage__calloutContent">
+        <p className="emptySessionPage__calloutText">{alert.message}</p>
+        <button
+          type="button"
+          className="emptySessionPage__calloutCta"
+          onClick={() => onAction(alert.actionTarget)}>
+          {alert.actionLabel}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * DualPurposeInput — Input field that accepts AI prompts or page search queries.
+ *
+ * @param {Object} props
+ * @param {(prompt: string) => void} props.onStartThread
+ * @param {(pageKey: string) => void} props.onOpenPage
+ */
+const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, onBlur, onHoverStart, onHoverEnd, borderActive }) => {
+  const [inputValue, setInputValue] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  const matchingPages = useMemo(() => {
+    if (!inputValue.trim()) return [];
+    const query = inputValue.toLowerCase();
+    return Object.entries(SOURCE_PAGE_MOCK)
+      .filter(([, { title }]) => title.toLowerCase().includes(query))
+      .map(([key, { title }]) => ({ key, title }));
+  }, [inputValue]);
+
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setInputValue(value);
+    setShowSuggestions(value.trim().length > 0);
+    if (onSearchChange) {
+      onSearchChange(value);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    if (e.key === 'Enter' && inputValue.trim()) {
+      const exactMatch = Object.entries(SOURCE_PAGE_MOCK).find(
+        ([, { title }]) =>
+          title.toLowerCase() === inputValue.trim().toLowerCase()
+      );
+      if (exactMatch) {
+        onOpenPage(exactMatch[0]);
+      } else {
+        onStartThread(inputValue.trim());
+      }
+      setInputValue('');
+      setShowSuggestions(false);
+    }
+  };
+
+  return (
+    <div
+      className={`emptySessionPage__inputWrap${borderActive ? ' emptySessionPage__inputWrap--borderActive' : ''}`}
+      onMouseEnter={onHoverStart}
+      onMouseLeave={onHoverEnd}>
+      <div className="emptySessionPage__inputField">
+        <OuiCompressedTextArea
+          placeholder="Ask AI anything, or type to search a page"
+          value={inputValue}
+          onChange={handleChange}
+          onKeyDown={handleSubmit}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          rows={3}
+          resize="none"
+          fullWidth
+          autoFocus
+          className="emptySessionPage__textarea"
+        />
+        <div className="emptySessionPage__inputActions">
+          <OuiButtonIcon
+            iconType="plus"
+            aria-label="Add attachment"
+            size="s"
+            color="text"
+          />
+          <OuiButtonIcon
+            iconType="sortUp"
+            aria-label="Send"
+            display="fill"
+            size="s"
+            isDisabled={!inputValue.trim()}
+            onClick={() => {
+              if (inputValue.trim()) {
+                const exactMatch = Object.entries(SOURCE_PAGE_MOCK).find(
+                  ([, { title }]) =>
+                    title.toLowerCase() === inputValue.trim().toLowerCase()
+                );
+                if (exactMatch) {
+                  onOpenPage(exactMatch[0]);
+                } else {
+                  onStartThread(inputValue.trim());
+                }
+                setInputValue('');
+                setShowSuggestions(false);
+              }
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * RecentAndFavoriteTabs — Tabbed section showing recent visits and favorites.
+ *
+ * @param {Object} props
+ * @param {import('./session_models').RecentItem[]} props.recentItems
+ * @param {import('./session_models').FavoriteItem[]} props.favoriteItems
+ * @param {(pageKey: string) => void} props.onOpenPage
+ */
+const RecentAndFavoriteTabs = ({ recentItems, favoriteItems, onOpenPage }) => {
+  const [activeTab, setActiveTab] = useState('recent');
+
+  const items = activeTab === 'recent' ? recentItems : favoriteItems;
+
+  const handleItemClick = (item) => {
+    if (item.pageKey) {
+      onOpenPage(item.pageKey);
+    }
+  };
+
+  return (
+    <div className="emptySessionPage__tabs">
+      <OuiTabs size="s" display="condensed" style={{ maxWidth: 'fit-content' }}>
+        <OuiTab
+          isSelected={activeTab === 'recent'}
+          onClick={() => setActiveTab('recent')}>
+          Recent
+        </OuiTab>
+        <OuiTab
+          isSelected={activeTab === 'favorites'}
+          onClick={() => setActiveTab('favorites')}>
+          Favorite
+        </OuiTab>
+      </OuiTabs>
+      <div className="emptySessionPage__tabContent" role="tabpanel">
+        {items.length === 0 ? (
+          <>
+            <div className="emptySessionPage__placeholderRow" />
+            <div className="emptySessionPage__placeholderRow" />
+            <div className="emptySessionPage__placeholderRow" />
+            <div className="emptySessionPage__placeholderRow" />
+            <div className="emptySessionPage__placeholderRow" />
+          </>
+        ) : (
+          <ul className="emptySessionPage__itemList">
+            {items.map((item) => (
+              <li key={item.id}>
+                <button
+                  className="emptySessionPage__listItem"
+                  onClick={() => handleItemClick(item)}>
+                  <OuiIcon
+                    type={item.type === 'page' ? 'document' : 'apps'}
+                    size="s"
+                  />
+                  <span className="emptySessionPage__listItemTitle">
+                    {item.title}
+                  </span>
+                  {activeTab === 'recent' && item.visitedAt && (
+                    <span className="emptySessionPage__listItemTime">
+                      {formatRelativeTime(item.visitedAt)}
+                    </span>
+                  )}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/**
+ * BottomSection — Shows saved objects list when a browse key is active,
+ * otherwise shows Recent/Favorite tabs.
+ */
+const BottomSection = ({ browseKey, recentItems, favoriteItems, onOpenPage }) => {
+  const [subTab, setSubTab] = useState(null);
+
+  // Reset sub-tab when browse key changes
+  React.useEffect(() => {
+    if (browseKey && SAVED_OBJECTS[browseKey]?.tabs) {
+      setSubTab(SAVED_OBJECTS[browseKey].tabs[0].id);
+    } else {
+      setSubTab(null);
+    }
+  }, [browseKey]);
+
+  if (!browseKey || !SAVED_OBJECTS[browseKey]) {
+    return (
+      <RecentAndFavoriteTabs
+        recentItems={recentItems}
+        favoriteItems={favoriteItems}
+        onOpenPage={onOpenPage}
+      />
+    );
+  }
+
+  const data = SAVED_OBJECTS[browseKey];
+
+  // Simple list (dashboards)
+  if (data.items && !data.tabs) {
+    return (
+      <div className="emptySessionPage__tabs">
+        <div className="emptySessionPage__sectionTitle">Dashboards</div>
+        <div className="emptySessionPage__tabContent">
+          {data.items.map((item) => (
+            <button
+              key={item.key}
+              className="emptySessionPage__listItem"
+              onClick={() => onOpenPage(browseKey)}>
+              <span className="emptySessionPage__listItemTitle">{item.title}</span>
+              <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Tabbed list (logs, metrics)
+  const activeSubTab = subTab || (data.tabs ? data.tabs[0].id : null);
+  const tabItems = data.tabItems[activeSubTab] || [];
+
+  return (
+    <div className="emptySessionPage__tabs">
+      <OuiTabs size="s" display="condensed" style={{ maxWidth: 'fit-content' }}>
+        {data.tabs.map((tab) => (
+          <OuiTab
+            key={tab.id}
+            isSelected={activeSubTab === tab.id}
+            onClick={() => setSubTab(tab.id)}>
+            {tab.name}
+          </OuiTab>
+        ))}
+      </OuiTabs>
+      <div className="emptySessionPage__tabContent">
+        {tabItems.map((item) => (
+          <button
+            key={item.key}
+            className="emptySessionPage__listItem"
+            onClick={() => onOpenPage(browseKey)}>
+            <span className="emptySessionPage__listItemTitle">{item.title}</span>
+            <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Format a timestamp as relative time (e.g., "2 hours ago").
+ * @param {number} timestamp
+ * @returns {string}
+ */
+function formatRelativeTime(timestamp) {
+  const now = Date.now();
+  const diff = now - timestamp;
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 1) return 'Just now';
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
+/**
+ * EmptySessionPage — The welcome experience shown when a session has no thread and no pages open.
+ *
+ * Displays a centered panel with:
+ * - Welcome title
+ * - System callout (when alerts are present)
+ * - Dual-purpose input (AI prompt or page search)
+ * - Quick access row with shortcut buttons
+ * - Recent visit / Favorite tabs
+ *
+ * @param {Object} props
+ * @param {(prompt: string) => void} props.onStartThread - Callback to start a new AI thread
+ * @param {(pageKey: string) => void} props.onOpenPage - Callback to open a page as a tab
+ * @param {import('./session_models').RecentItem[]} props.recentItems - Recently visited items
+ * @param {import('./session_models').FavoriteItem[]} props.favoriteItems - Favorited items
+ * @param {import('./session_models').SystemAlert|null} props.systemAlert - Active system alert
+ */
+export const EmptySessionPage = ({
+  onStartThread,
+  onOpenPage,
+  onOpenPageInNewSession,
+  onViewSession,
+  onStartInvestigation,
+  onSelectSession,
+  sessions = [],
+  recentItems = [],
+  favoriteItems = [],
+  systemAlert = null,
+}) => {
+  const themeContext = useContext(ThemeContext);
+  const isDark = themeContext.theme === 'v9-dark';
+  const mascotColor = isDark ? ['#FFFFFF', '#D9DEE5'] : ['#14558E', '#153A5A'];
+  const mascotEyeColor = isDark ? '#181028' : '#fff';
+
+  const [greeting] = useState(() => {
+    const greetings = [
+      'Good morning, John',
+      'What are you working on John?',
+      'Where should we start today John?',
+      'Hey hey, John!',
+      '¯\\_(ツ)_/¯',
+      "What's for today John?",
+    ];
+    return greetings[Math.floor(Math.random() * greetings.length)];
+  });
+
+  const [activeChip, setActiveChip] = useState('activity');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [dismissedItems, setDismissedItems] = useState(new Set());
+  const [dismissingItems, setDismissingItems] = useState(new Set());
+  const [inputHovered, setInputHovered] = useState(false);
+  const [inputFocused, setInputFocused] = useState(false);
+  const inputActive = inputHovered || inputFocused;
+  const [hoveredCard, setHoveredCard] = useState(null);
+  const [hoveredSession, setHoveredSession] = useState(null);
+  const [scrolledFromTop, setScrolledFromTop] = useState(false);
+  const [mascotExpression, setMascotExpression] = useState(undefined);
+  const [rightPanelTab, setRightPanelTab] = useState('insights');
+  const [hasAnimatedBriefing, setHasAnimatedBriefing] = useState(false);
+  const scrollRef = useRef(null);
+  const briefingRef = useRef(null);
+  const insightsRef = useRef(null);
+
+  // Mark briefing animations as done after initial load
+  React.useEffect(() => {
+    const timer = setTimeout(() => setHasAnimatedBriefing(true), 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleScroll = useCallback(() => {
+    if (scrollRef.current) {
+      setScrolledFromTop(scrollRef.current.scrollTop > 0);
+    }
+  }, []);
+
+  // Insight card hover — single card only, no proximity
+  const handleInsightHover = useCallback((hoveredIndex) => {
+    if (!insightsRef.current) return;
+    const cards = insightsRef.current.querySelectorAll('.ouiInsightCard');
+    cards.forEach((el, i) => {
+      el.style.transform = i === hoveredIndex ? 'scale(1.02)' : '';
+    });
+  }, []);
+
+  const handleInsightMouseDown = useCallback((pressedIndex) => {
+    if (!insightsRef.current) return;
+    const cards = insightsRef.current.querySelectorAll('.ouiInsightCard');
+    cards.forEach((el, i) => {
+      el.style.transform = i === pressedIndex ? 'scale(0.97)' : '';
+    });
+  }, []);
+
+  const handleInsightMouseLeave = useCallback(() => {
+    if (!insightsRef.current) return;
+    insightsRef.current.querySelectorAll('.ouiInsightCard').forEach((el) => {
+      el.style.transform = '';
+    });
+  }, []);
+
+  // Build a flat searchable list from all chip data + SOURCE_PAGE_MOCK
+  const allSearchableItems = useMemo(() => {
+    const items = [];
+    // Add all chip data items
+    Object.entries(CHIP_DATA).forEach(([category, categoryItems]) => {
+      categoryItems.forEach((item) => {
+        items.push({ ...item, category, pageKey: category === 'discover' ? 'logs' : category === 'monitor' ? 'alerts' : category === 'recent' ? 'dashboards' : category === 'favorite' ? 'dashboards' : 'notebooks' });
+      });
+    });
+    // Add SOURCE_PAGE_MOCK pages
+    Object.entries(SOURCE_PAGE_MOCK).forEach(([pageKey, { title }]) => {
+      items.push({ key: `page-${pageKey}`, title, subtitle: 'Page', category: 'pages', pageKey });
+    });
+    return items;
+  }, []);
+
+  // Filter items based on search query
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return null;
+    const query = searchQuery.toLowerCase();
+    return allSearchableItems.filter(
+      (item) => item.title.toLowerCase().includes(query) || (item.subtitle && item.subtitle.toLowerCase().includes(query))
+    );
+  }, [searchQuery, allSearchableItems]);
+
+  return (
+    <div className="emptySessionPage">
+      <div className="emptySessionPage__panel">
+        {/* Two-column layout */}
+        <div className="emptySessionPage__twoCol">
+          {/* Left column — AI-generated reading paragraph with inline widgets */}
+          <div className="emptySessionPage__leftCol">
+            {/* Mascot + status — above title */}
+            <div className="emptySessionPage__headerRow">
+              <div
+                className="emptySessionPage__avatarWrap"
+                onMouseDown={(e) => {
+                  e.currentTarget.style.transform = 'scale(0.85)';
+                  setMascotExpression('heart');
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  setMascotExpression(undefined);
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  setMascotExpression(undefined);
+                }}>
+                <Mascot size={32} expression={mascotExpression} idle={!mascotExpression} bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />
+              </div>
+              <span className="emptySessionPage__onlineStatus">
+                <span className="emptySessionPage__onlineDot" />
+                Olly is online
+              </span>
+            </div>
+            <OuiTitle size="m">
+              <h1>{greeting}</h1>
+            </OuiTitle>
+
+            <div className="emptySessionPage__briefingNarrative">
+              <p className="emptySessionPage__narrativePara emptySessionPage__narrativePara--1">
+                Things are largely stable. <strong>244 of 247</strong> services are healthy and running within normal thresholds — no widespread degradation, no cascading failures. The infrastructure is holding up well overall.
+              </p>
+
+              <p className="emptySessionPage__narrativePara emptySessionPage__narrativePara--2">
+                That said, there's one issue that warrants your immediate attention.{' '}
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                <a className="emptySessionPage__narrativeLink" onClick={() => onSelectSession('latency-spike-session')} onMouseEnter={() => setHoveredSession('latency-spike-session')} onMouseLeave={() => setHoveredSession(null)}>Payment service P99 latency has breached 2,000ms</a>, with connection pool exhaustion confirmed on 3 of 4 pods. This was flagged 15 minutes ago by Olly and a root cause has already been identified — so the team has something to act on. Keep an eye on this one; if the remaining pod tips over, transaction throughput will take a hit.
+              </p>
+
+              <p className="emptySessionPage__narrativePara emptySessionPage__narrativePara--3">
+                On the lower-priority side, there's a{' '}
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                <a className="emptySessionPage__narrativeLink" onClick={() => onSelectSession('error-rate-spike-session')} onMouseEnter={() => setHoveredSession('error-rate-spike-session')} onMouseLeave={() => setHoveredSession(null)}>checkout error-rate spike tied to an auth-service regression</a>. It was surfaced by the team 2 hours ago and is being tracked. Error rates are elevated but not yet at a level that suggests broad customer impact — still worth a look before end of day.
+              </p>
+
+              <p className="emptySessionPage__narrativePara emptySessionPage__narrativePara--4">
+                Finally, a{' '}
+                <span className="emptySessionPage__narrativeLink emptySessionPage__narrativeLink--resolved">DNS resolution timeout</span>{' '}
+                was flagged 3 hours ago and has since resolved on its own. No action needed there, but it's logged in case a pattern emerges later.
+              </p>
+            </div>
+
+            {/* Chat input — fixed at bottom of container */}
+            <div className="emptySessionPage__inlineInput">
+              <DualPurposeInput
+                onStartThread={onStartThread}
+                onOpenPage={onOpenPage}
+                onSearchChange={setSearchQuery}
+                onFocus={() => setInputFocused(true)}
+                onBlur={() => setInputFocused(false)}
+                onHoverStart={() => setInputHovered(true)}
+                onHoverEnd={() => setInputHovered(false)}
+                borderActive={inputActive}
+              />
+            </div>
+          </div>
+
+          {/* Right column — briefing items */}
+          <div className="emptySessionPage__rightCol">
+            <div
+              className={`emptySessionPage__briefing${hasAnimatedBriefing ? ' emptySessionPage__briefing--noAnim' : ''}`}
+              style={{ padding: 24, gap: 0 }}
+              ref={briefingRef}
+              onMouseLeave={() => {
+                if (briefingRef.current) {
+                  briefingRef.current.querySelectorAll('.emptySessionPage__briefingItem').forEach(el => { el.style.transform = ''; });
+                  briefingRef.current.querySelectorAll('.emptySessionPage__briefingSeparator').forEach(el => { el.style.opacity = ''; });
+                }
+              }}>
+              {!hoveredSession && (
+              <OuiTabs size="s" display="condensed" style={{ maxWidth: 'fit-content' }}>
+                <OuiTab isSelected={rightPanelTab === 'insights'} onClick={() => setRightPanelTab('insights')}>
+                  Insights
+                </OuiTab>
+                <OuiTab isSelected={rightPanelTab === 'open-page'} onClick={() => setRightPanelTab('open-page')}>
+                  Open a page
+                </OuiTab>
+              </OuiTabs>
+              )}
+
+              <div className="emptySessionPage__briefingContent">
+                {/* Session preview — shown on narrative link hover */}
+                <div className={`emptySessionPage__briefingPanel${!hoveredSession ? ' emptySessionPage__briefingPanel--hidden' : ''}`}>
+                  {hoveredSession && SESSION_PREVIEWS[hoveredSession] && (
+                    <div className="emptySessionPage__sessionPreview">
+                      <p className="emptySessionPage__previewSummary">{SESSION_PREVIEWS[hoveredSession].summary}</p>
+                      <div className="emptySessionPage__previewStats">
+                        {SESSION_PREVIEWS[hoveredSession].stats.map((stat, i) => (
+                          <div key={i} className={`emptySessionPage__previewStat emptySessionPage__previewStat--${stat.color}`}>
+                            <span className="emptySessionPage__previewStatValue">{stat.value}</span>
+                            <span className="emptySessionPage__previewStatLabel">{stat.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="emptySessionPage__previewSection">
+                        <span className="emptySessionPage__previewSectionLabel">Finding</span>
+                        <p className="emptySessionPage__previewSectionText">{SESSION_PREVIEWS[hoveredSession].finding}</p>
+                      </div>
+                      <div className="emptySessionPage__previewSection">
+                        <span className="emptySessionPage__previewSectionLabel">Recommended action</span>
+                        <p className="emptySessionPage__previewSectionText">{SESSION_PREVIEWS[hoveredSession].action}</p>
+                      </div>
+                      <p className="emptySessionPage__previewMeta">{SESSION_PREVIEWS[hoveredSession].meta}</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className={`emptySessionPage__briefingPanel${rightPanelTab !== 'open-page' || hoveredSession ? ' emptySessionPage__briefingPanel--hidden' : ''}`}>
+                  <div className="emptySessionPage__openPageGrid">
+                    {OPEN_PAGE_ITEMS.map((item, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        className="emptySessionPage__openPageItem"
+                        onClick={() => onOpenPageInNewSession(item.pageKey, item.label)}>
+                        <OuiIcon type={item.icon} size="m" />
+                        <span>{item.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={`emptySessionPage__briefingPanel${rightPanelTab !== 'insights' || hoveredSession ? ' emptySessionPage__briefingPanel--hidden' : ''}`}>
+                <div className="emptySessionPage__insightsGrid emptySessionPage__insightsGrid--2col" ref={insightsRef} onMouseLeave={handleInsightMouseLeave}>
+                  <OuiInsightCard title="Top services by fault rate" onMouseEnter={() => handleInsightHover(0)} onMouseDown={() => handleInsightMouseDown(0)} onMouseUp={() => handleInsightHover(0)}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600, opacity: 0.65, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                        <span>Service</span><span>Fault rate</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
+                        <span style={{ flex: '0 0 100px' }}>checkout</span>
+                        <span style={{ flex: 1, height: 8, borderRadius: 4, background: 'linear-gradient(90deg, #a5b4fc 66.67%, transparent 66.67%)' }} />
+                        <span style={{ fontWeight: 600 }}>66.67%</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
+                        <span style={{ flex: '0 0 100px' }}>frontend</span>
+                        <span style={{ flex: 1, height: 8, borderRadius: 4, background: 'linear-gradient(90deg, #a5b4fc 14.49%, transparent 14.49%)' }} />
+                        <span style={{ fontWeight: 600 }}>14.49%</span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
+                        <span style={{ flex: '0 0 100px' }}>frontend-proxy</span>
+                        <span style={{ flex: 1, height: 8, borderRadius: 4, background: 'linear-gradient(90deg, #a5b4fc 14.29%, transparent 14.29%)' }} />
+                        <span style={{ fontWeight: 600 }}>14.29%</span>
+                      </div>
+                    </div>
+                  </OuiInsightCard>
+
+                  <OuiInsightCard title="Connection timeout errors" onMouseEnter={() => handleInsightHover(1)} onMouseDown={() => handleInsightMouseDown(1)} onMouseUp={() => handleInsightHover(1)}>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
+                      <span style={{ color: '#d97706', fontWeight: 700, fontSize: 28, lineHeight: 1 }}>847</span>
+                      <span style={{ fontSize: 13, color: '#d97706', fontWeight: 600 }}>↑ 312%</span>
+                    </div>
+                    <svg viewBox="0 0 200 50" style={{ width: '100%', height: 50 }}>
+                      <defs><linearGradient id="connFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#d97706" stopOpacity="0.15"/><stop offset="100%" stopColor="#d97706" stopOpacity="0.01"/></linearGradient></defs>
+                      <path d="M0,48 C40,48 80,46 120,42 S170,20 200,10 V50 H0 Z" fill="url(#connFill)" />
+                      <path d="M0,48 C40,48 80,46 120,42 S170,20 200,10" fill="none" stroke="#d97706" strokeWidth="2.5" strokeLinecap="round" />
+                    </svg>
+                  </OuiInsightCard>
+
+                  <OuiInsightCard title="Recent alerts" onMouseEnter={() => handleInsightHover(2)} onMouseDown={() => handleInsightMouseDown(2)} onMouseUp={() => handleInsightHover(2)}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600, opacity: 0.65, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                        <span>Alert</span><span>Status</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                        <span>P99 latency breach</span><span style={{ color: '#f87171', fontWeight: 600 }}>Critical</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                        <span>Disk usage warning</span><span style={{ color: '#fbbf24', fontWeight: 600 }}>Warning</span>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                        <span>Error rate spike</span><span style={{ color: '#f87171', fontWeight: 600 }}>Critical</span>
+                      </div>
+                    </div>
+                  </OuiInsightCard>
+
+                  <OuiInsightCard title="Deployment timeline" onMouseEnter={() => handleInsightHover(3)} onMouseDown={() => handleInsightMouseDown(3)} onMouseUp={() => handleInsightHover(3)}>
+                    <svg viewBox="0 0 200 100" style={{ width: '100%', height: 100 }}>
+                      {/* Bars — wider, rounded top, spaced evenly */}
+                      <rect x="12" y="55" width="28" height="35" rx="4" fill="#34d399" />
+                      <rect x="50" y="30" width="28" height="60" rx="4" fill="#34d399" />
+                      <rect x="88" y="12" width="28" height="78" rx="4" fill="#34d399" />
+                      <rect x="126" y="38" width="28" height="52" rx="4" fill="#34d399" />
+                      <rect x="164" y="48" width="28" height="42" rx="4" fill="#34d399" />
+                      {/* X-axis labels */}
+                      <text x="26" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">1–3</text>
+                      <text x="64" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">5–7</text>
+                      <text x="102" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">9–11</text>
+                      <text x="140" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">13–15</text>
+                      <text x="178" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">17–23</text>
+                    </svg>
+                  </OuiInsightCard>
+
+                  <OuiInsightCard title="Resource utilization" onMouseEnter={() => handleInsightHover(4)} onMouseDown={() => handleInsightMouseDown(4)} onMouseUp={() => handleInsightHover(4)} titleExtra={<span style={{ color: '#34d399', fontWeight: 700, fontSize: 18 }}>56%</span>}>
+                    <svg viewBox="0 0 220 100" style={{ width: '100%', height: 100 }}>
+                      {/* Grid lines */}
+                      <line x1="30" y1="10" x2="210" y2="10" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
+                      <line x1="30" y1="32" x2="210" y2="32" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
+                      <line x1="30" y1="54" x2="210" y2="54" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
+                      <line x1="30" y1="76" x2="210" y2="76" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
+                      {/* Y-axis labels */}
+                      <text x="22" y="13" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">100</text>
+                      <text x="22" y="35" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">75</text>
+                      <text x="22" y="57" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">50</text>
+                      <text x="22" y="79" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">25</text>
+                      <text x="22" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">0</text>
+                      {/* Area fill */}
+                      <defs><linearGradient id="resFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#34d399" stopOpacity="0.25"/><stop offset="100%" stopColor="#34d399" stopOpacity="0.03"/></linearGradient></defs>
+                      <path d="M40,58 L75,54 L110,50 L145,52 L175,46 L195,44 L210,46 V96 H40 Z" fill="url(#resFill)" />
+                      {/* Line */}
+                      <polyline fill="none" stroke="#34d399" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points="40,58 75,54 110,50 145,52 175,46 195,44 210,46" />
+                      {/* Dots */}
+                      <circle cx="40" cy="58" r="3" fill="#34d399" />
+                      <circle cx="75" cy="54" r="3" fill="#34d399" />
+                      <circle cx="110" cy="50" r="3" fill="#34d399" />
+                      <circle cx="145" cy="52" r="3" fill="#34d399" />
+                      <circle cx="175" cy="46" r="3" fill="#34d399" />
+                      <circle cx="195" cy="44" r="3" fill="#34d399" />
+                      <circle cx="210" cy="46" r="3" fill="#34d399" />
+                      {/* X-axis labels */}
+                      <text x="40" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">0m</text>
+                      <text x="85" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">15m</text>
+                      <text x="130" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">30m</text>
+                      <text x="175" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">45m</text>
+                      <text x="210" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">60m</text>
+                    </svg>
+                  </OuiInsightCard>
+
+                  <OuiInsightCard title="Request throughput" onMouseEnter={() => handleInsightHover(5)} onMouseDown={() => handleInsightMouseDown(5)} onMouseUp={() => handleInsightHover(5)} titleExtra={<span style={{ color: '#a5b4fc', fontWeight: 700, fontSize: 18 }}>18.2k/s</span>}>
+                    <svg viewBox="0 0 220 100" style={{ width: '100%', height: 100 }}>
+                      {/* Grid lines */}
+                      <line x1="30" y1="14" x2="210" y2="14" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
+                      <line x1="30" y1="38" x2="210" y2="38" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
+                      <line x1="30" y1="62" x2="210" y2="62" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
+                      {/* Y-axis labels */}
+                      <text x="22" y="17" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">25k</text>
+                      <text x="22" y="41" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">15k</text>
+                      <text x="22" y="65" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">5k</text>
+                      {/* Area fill */}
+                      <defs><linearGradient id="rpsFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#a5b4fc" stopOpacity="0.25"/><stop offset="100%" stopColor="#a5b4fc" stopOpacity="0.03"/></linearGradient></defs>
+                      <path d="M40,60 L75,52 L110,56 L145,40 L175,46 L195,34 L210,38 V90 H40 Z" fill="url(#rpsFill)" />
+                      {/* Line */}
+                      <polyline fill="none" stroke="#a5b4fc" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points="40,60 75,52 110,56 145,40 175,46 195,34 210,38" />
+                      {/* Dots */}
+                      <circle cx="40" cy="60" r="3" fill="#a5b4fc" />
+                      <circle cx="75" cy="52" r="3" fill="#a5b4fc" />
+                      <circle cx="110" cy="56" r="3" fill="#a5b4fc" />
+                      <circle cx="145" cy="40" r="3" fill="#a5b4fc" />
+                      <circle cx="175" cy="46" r="3" fill="#a5b4fc" />
+                      <circle cx="195" cy="34" r="3" fill="#a5b4fc" />
+                      <circle cx="210" cy="38" r="3" fill="#a5b4fc" />
+                      {/* X-axis labels */}
+                      <text x="40" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">0m</text>
+                      <text x="85" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">15m</text>
+                      <text x="130" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">30m</text>
+                      <text x="175" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">45m</text>
+                      <text x="210" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">60m</text>
+                    </svg>
+                  </OuiInsightCard>
+                </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

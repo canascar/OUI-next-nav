@@ -1,0 +1,44 @@
+[     110ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:8030/#/login:0
+[   39405ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:8030/#/login:0
+[   87894ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[   94165ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[   94166ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[   94448ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[   94448ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/login_page.js is not accepted
+Update propagation: ./views/sample_pages/login_page.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828473:31)
+    at http://localhost:8030/bundle.js:828142:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828141:54)
+    at http://localhost:8030/bundle.js:828112:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828067:48)
+    at http://localhost:8030/bundle.js:828110:24 @ http://localhost:8030/bundle.js:532335
+[   96088ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[   96089ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[   96104ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[   96394ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[   96462ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:8030/#/login:0
+[   96540ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  101912ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  101912ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[  102047ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[  102047ms] [WARNING] [HMR] Error: Aborted because ./views/sample_pages/login_page.js is not accepted
+Update propagation: ./views/sample_pages/login_page.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828473:31)
+    at http://localhost:8030/bundle.js:828142:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828141:54)
+    at http://localhost:8030/bundle.js:828112:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828067:48)
+    at http://localhost:8030/bundle.js:828110:24 @ http://localhost:8030/bundle.js:532335
+[  103574ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530978
+[  103575ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532333
+[  103588ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457924
+[  103857ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482681
+[  103913ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://localhost:8030/#/login:0

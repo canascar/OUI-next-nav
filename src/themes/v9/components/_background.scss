@@ -1,0 +1,65 @@
+/*!
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// sass-lint:disable no-color-literals, leading-zero, no-trailing-zero, no-important
+
+// Glass Theme — Canvas gradient applied to html (uses same values as brandGradient mixin in sample pages)
+
+@if (lightness($ouiPageBackgroundColor) < 50) {
+  // DARK MODE
+  html {
+    background-color: $ouiPageBackgroundColor;
+    background-image:
+      radial-gradient(ellipse 80% 70% at 0% 0%, hsla(250, 35%, 38%, 0.4), transparent 70%),
+      radial-gradient(ellipse 70% 60% at 100% 10%, hsla(220, 25%, 42%, 0.35), transparent 70%),
+      radial-gradient(ellipse 90% 80% at 50% 100%, hsla(240, 20%, 36%, 0.3), transparent 70%),
+      radial-gradient(ellipse 60% 50% at 80% 80%, hsla(260, 25%, 36%, 0.3), transparent 70%),
+      radial-gradient(ellipse 100% 60% at 50% 40%, hsla(0, 0%, 50%, 0.15), transparent 65%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: $ouiTextColor;
+    font-family: $ouiFontFamily;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background: transparent;
+    min-height: 100vh;
+  }
+
+  .ouiPage,
+  .ouiPageBody {
+    background: transparent !important;
+  }
+
+} @else {
+  // LIGHT MODE
+  html {
+    background-color: $ouiPageBackgroundColor;
+    background-image:
+      radial-gradient(ellipse 80% 70% at 0% 0%, hsla(245, 40%, 82%, 0.35), transparent 70%),
+      radial-gradient(ellipse 70% 60% at 100% 10%, hsla(210, 30%, 84%, 0.35), transparent 70%),
+      radial-gradient(ellipse 90% 80% at 50% 100%, hsla(220, 20%, 86%, 0.3), transparent 70%),
+      radial-gradient(ellipse 60% 50% at 80% 80%, hsla(250, 25%, 83%, 0.25), transparent 70%),
+      radial-gradient(ellipse 100% 60% at 50% 40%, hsla(0, 0%, 92%, 0.25), transparent 65%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: $ouiTextColor;
+    font-family: $ouiFontFamily;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background: transparent;
+    min-height: 100vh;
+  }
+
+  .ouiPage,
+  .ouiPageBody {
+    background: transparent !important;
+  }
+}
+
+// sass-lint:enable no-color-literals, leading-zero, no-trailing-zero, no-important

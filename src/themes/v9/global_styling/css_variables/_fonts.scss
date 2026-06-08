@@ -1,0 +1,14 @@
+/*!
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// Glass Theme Fonts
+// Plus Jakarta Sans (body/display), Space Grotesk (numerics/timestamps/code)
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap');
+
+:root {
+  --oui-font-family: #{$ouiFontFamily};
+  --oui-font-family-display: #{$ouiFontFamilyDisplay};
+  --oui-code-font-family: #{$ouiCodeFontFamily};
+}

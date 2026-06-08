@@ -1,0 +1,290 @@
+/*!
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// Glass Theme — Button Styles
+// Pill-shaped buttons with lift hover, accent glow, soft transitions
+
+// sass-lint:disable no-important, no-color-literals
+
+// Force light text/icons on filled buttons in light mode
+.ouiButton--primary.ouiButton--fill:not(.ouiButton-isDisabled),
+.ouiButton--success.ouiButton--fill:not(.ouiButton-isDisabled),
+.ouiButton--text.ouiButton--fill:not(.ouiButton-isDisabled),
+.ouiButton--danger.ouiButton--fill:not(.ouiButton-isDisabled) {
+  color: #fff !important;
+
+  .ouiButton__text,
+  .ouiButton__icon {
+    color: #fff !important;
+  }
+}
+
+// Filled primary — indigo with glow
+.ouiButton--primary.ouiButton--fill:not(.ouiButton-isDisabled) {
+  background-color: $ouiColorPrimary !important;
+  border-color: $ouiColorPrimary !important;
+  box-shadow: 0 8px 22px -10px $ouiColorPrimary !important;
+
+  &:hover,
+  &:focus {
+    background-color: lighten($ouiColorPrimary, 5%) !important;
+    border-color: lighten($ouiColorPrimary, 5%) !important;
+  }
+
+  &:active {
+    background-color: darken($ouiColorPrimary, 5%) !important;
+    border-color: darken($ouiColorPrimary, 5%) !important;
+  }
+}
+
+// Filled success
+.ouiButton--success.ouiButton--fill:not(.ouiButton-isDisabled) {
+  box-shadow: 0 8px 22px -10px $ouiColorSuccess !important;
+
+  &:hover,
+  &:focus {
+    background-color: lighten($ouiColorSuccess, 5%) !important;
+    border-color: lighten($ouiColorSuccess, 5%) !important;
+  }
+
+  &:active {
+    background-color: darken($ouiColorSuccess, 5%) !important;
+    border-color: darken($ouiColorSuccess, 5%) !important;
+  }
+}
+
+// Filled danger
+.ouiButton--danger.ouiButton--fill:not(.ouiButton-isDisabled) {
+  box-shadow: 0 8px 22px -10px $ouiColorDanger !important;
+
+  &:hover,
+  &:focus {
+    background-color: lighten($ouiColorDanger, 5%) !important;
+    border-color: lighten($ouiColorDanger, 5%) !important;
+  }
+
+  &:active {
+    background-color: darken($ouiColorDanger, 5%) !important;
+    border-color: darken($ouiColorDanger, 5%) !important;
+  }
+}
+
+// Filled warning
+.ouiButton--warning.ouiButton--fill:not(.ouiButton-isDisabled) {
+  box-shadow: 0 8px 22px -10px $ouiColorWarning !important;
+
+  &:hover,
+  &:focus {
+    background-color: lighten($ouiColorWarning, 5%) !important;
+    border-color: lighten($ouiColorWarning, 5%) !important;
+  }
+
+  &:active {
+    background-color: darken($ouiColorWarning, 5%) !important;
+    border-color: darken($ouiColorWarning, 5%) !important;
+  }
+}
+
+// Filled icon buttons
+.ouiButtonIcon--primary.ouiButtonIcon--fill:not(.ouiButtonIcon-isDisabled) {
+  background-color: $ouiColorPrimary !important;
+  border-color: $ouiColorPrimary !important;
+
+  &:hover,
+  &:focus {
+    background-color: lighten($ouiColorPrimary, 5%) !important;
+    border-color: lighten($ouiColorPrimary, 5%) !important;
+  }
+}
+
+.ouiButtonIcon--primary.ouiButtonIcon--fill,
+.ouiButtonIcon--success.ouiButtonIcon--fill,
+.ouiButtonIcon--danger.ouiButtonIcon--fill {
+  color: #fff !important;
+
+  .ouiButtonIcon__icon {
+    color: #fff !important;
+    fill: #fff !important;
+  }
+}
+
+// Outline (non-fill) buttons — transparent bg, hairline border, lift on hover
+.ouiButton:not(.ouiButton--fill):not(.ouiButton-isDisabled) {
+  background-color: $ouiColorEmptyShade !important;
+  border: 1px solid $ouiColorLightShade !important;
+  color: $ouiTextColor !important;
+  box-shadow: 0 1px 2px rgba(15, 15, 15, 0.04) !important;
+  transition: transform 180ms cubic-bezier(.2, .7, .2, 1),
+              box-shadow 180ms cubic-bezier(.2, .7, .2, 1),
+              background-color 120ms ease,
+              border-color 120ms ease !important;
+
+  .ouiButton__text,
+  .ouiButton__icon {
+    color: $ouiTextColor !important;
+  }
+
+  &:hover,
+  &:focus {
+    border-color: lightOrDarkTheme(#e0e0e4, #2e3037) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(15, 15, 15, 0.06), 0 24px 48px rgba(15, 15, 15, 0.06) !important;
+  }
+
+  &:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 1px 2px rgba(15, 15, 15, 0.04) !important;
+  }
+}
+
+// Filled buttons — lift + glow on hover
+.ouiButton--fill:not(.ouiButton-isDisabled) {
+  transition: transform 180ms cubic-bezier(.2, .7, .2, 1),
+              box-shadow 180ms cubic-bezier(.2, .7, .2, 1),
+              background-color 120ms ease,
+              filter 180ms ease !important;
+
+  &:hover,
+  &:focus {
+    transform: translateY(-1px) !important;
+  }
+
+  &:active {
+    transform: translateY(0) !important;
+    box-shadow: none !important;
+  }
+}
+
+// Danger outline keeps its color
+.ouiButton--danger:not(.ouiButton--fill):not(.ouiButton-isDisabled) {
+  .ouiButton__text,
+  .ouiButton__icon {
+    color: $ouiColorDanger !important;
+  }
+}
+
+// Warning outline keeps its color
+.ouiButton--warning:not(.ouiButton--fill):not(.ouiButton-isDisabled) {
+  .ouiButton__text,
+  .ouiButton__icon {
+    color: $ouiColorWarning !important;
+  }
+}
+
+// Success outline keeps its color
+.ouiButton--success:not(.ouiButton--fill):not(.ouiButton-isDisabled) {
+  .ouiButton__text,
+  .ouiButton__icon {
+    color: $ouiColorSecondary !important;
+  }
+}
+
+// Accent outline keeps its color
+.ouiButton--accent:not(.ouiButton--fill):not(.ouiButton-isDisabled) {
+  .ouiButton__text,
+  .ouiButton__icon {
+    color: $ouiColorAccent !important;
+  }
+}
+
+// Ghost outline buttons
+.ouiButton--ghost:not(.ouiButton--fill):not(.ouiButton-isDisabled) {
+  background-color: lightOrDarkTheme($ouiColorDarkShade, $ouiColorLightShade) !important;
+  border-color: lightOrDarkTheme($ouiColorDarkShade, $ouiColorLightShade) !important;
+
+  &:hover,
+  &:focus {
+    background-color: lightOrDarkTheme(lighten($ouiColorDarkShade, 5%), lighten($ouiColorLightShade, 3%)) !important;
+  }
+}
+
+// Disabled buttons
+.ouiButton-isDisabled,
+.ouiButton-isDisabled:hover,
+.ouiButton-isDisabled:focus {
+  background-color: $ouiColorLightestShade !important;
+  border-color: transparent !important;
+  color: $ouiColorMediumShade !important;
+  box-shadow: none !important;
+  opacity: .5 !important;
+  transform: none !important;
+
+  .ouiButton__text,
+  .ouiButton__icon {
+    color: $ouiColorMediumShade !important;
+  }
+}
+
+// Icon buttons — outline style
+.ouiButtonIcon:not(.ouiButtonIcon--empty):not(.ouiButtonIcon--fill):not(.ouiButtonIcon-isDisabled) {
+  background-color: $ouiColorEmptyShade !important;
+  border: 1px solid $ouiColorLightShade !important;
+  box-shadow: 0 1px 2px rgba(15, 15, 15, 0.04) !important;
+  transition: transform 180ms cubic-bezier(.2, .7, .2, 1),
+              box-shadow 180ms cubic-bezier(.2, .7, .2, 1),
+              background-color 120ms ease,
+              border-color 120ms ease !important;
+
+  &:hover,
+  &:focus,
+  &:focus-within {
+    border-color: lightOrDarkTheme(#e0e0e4, #2e3037) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(15, 15, 15, 0.06), 0 24px 48px rgba(15, 15, 15, 0.06) !important;
+  }
+
+  &:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 1px 2px rgba(15, 15, 15, 0.04) !important;
+  }
+}
+
+// Icon buttons — filled style
+.ouiButtonIcon--fill:not(.ouiButtonIcon-isDisabled) {
+  box-shadow: 0 8px 22px -10px $ouiColorPrimary !important;
+  transition: transform 180ms cubic-bezier(.2, .7, .2, 1),
+              box-shadow 180ms cubic-bezier(.2, .7, .2, 1),
+              background-color 120ms ease !important;
+
+  &:hover,
+  &:focus,
+  &:focus-within {
+    transform: translateY(-1px) !important;
+  }
+
+  &:active {
+    transform: translateY(0) !important;
+    box-shadow: none !important;
+  }
+}
+
+// Compressed button group — pill container
+.ouiButtonGroup--compressed {
+  .ouiButtonGroup__buttons {
+    border-radius: $ouiButtonBorderRadius !important;
+  }
+}
+
+// Empty buttons — smooth hover transitions
+.ouiButtonEmpty,
+.ouiSmallButtonEmpty,
+.ouiButtonEmpty__content,
+.ouiSmallButtonEmpty__content {
+  transition: color 180ms ease,
+              background-color 180ms ease,
+              transform 200ms cubic-bezier(.2, .7, .2, 1) !important;
+}
+
+.ouiButtonEmpty:hover:not(:disabled),
+.ouiSmallButtonEmpty:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.ouiButtonEmpty:active:not(:disabled),
+.ouiSmallButtonEmpty:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+// sass-lint:enable no-important, no-color-literals

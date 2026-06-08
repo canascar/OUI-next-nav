@@ -1,0 +1,36 @@
+.idea
+node_modules/
+test/spec/screenshots/baseline/**/*.png
+test/spec/screenshots/diff/**/*.png
+test/spec/screenshots/screen/**/*.png
+test/failure-screenshots/**/*.png
+
+coverage/
+reports/
+tmp/
+/dist/
+# /docs/
+/lib/
+es/
+test-env/
+.idea
+.vscode/
+.DS_Store
+.eslintcache
+.yo-rc.json
+npm-debug.log
+yarn-error.log
+.cache-loader
+**/*.out
+
+# typescript output
+types/
+oui.d.ts
+
+# build caches
+.webpack-cache/
+
+# large bundle files
+docs/bundle.js
+docs/bundle.js.map
+docs/bundle.min.js.map

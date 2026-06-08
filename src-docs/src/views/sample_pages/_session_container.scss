@@ -1,0 +1,188 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+// sass-lint:disable no-misspelled-properties
+
+.sessionContainer {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  gap: 8px;
+  padding: 0;
+  margin: 8px;
+  height: calc(100% - 16px);
+  position: relative;
+  background-color: transparent;
+  border-radius: 12px;
+}
+
+// Remove gap when chat pane is minimized so page panel reaches the left edge
+.sessionContainer--chatMinimized {
+  gap: 0;
+}
+
+// Right pane wrapper — explicit width, animated
+.sessionContainer__pagePanelWrap {
+  height: 100%;
+  min-width: 0;
+  overflow: visible;
+  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.07));
+  border-radius: 12px;
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.62), rgba(24, 16, 40, 0.70));
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+  position: relative;
+}
+
+// Hide left border when canvas is full width (chat minimized)
+.sessionContainer--chatMinimized .sessionContainer__pagePanelWrap {
+  border-left: none;
+}
+
+.sessionContainer__pagePanelWrap--animating {
+  transition: width 500ms cubic-bezier(0.16, 0.9, 0.3, 1);
+}
+
+// Collapsed panel strip (inside pagePanelWrap when full-screen)
+.sessionContainer__collapsedPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  background-color: transparent;
+  border-radius: 12px;
+  padding: 0 !important; // sass-lint:disable-line no-important
+}
+
+.sessionContainer__collapsedPanelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  width: 100%;
+  border-bottom: 1px solid $ouiBorderColor;
+  padding: 0 !important; // sass-lint:disable-line no-important
+}
+
+.sessionContainer__collapsedTabs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  padding: 8px 0;
+  width: 100%;
+  text-align: center;
+}
+
+// Entrance animation — panels expand from edges when transitioning from empty session
+.sessionContainer--entering .threadPanel {
+  animation: panelExpandFromLeft 500ms cubic-bezier(0.16, 0.9, 0.3, 1);
+}
+
+.sessionContainer--entering .sessionContainer__pagePanelWrap {
+  animation: panelExpandFromRight 500ms cubic-bezier(0.16, 0.9, 0.3, 1);
+}
+
+@keyframes panelExpandFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes panelExpandFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+// ============================================================
+// OLLY CHAT PILL — positioned at bottom-right of session container
+// ============================================================
+.sessionContainer__ollyChatPill {
+  position: absolute;
+  bottom: 16px;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  animation: ollyChatPillEnter 500ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+
+  // Radial blur shadow — bottom center, only top half visible
+  &::before {
+    content: '';
+    position: fixed;
+    bottom: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 700px;
+    height: 300px;
+    background: radial-gradient(ellipse 100% 100% at 50% 80%, lightOrDarkTheme(rgba(248, 247, 252, 0.85), rgba($ouiColorLightestShade, 0.8)), transparent 60%);
+    pointer-events: none;
+    z-index: -1;
+    animation: ollyChatPillGlowIn 600ms ease-out 300ms both;
+  }
+
+  > * {
+    pointer-events: auto;
+  }
+}
+
+@keyframes ollyChatPillGlowIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.sessionContainer__ollyChatPill--exiting {
+  animation: ollyChatPillExit 300ms ease-in both;
+  pointer-events: none;
+}
+
+@keyframes ollyChatPillEnter {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ollyChatPillExit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+}

@@ -1,0 +1,29 @@
+[    1778ms] [INFO] [webpack-dev-server] Server started: Hot Module Replacement enabled, Live Reloading enabled, Progress disabled, Overlay enabled. @ http://localhost:8030/bundle.js:530954
+[    1779ms] [LOG] [HMR] Waiting for update signal from WDS... @ http://localhost:8030/bundle.js:532309
+[    1796ms] [INFO] %cDownload the React DevTools for a better development experience: https://fb.me/react-devtools font-weight:bold @ http://localhost:8030/bundle.js:457900
+[    2112ms] [ERROR] Warning: Each child in a list should have a unique "key" prop.%s%s See https://fb.me/react-warning-keys for more information.%s 
+
+Check the top-level render call using <OuiFlexGroup>.  
+    in OuiFlexItem @ http://localhost:8030/bundle.js:482657
+[    2167ms] [ERROR] Warning: validateDOMNesting(...): %s cannot appear as a descendant of <%s>.%s <button> button 
+    in button (created by EmptySessionPage)
+    in div (created by EmptySessionPage)
+    in div (created by OuiInsightCard)
+    in button (created by OuiInsightCard)
+    in OuiInsightCard (created by EmptySessionPage)
+    in div (created by EmptySessionPage)
+    in div (created by EmptySessionPage)
+    in div (created by EmptySessionPage)
+    in div (created by EmptySessionPage)
+    in div (created by EmptySessionPage)
+    in EmptySessionPage (created by SessionPagesView)
+    in div (created by SessionPagesView)
+    in div (created by SessionPagesView)
+    in SessionPagesView (created by Context.Consumer)
+    in LinkWrapper (created by Context.Consumer)
+    in Route
+    in Switch
+    in Router
+    in ThemeProvider
+    in Provider @ http://localhost:8030/bundle.js:430650
+[    2365ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:8030/favicon.ico:0

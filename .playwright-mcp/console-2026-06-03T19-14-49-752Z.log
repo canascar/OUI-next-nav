@@ -1,0 +1,25 @@
+[   73373ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[   99540ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[   99541ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[   99719ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  124302ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  124438ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[  143886ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[  144307ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[  144307ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_dark.scss @ http://localhost:8030/bundle.js:532333
+[  144307ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_light.scss @ http://localhost:8030/bundle.js:532333
+[  144307ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_dark.scss @ http://localhost:8030/bundle.js:532333
+[  144308ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_light.scss @ http://localhost:8030/bundle.js:532333
+[  144308ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[  144308ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[  144619ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[  144619ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_dark.scss @ http://localhost:8030/bundle.js:532333
+[  144619ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_light.scss @ http://localhost:8030/bundle.js:532333
+[  144619ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_dark.scss @ http://localhost:8030/bundle.js:532333
+[  144619ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_next_light.scss @ http://localhost:8030/bundle.js:532333
+[  144619ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[  144620ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[  144724ms] [LOG] [HMR] Updated modules: @ http://localhost:8030/bundle.js:532333
+[  144724ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_dark.scss @ http://localhost:8030/bundle.js:532333
+[  144724ms] [LOG] [HMR]  - ../../node_modules/css-loader/dist/cjs.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js!./theme_v9_light.scss @ http://localhost:8030/bundle.js:532333
+[  144724ms] [LOG] [HMR] App is up to date. @ http://localhost:8030/bundle.js:532333

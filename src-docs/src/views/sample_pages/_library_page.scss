@@ -1,0 +1,139 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+// sass-lint:disable no-misspelled-properties
+
+.libraryPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: $ouiSizeL $ouiSizeL $ouiSizeL $ouiSizeL;
+  overflow-y: auto;
+  position: relative;
+  @include brandGradient;
+  animation: screenFadeIn 500ms ease-out both;
+
+  // Top fade handled by JS scroll handler (per-item opacity)
+}
+
+.libraryPage__content {
+  width: 100%;
+  max-width: 832px;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+}
+
+.libraryPage__headerFixed {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  padding: 0 $ouiSizeL $ouiSizeS;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.libraryPage__headerInner {
+  width: 100%;
+  max-width: 832px;
+}
+
+.libraryPage__header {
+  margin-bottom: $ouiSizeL;
+}
+
+.libraryPage__search {
+  margin-bottom: $ouiSize;
+}
+
+.libraryPage__tabs {
+  margin-bottom: $ouiSize;
+
+  .emptySessionPage__chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    justify-content: flex-start;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  // Fade edges only when overflowing — toggled via data attribute from JS
+  .emptySessionPage__chips[data-fade="both"] {
+    -webkit-mask-image: linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent);
+    mask-image: linear-gradient(to right, transparent, black 24px, black calc(100% - 24px), transparent);
+  }
+
+  .emptySessionPage__chips[data-fade="left"] {
+    -webkit-mask-image: linear-gradient(to right, transparent, black 24px);
+    mask-image: linear-gradient(to right, transparent, black 24px);
+  }
+
+  .emptySessionPage__chips[data-fade="right"] {
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
+    mask-image: linear-gradient(to right, black calc(100% - 24px), transparent);
+  }
+
+  .emptySessionPage__chip {
+    flex: 0 0 auto;
+  }
+}
+
+.libraryPage__items {
+  display: flex;
+  flex-direction: column;
+  gap: $ouiSizeS;
+
+  .emptySessionPage__listItem {
+    background: lightOrDarkTheme(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.04));
+    border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.06));
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    transition: background-color 200ms ease, border-color 200ms ease, transform 250ms cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 250ms ease, opacity 100ms ease-out;
+
+    &:hover {
+      background: lightOrDarkTheme(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.07));
+      border-color: lightOrDarkTheme(rgba(99, 102, 241, 0.3), rgba(165, 180, 252, 0.2));
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
+    }
+  }
+}
+
+// Top fade — no longer needed, handled by JS scroll handler
+// .libraryPage__topFade { ... }
+
+.libraryPage__empty {
+  text-align: center;
+  padding: $ouiSizeXL 0;
+  color: $ouiColorMediumShade;
+  font-size: $ouiFontSizeS;
+}
+
+@keyframes screenFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

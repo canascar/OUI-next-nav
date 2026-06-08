@@ -1,0 +1,197 @@
+- generic [ref=e2]:
+  - generic [ref=e235]:
+    - generic [ref=e236]:
+      - link "OUI home" [ref=e238] [cursor=pointer]:
+        - /url: "#/"
+        - img "OpenSearch" [ref=e239]
+        - generic [ref=e243]:
+          - text: OpenSearch AUI
+          - generic "Beta" [ref=e244]
+      - button "Switch to light mode" [ref=e247] [cursor=pointer]:
+        - img
+    - generic [ref=e248]:
+      - button "Sample Pages" [ref=e252] [cursor=pointer]:
+        - generic [ref=e253]:
+          - img [ref=e254]
+          - generic [ref=e256]: Sample Pages
+      - button "v9 Dark" [ref=e260] [cursor=pointer]:
+        - generic [ref=e261]:
+          - img [ref=e262]
+          - generic [ref=e264]: v9 Dark
+      - link "OUI GitHub repo" [ref=e267] [cursor=pointer]:
+        - /url: https://github.com/opensearch-project/oui
+        - img [ref=e271]
+      - link "OUI Figma component library" [ref=e275] [cursor=pointer]:
+        - /url: https://www.figma.com/community/file/1319043629276905995
+        - img [ref=e279]
+  - generic [ref=e280]:
+    - generic [ref=e282]:
+      - search [ref=e283]:
+        - generic [ref=e285]:
+          - searchbox "Search for a docs section" [ref=e286]
+          - generic:
+            - generic:
+              - img
+      - navigation "OUI" [ref=e288]:
+        - generic [ref=e289]:
+          - button "Guidelines" [ref=e291] [cursor=pointer]:
+            - generic [ref=e292]:
+              - generic "Guidelines" [ref=e293]
+              - img [ref=e294]
+          - button "Layout" [ref=e297] [cursor=pointer]:
+            - generic [ref=e298]:
+              - generic "Layout" [ref=e299]
+              - img [ref=e300]
+          - button "Navigation" [ref=e303] [cursor=pointer]:
+            - generic [ref=e304]:
+              - generic "Navigation" [ref=e305]
+              - img [ref=e306]
+          - button "Tabular content" [ref=e309] [cursor=pointer]:
+            - generic [ref=e310]:
+              - generic "Tabular content" [ref=e311]
+              - img [ref=e312]
+          - generic [ref=e314]:
+            - button "Display" [ref=e315] [cursor=pointer]:
+              - generic [ref=e316]:
+                - generic "Display" [ref=e317]
+                - img [ref=e318]
+            - generic [ref=e320]:
+              - link "Aspect ratio" [ref=e322] [cursor=pointer]:
+                - /url: "#/display/aspect-ratio"
+                - generic "Aspect ratio" [ref=e324]
+              - link "Avatar" [ref=e326] [cursor=pointer]:
+                - /url: "#/display/avatar"
+                - generic "Avatar" [ref=e328]
+              - link "Badge" [ref=e330] [cursor=pointer]:
+                - /url: "#/display/badge"
+                - generic "Badge" [ref=e332]
+              - link "Brand gradient" [ref=e334] [cursor=pointer]:
+                - /url: "#/display/brand-gradient"
+                - generic "Brand gradient" [ref=e336]
+              - link "Callout" [ref=e338] [cursor=pointer]:
+                - /url: "#/display/callout"
+                - generic "Callout" [ref=e340]
+              - link "Card" [ref=e342] [cursor=pointer]:
+                - /url: "#/display/card"
+                - generic "Card" [ref=e344]
+              - link "Comment list" [ref=e346] [cursor=pointer]:
+                - /url: "#/display/comment-list"
+                - generic "Comment list" [ref=e348]
+              - link "Description list" [ref=e350] [cursor=pointer]:
+                - /url: "#/display/description-list"
+                - generic "Description list" [ref=e352]
+              - link "Drag and drop" [ref=e354] [cursor=pointer]:
+                - /url: "#/display/drag-and-drop"
+                - generic "Drag and drop" [ref=e356]
+              - link "Empty prompt" [ref=e358] [cursor=pointer]:
+                - /url: "#/display/empty-prompt"
+                - generic "Empty prompt" [ref=e360]
+              - link "Health" [ref=e362] [cursor=pointer]:
+                - /url: "#/display/health"
+                - generic "Health" [ref=e364]
+              - link "Icons" [ref=e366] [cursor=pointer]:
+                - /url: "#/display/icons"
+                - generic "Icons" [ref=e368]
+              - link "Image" [ref=e370] [cursor=pointer]:
+                - /url: "#/display/image"
+                - generic "Image" [ref=e372]
+              - link "List group" [ref=e374] [cursor=pointer]:
+                - /url: "#/display/list-group"
+                - generic "List group" [ref=e376]
+              - link "Loading" [ref=e378] [cursor=pointer]:
+                - /url: "#/display/loading"
+                - generic "Loading" [ref=e380]
+              - link "Notification event" [ref=e382] [cursor=pointer]:
+                - /url: "#/display/notification-event"
+                - generic "Notification event" [ref=e384]
+              - link "Progress" [ref=e386] [cursor=pointer]:
+                - /url: "#/display/progress"
+                - generic "Progress" [ref=e388]
+              - link "Schema" [ref=e390] [cursor=pointer]:
+                - /url: "#/display/schema"
+                - generic "Schema" [ref=e392]
+              - link "Stat" [ref=e394] [cursor=pointer]:
+                - /url: "#/display/stat"
+                - generic "Stat" [ref=e396]
+              - link "Text" [ref=e398] [cursor=pointer]:
+                - /url: "#/display/text"
+                - generic "Text" [ref=e400]
+              - link "NEW Thread list" [ref=e402] [cursor=pointer]:
+                - /url: "#/display/thread-list"
+                - generic [ref=e403]:
+                  - generic "NEW" [ref=e404]:
+                    - generic [ref=e406]: NEW
+                  - generic "Thread list" [ref=e407]
+              - link "Title" [ref=e409] [cursor=pointer]:
+                - /url: "#/display/title"
+                - generic "Title" [ref=e411]
+              - link "Toast" [ref=e413] [cursor=pointer]:
+                - /url: "#/display/toast"
+                - generic "Toast" [ref=e415]
+              - link "Tooltip" [ref=e417] [cursor=pointer]:
+                - /url: "#/display/tooltip"
+                - generic "Tooltip" [ref=e419]
+              - link "Tour" [ref=e421] [cursor=pointer]:
+                - /url: "#/display/tour"
+                - generic "Tour" [ref=e423]
+              - link "Visualization card" [ref=e425] [cursor=pointer]:
+                - /url: "#/display/visualization-card"
+                - generic "Visualization card" [ref=e427]
+          - button "Forms" [ref=e429] [cursor=pointer]:
+            - generic [ref=e430]:
+              - generic "Forms" [ref=e431]
+              - img [ref=e432]
+          - button "Editors & syntax" [ref=e435] [cursor=pointer]:
+            - generic [ref=e436]:
+              - generic "Editors & syntax" [ref=e437]
+              - img [ref=e438]
+          - button "Headless" [ref=e441] [cursor=pointer]:
+            - generic [ref=e442]:
+              - generic "Headless" [ref=e443]
+              - img [ref=e444]
+          - button "Utilities" [ref=e447] [cursor=pointer]:
+            - generic [ref=e448]:
+              - generic "Utilities" [ref=e449]
+              - img [ref=e450]
+          - button "Package" [ref=e453] [cursor=pointer]:
+            - generic [ref=e454]:
+              - generic "Package" [ref=e455]
+              - img [ref=e456]
+    - generic [ref=e458]:
+      - banner [ref=e459]:
+        - heading "Brand gradient" [level=1] [ref=e463]
+      - main [ref=e464]:
+        - generic [ref=e466]:
+          - heading "Brand gradient backgrounds" [level=2] [ref=e468]
+          - paragraph [ref=e471]:
+            - strong [ref=e472]: OuiBrandGradient
+            - text: "provides branded gradient backgrounds using the Glass theme's indigo/violet corner blobs. It supports three variants:"
+            - code [ref=e473]: subtle
+            - text: for ambient page backgrounds,
+            - code [ref=e474]: vivid
+            - text: for hero sections and login pages, and
+            - code [ref=e475]: radial
+            - text: for focused centered layouts. Each variant adapts to light and dark mode.
+          - generic [ref=e477]:
+            - generic [ref=e480]:
+              - heading "Gradient variants" [level=3] [ref=e481]
+              - generic [ref=e483]:
+                - generic [ref=e486]:
+                  - heading "subtle" [level=3] [ref=e487]
+                  - paragraph [ref=e491]: Dark mode
+                - generic [ref=e494]:
+                  - heading "vivid" [level=3] [ref=e495]
+                  - paragraph [ref=e499]: Dark mode
+                - generic [ref=e502]:
+                  - heading "radial" [level=3] [ref=e503]
+                  - paragraph [ref=e507]: Dark mode
+                - generic [ref=e510]:
+                  - heading "satin" [level=3] [ref=e511]
+                  - paragraph [ref=e515]: Dark mode
+              - heading "Full-width example" [level=3] [ref=e517]
+              - generic [ref=e520]:
+                - heading "Welcome to OpenSearch" [level=2] [ref=e521]
+                - paragraph [ref=e525]: Brand gradient backgrounds for login pages, hero sections, and more.
+            - tablist [ref=e529]:
+              - tab "Demo JS" [ref=e530] [cursor=pointer]:
+                - generic [ref=e531]: Demo JS

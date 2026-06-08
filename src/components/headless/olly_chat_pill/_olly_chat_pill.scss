@@ -1,0 +1,260 @@
+/*!
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// OuiOllyChatPill — Floating chat pill with avatar + input
+// Frosted glass container, expands on focus, primary border on focus-within.
+
+.ouiOllyChatPill {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 8px;
+  background-color: lightOrDarkTheme($ouiColorEmptyShade, $ouiFormBackgroundColor);
+  border-radius: 14px;
+  border: 1px solid transparent;
+  box-shadow: lightOrDarkTheme(
+    0 4px 16px rgba(99, 102, 241, 0.12),
+    0 4px 20px rgba(30, 15, 60, 0.50)
+  );
+  width: 240px;
+  position: relative;
+  overflow: visible;
+  transition:
+    width 500ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    border-color 250ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 300ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 300ms cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  // Animated gradient border — subtle rotating conic gradient
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 15px;
+    padding: 1px;
+    background: conic-gradient(
+      from var(--olly-pill-angle, 0deg),
+      lightOrDarkTheme(rgba(99, 102, 241, 0.25), rgba(165, 180, 252, 0.30)),
+      lightOrDarkTheme(rgba(16, 185, 129, 0.20), rgba(52, 211, 153, 0.25)),
+      lightOrDarkTheme(rgba(99, 102, 241, 0.10), rgba(165, 180, 252, 0.12)),
+      lightOrDarkTheme(rgba(217, 119, 6, 0.15), rgba(251, 191, 36, 0.20)),
+      lightOrDarkTheme(rgba(99, 102, 241, 0.25), rgba(165, 180, 252, 0.30))
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: ollyChatPillBorderSpin 6s linear infinite;
+    animation-play-state: paused;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  // Spin the border only when expanded or highlighted
+  &--expanded::before,
+  &--highlighted::before {
+    animation-play-state: running;
+  }
+
+  // Ensure content sits above the pseudo-element
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  &:hover {
+    box-shadow: lightOrDarkTheme(
+      0 8px 28px rgba(99, 102, 241, 0.18),
+      0 8px 32px rgba(30, 15, 60, 0.60)
+    );
+    transform: translateY(-1px);
+
+    &::before {
+      background: conic-gradient(
+        from var(--olly-pill-angle, 0deg),
+        lightOrDarkTheme(rgba(99, 102, 241, 0.45), rgba(165, 180, 252, 0.50)),
+        lightOrDarkTheme(rgba(16, 185, 129, 0.35), rgba(52, 211, 153, 0.40)),
+        lightOrDarkTheme(rgba(99, 102, 241, 0.20), rgba(165, 180, 252, 0.22)),
+        lightOrDarkTheme(rgba(217, 119, 6, 0.30), rgba(251, 191, 36, 0.35)),
+        lightOrDarkTheme(rgba(99, 102, 241, 0.45), rgba(165, 180, 252, 0.50))
+      );
+    }
+  }
+
+  &:focus-within {
+    width: 400px;
+    border-color: $ouiColorPrimary;
+    box-shadow: lightOrDarkTheme(
+      0 8px 28px rgba(99, 102, 241, 0.22),
+      0 8px 32px rgba(30, 15, 60, 0.70)
+    );
+    transform: translateY(-1px);
+
+    &::before {
+      opacity: 0;
+      transition: opacity 200ms ease;
+    }
+  }
+}
+
+@property --olly-pill-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes ollyChatPillBorderSpin {
+  to {
+    --olly-pill-angle: 360deg;
+  }
+}
+
+// Expanded state (has message) — width handled by transition on base class
+.ouiOllyChatPill--expanded {
+  width: 400px;
+}
+
+// Dismissing state — message is gone, pill shrinks back with bounce
+.ouiOllyChatPill--dismissing {
+  width: 240px;
+}
+
+// Input row — avatar + text input
+.ouiOllyChatPill__inputRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// Avatar button
+.ouiOllyChatPill__avatar {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  transition: transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  &:active {
+    transform: scale(0.8);
+    transition: transform 100ms ease-in;
+  }
+}
+
+.ouiOllyChatPill__avatar--highlight {
+  animation: ollyChatPillPulse 2s ease-in-out infinite;
+}
+
+.ouiOllyChatPill__avatar--static {
+  cursor: default;
+}
+
+@keyframes ollyChatPillPulse {
+  0%, 100% { box-shadow: none; }
+  50% { box-shadow: 0 0 0 4px rgba($ouiColorPrimary, 0.15); }
+}
+
+// Text input — borderless, transparent
+.ouiOllyChatPill__input {
+  appearance: none;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: $ouiFontFamily;
+  font-size: $ouiFontSizeS;
+  color: $ouiTextColor;
+  width: 100%;
+  min-width: 200px;
+  padding: 6px 0;
+
+  &::placeholder {
+    color: $ouiColorMediumShade;
+  }
+}
+
+// Message bubble (proactive insight)
+.ouiOllyChatPill__message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 10px;
+  background: lightOrDarkTheme(rgba($ouiColorPrimary, 0.04), rgba($ouiColorPrimary, 0.08));
+  transition: background-color 150ms ease;
+  animation: ollyChatPillMessageIn 500ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  transform-origin: bottom center;
+
+  &:hover {
+    background: lightOrDarkTheme(rgba($ouiColorPrimary, 0.08), rgba($ouiColorPrimary, 0.12));
+  }
+}
+
+@keyframes ollyChatPillMessageIn {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.ouiOllyChatPill__messageText {
+  flex: 1;
+  font-size: $ouiFontSizeXS;
+  color: $ouiTextColor;
+  line-height: 1.4;
+  margin: 0;
+}
+
+// Quick reply buttons
+.ouiOllyChatPill__quickReplies {
+  display: flex;
+  gap: 6px;
+  padding: 0 4px;
+}
+
+.ouiOllyChatPill__quickReply {
+  appearance: none;
+  border: 1px solid $ouiColorLightShade;
+  border-radius: 999px;
+  background: transparent;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-family: inherit;
+  font-weight: 500;
+  color: $ouiColorMediumShade;
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+
+  &:hover {
+    border-color: $ouiColorPrimary;
+    color: $ouiColorPrimary;
+    background: rgba($ouiColorPrimary, 0.06);
+  }
+
+  &--primary {
+    border-color: rgba($ouiColorPrimary, 0.4);
+    color: $ouiColorPrimary;
+
+    &:hover {
+      border-color: $ouiColorPrimary;
+      background: rgba($ouiColorPrimary, 0.1);
+    }
+  }
+}
+
+// Dismiss button — uses OuiButtonIcon, just align it
+.ouiOllyChatPill__dismiss {
+  flex-shrink: 0;
+  align-self: center;
+}

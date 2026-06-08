@@ -1,0 +1,13 @@
+[   84683ms] [INFO] [webpack-dev-server] App updated. Recompiling... @ http://localhost:8030/bundle.js:530978
+[   90556ms] [INFO] [webpack-dev-server] App hot update... @ http://localhost:8030/bundle.js:530978
+[   90557ms] [LOG] [HMR] Checking for updates on the server... @ http://localhost:8030/bundle.js:532333
+[   90671ms] [WARNING] [HMR] Cannot apply update. Need to do a full reload! @ http://localhost:8030/bundle.js:532335
+[   90671ms] [WARNING] [HMR] Error: Aborted because ../../olly-mascot/Mascot.tsx is not accepted
+Update propagation: ../../olly-mascot/Mascot.tsx -> ./views/sample_pages/empty_session_page.js -> ./views/sample_pages/sample_pages_view.js -> ./index.js
+    at applyHandler (http://localhost:8030/bundle.js:828464:31)
+    at http://localhost:8030/bundle.js:828133:21
+    at Array.map (<anonymous>)
+    at internalApply (http://localhost:8030/bundle.js:828132:54)
+    at http://localhost:8030/bundle.js:828103:26
+    at waitForBlockingPromises (http://localhost:8030/bundle.js:828058:48)
+    at http://localhost:8030/bundle.js:828101:24 @ http://localhost:8030/bundle.js:532335

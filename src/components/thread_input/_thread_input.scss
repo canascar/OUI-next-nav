@@ -1,0 +1,121 @@
+/*!
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+.ouiThreadInput {
+  width: 100%;
+}
+
+.ouiThreadInput--fullWidth {
+  max-width: 100%;
+}
+
+.ouiThreadInput__wrapper {
+  position: relative;
+  border: 1px solid $ouiFormBorderColor;
+  border-radius: 16px;
+  background-color: rgba(red($ouiFormBackgroundColor), green($ouiFormBackgroundColor), blue($ouiFormBackgroundColor), 0.55);
+  transition: transform 150ms ease-in-out, box-shadow 150ms ease-in-out, background-color 150ms ease-in-out, border-color 200ms ease;
+  transform: translateY(0);
+  overflow: hidden;
+
+  // Animated bottom border — removed for Glass theme (clean pill shape, no underline)
+  // &::after { ... }
+
+  &:hover,
+  &:focus-within {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px lightOrDarkTheme(rgba(46, 74, 143, 0.12), rgba(0, 0, 0, 0.25));
+    background-color: $ouiFormBackgroundColor;
+    border-color: $ouiColorPrimary;
+  }
+}
+
+.ouiThreadInput__textarea {
+  display: block;
+  width: 100%;
+  padding: $ouiSizeM;
+  padding-bottom: $ouiSizeXS;
+  border: none;
+  background: transparent;
+  resize: none;
+  font-family: $ouiFontFamily;
+  font-size: $ouiFontSize;
+  line-height: $ouiLineHeight;
+  color: $ouiTextColor;
+  outline: none;
+
+  &::placeholder {
+    color: $ouiColorMediumShade;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.ouiThreadInput__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $ouiSizeXS $ouiSizeM $ouiSizeM;
+}
+
+.ouiThreadInput__actionsLeft {
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeXS;
+}
+
+.ouiThreadInput__actionsRight {
+  display: flex;
+  align-items: center;
+  gap: $ouiSizeXS;
+  margin-left: auto;
+}
+
+.ouiThreadInput--disabled .ouiThreadInput__wrapper {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+// Thread scroll button
+.ouiThreadScrollButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid $ouiFormBorderColor;
+  border-radius: 9999px;
+  background-color: $ouiFormBackgroundColor;
+  color: $ouiTextColor;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease, background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background-color: $ouiColorLightestShade;
+    border-color: $ouiColorPrimary;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px $ouiFocusRingColor;
+  }
+
+  &:active {
+    background-color: $ouiColorLightShade;
+  }
+}
+
+.ouiThreadScrollButton--visible {
+  opacity: 1;
+  pointer-events: auto;
+}

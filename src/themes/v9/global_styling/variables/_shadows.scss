@@ -1,0 +1,38 @@
+/*!
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+// sass-lint:disable leading-zero
+// Glass Theme — Feather-light shadows (never for "depth glamour")
+$ouiShadowColor: rgba(15, 15, 15, 0.04) !default;
+$ouiShadowColorLarge: rgba(15, 15, 15, 0.06) !default;
+
+// Shadow opacity
+$ouiShadowOpacity: 0.04 !default;
+
+// Glass shadow scale
+$ouiShadowBase: 0 1px 2px rgba(15, 15, 15, 0.04), 0 8px 24px rgba(15, 15, 15, 0.04);
+$ouiShadow1: 0 1px 2px rgba(15, 15, 15, 0.04), 0 8px 24px rgba(15, 15, 15, 0.04);
+$ouiShadow2: 0 4px 12px rgba(15, 15, 15, 0.06), 0 24px 48px rgba(15, 15, 15, 0.06);
+$ouiShadow3: 0 4px 12px rgba(15, 15, 15, 0.06), 0 24px 48px rgba(15, 15, 15, 0.06);
+$ouiShadow4: 0 2px 6px rgba(15, 15, 15, 0.06), 0 16px 36px rgba(15, 15, 15, 0.08);
+$ouiShadow5: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 24px 60px -30px rgba(31, 31, 60, 0.28);
+$ouiShadow6: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 24px 60px -30px rgba(31, 31, 60, 0.28);
+
+// Local elevation z-index values
+$ouiLocalZIndex1: 1;
+$ouiLocalZIndex2: 2;
+$ouiLocalZIndex3: 3;
+
+
+/* OUI -> EUI Aliases */
+$euiShadowColor: $ouiShadowColor;
+$euiShadowColorLarge: $ouiShadowColorLarge;
+/* End of Aliases */

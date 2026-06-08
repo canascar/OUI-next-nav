@@ -1,0 +1,42 @@
+/*!
+ * Copyright OpenSearch Contributors
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// sass-lint:disable no-important, no-color-literals
+
+// Glass Theme — Modals: frosted glass with blur, rounded, hairline border
+.ouiModal {
+  border-radius: $ouiBorderRadius !important;
+  overflow: visible !important;
+  background: lightOrDarkTheme(rgba(255, 255, 255, 0.80), rgba(255, 255, 255, 0.06)) !important;
+  -webkit-backdrop-filter: blur(30px) saturate(180%) !important;
+  backdrop-filter: blur(30px) saturate(180%) !important;
+  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.14)) !important;
+  box-shadow: lightOrDarkTheme(
+    #{0 4px 12px rgba(15, 15, 15, 0.06), 0 24px 48px rgba(15, 15, 15, 0.08)},
+    #{inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 4px 12px rgba(0, 0, 0, 0.4), 0 24px 48px rgba(0, 0, 0, 0.4)}
+  ) !important;
+
+  // No corner ticks
+  &::before {
+    display: none !important;
+  }
+
+  // Keep inner content clipped with rounded corners, transparent bg
+  > div {
+    overflow: hidden !important;
+    border-radius: $ouiBorderRadius !important;
+    background: transparent !important;
+  }
+}
+
+.ouiModalHeader {
+  border-bottom-color: lightOrDarkTheme(#ececef, #23252b) !important;
+}
+
+.ouiModalFooter {
+  border-top-color: lightOrDarkTheme(#ececef, #23252b) !important;
+}
+
+// sass-lint:enable no-important, no-color-literals

@@ -1,0 +1,315 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - link "OUI home" [ref=e1092] [cursor=pointer]:
+        - /url: "#/"
+        - img "OpenSearch" [ref=e1093]
+        - generic [ref=e11]:
+          - text: OpenSearch AUI
+          - generic "Beta" [ref=e1094]
+      - button "Switch to dark mode" [ref=e1095] [cursor=pointer]:
+        - img
+    - generic [ref=e16]:
+      - button "Sample Pages" [ref=e1096] [cursor=pointer]:
+        - generic [ref=e21]:
+          - img [ref=e22]
+          - generic [ref=e24]: Sample Pages
+      - button "v9 Light" [ref=e1097] [cursor=pointer]:
+        - generic [ref=e29]:
+          - img [ref=e30]
+          - generic [ref=e32]: v9 Light
+      - link "OUI GitHub repo" [ref=e1098] [cursor=pointer]:
+        - /url: https://github.com/opensearch-project/oui
+        - img [ref=e39]
+      - link "OUI Figma component library" [ref=e1099] [cursor=pointer]:
+        - /url: https://www.figma.com/community/file/1319043629276905995
+        - img [ref=e47]
+  - generic [ref=e48]:
+    - generic [ref=e50]:
+      - search [ref=e51]:
+        - generic [ref=e53]:
+          - searchbox "Search for a docs section" [ref=e1100]
+          - generic:
+            - generic:
+              - img
+      - navigation "OUI" [ref=e1101]:
+        - generic [ref=e57]:
+          - generic [ref=e58]:
+            - button "Guidelines" [ref=e1102] [cursor=pointer]:
+              - generic [ref=e60]:
+                - generic "Guidelines" [ref=e1103]
+                - img [ref=e62]
+            - generic [ref=e64]:
+              - link "Colors" [ref=e1104] [cursor=pointer]:
+                - /url: "#/guidelines/colors"
+                - generic "Colors" [ref=e1105]
+              - link "Sass" [ref=e1106] [cursor=pointer]:
+                - /url: "#/guidelines/sass"
+                - generic "Sass" [ref=e1107]
+              - link "Mascot" [ref=e1108] [cursor=pointer]:
+                - /url: "#/guidelines/mascot"
+                - generic "Mascot" [ref=e1109]
+          - button "Layout" [ref=e1110] [cursor=pointer]:
+            - generic [ref=e79]:
+              - generic "Layout" [ref=e1111]
+              - img [ref=e81]
+          - button "Navigation" [ref=e1112] [cursor=pointer]:
+            - generic [ref=e85]:
+              - generic "Navigation" [ref=e1113]
+              - img [ref=e87]
+          - button "Tabular content" [ref=e1114] [cursor=pointer]:
+            - generic [ref=e91]:
+              - generic "Tabular content" [ref=e1115]
+              - img [ref=e93]
+          - button "Display" [ref=e1116] [cursor=pointer]:
+            - generic [ref=e97]:
+              - generic "Display" [ref=e1117]
+              - img [ref=e99]
+          - button "Forms" [ref=e1118] [cursor=pointer]:
+            - generic [ref=e103]:
+              - generic "Forms" [ref=e1119]
+              - img [ref=e105]
+          - button "Editors & syntax" [ref=e1120] [cursor=pointer]:
+            - generic [ref=e109]:
+              - generic "Editors & syntax" [ref=e1121]
+              - img [ref=e111]
+          - button "Headless" [ref=e1122] [cursor=pointer]:
+            - generic [ref=e115]:
+              - generic "Headless" [ref=e1123]
+              - img [ref=e117]
+          - button "Utilities" [ref=e1124] [cursor=pointer]:
+            - generic [ref=e121]:
+              - generic "Utilities" [ref=e1125]
+              - img [ref=e123]
+          - button "Package" [ref=e1126] [cursor=pointer]:
+            - generic [ref=e127]:
+              - generic "Package" [ref=e1127]
+              - img [ref=e129]
+    - generic [ref=e131]:
+      - banner [ref=e132]:
+        - heading "Agentic Mascot Guidelines" [level=1] [ref=e1128]
+      - main [ref=e137]:
+        - generic [ref=e138]:
+          - paragraph [ref=e140]: The OpenSearch mascot is a single circular character with comma-shaped eyes. It communicates agent state through nine eye expressions and a scale ladder from 18px to 96px. The body never morphs — only the eyes change. Color shifts to gold only when the agent needs human input.
+          - heading "A · Vocabulary" [level=2] [ref=e1129]
+          - paragraph [ref=e146]: One body, nine expressions — the alphabet the mascot uses.
+          - generic [ref=e148]:
+            - generic [ref=e150]:
+              - img "mascot · comma" [ref=e1130]:
+                - img [ref=e152]
+              - heading "COMMA" [level=4] [ref=e1131]
+              - paragraph [ref=e164]:
+                - strong [ref=e165]: Rest / Idle / Streaming
+              - paragraph [ref=e168]: The default resting state. Eyes relaxed, body neutral.
+            - generic [ref=e170]:
+              - img "mascot · blink" [ref=e1132]:
+                - img [ref=e172]
+              - heading "BLINK" [level=4] [ref=e1133]
+              - paragraph [ref=e184]:
+                - strong [ref=e185]: Ack / Listening
+              - paragraph [ref=e188]: A brief close-and-open. Signals the mascot heard you.
+            - generic [ref=e190]:
+              - img "mascot · dot" [ref=e1134]:
+                - img [ref=e192]
+              - heading "DOT" [level=4] [ref=e1135]
+              - paragraph [ref=e204]:
+                - strong [ref=e205]: Alert / Thinking / Tool call
+              - paragraph [ref=e208]: Focused dot pupils. The mascot is processing.
+            - generic [ref=e210]:
+              - img "mascot · squint" [ref=e1136]:
+                - img [ref=e212]
+              - heading "SQUINT" [level=4] [ref=e1137]
+              - paragraph [ref=e224]:
+                - strong [ref=e225]: Scan / Searching / Reading
+              - paragraph [ref=e228]: Narrowed eyes. The mascot is reading or scanning content.
+            - generic [ref=e230]:
+              - img "mascot · happy" [ref=e1138]:
+                - img [ref=e232]
+              - heading "HAPPY" [level=4] [ref=e1139]
+              - paragraph [ref=e244]:
+                - strong [ref=e245]: Success / Found / Resolved
+              - paragraph [ref=e248]: Upturned eyes. Something went well.
+            - generic [ref=e250]:
+              - img "mascot · wow" [ref=e1140]:
+                - img [ref=e252]
+              - heading "WOW" [level=4] [ref=e1141]
+              - paragraph [ref=e264]:
+                - strong [ref=e265]: Attention / Asking / Needs input
+              - paragraph [ref=e268]: Wide eyes, body shifts gold. The mascot needs you.
+            - generic [ref=e270]:
+              - img "mascot · wink" [ref=e1142]:
+                - img [ref=e272]
+              - heading "WINK" [level=4] [ref=e1143]
+              - paragraph [ref=e284]:
+                - strong [ref=e285]: Closed / Done / Delivered
+              - paragraph [ref=e288]: One eye shut. Task complete, signing off.
+            - generic [ref=e290]:
+              - img "mascot · heart" [ref=e1144]:
+                - img [ref=e292]
+              - heading "HEART" [level=4] [ref=e1145]
+              - paragraph [ref=e304]:
+                - strong [ref=e305]: Love / Pinned / Saved
+              - paragraph [ref=e308]: Heart-shaped eyes. Something was saved or favorited.
+            - generic [ref=e310]:
+              - img "mascot · xx" [ref=e1146]:
+                - img [ref=e312]
+              - heading "XX" [level=4] [ref=e1147]
+              - paragraph [ref=e324]:
+                - strong [ref=e325]: Failed / Error / Cancelled
+              - paragraph [ref=e328]: Crossed-out eyes. Something went wrong.
+          - heading "B · Lifecycle" [level=2] [ref=e1148]
+          - paragraph [ref=e334]: What the mascot does at each phase of an agent run.
+          - generic [ref=e337]:
+            - paragraph [ref=e340]: B · LIFECYCLE · 1 OF 5
+            - heading "Listening — blink (36px)" [level=3] [ref=e1149]
+            - paragraph [ref=e345]: The user is still typing. The mascot is a small avatar inside the composer's status line, blinking at a natural rhythm. It does NOT spin or grow — presence, not pressure.
+            - heading "Why this state" [level=5] [ref=e1150]
+            - list [ref=e350]:
+              - listitem [ref=e351]: Eye = blink — natural cadence, never a spinner
+              - listitem [ref=e352]: Soft bob is ON (4.2s breath cycle)
+              - listitem [ref=e353]: Small (36px) — sits in the chrome, not the message
+            - paragraph [ref=e357]:
+              - strong [ref=e358]: "Avoid:"
+              - text: Growing, smiling, or going to dot here. Save attentiveness for thinking.
+          - generic [ref=e361]:
+            - paragraph [ref=e364]: B · LIFECYCLE · 2 OF 5
+            - heading "Planning — dot (56px)" [level=3] [ref=e1151]
+            - paragraph [ref=e369]: Before any tools fire, the agent is sketching a plan. Mascot sits in the message gutter at focus size; the dot eye signals sharp attention. The plan itself streams in next to it.
+            - heading "Why this state" [level=5] [ref=e1152]
+            - list [ref=e374]:
+              - listitem [ref=e375]: Eye = dot — sharp, alert, narrowed focus
+              - listitem [ref=e376]: Bigger (56px) than listening — focal point of the message
+              - listitem [ref=e377]: Sits LEFT of the plan, gutter-aligned
+              - listitem [ref=e378]: Stays in this state until the first tool fires; then shrinks + becomes squint
+            - paragraph [ref=e382]:
+              - emphasis [ref=e383]: The plan is the message. The mascot is the byline.
+          - generic [ref=e386]:
+            - paragraph [ref=e389]: B · LIFECYCLE · 3 OF 5
+            - heading "Working — squint / dot (16px)" [level=3] [ref=e1153]
+            - paragraph [ref=e394]: "The agent fires tools one at a time. Only the active step has the mascot — past steps get a checkmark. The eye shape tracks the kind of work: squint for search/read, dot for code/tool execution."
+            - heading "Why this state" [level=5] [ref=e1154]
+            - list [ref=e399]:
+              - listitem [ref=e400]: Scaled DOWN to 16px — matches the step checkbox
+              - listitem [ref=e401]: squint for retrieval / scanning kinds of work
+              - listitem [ref=e402]: dot when an active tool (code, terminal, write) is running
+              - listitem [ref=e403]: Eye flickers between the two as tools chain inside one step
+            - paragraph [ref=e407]:
+              - strong [ref=e408]: "Avoid:"
+              - text: Stacking multiple mascots. One active mascot at a time.
+          - generic [ref=e411]:
+            - paragraph [ref=e414]: B · LIFECYCLE · 4 OF 5
+            - heading "Interrupt — wow + gold body (52px)" [level=3] [ref=e1155]
+            - paragraph [ref=e419]: The agent needs to come back with a question. This is the ONE moment the BODY changes color — navy shifts to gold. The eye opens wide (wow). It's the loudest signal in the system.
+            - heading "Why this state" [level=5] [ref=e1156]
+            - list [ref=e424]:
+              - listitem [ref=e425]: Body goes gold — the ONLY color change in the system
+              - listitem [ref=e426]: Eye opens to wow (O O) — wide, attentive
+              - listitem [ref=e427]: Scales UP to 52px and inhabits a stripe-gold card
+            - paragraph [ref=e431]:
+              - emphasis [ref=e432]: If the user walks away, the eye drifts to dot after ~30s (blocked → patient waiting). A nudge, not a tantrum.
+          - generic [ref=e435]:
+            - paragraph [ref=e438]: B · LIFECYCLE · 5 OF 5
+            - heading "Delivered — happy → wink (22px)" [level=3] [ref=e1157]
+            - paragraph [ref=e443]: One beat of happy (^ ^, 280ms ease-out) on the "found" moment, then resolves to wink for the byline. The mascot does not stay happy — that would feel needy.
+            - heading "Why this state" [level=5] [ref=e1158]
+            - list [ref=e448]:
+              - listitem [ref=e449]: Scale drops to 22px — the answer is the hero
+              - listitem [ref=e450]: Mascot sits in the byline beside step count + timing
+              - listitem [ref=e451]: Wink reads as "satisfied", not "look at me"
+              - listitem [ref=e452]: If user thumbs-up, eye briefly becomes heart (1.2s) before settling
+            - paragraph [ref=e456]:
+              - emphasis [ref=e457]: "Edge case — couldn't find: mascot resolves to blocked (gold dot), not error. xx is reserved for tool failures."
+          - heading "C · Placement & Scale" [level=2] [ref=e1159]
+          - paragraph [ref=e464]: Where the mascot lives, and how big.
+          - paragraph [ref=e467]:
+            - strong [ref=e468]: "Rule:"
+            - text: mascot scale ∝ how much the agent wants you to look.
+          - generic [ref=e472]:
+            - img "mascot · comma" [ref=e1160]:
+              - img [ref=e475]
+            - code [ref=e484]: 18px
+            - strong [ref=e487]: Step pip
+            - paragraph [ref=e490]: Tiny indicator in a step sequence
+          - generic [ref=e494]:
+            - img "mascot · comma" [ref=e1161]:
+              - img [ref=e497]
+            - code [ref=e506]: 28px
+            - strong [ref=e509]: Status
+            - paragraph [ref=e512]: Inline status badge
+          - generic [ref=e516]:
+            - img "mascot · comma" [ref=e1162]:
+              - img [ref=e519]
+            - code [ref=e528]: 44px
+            - strong [ref=e531]: Inline
+            - paragraph [ref=e534]: Within a message or card
+          - generic [ref=e538]:
+            - img "mascot · comma" [ref=e1163]:
+              - img [ref=e541]
+            - code [ref=e550]: 68px
+            - strong [ref=e553]: Focus
+            - paragraph [ref=e556]: Primary attention point
+          - generic [ref=e560]:
+            - img "mascot · comma" [ref=e1164]:
+              - img [ref=e563]
+            - code [ref=e572]: 96px
+            - strong [ref=e575]: Presence
+            - paragraph [ref=e578]: Full presence, e.g. empty state
+          - heading "D · Micro-moments" [level=2] [ref=e1165]
+          - paragraph [ref=e585]: Small opinions on the in-betweens.
+          - generic [ref=e587]:
+            - generic [ref=e589]:
+              - img "mascot · happy" [ref=e1166]:
+                - img [ref=e592]
+              - heading "One beat of happy, never two" [level=4] [ref=e1167]
+              - paragraph [ref=e603]: On 'found', the eye flips to ^ ^ for 280ms with a subtle 4px hop, then resolves to wink. Repeating it more than once turns it into a tic. Once is satisfying; twice is annoying.
+            - generic [ref=e605]:
+              - img "mascot · wow" [ref=e1168]:
+                - img [ref=e608]
+              - heading "Gold body, never gold eye" [level=4] [ref=e1169]
+              - paragraph [ref=e619]: The ONLY moment the body color changes is when a human is needed. After ~30s without response, the wow eye softens to dot — patient waiting. The gold body stays.
+            - generic [ref=e621]:
+              - img "mascot · xx" [ref=e1170]:
+                - img [ref=e624]
+              - heading "xx flashes, then returns to comma" [level=4] [ref=e1171]
+              - paragraph [ref=e635]: X-eyes show for ~600ms after a tool failure, then settle back. The error itself lives in the message text — the mascot doesn't keep wearing it. The agent recovers.
+            - generic [ref=e637]:
+              - img "mascot · squint" [ref=e1172]:
+                - img [ref=e640]
+              - heading "Eyes follow data, not the cursor" [level=4] [ref=e1173]
+              - paragraph [ref=e651]: During work, idle cursor-following is OFF. Eyes belong to the agent's attention, not the user's. Cursor-following turns back on only at idle, and only on the empty state.
+            - generic [ref=e653]:
+              - img "mascot · comma" [ref=e1174]:
+                - img [ref=e656]
+              - heading "Idle blinks, never sleeps" [level=4] [ref=e1175]
+              - paragraph [ref=e667]: "At rest the mascot cycles micro-expressions: blink (40%), then dot/squint/happy/wow/wink. No xx in idle — sleeping AI is a lie. Cycle pauses while any tool runs."
+            - generic [ref=e669]:
+              - img "mascot · heart" [ref=e1176]:
+                - img [ref=e672]
+              - heading "Heart eye is earned" [level=4] [ref=e1177]
+              - paragraph [ref=e683]: Reserved for when the USER acts — thumbs-up, pin-to-runbook, share. The agent never wears heart on its own. It's the user's affordance, not the agent's emotion.
+          - heading "Principles" [level=2] [ref=e1178]
+          - paragraph [ref=e689]: Six rules the mascot follows.
+          - generic [ref=e693]:
+            - strong [ref=e696]: "1."
+            - strong [ref=e699]: One mascot per message
+            - paragraph [ref=e702]: Never show multiple mascots in the same context.
+          - generic [ref=e706]:
+            - strong [ref=e709]: "2."
+            - strong [ref=e712]: Body is invariant
+            - paragraph [ref=e715]: Only the eyes change. The body shape stays constant.
+          - generic [ref=e719]:
+            - strong [ref=e722]: "3."
+            - strong [ref=e725]: Scale signals urgency
+            - paragraph [ref=e728]: Bigger means more important. Smaller means background.
+          - generic [ref=e732]:
+            - strong [ref=e735]: "4."
+            - strong [ref=e738]: State follows the current tool
+            - paragraph [ref=e741]: The expression maps to what the agent is doing right now.
+          - generic [ref=e745]:
+            - strong [ref=e748]: "5."
+            - strong [ref=e751]: Don't wear the result
+            - paragraph [ref=e754]: The mascot reacts, then returns to neutral. It doesn't stay happy forever.
+          - generic [ref=e758]:
+            - strong [ref=e761]: "6."
+            - strong [ref=e764]: Gold means human-needed
+            - paragraph [ref=e767]: The only time the body color changes is when the agent needs your input.

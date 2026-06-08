@@ -1,0 +1,28 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+.ouiThreadList {
+  padding: $ouiSizeM;
+
+  &--flush {
+    padding: 0;
+  }
+
+  &--bordered {
+    border: $ouiBorderThin;
+    border-radius: $ouiBorderRadius;
+  }
+
+  // Hide border of item above when next item is hovered
+  .ouiThreadListItem:has(+ .ouiThreadListItem:hover) {
+    border-bottom-color: transparent;
+  }
+}

@@ -1,0 +1,7 @@
+[  124276ms] [ERROR] Error: <rect> attribute width: A negative value is not valid. ("-45.984375") @ http://localhost:8030/bundle.js:432456
+[  327969ms] [ERROR] Error: <rect> attribute width: A negative value is not valid. ("-84.484375") @ http://localhost:8030/bundle.js:432456
+[  330926ms] [ERROR] Error: <rect> attribute width: A negative value is not valid. ("-41.875") @ http://localhost:8030/bundle.js:432456
+[  330944ms] [ERROR] Error: <rect> attribute width: A negative value is not valid. ("-82.46875") @ http://localhost:8030/bundle.js:432456
+[  336261ms] [ERROR] Error: <rect> attribute width: A negative value is not valid. ("-44.578125") @ http://localhost:8030/bundle.js:432456
+[  346494ms] [ERROR] Error: <rect> attribute width: A negative value is not valid. ("-62.375") @ http://localhost:8030/bundle.js:432456
+[  346511ms] [ERROR] Error: <rect> attribute width: A negative value is not valid. ("-13.40625") @ http://localhost:8030/bundle.js:432456
