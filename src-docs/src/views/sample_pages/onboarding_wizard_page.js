@@ -1465,6 +1465,7 @@ export const OnboardingWizardPage = () => {
   if (showIntro) {
     return (
       <div
+        className="onboardWizard__introWrapper"
         style={{
           display: 'flex',
           position: 'absolute',
