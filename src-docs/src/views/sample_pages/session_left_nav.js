@@ -297,7 +297,7 @@ export const SessionLeftNav = ({
             <div
               onMouseEnter={() => openNavPopover('profile')}
               onMouseLeave={() => closeNavPopover()}>
-              <ProfilePopoverContent onPageChange={(page) => { setNavPopover(null); window.location.href = '#/' + page; }} />
+              <ProfilePopoverContent />
             </div>
           </OuiPopover>
         </div>

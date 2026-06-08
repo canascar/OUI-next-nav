@@ -17,13 +17,13 @@
   flex: 1;
   min-width: 0;
   overflow: hidden;
-  gap: 10px;
+  gap: 8px;
   padding: 0;
-  margin: 16px;
-  height: calc(100% - 32px);
+  margin: 8px;
+  height: calc(100% - 16px);
   position: relative;
   background-color: transparent;
-  border-radius: 18px;
+  border-radius: 12px;
 }
 
 // Remove gap when chat pane is minimized so page panel reaches the left edge
@@ -37,7 +37,7 @@
   min-width: 0;
   overflow: visible;
   border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.07));
-  border-radius: 18px;
+  border-radius: 12px;
   background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.62), rgba(24, 16, 40, 0.70));
   -webkit-backdrop-filter: blur(24px) saturate(160%);
   backdrop-filter: blur(24px) saturate(160%);
@@ -61,7 +61,7 @@
   height: 100%;
   width: 100%;
   background-color: transparent;
-  border-radius: 18px;
+  border-radius: 12px;
   padding: 0 !important; // sass-lint:disable-line no-important
 }
 
@@ -122,7 +122,7 @@
 // ============================================================
 .sessionContainer__ollyChatPill {
   position: absolute;
-  bottom: 32px;
+  bottom: 16px;
   left: 0;
   right: 0;
   z-index: 20;

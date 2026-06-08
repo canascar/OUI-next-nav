@@ -212,11 +212,6 @@ body {
   width: $ouiSize * 16;
 }
 
-// Add spacing between header right-side items (Sample Pages, Theme selector, etc.)
-.ouiHeaderSection:last-child .ouiHeaderSectionItem + .ouiHeaderSectionItem {
-  margin-left: 8px;
-}
-
 .guideCharts__customLegend {
   font-size: $ouiFontSizeXS;
   position: absolute;

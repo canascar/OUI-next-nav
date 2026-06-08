@@ -57,32 +57,19 @@
   align-items: center;
   gap: $ouiSizeS;
 
-  // Hide scrollbar completely
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  // Hide scrollbar but keep scroll functionality
+  scrollbar-width: thin;
 
   &::-webkit-scrollbar {
-    display: none;
+    height: 2px;
   }
 
-  // Fade right edge only (scrolled to start)
-  &--fade-right {
-    -webkit-mask-image: linear-gradient(to right, black calc(100% - 32px), transparent);
-    mask-image: linear-gradient(to right, black calc(100% - 32px), transparent);
-  }
-
-  // Fade left edge only (scrolled to end)
-  &--fade-left {
-    -webkit-mask-image: linear-gradient(to right, transparent, black 32px);
-    mask-image: linear-gradient(to right, transparent, black 32px);
-  }
-
-  // Fade both edges (scrolled in the middle)
-  &--fade-both {
-    -webkit-mask-image: linear-gradient(to right, transparent, black 32px, black calc(100% - 32px), transparent);
-    mask-image: linear-gradient(to right, transparent, black 32px, black calc(100% - 32px), transparent);
+  &::-webkit-scrollbar-thumb {
+    background-color: $ouiBorderColor;
+    border-radius: 2px;
   }
 }
+
 // Separator between tabs
 .pagePanel__tabSeparator {
   width: 1px;
@@ -204,16 +191,6 @@
     font-weight: 600;
     background-color: rgba($ouiColorPrimary, 0.05);
   }
-
-  &--new {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: $ouiColorPrimary;
-    border-top: 1px solid $ouiColorLightShade;
-    margin-top: 4px;
-    padding-top: $ouiSizeS + 4px;
-  }
 }
 
 // ============================================================
@@ -225,18 +202,6 @@
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  animation: pagePanelFadeIn 300ms ease-out both;
-}
-
-@keyframes pagePanelFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 // Empty state (no tabs open or page not found)
@@ -261,7 +226,6 @@
   min-height: 0;
   position: relative;
   background: transparent;
-  animation: pagePanelFadeIn 400ms ease-out both;
 
   > * {
     position: relative;

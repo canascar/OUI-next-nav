@@ -56,14 +56,9 @@
   align-items: center;
   justify-content: flex-start;
   flex-shrink: 0;
-  cursor: pointer;
-  transition: transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: default;
+  transition: transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-origin: center center;
-
-  &:active {
-    transform: scale(0.8);
-    transition: transform 100ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
 }
 
 // Header row — mascot + online status side by side
@@ -129,7 +124,7 @@
   flex-direction: column;
   align-items: stretch;
   justify-content: center;
-  flex: 1;
+  flex: 1 1 50%;
   min-width: 0;
   min-height: 0;
   height: 100%;
@@ -152,6 +147,160 @@
 .emptySessionPage__inlineInput {
   margin-left: auto;
   margin-right: 0;
+}
+
+// Briefing narrative — flowing prose in the left column
+.emptySessionPage__briefingNarrative {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: 0;
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.emptySessionPage__narrativePara {
+  margin: 0;
+  padding: 0 0 16px;
+  font-size: $ouiFontSizeS;
+  line-height: 1.65;
+  color: $ouiTextColor;
+  opacity: 0;
+  animation: narrativeFadeIn 600ms ease-out forwards;
+
+  strong {
+    color: $ouiTitleColor;
+    font-weight: $ouiFontWeightSemiBold;
+  }
+
+  &--1 { animation-delay: 300ms; }
+  &--2 { animation-delay: 600ms; }
+  &--3 { animation-delay: 900ms; }
+  &--4 { animation-delay: 1200ms; }
+}
+
+@keyframes narrativeFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Inline link — bold + underline, clickable
+.emptySessionPage__narrativeLink {
+  font-weight: $ouiFontWeightSemiBold;
+  color: $ouiTitleColor;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
+  cursor: pointer;
+  transition: color 150ms ease;
+
+  &:hover {
+    color: $ouiColorPrimary;
+  }
+
+  // Resolved — looks like a link but no hover highlight
+  &--resolved {
+    cursor: default;
+
+    &:hover {
+      color: $ouiTitleColor;
+    }
+  }
+}
+
+// ─── Session Preview (replaces right panel on hover) ──────────────────────
+.emptySessionPage__sessionPreview {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+.emptySessionPage__previewSummary {
+  font-size: $ouiFontSizeS;
+  line-height: 1.5;
+  color: $ouiTextColor;
+  margin: 0;
+}
+
+.emptySessionPage__previewStats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.emptySessionPage__previewStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 6px;
+  border-radius: $ouiBorderRadiusSmall;
+  border: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.06), rgba(255, 255, 255, 0.06));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.04));
+
+  &--danger .emptySessionPage__previewStatValue { color: $ouiColorDanger; }
+  &--warning .emptySessionPage__previewStatValue { color: $ouiColorWarning; }
+  &--success .emptySessionPage__previewStatValue { color: $ouiColorSuccess; }
+  &--default .emptySessionPage__previewStatValue { color: $ouiTitleColor; }
+}
+
+.emptySessionPage__previewStatValue {
+  font-size: $ouiFontSizeM;
+  font-weight: $ouiFontWeightSemiBold;
+  line-height: 1;
+}
+
+.emptySessionPage__previewStatLabel {
+  font-size: 10px;
+  color: $ouiColorMediumShade;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-weight: $ouiFontWeightMedium;
+}
+
+.emptySessionPage__previewSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.emptySessionPage__previewSectionLabel {
+  font-size: 11px;
+  font-weight: $ouiFontWeightSemiBold;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: $ouiColorMediumShade;
+}
+
+.emptySessionPage__previewSectionText {
+  font-size: $ouiFontSizeS;
+  line-height: 1.5;
+  color: $ouiTextColor;
+  margin: 0;
+}
+
+.emptySessionPage__previewMeta {
+  font-size: 11px;
+  line-height: 1.4;
+  color: $ouiColorMediumShade;
+  margin: 0;
+  padding-top: 4px;
+  border-top: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.06), rgba(255, 255, 255, 0.06));
 }
 
 // Scrollable content wrapper
@@ -210,22 +359,22 @@
   color: lightOrDarkTheme(rgba(99, 102, 241, 1), rgba(165, 180, 252, 1));
 }
 
-// Tab content panels — fade transition
+// Tab content panels — fade transition.
+// Both panels share the same grid cell so the content area always reserves
+// the height of the taller panel; switching tabs no longer shifts layout.
 .emptySessionPage__briefingContent {
-  display: flex;
-  flex-direction: column;
+  display: grid;
 }
 
 .emptySessionPage__briefingPanel {
+  grid-area: 1 / 1;
+  min-height: 0;
   opacity: 1;
-  transition: opacity 700ms cubic-bezier(0.25, 0.1, 0.25, 1);
+  transition: opacity 400ms cubic-bezier(0.25, 0.1, 0.25, 1);
 
   &--hidden {
     opacity: 0;
-    height: 0;
-    overflow: hidden;
     pointer-events: none;
-    transition: opacity 400ms cubic-bezier(0.25, 0.1, 0.25, 1), height 0ms 400ms;
   }
 }
 
@@ -235,7 +384,7 @@
   justify-content: center;
   align-items: flex-start;
   gap: 0;
-  flex: 1;
+  flex: 1 1 50%;
   min-width: 0;
   overflow-y: auto;
   padding: 24px;
@@ -312,12 +461,11 @@
   cursor: pointer;
   appearance: none;
   border-style: dashed;
-  transition: background-color 200ms ease, border-color 200ms ease, transform 180ms cubic-bezier(.2,.7,.2,1);
+  transition: background-color 200ms ease, border-color 200ms ease;
 
   &:hover {
     background-color: rgba($ouiColorPrimary, 0.08);
     border-color: rgba($ouiColorPrimary, 0.3);
-    transform: translateY(-1px);
   }
 }
 
@@ -404,7 +552,9 @@
 .emptySessionPage__openPageGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  grid-template-rows: repeat(5, 1fr);
+  gap: 12px;
+  height: 100%;
 }
 
 .emptySessionPage__openPageItem {
@@ -413,21 +563,32 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 16px 8px;
-  border: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.08), rgba(250, 250, 250, 0.08));
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(24, 16, 40, 0.3));
+  padding: 12px 8px;
+  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.07));
+  border-radius: $ouiBorderRadius;
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.06));
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(140%);
+  box-shadow: 0 1px 3px rgba(15, 15, 15, 0.03);
   cursor: pointer;
-  font-size: $ouiFontSizeXS;
-  font-weight: 500;
-  color: $ouiTextColor;
-  transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
+  font-size: $ouiFontSizeS;
+  font-weight: $ouiFontWeightMedium;
+  color: $ouiTitleColor;
   appearance: none;
+  transition:
+    transform 280ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 280ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    border-color 180ms ease,
+    background-color 180ms ease;
 
   &:hover {
-    background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.9), rgba($ouiColorPrimary, 0.12));
-    border-color: rgba($ouiColorPrimary, 0.3);
-    transform: translateY(-1px);
-    color: $ouiColorPrimary;
+    transform: translateY(-2px);
+    border-color: $ouiColorPrimary;
+    box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
   }
 }
 
@@ -449,13 +610,12 @@
   border-left: 3px solid lightOrDarkTheme(rgba(10, 10, 10, 0.2), rgba(250, 250, 250, 0.3));
   cursor: pointer;
   text-align: left;
-  transition: background-color 200ms ease, border-color 200ms ease, transform 180ms cubic-bezier(.2,.7,.2,1);
+  transition: background-color 200ms ease, border-color 200ms ease;
   appearance: none;
 
   &:hover {
     background-color: rgba($ouiColorPrimary, 0.06);
     border-left-color: $ouiColorPrimary;
-    transform: translateX(2px);
   }
 
   &--warning {
@@ -1584,7 +1744,7 @@ textarea.emptySessionPage__textarea {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding-top: 8px;
+  padding-top: 0;
 
   &--2col {
     display: grid;

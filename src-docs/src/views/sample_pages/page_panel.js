@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useRef, useState, useCallback, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   OuiButtonIcon,
   OuiIcon,
@@ -62,26 +62,6 @@ export const PAGE_TAB_ICONS = {
 const TabBar = ({ tabs, activeTabId, onTabSelect, onTabClose, onAddTab, onExpandChat, aiButtonHighlight, aiButtonMessage, onDismissAiPopover }) => {
   const tabListRef = useRef(null);
   const [isListOpen, setIsListOpen] = useState(false);
-  const [tabFade, setTabFade] = useState(''); // '', 'right', 'left', 'both'
-
-  // Check tab list scroll state
-  const updateTabFade = useCallback(() => {
-    const el = tabListRef.current;
-    if (!el) return;
-    const { scrollLeft, scrollWidth, clientWidth } = el;
-    const hasOverflow = scrollWidth > clientWidth + 2;
-    if (!hasOverflow) { setTabFade(''); return; }
-    const atStart = scrollLeft < 4;
-    const atEnd = scrollLeft + clientWidth >= scrollWidth - 4;
-    if (atStart && !atEnd) setTabFade('right');
-    else if (!atStart && atEnd) setTabFade('left');
-    else if (!atStart && !atEnd) setTabFade('both');
-    else setTabFade('');
-  }, []);
-
-  useEffect(() => {
-    updateTabFade();
-  }, [tabs, updateTabFade]);
 
   const handleKeyDown = (e, tabId, index) => {
     const tabElements = tabListRef.current?.querySelectorAll('[role="tab"]');
@@ -114,11 +94,10 @@ const TabBar = ({ tabs, activeTabId, onTabSelect, onTabClose, onAddTab, onExpand
         </div>
       )}
       <div
-        className={`pagePanel__tabList${tabFade ? ` pagePanel__tabList--fade-${tabFade}` : ''}`}
+        className="pagePanel__tabList"
         role="tablist"
         aria-label="Open pages"
-        ref={tabListRef}
-        onScroll={updateTabFade}>
+        ref={tabListRef}>
         {tabs.map((tab, index) => {
           const isActive = tab.id === activeTabId;
           return (
@@ -202,16 +181,6 @@ const TabBar = ({ tabs, activeTabId, onTabSelect, onTabClose, onAddTab, onExpand
                 {tab.title}
               </button>
             ))}
-            <button
-              type="button"
-              className="pagePanel__tabListItem pagePanel__tabListItem--new"
-              onClick={() => {
-                onAddTab();
-                setIsListOpen(false);
-              }}>
-              <OuiIcon type="plus" size="s" />
-              <span>New Tab</span>
-            </button>
           </div>
         </OuiPopover>
       </div>
@@ -263,7 +232,7 @@ export const PagePanel = ({
     }
 
     if (activeTab.pageKey === 'new-tab') {
-      return <NewTabPage key={activeTab.id} onSelectPage={onSelectPage} />;
+      return <NewTabPage onSelectPage={onSelectPage} />;
     }
 
     const pageEntry = SOURCE_PAGE_MOCK[activeTab.pageKey];
@@ -311,7 +280,6 @@ export const PagePanel = ({
       />
       <div
         className="pagePanel__content"
-        key={activeTab ? activeTab.id : 'empty'}
         role="tabpanel"
         aria-label={activeTab ? activeTab.title : 'No tab selected'}>
         {renderTabContent()}

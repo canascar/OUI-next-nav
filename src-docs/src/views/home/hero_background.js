@@ -14,7 +14,6 @@ import React, { useRef, useEffect } from 'react';
 export const HeroBackground = ({ isDarkMode }) => {
   const canvasRef = useRef(null);
   const animationRef = useRef(null);
-  const mouseRef = useRef({ x: 0.5, y: 0.5 }); // normalized 0-1
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -34,53 +33,6 @@ export const HeroBackground = ({ isDarkMode }) => {
       canvas.style.height = height + 'px';
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
-
-    // Mouse tracking for interactive rotation
-    let isDragging = false;
-    let dragVelocity = 0;
-    let dragRotation = 0;
-    let dragScaleVelocity = 0;
-    let dragScale = 1;
-    let previousMouseX = 0;
-    let previousMouseY = 0;
-    const dragDamping = 0.95;
-    const dragSpring = 0.003;
-
-    const onMouseMove = (e) => {
-      const rect = canvas.parentElement.getBoundingClientRect();
-      mouseRef.current.x = (e.clientX - rect.left) / rect.width;
-      mouseRef.current.y = (e.clientY - rect.top) / rect.height;
-
-      if (isDragging) {
-        const dx = e.clientX - previousMouseX;
-        const dy = e.clientY - previousMouseY;
-        previousMouseX = e.clientX;
-        previousMouseY = e.clientY;
-        dragVelocity = dx * 0.01;
-        dragRotation += dragVelocity;
-        // Y movement scales the logo (drag down = shrink, drag up = grow)
-        dragScaleVelocity = dy * -0.002;
-        dragScale += dragScaleVelocity;
-        dragScale = Math.max(0.5, Math.min(1.5, dragScale));
-      }
-    };
-
-    const onPointerDown = (e) => {
-      isDragging = true;
-      previousMouseX = e.clientX;
-      previousMouseY = e.clientY;
-      canvas.style.cursor = 'grabbing';
-    };
-
-    const onPointerUp = () => {
-      isDragging = false;
-      canvas.style.cursor = 'grab';
-    };
-
-    canvas.style.cursor = 'grab';
-    window.addEventListener('mousemove', onMouseMove);
-    canvas.addEventListener('pointerdown', onPointerDown);
-    window.addEventListener('pointerup', onPointerUp);
 
     // Blueprint colors - faded back more
     const colors = isDarkMode ? {
@@ -120,16 +72,14 @@ export const HeroBackground = ({ isDarkMode }) => {
     // ============================================
     // HELPER: Draw the OpenSearch logo using SVG paths
     // ============================================
-    const drawOpenSearchLogo = (cx, cy, size, strokeColor, fillColor, lineWidth, rotation = 0) => {
+    const drawOpenSearchLogo = (cx, cy, size, strokeColor, fillColor, lineWidth) => {
       ctx.save();
       
       // The SVG viewBox is 64x64, so we scale accordingly
       const scale = size / 64;
       
-      // Translate to center, rotate, then offset
-      ctx.translate(cx, cy);
-      ctx.rotate(rotation);
-      ctx.translate(-32 * scale, -32 * scale);
+      // Translate to center the logo (SVG is 0,0 to 64,64, center is 32,32)
+      ctx.translate(cx - 32 * scale, cy - 32 * scale);
       ctx.scale(scale, scale);
       
       ctx.strokeStyle = strokeColor;
@@ -230,25 +180,9 @@ export const HeroBackground = ({ isDarkMode }) => {
 
       // ============================================
       // OPENSEARCH LOGO - Blueprint style
-      // Using exact SVG paths with interactive rotation
+      // Using exact SVG paths
       // ============================================
-      // Spring physics: drag rotation decays back to mouse-tracking position
-      if (!isDragging) {
-        const targetRotation = (mouseRef.current.x - 0.5) * 0.4;
-        const force = (targetRotation - dragRotation) * dragSpring;
-        dragVelocity += force;
-        dragVelocity *= dragDamping;
-        dragRotation += dragVelocity;
-        // Scale springs back to 1.0
-        const scaleForce = (1.0 - dragScale) * 0.02;
-        dragScaleVelocity += scaleForce;
-        dragScaleVelocity *= dragDamping;
-        dragScale += dragScaleVelocity;
-        dragScale = Math.max(0.5, Math.min(1.5, dragScale));
-      }
-      const mouseRotation = dragRotation + Math.sin(time * 0.2) * 0.03;
-      const finalLogoSize = logoSize * dragScale;
-      drawOpenSearchLogo(logoX, logoY, finalLogoSize, colors.lineBright, colors.lineFill, 2, mouseRotation);
+      drawOpenSearchLogo(logoX, logoY, logoSize, colors.lineBright, colors.lineFill, 2);
       
       // Center point marker
       ctx.strokeStyle = colors.accent;
@@ -501,9 +435,6 @@ export const HeroBackground = ({ isDarkMode }) => {
 
     return () => {
       window.removeEventListener('resize', resize);
-      window.removeEventListener('mousemove', onMouseMove);
-      canvas.removeEventListener('pointerdown', onPointerDown);
-      window.removeEventListener('pointerup', onPointerUp);
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
@@ -519,8 +450,7 @@ export const HeroBackground = ({ isDarkMode }) => {
         left: 0,
         width: '100%',
         height: '100%',
-        pointerEvents: 'auto',
-        zIndex: 2,
+        pointerEvents: 'none',
       }}
     />
   );

@@ -9,23 +9,12 @@
  * GitHub history for details.
  */
 
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   OuiCompressedFieldSearch,
   OuiIcon,
 } from '../../../../src/components';
 import { SOURCE_PAGE_MOCK } from './session_models';
-import { OpenSearch3DLogo } from './opensearch_3d_logo';
-
-const CANVAS_TITLES = [
-  'Your canvas is ready',
-  'Blank canvas ready for you',
-  'Unlimited discoveries await',
-  'An empty canvas ready for data exploration',
-  'This canvas is waiting for your visualizations',
-  'Visualize more than this empty canvas',
-  'A new canvas for opening searches',
-];
 
 /**
  * Filter chips for the new tab page (no Recent tab).
@@ -51,11 +40,6 @@ export const NewTabPage = ({ onSelectPage }) => {
   const [activeChip, setActiveChip] = useState('discover');
   const [inputValue, setInputValue] = useState('');
 
-  // Pick a random title once per mount
-  const canvasTitle = useRef(
-    CANVAS_TITLES[Math.floor(Math.random() * CANVAS_TITLES.length)]
-  ).current;
-
   // Build searchable items
   const allItems = useMemo(() => {
     const items = [];
@@ -78,14 +62,6 @@ export const NewTabPage = ({ onSelectPage }) => {
 
   return (
     <div className="newTabPage">
-      {/* 3D Logo */}
-      <div className="newTabPage__logoWrap">
-        <OpenSearch3DLogo size={160} />
-      </div>
-
-      {/* Randomized title */}
-      <h2 className="newTabPage__title">{canvasTitle}</h2>
-
       {/* Search field */}
       <OuiCompressedFieldSearch
         placeholder="Search pages..."

@@ -273,7 +273,7 @@ export const SessionContainer = ({
   // Calculate explicit widths for both panes
   // Left pane: 0% when minimized, threadPanelWidth% when side-by-side, ~100% when full-screen
   // Right pane: gets the rest
-  const COLLAPSED_WIDTH = 64; // px for collapsed strip
+  const COLLAPSED_WIDTH = 48; // px for collapsed strip
   let leftWidth;
   let rightStyle;
 
@@ -281,7 +281,7 @@ export const SessionContainer = ({
     leftWidth = '0px';
     rightStyle = { flex: 1 };
   } else if (isFullScreen) {
-    leftWidth = `calc(100% - ${COLLAPSED_WIDTH}px - 1px)`;
+    leftWidth = `calc(100% - ${COLLAPSED_WIDTH}px - 8px)`;
     rightStyle = { width: `${COLLAPSED_WIDTH}px`, flex: 'none' };
   } else {
     leftWidth = `${threadPanelWidth}%`;
