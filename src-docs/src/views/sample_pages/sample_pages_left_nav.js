@@ -1738,7 +1738,7 @@ const SettingsPopoverContent = ({
 };
 
 // Profile popover content
-const ProfilePopoverContent = () => {
+const ProfilePopoverContent = ({ onPageChange }) => {
   const [helpOpen, setHelpOpen] = useState(false);
   return (
     <div className="samplePagesLeftNav__toolsPopover">
@@ -1818,7 +1818,7 @@ const ProfilePopoverContent = () => {
         <button
           type="button"
           className="samplePagesLeftNav__toolsPopoverItem"
-          onClick={() => {}}>
+          onClick={() => { if (onPageChange) onPageChange('login'); }}>
           <div className="samplePagesLeftNav__navItemIconWrap">
             <OuiIcon type="exit" size="m" />
           </div>
@@ -2845,7 +2845,7 @@ export const SamplePagesLeftNav = ({
                 <div
                   onMouseEnter={() => openNavPopover('profile')}
                   onMouseLeave={() => closeNavPopover()}>
-                  <ProfilePopoverContent />
+                  <ProfilePopoverContent onPageChange={(page) => { setNavPopover(null); onPageChange(page); }} />
                 </div>
               </OuiPopover>
             </div>
@@ -3116,7 +3116,7 @@ export const SamplePagesLeftNav = ({
             <div
               onMouseEnter={() => openNavPopover('profile')}
               onMouseLeave={() => closeNavPopover()}>
-              <ProfilePopoverContent />
+              <ProfilePopoverContent onPageChange={(page) => { setNavPopover(null); onPageChange(page); }} />
             </div>
           </OuiPopover>
         </div>

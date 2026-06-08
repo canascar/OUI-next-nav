@@ -1063,6 +1063,10 @@ export const SamplePagesView = () => {
   };
 
   const handlePageChange = (page) => {
+    if (page === 'login') {
+      window.location.href = '#/login';
+      return;
+    }
     if (page === activePage) {
       // Re-clicking the same tab — reopen the panel if it was closed
       if (!PANEL_CLOSED_BY_DEFAULT.has(page)) {
