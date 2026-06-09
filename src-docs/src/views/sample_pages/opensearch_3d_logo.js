@@ -74,8 +74,8 @@ export const OpenSearch3DLogo = ({ size = 240 }) => {
     scene.add(modelGroup);
 
     // Physics — spring-based: always pulled toward idle oscillation
-    const springStrength = 0.006; // Pull toward home (higher = more elastic snap-back)
-    const damping = 0.95; // Velocity decay (higher = less friction, more glide)
+    const springStrength = 0.01; // Pull toward home (higher = more elastic snap-back)
+    const damping = 0.92; // Velocity decay (higher = less friction, more glide)
     const velocity = { x: 0, y: 0, z: 0 };
     let isDragging = false;
     let hasInteracted = false;
@@ -151,7 +151,7 @@ export const OpenSearch3DLogo = ({ size = 240 }) => {
 
     // Mouse/touch interaction
     let dragDistance = 0; // tracks total drag displacement for resistance
-    const dragResistance = 0.4; // 0 = no resistance, 1 = locked. Higher = harder initial pull
+    const dragResistance = 0.25; // 0 = no resistance, 1 = locked. Higher = harder initial pull
     
     const onPointerDown = (e) => {
       isDragging = true;
@@ -170,7 +170,7 @@ export const OpenSearch3DLogo = ({ size = 240 }) => {
       dragDistance += Math.sqrt(dx * dx + dy * dy);
       const tension = 1 / (1 + dragResistance * Math.exp(-dragDistance * 0.02));
       
-      const sensitivity = 0.008 * tension;
+      const sensitivity = 0.02 * tension;
       // Directly rotate the object while dragging
       modelGroup.rotation.y += dx * sensitivity;
       modelGroup.rotation.x += dy * sensitivity;

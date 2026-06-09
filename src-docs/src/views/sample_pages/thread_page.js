@@ -30,6 +30,7 @@ import {
   OuiText,
   OuiToolTip,
   OuiCompressedTextArea,
+  OuiThreadScrollButton,
 } from '../../../../src/components';
 
 import { DetailPageHeader } from './detail_page_header';
@@ -1600,6 +1601,8 @@ export const ThreadPage = ({
   const isDragging = useRef(false);
   const feedRef = useRef(null);
   const responseIndex = useRef(0);
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  const [feedScrolled, setFeedScrolled] = useState(false);
   const [completedScriptedIds, setCompletedScriptedIds] = useState(new Set());
 
   const streamTimers = useRef([]);
@@ -2168,7 +2171,16 @@ export const ThreadPage = ({
         {/* Conversation column */}
         <div className="threadPage__conversationCol">
           {/* Conversation feed — scrollable */}
-          <div className="threadPage__feed" ref={feedRef}>
+          <div
+            className={`threadPage__feed${feedScrolled ? ' threadPage__feed--hasOverflow' : ''}`}
+            ref={feedRef}
+            onScroll={() => {
+              if (!feedRef.current) return;
+              const { scrollTop, scrollHeight, clientHeight } = feedRef.current;
+              const distFromBottom = scrollHeight - scrollTop - clientHeight;
+              setShowScrollButton(distFromBottom > 100);
+              setFeedScrolled(distFromBottom > 10);
+            }}>
             {messages.length === 0 && !isTyping && (
               <div className="threadPage__emptyState">
                 <OllyIdle size={48} winkOnMount={false} className="threadPage__emptyMascot" />
@@ -2242,10 +2254,7 @@ export const ThreadPage = ({
               );
             })}
             {isTyping && null}
-          </div>
-
-          {/* Input area — textarea with buttons inside at bottom */}
-          <div className="threadPage__inputArea">
+            {/* Suggested prompts — inside the chat feed */}
             {(() => {
               if (
                 message.trim() ||
@@ -2303,234 +2312,7 @@ export const ThreadPage = ({
                       onClick={() => {
                         setMessage(prompt);
                         hasInteracted.current = true;
-                        setTimeout(() => {
-                          setMessage('');
-                          const userMsg = {
-                            role: 'user',
-                            author: 'You',
-                            content: prompt,
-                          };
-                          setMessages((prev) => [...prev, userMsg]);
-                          setIsTyping(true);
-                          const scripted =
-                            SCRIPTED_RESPONSES[effectiveScriptedKey];
-                          let mockResponse;
-                          let tasks;
-                          if (scripted) {
-                            const matched = Object.values(scripted).find(
-                              (item) => item.match && item.match.test(prompt)
-                            );
-                            if (matched) {
-                              mockResponse = matched;
-                              tasks =
-                                matched.tasks ||
-                                MOCK_TASKS[
-                                  responseIndex.current % MOCK_TASKS.length
-                                ];
-                            } else {
-                              const idx =
-                                responseIndex.current % MOCK_RESPONSES.length;
-                              mockResponse = MOCK_RESPONSES[idx];
-                              tasks = MOCK_TASKS[idx % MOCK_TASKS.length];
-                            }
-                          } else {
-                            const idx =
-                              responseIndex.current % MOCK_RESPONSES.length;
-                            mockResponse = MOCK_RESPONSES[idx];
-                            tasks = MOCK_TASKS[idx % MOCK_TASKS.length];
-                          }
-                          responseIndex.current += 1;
-                          const fullContent = mockResponse.content;
-                          const attachment = mockResponse.attachment;
-                          const attachments = mockResponse.attachments;
-                          const taskMsg = {
-                            role: 'tasks',
-                            tasks,
-                            statuses: ['running'],
-                            collapsed: false,
-                          };
-                          setMessages((prev) => [...prev, taskMsg]);
-                          const t1 = setTimeout(() => {
-                            setMessages((prev) => {
-                              const updated = [...prev];
-                              const ti = updated.findLastIndex(
-                                (m) => m.role === 'tasks'
-                              );
-                              if (ti >= 0)
-                                updated[ti] = {
-                                  ...updated[ti],
-                                  statuses: ['done', 'running'],
-                                };
-                              return updated;
-                            });
-                          }, 3000);
-                          streamTimers.current.push(t1);
-                          const t2 = setTimeout(() => {
-                            setMessages((prev) => {
-                              const updated = [...prev];
-                              const ti = updated.findLastIndex(
-                                (m) => m.role === 'tasks'
-                              );
-                              if (ti >= 0)
-                                updated[ti] = {
-                                  ...updated[ti],
-                                  statuses: ['done', 'done'],
-                                };
-                              return updated;
-                            });
-                          }, 6000);
-                          streamTimers.current.push(t2);
-                          const t3 = setTimeout(() => {
-                            setMessages((prev) => {
-                              const updated = [...prev];
-                              const ti = updated.findLastIndex(
-                                (m) => m.role === 'tasks'
-                              );
-                              if (ti >= 0)
-                                updated[ti] = {
-                                  ...updated[ti],
-                                  collapsed: true,
-                                };
-                              return updated;
-                            });
-                            setIsTyping(false);
-                            const tokens = fullContent.split(/(\s+)/);
-                            setMessages((prev) => [
-                              ...prev,
-                              {
-                                role: 'assistant',
-                                content: '',
-                                streaming: true,
-                                attachment,
-                                attachments,
-                              },
-                            ]);
-                            let built = '';
-                            tokens.forEach((token, i) => {
-                              const timer = setTimeout(() => {
-                                built += token;
-                                setMessages((prev) => {
-                                  const updated = [...prev];
-                                  updated[updated.length - 1] = {
-                                    role: 'assistant',
-                                    content: built,
-                                    streaming: i < tokens.length - 1,
-                                    attachment,
-                                    attachments,
-                                  };
-                                  return updated;
-                                });
-                                if (i === tokens.length - 1) {
-                                  // Add link-preview attachments to canvas
-                                  const newAtts = (
-                                    attachments ||
-                                    (attachment ? [attachment] : [])
-                                  ).filter((a) => a.type === 'link-preview');
-                                  if (newAtts.length > 0) {
-                                    setCanvasItems((prev) => [
-                                      ...prev,
-                                      ...newAtts,
-                                    ]);
-                                  }
-                                  if (mockResponse.id) {
-                                    setCompletedScriptedIds(
-                                      (prev) =>
-                                        new Set([...prev, mockResponse.id])
-                                    );
-                                  }
-                                  setCompletedScriptedIds((prev) => {
-                                    const next = new Set([...prev]);
-                                    if (mockResponse.id)
-                                      next.add(mockResponse.id);
-                                    if (
-                                      next.has('logs') &&
-                                      next.has('traces') &&
-                                      !next.has('conclusion')
-                                    ) {
-                                      next.add('conclusion');
-                                      const conclusionContent =
-                                        CONCLUSION_MESSAGE.content;
-                                      const conclusionTokens = conclusionContent.split(
-                                        /(\s+)/
-                                      );
-                                      const conclusionTimer = setTimeout(() => {
-                                        setMessages((prev2) => [
-                                          ...prev2,
-                                          {
-                                            role: 'assistant',
-                                            content: '',
-                                            streaming: true,
-                                          },
-                                        ]);
-                                        let conclusionBuilt = '';
-                                        conclusionTokens.forEach(
-                                          (token2, ci) => {
-                                            const cTimer = setTimeout(() => {
-                                              conclusionBuilt += token2;
-                                              setMessages((prev2) => {
-                                                const updated2 = [...prev2];
-                                                updated2[
-                                                  updated2.length - 1
-                                                ] = {
-                                                  role: 'assistant',
-                                                  content: conclusionBuilt,
-                                                  streaming:
-                                                    ci <
-                                                    conclusionTokens.length - 1,
-                                                };
-                                                return updated2;
-                                              });
-                                            }, ci * 30);
-                                            streamTimers.current.push(cTimer);
-                                          }
-                                        );
-                                      }, 300);
-                                      streamTimers.current.push(
-                                        conclusionTimer
-                                      );
-                                    }
-                                    return next;
-                                  });
-
-                                  // Stream follow-up messages if defined
-                                  if (mockResponse.followUps && mockResponse.followUps.length > 0) {
-                                    let followUpDelay = 800;
-                                    mockResponse.followUps.forEach((followUp) => {
-                                      const fuTimer = setTimeout(() => {
-                                        const fuTokens = followUp.content.split(/(\s+)/);
-                                        setMessages((prev2) => [
-                                          ...prev2,
-                                          { role: 'assistant', content: '', streaming: true, attachment: followUp.attachment },
-                                        ]);
-                                        let fuBuilt = '';
-                                        fuTokens.forEach((fuToken, fi) => {
-                                          const fTimer = setTimeout(() => {
-                                            fuBuilt += fuToken;
-                                            setMessages((prev2) => {
-                                              const updated2 = [...prev2];
-                                              updated2[updated2.length - 1] = {
-                                                role: 'assistant',
-                                                content: fuBuilt,
-                                                streaming: fi < fuTokens.length - 1,
-                                                attachment: followUp.attachment,
-                                              };
-                                              return updated2;
-                                            });
-                                          }, fi * 30);
-                                          streamTimers.current.push(fTimer);
-                                        });
-                                      }, followUpDelay);
-                                      streamTimers.current.push(fuTimer);
-                                      followUpDelay += 1500;
-                                    });
-                                  }
-                                }
-                              }, i * 30);
-                              streamTimers.current.push(timer);
-                            });
-                          }, 6500);
-                          streamTimers.current.push(t3);
-                        }, 0);
+                        setTimeout(() => handleSend(prompt), 0);
                       }}>
                       {prompt}
                     </OuiSmallButtonEmpty>
@@ -2538,6 +2320,21 @@ export const ThreadPage = ({
                 </div>
               );
             })()}
+          </div>
+
+          <OuiThreadScrollButton
+            isVisible={showScrollButton}
+            onClick={() => {
+              if (feedRef.current) {
+                feedRef.current.scrollTo({ top: feedRef.current.scrollHeight, behavior: 'smooth' });
+                setShowScrollButton(false);
+              }
+            }}
+            style={{ position: 'absolute', bottom: 140, left: '50%', transform: 'translateX(-50%)', zIndex: 5 }}
+          />
+
+          {/* Input area — textarea with buttons inside at bottom */}
+          <div className="threadPage__inputArea">
             <div className="threadPage__inputWrapper">
               <OuiCompressedTextArea
                 placeholder="Ask anything. Type / for actions."
