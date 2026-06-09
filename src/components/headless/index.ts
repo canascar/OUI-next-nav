@@ -20,3 +20,9 @@ export {
 export { OuiOllyChatPill, OuiOllyChatPillProps } from './olly_chat_pill';
 
 export { OuiSessionRecents } from './session_recents';
+
+export {
+  OuiAgenticSpinner,
+  OuiAgenticSpinnerProps,
+  OuiAgenticSpinnerSize,
+} from './agentic_spinner';

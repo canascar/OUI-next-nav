@@ -36,6 +36,7 @@ import { DetailPageHeader } from './detail_page_header';
 import { ProgressTracker } from './progress_tracker';
 import { Mascot } from '../../../../olly-mascot/Mascot';
 import { ThemeContext } from '../../components/with_theme';
+import { OllyIdle } from './olly_idle';
 import {
   Chart,
   Settings,
@@ -1049,33 +1050,64 @@ const AssistantMessage = ({
   attachment,
   attachments,
   onViewAsPage,
+  mascotColor,
+  mascotEyeColor,
+  isLastAssistant,
+  isTyping,
 }) => {
   const allAttachments = attachments || (attachment ? [attachment] : []);
+  const showMascot = isLastAssistant && !isTyping;
+
+  // Determine mascot expression based on state:
+  // - No content yet (pulsating delay): "blink"
+  // - Text streaming in: "dot" (attentive)
+  // - Done: idle (OllyIdle handles this)
+  const streamingExpression = !content ? 'blink' : 'dot';
+
   return (
     <div className="threadPage__message threadPage__message--assistant">
-      <div className="threadPage__bubble threadPage__bubble--assistant">
-        {content && <OuiText size="s">{parseContent(content)}</OuiText>}
-        {!streaming &&
-          allAttachments.map((att, idx) =>
-            renderSingleAttachment(att, idx, onViewAsPage)
+      {streaming ? (
+        // While streaming: Olly on left, text on right (row)
+        <div className="threadPage__assistantStreamRow">
+          {showMascot && (
+            <div className={`threadPage__responseMascot${!content ? ' threadPage__responseMascot--pulsing' : ''}`}>
+              <Mascot size={20} expression={streamingExpression} idle={false} bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />
+            </div>
           )}
-        {!streaming && (
-          <div className="threadPage__feedback">
-            <OuiButtonIcon
-              iconType="thumbsUp"
-              aria-label="Helpful"
-              size="xs"
-              color="text"
-            />
-            <OuiButtonIcon
-              iconType="thumbsDown"
-              aria-label="Not helpful"
-              size="xs"
-              color="text"
-            />
+          <div className="threadPage__bubble threadPage__bubble--assistant">
+            {content && <OuiText size="s">{parseContent(content)}</OuiText>}
           </div>
-        )}
-      </div>
+        </div>
+      ) : (
+        // Done: text full width, OllyIdle below on the left (with wink → idle)
+        <>
+          <div className="threadPage__bubble threadPage__bubble--assistant">
+            {content && <OuiText size="s">{parseContent(content)}</OuiText>}
+            {allAttachments.map((att, idx) =>
+              renderSingleAttachment(att, idx, onViewAsPage)
+            )}
+            <div className="threadPage__feedback">
+              <OuiButtonIcon
+                iconType="thumbsUp"
+                aria-label="Helpful"
+                size="xs"
+                color="text"
+              />
+              <OuiButtonIcon
+                iconType="thumbsDown"
+                aria-label="Not helpful"
+                size="xs"
+                color="text"
+              />
+            </div>
+          </div>
+          {showMascot && content && (
+            <div className="threadPage__responseMascot">
+              <OllyIdle size={20} showTooltip />
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };
@@ -1536,6 +1568,7 @@ export const ThreadPage = ({
 
   const [messages, setMessages] = useState(initialMessages);
   const [message, setMessage] = useState('');
+  const [mascotExpression, setMascotExpression] = useState(undefined);
   const sendRef = useRef(null);
   const lastProcessedInput = useRef(null);
   const emptyChatTitle = useRef(
@@ -1781,20 +1814,24 @@ export const ThreadPage = ({
           return updated;
         });
         setIsTyping(false);
-        const tokens = fullContent.split(/(\s+)/);
+        // Show Olly pulsating for 1.5s before text starts
         setMessages((prev) => [...prev, { role: 'assistant', content: '', streaming: true, attachment, attachments }]);
-        let built = '';
-        tokens.forEach((token, i) => {
-          const timer = setTimeout(() => {
-            built += token;
-            setMessages((prev) => {
-              const updated = [...prev];
-              updated[updated.length - 1] = { role: 'assistant', content: built, streaming: i < tokens.length - 1, attachment, attachments };
-              return updated;
-            });
-          }, i * 30);
-          streamTimers.current.push(timer);
-        });
+        const delayTimer = setTimeout(() => {
+          const tokens = fullContent.split(/(\s+)/);
+          let built = '';
+          tokens.forEach((token, i) => {
+            const timer = setTimeout(() => {
+              built += token;
+              setMessages((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1] = { role: 'assistant', content: built, streaming: i < tokens.length - 1, attachment, attachments };
+                return updated;
+              });
+            }, i * 30);
+            streamTimers.current.push(timer);
+          });
+        }, 2000);
+        streamTimers.current.push(delayTimer);
       }, 6000);
       streamTimers.current.push(t3);
     }
@@ -1905,9 +1942,7 @@ export const ThreadPage = ({
 
       setIsTyping(false);
 
-      // Split into words, preserving newlines as separate tokens
-      const tokens = fullContent.split(/(\s+)/);
-
+      // Show Olly pulsating for 1.5s before text starts
       setMessages((prev) => [
         ...prev,
         {
@@ -1919,15 +1954,19 @@ export const ThreadPage = ({
         },
       ]);
 
-      let built = '';
-      tokens.forEach((token, i) => {
-        const timer = setTimeout(() => {
-          built += token;
-          setMessages((prev) => {
-            const updated = [...prev];
-            updated[updated.length - 1] = {
-              role: 'assistant',
-              content: built,
+      const textDelayTimer = setTimeout(() => {
+        // Split into words, preserving newlines as separate tokens
+        const tokens = fullContent.split(/(\s+)/);
+
+        let built = '';
+        tokens.forEach((token, i) => {
+          const timer = setTimeout(() => {
+            built += token;
+            setMessages((prev) => {
+              const updated = [...prev];
+              updated[updated.length - 1] = {
+                role: 'assistant',
+                content: built,
               streaming: i < tokens.length - 1,
               attachment,
               attachments,
@@ -2022,6 +2061,8 @@ export const ThreadPage = ({
         }, i * 30);
         streamTimers.current.push(timer);
       });
+      }, 2000);
+      streamTimers.current.push(textDelayTimer);
     }, 6500);
     streamTimers.current.push(t3);
   };
@@ -2130,29 +2171,7 @@ export const ThreadPage = ({
           <div className="threadPage__feed" ref={feedRef}>
             {messages.length === 0 && !isTyping && (
               <div className="threadPage__emptyState">
-                <div
-                  className="threadPage__emptyMascot threadPage__emptyMascot--popIn"
-                  ref={(el) => {
-                    if (el && !el.dataset.ready) {
-                      el.addEventListener('animationend', () => {
-                        el.classList.remove('threadPage__emptyMascot--popIn');
-                        el.classList.add('threadPage__emptyMascot--ready');
-                        el.dataset.ready = 'true';
-                      }, { once: true });
-                    }
-                  }}
-                  onMouseDown={(e) => {
-                    e.currentTarget.classList.add('threadPage__emptyMascot--squish');
-                  }}
-                  onMouseUp={(e) => {
-                    e.currentTarget.classList.remove('threadPage__emptyMascot--squish');
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.classList.remove('threadPage__emptyMascot--squish');
-                  }}
-                  style={{ cursor: 'pointer' }}>
-                  <Mascot size={48} expression={undefined} idle bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />
-                </div>
+                <OllyIdle size={48} winkOnMount={false} className="threadPage__emptyMascot" />
                 <h3 className="threadPage__emptyTitle">{emptyChatTitle}</h3>
                 <div className="threadPage__emptySuggestions">
                   <button
@@ -2215,6 +2234,10 @@ export const ThreadPage = ({
                   attachment={msg.attachment}
                   attachments={msg.attachments}
                   onViewAsPage={handleViewAsPage}
+                  mascotColor={mascotColor}
+                  mascotEyeColor={mascotEyeColor}
+                  isLastAssistant={i === messages.findLastIndex((m) => m.role === 'assistant')}
+                  isTyping={isTyping}
                 />
               );
             })}

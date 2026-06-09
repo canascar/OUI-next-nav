@@ -9,14 +9,11 @@
  * GitHub history for details.
  */
 
-import React, { useContext } from 'react';
+import React from 'react';
 import {
   OuiIcon,
-  OuiLoadingSpinner,
   OuiText,
 } from '../../../../src/components';
-import { Mascot } from '../../../../olly-mascot/Mascot';
-import { ThemeContext } from '../../components/with_theme';
 
 /**
  * ProgressTracker — OUI-skinned version of Tool UI's Progress Tracker.
@@ -37,12 +34,12 @@ const formatElapsedTime = (ms) => {
   return `${minutes}m ${seconds}s`;
 };
 
-const StepIcon = ({ status, mascotColor, mascotEyeColor }) => {
+const StepIcon = ({ status }) => {
   switch (status) {
     case 'completed':
       return <OuiIcon type="checkInCircleEmpty" size="m" color="success" />;
     case 'in-progress':
-      return <Mascot size={16} idle bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />;
+      return <span className="ouiAgenticSpinner ouiAgenticSpinner--s" />;
     case 'failed':
       return <OuiIcon type="crossInACircleFilled" size="m" color="danger" />;
     case 'pending':
@@ -52,10 +49,6 @@ const StepIcon = ({ status, mascotColor, mascotEyeColor }) => {
 };
 
 export const ProgressTracker = ({ id, steps, elapsedTime, collapsed }) => {
-  const themeContext = useContext(ThemeContext);
-  const isDark = themeContext.theme === 'v9-dark';
-  const mascotColor = isDark ? ['#FFFFFF', '#D9DEE5'] : ['#14558E', '#153A5A'];
-  const mascotEyeColor = isDark ? '#181028' : '#fff';
   if (collapsed) {
     const completedCount = steps.filter((s) => s.status === 'completed').length;
     const hasFailed = steps.some((s) => s.status === 'failed');
@@ -113,7 +106,7 @@ export const ProgressTracker = ({ id, steps, elapsedTime, collapsed }) => {
               className={`progressTracker__step progressTracker__step--${step.status}`}
               aria-current={isCurrent ? 'step' : undefined}>
               <div className="progressTracker__stepIcon">
-                <StepIcon status={step.status} mascotColor={mascotColor} mascotEyeColor={mascotEyeColor} />
+                <StepIcon status={step.status} />
               </div>
               <div className="progressTracker__stepContent">
                 <OuiText size="xs">

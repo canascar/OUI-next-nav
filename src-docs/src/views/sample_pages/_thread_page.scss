@@ -148,7 +148,8 @@
   }
 
   &--assistant {
-    justify-content: flex-start;
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 
@@ -1034,4 +1035,56 @@ textarea.threadPage__textarea {
 .mockCanvasPage--fullBody .ouiPanel,
 .mockCanvasPage .ouiPanel {
   border: 1px solid $ouiBorderColor !important;
+}
+
+// ─── Typing indicator ────────────────────────────────────────
+
+// Response mascot — below the text on the left when done
+.threadPage__responseMascot {
+  margin-top: 4px;
+  animation: threadMascotPopIn 400ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+
+  &--pulsing {
+    animation: threadMascotPopIn 400ms cubic-bezier(0.34, 1.56, 0.64, 1) both,
+               threadMascotPulse 1s ease-in-out 400ms infinite;
+  }
+}
+
+@keyframes threadMascotPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+}
+
+// Streaming row — Olly on left, bubble on right
+.threadPage__assistantStreamRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+
+  .threadPage__responseMascot {
+    flex-shrink: 0;
+    align-self: flex-start;
+    padding-top: 2px;
+    margin-top: 0;
+  }
+}
+
+@keyframes threadMascotPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// Assistant row — mascot on left, bubble on right
+.threadPage__assistantRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
 }

@@ -37,6 +37,7 @@ import { SOURCE_PAGE_MOCK } from './session_models';
 import { OllyAvatar } from './olly_avatar';
 import { Mascot } from '../../../../olly-mascot/Mascot';
 import { ThemeContext } from '../../components/with_theme';
+import { OllyIdle } from './olly_idle';
 
 /**
  * Quick access shortcut definitions.
@@ -690,22 +691,7 @@ export const EmptySessionPage = ({
           <div className="emptySessionPage__leftCol">
             {/* Mascot + status — above title */}
             <div className="emptySessionPage__headerRow">
-              <div
-                className="emptySessionPage__avatarWrap"
-                onMouseDown={(e) => {
-                  e.currentTarget.style.transform = 'scale(0.85)';
-                  setMascotExpression('heart');
-                }}
-                onMouseUp={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  setMascotExpression(undefined);
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  setMascotExpression(undefined);
-                }}>
-                <Mascot size={32} expression={mascotExpression} idle={!mascotExpression} bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />
-              </div>
+              <OllyIdle size={32} winkOnMount={false} className="emptySessionPage__avatarWrap" />
               <span className="emptySessionPage__onlineStatus">
                 <span className="emptySessionPage__onlineDot" />
                 Olly is online
