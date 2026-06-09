@@ -18,6 +18,7 @@ import {
   OuiInsightCard,
   OuiInsightCallout,
   OuiSmallButtonEmpty,
+  OuiPopover,
   OuiTab,
   OuiTabs,
   OuiText,
@@ -499,6 +500,70 @@ function formatRelativeTime(timestamp) {
 }
 
 /**
+ * NarrativeLink — Inline link with a hover popover showing session preview.
+ */
+const NarrativeLink = ({ sessionId, children, onClick }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const timerRef = useRef(null);
+  const preview = SESSION_PREVIEWS[sessionId];
+
+  const handleMouseEnter = () => {
+    timerRef.current = setTimeout(() => setIsOpen(true), 300);
+  };
+  const handleMouseLeave = () => {
+    clearTimeout(timerRef.current);
+    setIsOpen(false);
+  };
+
+  const button = (
+    // eslint-disable-next-line jsx-a11y/anchor-is-valid
+    <a
+      className="emptySessionPage__narrativeLink"
+      onClick={onClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}>
+      {children}
+    </a>
+  );
+
+  if (!preview) return button;
+
+  return (
+    <OuiPopover
+      button={button}
+      isOpen={isOpen}
+      closePopover={() => setIsOpen(false)}
+      anchorPosition="downCenter"
+      panelPaddingSize="none"
+      hasArrow={false}
+      panelClassName="emptySessionPage__previewPopover"
+      onMouseEnter={() => { clearTimeout(timerRef.current); setIsOpen(true); }}
+      onMouseLeave={handleMouseLeave}>
+      <div className="emptySessionPage__sessionPreview">
+        <p className="emptySessionPage__previewSummary">{preview.summary}</p>
+        <div className="emptySessionPage__previewStats">
+          {preview.stats.map((stat, i) => (
+            <div key={i} className={`emptySessionPage__previewStat emptySessionPage__previewStat--${stat.color}`}>
+              <span className="emptySessionPage__previewStatValue">{stat.value}</span>
+              <span className="emptySessionPage__previewStatLabel">{stat.label}</span>
+            </div>
+          ))}
+        </div>
+        <div className="emptySessionPage__previewSection">
+          <span className="emptySessionPage__previewSectionLabel">Finding</span>
+          <p className="emptySessionPage__previewSectionText">{preview.finding}</p>
+        </div>
+        <div className="emptySessionPage__previewSection">
+          <span className="emptySessionPage__previewSectionLabel">Recommended action</span>
+          <p className="emptySessionPage__previewSectionText">{preview.action}</p>
+        </div>
+        <p className="emptySessionPage__previewMeta">{preview.meta}</p>
+      </div>
+    </OuiPopover>
+  );
+};
+
+/**
  * EmptySessionPage — The welcome experience shown when a session has no thread and no pages open.
  *
  * Displays a centered panel with:
@@ -552,7 +617,6 @@ export const EmptySessionPage = ({
   const [inputFocused, setInputFocused] = useState(false);
   const inputActive = inputHovered || inputFocused;
   const [hoveredCard, setHoveredCard] = useState(null);
-  const [hoveredSession, setHoveredSession] = useState(null);
   const [scrolledFromTop, setScrolledFromTop] = useState(false);
   const [mascotExpression, setMascotExpression] = useState(undefined);
   const [rightPanelTab, setRightPanelTab] = useState('insights');
@@ -658,25 +722,23 @@ export const EmptySessionPage = ({
 
             <div className="emptySessionPage__briefingNarrative">
               <p className="emptySessionPage__narrativePara emptySessionPage__narrativePara--1">
-                Things are largely stable. <strong>244 of 247</strong> services are healthy and running within normal thresholds — no widespread degradation, no cascading failures. The infrastructure is holding up well overall.
+                <strong>244 of 247</strong> services healthy. No degradation, no cascading failures.
               </p>
 
               <p className="emptySessionPage__narrativePara emptySessionPage__narrativePara--2">
-                That said, there's one issue that warrants your immediate attention.{' '}
-                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                <a className="emptySessionPage__narrativeLink" onClick={() => onSelectSession('latency-spike-session')} onMouseEnter={() => setHoveredSession('latency-spike-session')} onMouseLeave={() => setHoveredSession(null)}>Payment service P99 latency has breached 2,000ms</a>, with connection pool exhaustion confirmed on 3 of 4 pods. This was flagged 15 minutes ago by Olly and a root cause has already been identified — so the team has something to act on. Keep an eye on this one; if the remaining pod tips over, transaction throughput will take a hit.
+                One issue needs attention:{' '}
+                <NarrativeLink sessionId="latency-spike-session" onClick={() => onSelectSession('latency-spike-session')}>Payment service P99 has breached 2,000ms</NarrativeLink> — connection pool exhaustion on 3 of 4 pods. Root cause identified 15 min ago. If the last pod tips, throughput takes a hit.
               </p>
 
               <p className="emptySessionPage__narrativePara emptySessionPage__narrativePara--3">
-                On the lower-priority side, there's a{' '}
-                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                <a className="emptySessionPage__narrativeLink" onClick={() => onSelectSession('error-rate-spike-session')} onMouseEnter={() => setHoveredSession('error-rate-spike-session')} onMouseLeave={() => setHoveredSession(null)}>checkout error-rate spike tied to an auth-service regression</a>. It was surfaced by the team 2 hours ago and is being tracked. Error rates are elevated but not yet at a level that suggests broad customer impact — still worth a look before end of day.
+                Lower priority:{' '}
+                <NarrativeLink sessionId="error-rate-spike-session" onClick={() => onSelectSession('error-rate-spike-session')}>checkout error-rate spike from an auth-service regression</NarrativeLink>. Surfaced 2 hours ago, being tracked. Not yet customer-impacting.
               </p>
 
               <p className="emptySessionPage__narrativePara emptySessionPage__narrativePara--4">
-                Finally, a{' '}
-                <span className="emptySessionPage__narrativeLink emptySessionPage__narrativeLink--resolved">DNS resolution timeout</span>{' '}
-                was flagged 3 hours ago and has since resolved on its own. No action needed there, but it's logged in case a pattern emerges later.
+                You also have 2 recent sessions —{' '}
+                <NarrativeLink sessionId="latency-spike-session" onClick={() => onSelectSession('latency-spike-session')}>a latency spike investigation</NarrativeLink> and{' '}
+                <NarrativeLink sessionId="error-rate-spike-session" onClick={() => onSelectSession('error-rate-spike-session')}>a checkout error-rate spike</NarrativeLink> — if you want to pick up where you left off.
               </p>
             </div>
 
@@ -707,45 +769,24 @@ export const EmptySessionPage = ({
                   briefingRef.current.querySelectorAll('.emptySessionPage__briefingSeparator').forEach(el => { el.style.opacity = ''; });
                 }
               }}>
-              {!hoveredSession && (
+              <div className="emptySessionPage__tabRow">
               <OuiTabs size="s" display="condensed" style={{ maxWidth: 'fit-content' }}>
                 <OuiTab isSelected={rightPanelTab === 'insights'} onClick={() => setRightPanelTab('insights')}>
-                  Insights
+                  Overview
                 </OuiTab>
                 <OuiTab isSelected={rightPanelTab === 'open-page'} onClick={() => setRightPanelTab('open-page')}>
                   Open a page
                 </OuiTab>
               </OuiTabs>
+              {rightPanelTab === 'insights' && (
+                <OuiSmallButtonEmpty iconType="gear" size="xs">
+                  Customize
+                </OuiSmallButtonEmpty>
               )}
+              </div>
 
               <div className="emptySessionPage__briefingContent">
-                {/* Session preview — shown on narrative link hover */}
-                <div className={`emptySessionPage__briefingPanel${!hoveredSession ? ' emptySessionPage__briefingPanel--hidden' : ''}`}>
-                  {hoveredSession && SESSION_PREVIEWS[hoveredSession] && (
-                    <div className="emptySessionPage__sessionPreview">
-                      <p className="emptySessionPage__previewSummary">{SESSION_PREVIEWS[hoveredSession].summary}</p>
-                      <div className="emptySessionPage__previewStats">
-                        {SESSION_PREVIEWS[hoveredSession].stats.map((stat, i) => (
-                          <div key={i} className={`emptySessionPage__previewStat emptySessionPage__previewStat--${stat.color}`}>
-                            <span className="emptySessionPage__previewStatValue">{stat.value}</span>
-                            <span className="emptySessionPage__previewStatLabel">{stat.label}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="emptySessionPage__previewSection">
-                        <span className="emptySessionPage__previewSectionLabel">Finding</span>
-                        <p className="emptySessionPage__previewSectionText">{SESSION_PREVIEWS[hoveredSession].finding}</p>
-                      </div>
-                      <div className="emptySessionPage__previewSection">
-                        <span className="emptySessionPage__previewSectionLabel">Recommended action</span>
-                        <p className="emptySessionPage__previewSectionText">{SESSION_PREVIEWS[hoveredSession].action}</p>
-                      </div>
-                      <p className="emptySessionPage__previewMeta">{SESSION_PREVIEWS[hoveredSession].meta}</p>
-                    </div>
-                  )}
-                </div>
-
-                <div className={`emptySessionPage__briefingPanel${rightPanelTab !== 'open-page' || hoveredSession ? ' emptySessionPage__briefingPanel--hidden' : ''}`}>
+                <div className={`emptySessionPage__briefingPanel${rightPanelTab !== 'open-page' ? ' emptySessionPage__briefingPanel--hidden' : ''}`}>
                   <div className="emptySessionPage__openPageGrid">
                     {OPEN_PAGE_ITEMS.map((item, i) => (
                       <button
@@ -760,9 +801,9 @@ export const EmptySessionPage = ({
                   </div>
                 </div>
 
-                <div className={`emptySessionPage__briefingPanel${rightPanelTab !== 'insights' || hoveredSession ? ' emptySessionPage__briefingPanel--hidden' : ''}`}>
+                <div className={`emptySessionPage__briefingPanel${rightPanelTab !== 'insights' ? ' emptySessionPage__briefingPanel--hidden' : ''}`}>
                 <div className="emptySessionPage__insightsGrid emptySessionPage__insightsGrid--2col" ref={insightsRef} onMouseLeave={handleInsightMouseLeave}>
-                  <OuiInsightCard title="Top services by fault rate" onMouseEnter={() => handleInsightHover(0)} onMouseDown={() => handleInsightMouseDown(0)} onMouseUp={() => handleInsightHover(0)}>
+                  <OuiInsightCard title="Top services by fault rate" onMouseEnter={() => handleInsightHover(0)} onMouseDown={() => handleInsightMouseDown(0)} onMouseUp={() => handleInsightHover(0)} onClick={() => onOpenPageInNewSession('app-perf-services', 'Application Services')}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600, opacity: 0.65, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                         <span>Service</span><span>Fault rate</span>
@@ -785,7 +826,7 @@ export const EmptySessionPage = ({
                     </div>
                   </OuiInsightCard>
 
-                  <OuiInsightCard title="Connection timeout errors" onMouseEnter={() => handleInsightHover(1)} onMouseDown={() => handleInsightMouseDown(1)} onMouseUp={() => handleInsightHover(1)}>
+                  <OuiInsightCard title="Connection timeout errors" onMouseEnter={() => handleInsightHover(1)} onMouseDown={() => handleInsightMouseDown(1)} onMouseUp={() => handleInsightHover(1)} onClick={() => onOpenPageInNewSession('logs', 'Logs')}>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
                       <span style={{ color: '#d97706', fontWeight: 700, fontSize: 28, lineHeight: 1 }}>847</span>
                       <span style={{ fontSize: 13, color: '#d97706', fontWeight: 600 }}>↑ 312%</span>
@@ -797,7 +838,7 @@ export const EmptySessionPage = ({
                     </svg>
                   </OuiInsightCard>
 
-                  <OuiInsightCard title="Recent alerts" onMouseEnter={() => handleInsightHover(2)} onMouseDown={() => handleInsightMouseDown(2)} onMouseUp={() => handleInsightHover(2)}>
+                  <OuiInsightCard title="Recent alerts" onMouseEnter={() => handleInsightHover(2)} onMouseDown={() => handleInsightMouseDown(2)} onMouseUp={() => handleInsightHover(2)} onClick={() => onOpenPageInNewSession('alerts', 'Alerts')}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600, opacity: 0.65, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                         <span>Alert</span><span>Status</span>
@@ -814,7 +855,7 @@ export const EmptySessionPage = ({
                     </div>
                   </OuiInsightCard>
 
-                  <OuiInsightCard title="Deployment timeline" onMouseEnter={() => handleInsightHover(3)} onMouseDown={() => handleInsightMouseDown(3)} onMouseUp={() => handleInsightHover(3)}>
+                  <OuiInsightCard title="Deployment timeline" onMouseEnter={() => handleInsightHover(3)} onMouseDown={() => handleInsightMouseDown(3)} onMouseUp={() => handleInsightHover(3)} onClick={() => onOpenPageInNewSession('dashboards', 'Dashboards')}>
                     <svg viewBox="0 0 200 100" style={{ width: '100%', height: 100 }}>
                       {/* Bars — wider, rounded top, spaced evenly */}
                       <rect x="12" y="55" width="28" height="35" rx="4" fill="#34d399" />
@@ -831,7 +872,7 @@ export const EmptySessionPage = ({
                     </svg>
                   </OuiInsightCard>
 
-                  <OuiInsightCard title="Resource utilization" onMouseEnter={() => handleInsightHover(4)} onMouseDown={() => handleInsightMouseDown(4)} onMouseUp={() => handleInsightHover(4)} titleExtra={<span style={{ color: '#34d399', fontWeight: 700, fontSize: 18 }}>56%</span>}>
+                  <OuiInsightCard title="Resource utilization" onMouseEnter={() => handleInsightHover(4)} onMouseDown={() => handleInsightMouseDown(4)} onMouseUp={() => handleInsightHover(4)} onClick={() => onOpenPageInNewSession('metrics', 'Metrics')} titleExtra={<span style={{ color: '#34d399', fontWeight: 700, fontSize: 18 }}>56%</span>}>
                     <svg viewBox="0 0 220 100" style={{ width: '100%', height: 100 }}>
                       {/* Grid lines */}
                       <line x1="30" y1="10" x2="210" y2="10" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
@@ -866,22 +907,17 @@ export const EmptySessionPage = ({
                     </svg>
                   </OuiInsightCard>
 
-                  <OuiInsightCard title="Request throughput" onMouseEnter={() => handleInsightHover(5)} onMouseDown={() => handleInsightMouseDown(5)} onMouseUp={() => handleInsightHover(5)} titleExtra={<span style={{ color: '#a5b4fc', fontWeight: 700, fontSize: 18 }}>18.2k/s</span>}>
+                  <OuiInsightCard title="Request throughput" onMouseEnter={() => handleInsightHover(5)} onMouseDown={() => handleInsightMouseDown(5)} onMouseUp={() => handleInsightHover(5)} onClick={() => onOpenPageInNewSession('metrics', 'Metrics')} titleExtra={<span style={{ color: '#a5b4fc', fontWeight: 700, fontSize: 18 }}>18.2k/s</span>}>
                     <svg viewBox="0 0 220 100" style={{ width: '100%', height: 100 }}>
-                      {/* Grid lines */}
                       <line x1="30" y1="14" x2="210" y2="14" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
                       <line x1="30" y1="38" x2="210" y2="38" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
                       <line x1="30" y1="62" x2="210" y2="62" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
-                      {/* Y-axis labels */}
                       <text x="22" y="17" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">25k</text>
                       <text x="22" y="41" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">15k</text>
                       <text x="22" y="65" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">5k</text>
-                      {/* Area fill */}
                       <defs><linearGradient id="rpsFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#a5b4fc" stopOpacity="0.25"/><stop offset="100%" stopColor="#a5b4fc" stopOpacity="0.03"/></linearGradient></defs>
                       <path d="M40,60 L75,52 L110,56 L145,40 L175,46 L195,34 L210,38 V90 H40 Z" fill="url(#rpsFill)" />
-                      {/* Line */}
                       <polyline fill="none" stroke="#a5b4fc" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points="40,60 75,52 110,56 145,40 175,46 195,34 210,38" />
-                      {/* Dots */}
                       <circle cx="40" cy="60" r="3" fill="#a5b4fc" />
                       <circle cx="75" cy="52" r="3" fill="#a5b4fc" />
                       <circle cx="110" cy="56" r="3" fill="#a5b4fc" />
@@ -889,7 +925,6 @@ export const EmptySessionPage = ({
                       <circle cx="175" cy="46" r="3" fill="#a5b4fc" />
                       <circle cx="195" cy="34" r="3" fill="#a5b4fc" />
                       <circle cx="210" cy="38" r="3" fill="#a5b4fc" />
-                      {/* X-axis labels */}
                       <text x="40" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">0m</text>
                       <text x="85" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">15m</text>
                       <text x="130" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">30m</text>

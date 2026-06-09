@@ -1489,7 +1489,7 @@ function initializeSessionState() {
     pendingThread: null,
     title: 'New Session',
     threadPanelState: 'minimized',
-    threadPanelWidth: 50,
+    threadPanelWidth: 40,
     tabs: [],
     activeTabId: null,
     createdAt: Date.now(),
