@@ -90,6 +90,11 @@ export const OllyIdle = ({ size = 24, expression, winkOnMount = true, showToolti
           ? 'transform 100ms cubic-bezier(0.4, 0, 0.2, 1)'
           : 'transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1)',
         transformOrigin: 'center center',
+        display: 'inline-flex',
+        width: size,
+        height: size,
+        alignItems: 'center',
+        justifyContent: 'center',
         ...style,
       }}
       onMouseDown={handleMouseDown}
