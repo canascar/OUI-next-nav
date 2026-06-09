@@ -198,10 +198,10 @@
   }
 }
 
-// Inline link — bold + underline, clickable
+// Inline link — bold + underline + primary color, clickable
 .emptySessionPage__narrativeLink {
   font-weight: $ouiFontWeightSemiBold;
-  color: $ouiTitleColor;
+  color: $ouiColorPrimary;
   text-decoration: underline;
   text-decoration-thickness: 1.5px;
   text-underline-offset: 2px;
@@ -209,24 +209,31 @@
   transition: color 150ms ease;
 
   &:hover {
-    color: $ouiColorPrimary;
+    color: lightOrDarkTheme(darken($ouiColorPrimary, 10%), lighten($ouiColorPrimary, 10%));
   }
 
-  // Resolved — looks like a link but no hover highlight
+  // Resolved — softer shade, no navigation
   &--resolved {
+    color: $ouiColorMediumShade;
     cursor: default;
 
     &:hover {
-      color: $ouiTitleColor;
+      color: $ouiColorMediumShade;
     }
   }
 }
 
-// ─── Session Preview (replaces right panel on hover) ──────────────────────
+// ─── Session Preview (shown in popover on hover) ──────────────────────
+.emptySessionPage__previewPopover {
+  width: 480px;
+  border-radius: $ouiBorderRadius !important; // sass-lint:disable-line no-important
+}
+
 .emptySessionPage__sessionPreview {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding: 16px;
   width: 100%;
 }
 
@@ -326,6 +333,14 @@
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+.emptySessionPage__tabRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 8px;
 }
 
 .emptySessionPage__briefing {
