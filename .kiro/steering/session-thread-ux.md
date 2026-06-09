@@ -118,7 +118,25 @@ import { OllyIdle } from './olly_idle';
 | `TaskListMessage` | `thread_page.js` | Renders step progress with blob |
 | `ProgressTracker` | `progress_tracker.js` | Step list with status icons |
 | `OuiAgenticSpinner` | `src/components/headless/agentic_spinner/` | Blob loading animation |
+| `OllyIdle` | `src-docs/src/views/sample_pages/olly_idle.js` | Idle mascot with interactions |
 | `Mascot` | `olly-mascot/Mascot` | Olly avatar with expressions |
+
+---
+
+## Light / Dark Mode Colors
+
+The mascot color automatically adapts to the current theme:
+
+| Mode | Body Color | Eye Color |
+|------|-----------|-----------|
+| Light (`v9-light`) | `['#14558E', '#153A5A']` (navy gradient) | `#fff` (white) |
+| Dark (`v9-dark`) | `['#FFFFFF', '#D9DEE5']` (white gradient) | `#181028` (dark purple) |
+| Gold (human-needed only) | `['#B8860B', '#8B6914']` | `#fff` |
+
+**Rules:**
+- Body color NEVER changes during normal operation — only expressions change
+- Gold is the ONLY body color change, reserved for "agent needs human input"
+- `OllyIdle` handles theme detection automatically via `ThemeContext`
 
 ---
 

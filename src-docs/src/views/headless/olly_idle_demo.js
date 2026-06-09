@@ -57,6 +57,18 @@ export default () => {
       <OuiSpacer size="xl" />
 
       <OuiText size="s">
+        <strong>Light / Dark mode colors:</strong>
+        <ul>
+          <li><strong>Light mode:</strong> Body <code>['#14558E', '#153A5A']</code> (navy gradient), Eyes <code>#fff</code></li>
+          <li><strong>Dark mode:</strong> Body <code>['#FFFFFF', '#D9DEE5']</code> (white gradient), Eyes <code>#181028</code></li>
+          <li>Colors are automatically applied via <code>ThemeContext</code> — no manual configuration needed</li>
+          <li>Gold body (<code>['#B8860B', '#8B6914']</code>) is reserved for "human input needed" state only</li>
+        </ul>
+      </OuiText>
+
+      <OuiSpacer size="xl" />
+
+      <OuiText size="s">
         <strong>Interaction states:</strong>
         <ul>
           <li><strong>Idle:</strong> cycles through micro-expressions (blink-heavy)</li>
