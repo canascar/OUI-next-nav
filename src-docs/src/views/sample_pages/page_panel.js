@@ -210,7 +210,7 @@ const TabBar = ({ tabs, activeTabId, onTabSelect, onTabClose, onAddTab, onExpand
                 setIsListOpen(false);
               }}>
               <OuiIcon type="plus" size="s" />
-              <span>New Tab</span>
+              <span>Add new tab</span>
             </button>
           </div>
         </OuiPopover>

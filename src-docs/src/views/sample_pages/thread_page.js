@@ -2169,7 +2169,18 @@ export const ThreadPage = ({
       {/* Body: feed + optional canvas flyout */}
       <div className="threadPage__body">
         {/* Conversation column */}
-        <div className="threadPage__conversationCol">
+        <div
+          className="threadPage__conversationCol"
+          onWheel={(e) => {
+            if (feedRef.current) {
+              const el = feedRef.current;
+              const isOverFeed = el.contains(e.target);
+              if (!isOverFeed) {
+                el.scrollTop += e.deltaY * 1.2;
+                e.preventDefault();
+              }
+            }
+          }}>
           {/* Conversation feed — scrollable */}
           <div
             className={`threadPage__feed${feedScrolled ? ' threadPage__feed--hasOverflow' : ''}`}

@@ -774,6 +774,13 @@ textarea.emptySessionPage__textarea {
   &:hover {
     background-color: rgba($ouiColorPrimary, 0.08);
     border-color: rgba($ouiColorPrimary, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: none;
   }
 
   &--activityLayout {

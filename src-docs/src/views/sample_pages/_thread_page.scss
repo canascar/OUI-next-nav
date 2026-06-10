@@ -37,6 +37,8 @@
 .threadPage__feed {
   flex: 1;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
   padding: 12px 16px 16px;
   display: flex;
   flex-direction: column;

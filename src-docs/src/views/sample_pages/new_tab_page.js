@@ -9,9 +9,10 @@
  * GitHub history for details.
  */
 
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useCallback } from 'react';
 import {
   OuiCompressedFieldSearch,
+  OuiFieldSearch,
   OuiIcon,
 } from '../../../../src/components';
 import { SOURCE_PAGE_MOCK } from './session_models';
@@ -56,6 +57,41 @@ export const NewTabPage = ({ onSelectPage }) => {
     CANVAS_TITLES[Math.floor(Math.random() * CANVAS_TITLES.length)]
   ).current;
 
+  const searchListRef = useRef(null);
+
+  const handleSearchHover = useCallback((hoveredIndex) => {
+    if (!searchListRef.current) return;
+    const items = searchListRef.current.querySelectorAll('.emptySessionPage__listItem');
+    items.forEach((el, i) => {
+      const distance = Math.abs(i - hoveredIndex);
+      let scale = 1;
+      if (distance === 0) scale = 1.03;
+      else if (distance === 1) scale = 1.015;
+      else if (distance === 2) scale = 1.005;
+      el.style.transform = `scale(${scale})`;
+    });
+  }, []);
+
+  const handleSearchMouseDown = useCallback((pressedIndex) => {
+    if (!searchListRef.current) return;
+    const items = searchListRef.current.querySelectorAll('.emptySessionPage__listItem');
+    items.forEach((el, i) => {
+      const distance = Math.abs(i - pressedIndex);
+      let scale = 1;
+      if (distance === 0) scale = 0.97;
+      else if (distance === 1) scale = 0.985;
+      else if (distance === 2) scale = 0.995;
+      el.style.transform = `scale(${scale})`;
+    });
+  }, []);
+
+  const handleSearchMouseLeave = useCallback(() => {
+    if (!searchListRef.current) return;
+    searchListRef.current.querySelectorAll('.emptySessionPage__listItem').forEach((el) => {
+      el.style.transform = '';
+    });
+  }, []);
+
   // Build searchable items
   const allItems = useMemo(() => {
     const items = [];
@@ -87,7 +123,7 @@ export const NewTabPage = ({ onSelectPage }) => {
       <h2 className="newTabPage__title">{canvasTitle}</h2>
 
       {/* Search field */}
-      <OuiCompressedFieldSearch
+      <OuiFieldSearch
         placeholder="Search pages..."
         value={inputValue}
         onChange={(e) => {
@@ -98,17 +134,20 @@ export const NewTabPage = ({ onSelectPage }) => {
       />
 
       {searchResults ? (
-        <div className="emptySessionPage__tabContent">
+        <div className="emptySessionPage__tabContent" ref={searchListRef} onMouseLeave={handleSearchMouseLeave} style={{ gap: 4 }}>
           {searchResults.length === 0 ? (
             <p style={{ color: '#676e75', textAlign: 'center', padding: '16px' }}>No results found</p>
           ) : (
             <>
-              <span className="emptySessionPage__searchLabel">Suggested pages</span>
-              {searchResults.map((item) => (
+              <span className="emptySessionPage__searchLabel" style={{ marginBottom: 8 }}>Suggested pages</span>
+              {searchResults.map((item, idx) => (
                 <button
                   key={item.key}
                   type="button"
                   className="emptySessionPage__listItem"
+                  onMouseEnter={() => handleSearchHover(idx)}
+                  onMouseDown={() => handleSearchMouseDown(idx)}
+                  onMouseUp={() => handleSearchHover(idx)}
                   onClick={() => onSelectPage(item.pageKey, item.title)}>
                   <span className="emptySessionPage__listItemTitle">{item.title}</span>
                   <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
