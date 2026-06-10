@@ -928,7 +928,7 @@ export const EmptySessionPage = ({
                     <div className="emptySessionPage__widgetListHeader">
                       <span className="emptySessionPage__widgetListIcon"><OuiIcon type="search" size="m" /></span>
                       <span className="emptySessionPage__widgetListTitle">Saved queries</span>
-                      <span className="emptySessionPage__widgetListAction">all ›</span>
+                      <span className="emptySessionPage__widgetListAction"><OuiIcon type="arrowRight" size="s" /></span>
                     </div>
                     <div className="emptySessionPage__widgetListItems">
                       <div className="emptySessionPage__widgetListItem">
@@ -951,7 +951,7 @@ export const EmptySessionPage = ({
                     <div className="emptySessionPage__widgetListHeader">
                       <span className="emptySessionPage__widgetListIcon"><OuiIcon type="grid" size="m" /></span>
                       <span className="emptySessionPage__widgetListTitle">Dashboards</span>
-                      <span className="emptySessionPage__widgetListAction">all ›</span>
+                      <span className="emptySessionPage__widgetListAction"><OuiIcon type="arrowRight" size="s" /></span>
                     </div>
                     <div className="emptySessionPage__widgetListItems">
                       <div className="emptySessionPage__widgetListItem">
