@@ -170,16 +170,16 @@
     gap: 0;
   }
 
-  // When a popover is open, blur/dim siblings and scale down content
+  // When a popover is open, blur/dim sibling news items (not the summary)
   &:has(.ouiPopover-isOpen) {
-    > *:not(:has(.ouiPopover-isOpen)) {
+    > .emptySessionPage__newsItem:not(:has(.ouiPopover-isOpen)) {
       filter: blur(2px);
       opacity: 0.5;
       transform: scale(0.98);
       transition: filter 250ms ease, opacity 250ms ease, transform 250ms ease;
     }
 
-    > *:has(.ouiPopover-isOpen) {
+    > .emptySessionPage__newsItem:has(.ouiPopover-isOpen) {
       position: relative;
       z-index: 2;
     }
