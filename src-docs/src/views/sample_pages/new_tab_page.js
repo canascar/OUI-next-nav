@@ -58,6 +58,7 @@ export const NewTabPage = ({ onSelectPage }) => {
   ).current;
 
   const searchListRef = useRef(null);
+  const searchScrollRef = useRef(null);
 
   const handleSearchHover = useCallback((hoveredIndex) => {
     if (!searchListRef.current) return;
@@ -113,7 +114,12 @@ export const NewTabPage = ({ onSelectPage }) => {
   }, [searchQuery, allItems]);
 
   return (
-    <div className="newTabPage">
+    <div className="newTabPage" onWheel={(e) => {
+      if (searchScrollRef.current && !searchScrollRef.current.contains(e.target)) {
+        searchScrollRef.current.scrollTop += e.deltaY;
+        e.preventDefault();
+      }
+    }}>
       {/* 3D Logo */}
       <div className="newTabPage__logoWrap">
         <OpenSearch3DLogo size={160} />
@@ -134,12 +140,12 @@ export const NewTabPage = ({ onSelectPage }) => {
       />
 
       {searchResults ? (
-        <div className="emptySessionPage__tabContent" ref={searchListRef} onMouseLeave={handleSearchMouseLeave} style={{ gap: 4 }}>
+        <div className="newTabPage__searchResults" ref={searchListRef} onMouseLeave={handleSearchMouseLeave}>
+          <span className="emptySessionPage__searchLabel" style={{ marginBottom: 8, flexShrink: 0 }}>Suggested pages</span>
           {searchResults.length === 0 ? (
             <p style={{ color: '#676e75', textAlign: 'center', padding: '16px' }}>No results found</p>
           ) : (
-            <>
-              <span className="emptySessionPage__searchLabel" style={{ marginBottom: 8 }}>Suggested pages</span>
+            <div className="newTabPage__searchResultsList" ref={searchScrollRef}>
               {searchResults.map((item, idx) => (
                 <button
                   key={item.key}
@@ -153,7 +159,7 @@ export const NewTabPage = ({ onSelectPage }) => {
                   <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
                 </button>
               ))}
-            </>
+            </div>
           )}
         </div>
       ) : (
@@ -174,7 +180,7 @@ export const NewTabPage = ({ onSelectPage }) => {
           <div className="emptySessionPage__tabContent">
             {/* Discover grid */}
             {activeChip === 'discover' && (
-              <div className="emptySessionPage__sectionHeader">// OPEN A PAGE TO DISCOVER</div>
+              <h4>Open a page to discover</h4>
             )}
             {activeChip === 'discover' && (
               <div className="emptySessionPage__discoverGrid">
@@ -199,7 +205,7 @@ export const NewTabPage = ({ onSelectPage }) => {
 
             {/* Monitor grid */}
             {activeChip === 'monitor' && (
-              <div className="emptySessionPage__sectionHeader">// OPEN A PAGE TO MONITOR</div>
+              <h4>Open a page to monitor</h4>
             )}
             {activeChip === 'monitor' && (
               <div className="emptySessionPage__discoverGrid">
@@ -232,7 +238,7 @@ export const NewTabPage = ({ onSelectPage }) => {
 
             {/* More grid */}
             {activeChip === 'more' && (
-              <div className="emptySessionPage__sectionHeader">// OPEN A PAGE</div>
+              <h4>Open a page</h4>
             )}
             {activeChip === 'more' && (
               <div className="emptySessionPage__discoverGrid">

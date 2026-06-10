@@ -736,7 +736,9 @@ textarea.emptySessionPage__textarea {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  width: 100%;
+  width: calc(100% + 24px);
+  margin-left: -12px;
+  padding: 6px 12px;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -1011,11 +1013,18 @@ textarea.emptySessionPage__textarea {
   cursor: pointer;
   font-size: $ouiFontSizeS;
   color: $ouiTextColor;
-  transition: background-color 200ms ease, border-color 200ms ease;
+  transition: background-color 200ms ease, border-color 200ms ease, transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 200ms ease;
 
   &:hover {
     background-color: rgba($ouiColorPrimary, 0.08);
     border-color: rgba($ouiColorPrimary, 0.3);
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
+  }
+
+  &:active {
+    transform: scale(0.97);
+    box-shadow: none;
   }
 
   &--disabled {
@@ -1026,6 +1035,8 @@ textarea.emptySessionPage__textarea {
     &:hover {
       background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(24, 16, 40, 0.4));
       border-color: lightOrDarkTheme(rgba(10, 10, 10, 0.14), rgba(250, 250, 250, 0.16));
+      transform: none;
+      box-shadow: none;
     }
   }
 }

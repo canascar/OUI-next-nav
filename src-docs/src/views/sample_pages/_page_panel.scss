@@ -224,7 +224,8 @@
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  animation: pagePanelFadeIn 300ms ease-out both;
+  padding-bottom: 8px;
+  animation: pagePanelFadeIn 400ms ease-out both;
 }
 
 @keyframes pagePanelFadeIn {
