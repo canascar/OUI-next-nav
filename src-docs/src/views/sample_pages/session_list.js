@@ -13,6 +13,7 @@ import React, { useState, useCallback, useRef } from 'react';
 
 import {
   OuiCompressedFieldSearch,
+  OuiFieldSearch,
   OuiIcon,
   OuiText,
   OuiTitle,
@@ -108,7 +109,7 @@ export const SessionList = ({
 
         {/* Search */}
         <div className="sessionList__search">
-          <OuiCompressedFieldSearch
+          <OuiFieldSearch
             placeholder="Search sessions..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}

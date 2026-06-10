@@ -13,6 +13,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 
 import {
   OuiCompressedFieldSearch,
+  OuiFieldSearch,
   OuiIcon,
   OuiTitle,
 } from '../../../../src/components';
@@ -199,7 +200,7 @@ export const LibraryPage = ({ onSelectPage }) => {
           </div>
 
           <div className="libraryPage__search">
-            <OuiCompressedFieldSearch
+            <OuiFieldSearch
               placeholder="Search assets..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
