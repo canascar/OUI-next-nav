@@ -34,6 +34,7 @@ import {
 
 import { DetailPageHeader } from './detail_page_header';
 import { ProgressTracker } from './progress_tracker';
+import { OllyIndicator } from './olly_indicator';
 import { Mascot } from '../../../../olly-mascot/Mascot';
 import { ThemeContext } from '../../components/with_theme';
 import {
@@ -2208,7 +2209,13 @@ export const ThreadPage = ({
                 />
               );
             })}
-            {isTyping && null}
+            {isTyping && (
+              <div className="threadPage__message threadPage__message--assistant">
+                <div className="threadPage__bubble threadPage__bubble--assistant">
+                  <OllyIndicator state="process-label" />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Input area — textarea with buttons inside at bottom */}

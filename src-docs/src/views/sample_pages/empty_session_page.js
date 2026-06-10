@@ -23,6 +23,7 @@ import {
   OuiTabs,
   OuiText,
   OuiTitle,
+  OuiToolTip,
 } from '../../../../src/components';
 
 import {
@@ -720,26 +721,28 @@ export const EmptySessionPage = ({
               <h1>{greeting}</h1>
             </OuiTitle>
 
-            <div className="emptySessionPage__briefingNarrative">
-              <p className="emptySessionPage__narrativePara emptySessionPage__narrativePara--1">
+            <div className="emptySessionPage__briefingNarrative emptySessionPage__briefingNarrative--news">
+              <p className="emptySessionPage__narrativePara emptySessionPage__narrativePara--1 emptySessionPage__newsSummary">
                 <strong>244 of 247</strong> services healthy. No degradation, no cascading failures.
               </p>
-
-              <p className="emptySessionPage__narrativePara emptySessionPage__narrativePara--2">
-                One issue needs attention:{' '}
-                <NarrativeLink sessionId="latency-spike-session" onClick={() => onSelectSession('latency-spike-session')}>Payment service P99 has breached 2,000ms</NarrativeLink> — connection pool exhaustion on 3 of 4 pods. Root cause identified 15 min ago. If the last pod tips, throughput takes a hit.
-              </p>
-
-              <p className="emptySessionPage__narrativePara emptySessionPage__narrativePara--3">
-                Lower priority:{' '}
-                <NarrativeLink sessionId="error-rate-spike-session" onClick={() => onSelectSession('error-rate-spike-session')}>checkout error-rate spike from an auth-service regression</NarrativeLink>. Surfaced 2 hours ago, being tracked. Not yet customer-impacting.
-              </p>
-
-              <p className="emptySessionPage__narrativePara emptySessionPage__narrativePara--4">
-                You also have 2 recent sessions —{' '}
-                <NarrativeLink sessionId="latency-spike-session" onClick={() => onSelectSession('latency-spike-session')}>a latency spike investigation</NarrativeLink> and{' '}
-                <NarrativeLink sessionId="error-rate-spike-session" onClick={() => onSelectSession('error-rate-spike-session')}>a checkout error-rate spike</NarrativeLink> — if you want to pick up where you left off.
-              </p>
+              <div className="emptySessionPage__narrativePara emptySessionPage__narrativePara--2 emptySessionPage__newsItem">
+                <span className="emptySessionPage__newsBadge emptySessionPage__newsBadge--critical">Critical</span>
+                <span className="emptySessionPage__newsBody">
+                  <NarrativeLink sessionId="latency-spike-session" onClick={() => onSelectSession('latency-spike-session')}>Payment service P99 breached 2,000ms</NarrativeLink> — connection pool exhaustion on 3 of 4 pods. Root cause identified.
+                </span>
+              </div>
+              <div className="emptySessionPage__narrativePara emptySessionPage__narrativePara--3 emptySessionPage__newsItem">
+                <span className="emptySessionPage__newsBadge emptySessionPage__newsBadge--warning">Warning</span>
+                <span className="emptySessionPage__newsBody">
+                  <NarrativeLink sessionId="error-rate-spike-session" onClick={() => onSelectSession('error-rate-spike-session')}>Checkout error-rate spike</NarrativeLink> tied to auth-service regression. Elevated but not yet customer-impacting.
+                </span>
+              </div>
+              <div className="emptySessionPage__narrativePara emptySessionPage__narrativePara--4 emptySessionPage__newsItem">
+                <span className="emptySessionPage__newsBadge emptySessionPage__newsBadge--resolved">Resolved</span>
+                <span className="emptySessionPage__newsBody">
+                  DNS resolution timeout flagged 3 hours ago — resolved on its own. Logged for pattern tracking.
+                </span>
+              </div>
             </div>
 
             {/* Chat input — fixed at bottom of container */}
@@ -769,7 +772,7 @@ export const EmptySessionPage = ({
                   briefingRef.current.querySelectorAll('.emptySessionPage__briefingSeparator').forEach(el => { el.style.opacity = ''; });
                 }
               }}>
-              <div className="emptySessionPage__tabRow">
+              <div className="emptySessionPage__tabRow emptySessionPage__tabRow--sticky">
               <OuiTabs size="s" display="condensed" style={{ maxWidth: 'fit-content' }}>
                 <OuiTab isSelected={rightPanelTab === 'insights'} onClick={() => setRightPanelTab('insights')}>
                   Overview
@@ -779,9 +782,15 @@ export const EmptySessionPage = ({
                 </OuiTab>
               </OuiTabs>
               {rightPanelTab === 'insights' && (
-                <OuiSmallButtonEmpty iconType="gear" size="xs">
-                  Customize
-                </OuiSmallButtonEmpty>
+                <OuiToolTip content="Customize" position="left">
+                  <OuiButtonIcon
+                    iconType="gear"
+                    aria-label="Customize"
+                    size="xs"
+                    color="text"
+                    display="empty"
+                  />
+                </OuiToolTip>
               )}
               </div>
 
@@ -802,7 +811,8 @@ export const EmptySessionPage = ({
                 </div>
 
                 <div className={`emptySessionPage__briefingPanel${rightPanelTab !== 'insights' ? ' emptySessionPage__briefingPanel--hidden' : ''}`}>
-                <div className="emptySessionPage__insightsGrid emptySessionPage__insightsGrid--2col" ref={insightsRef} onMouseLeave={handleInsightMouseLeave}>
+                <div className="emptySessionPage__widgetGrid" ref={insightsRef} onMouseLeave={handleInsightMouseLeave}>
+                  {/* Row 1: Top services + Connection timeout errors */}
                   <OuiInsightCard title="Top services by fault rate" onMouseEnter={() => handleInsightHover(0)} onMouseDown={() => handleInsightMouseDown(0)} onMouseUp={() => handleInsightHover(0)} onClick={() => onOpenPageInNewSession('app-perf-services', 'Application Services')}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600, opacity: 0.65, textTransform: 'uppercase', letterSpacing: 0.5 }}>
@@ -838,6 +848,7 @@ export const EmptySessionPage = ({
                     </svg>
                   </OuiInsightCard>
 
+                  {/* Row 2: Recent alerts + Deployment timeline */}
                   <OuiInsightCard title="Recent alerts" onMouseEnter={() => handleInsightHover(2)} onMouseDown={() => handleInsightMouseDown(2)} onMouseUp={() => handleInsightHover(2)} onClick={() => onOpenPageInNewSession('alerts', 'Alerts')}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600, opacity: 0.65, textTransform: 'uppercase', letterSpacing: 0.5 }}>
@@ -857,13 +868,11 @@ export const EmptySessionPage = ({
 
                   <OuiInsightCard title="Deployment timeline" onMouseEnter={() => handleInsightHover(3)} onMouseDown={() => handleInsightMouseDown(3)} onMouseUp={() => handleInsightHover(3)} onClick={() => onOpenPageInNewSession('dashboards', 'Dashboards')}>
                     <svg viewBox="0 0 200 100" style={{ width: '100%', height: 100 }}>
-                      {/* Bars — wider, rounded top, spaced evenly */}
                       <rect x="12" y="55" width="28" height="35" rx="4" fill="#34d399" />
                       <rect x="50" y="30" width="28" height="60" rx="4" fill="#34d399" />
                       <rect x="88" y="12" width="28" height="78" rx="4" fill="#34d399" />
                       <rect x="126" y="38" width="28" height="52" rx="4" fill="#34d399" />
                       <rect x="164" y="48" width="28" height="42" rx="4" fill="#34d399" />
-                      {/* X-axis labels */}
                       <text x="26" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">1–3</text>
                       <text x="64" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">5–7</text>
                       <text x="102" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">9–11</text>
@@ -872,25 +881,21 @@ export const EmptySessionPage = ({
                     </svg>
                   </OuiInsightCard>
 
+                  {/* Row 3: Resource utilization + Log Explorer */}
                   <OuiInsightCard title="Resource utilization" onMouseEnter={() => handleInsightHover(4)} onMouseDown={() => handleInsightMouseDown(4)} onMouseUp={() => handleInsightHover(4)} onClick={() => onOpenPageInNewSession('metrics', 'Metrics')} titleExtra={<span style={{ color: '#34d399', fontWeight: 700, fontSize: 18 }}>56%</span>}>
                     <svg viewBox="0 0 220 100" style={{ width: '100%', height: 100 }}>
-                      {/* Grid lines */}
                       <line x1="30" y1="10" x2="210" y2="10" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
                       <line x1="30" y1="32" x2="210" y2="32" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
                       <line x1="30" y1="54" x2="210" y2="54" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
                       <line x1="30" y1="76" x2="210" y2="76" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
-                      {/* Y-axis labels */}
                       <text x="22" y="13" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">100</text>
                       <text x="22" y="35" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">75</text>
                       <text x="22" y="57" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">50</text>
                       <text x="22" y="79" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">25</text>
                       <text x="22" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">0</text>
-                      {/* Area fill */}
                       <defs><linearGradient id="resFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#34d399" stopOpacity="0.25"/><stop offset="100%" stopColor="#34d399" stopOpacity="0.03"/></linearGradient></defs>
                       <path d="M40,58 L75,54 L110,50 L145,52 L175,46 L195,44 L210,46 V96 H40 Z" fill="url(#resFill)" />
-                      {/* Line */}
                       <polyline fill="none" stroke="#34d399" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points="40,58 75,54 110,50 145,52 175,46 195,44 210,46" />
-                      {/* Dots */}
                       <circle cx="40" cy="58" r="3" fill="#34d399" />
                       <circle cx="75" cy="54" r="3" fill="#34d399" />
                       <circle cx="110" cy="50" r="3" fill="#34d399" />
@@ -898,7 +903,6 @@ export const EmptySessionPage = ({
                       <circle cx="175" cy="46" r="3" fill="#34d399" />
                       <circle cx="195" cy="44" r="3" fill="#34d399" />
                       <circle cx="210" cy="46" r="3" fill="#34d399" />
-                      {/* X-axis labels */}
                       <text x="40" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">0m</text>
                       <text x="85" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">15m</text>
                       <text x="130" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">30m</text>
@@ -907,31 +911,57 @@ export const EmptySessionPage = ({
                     </svg>
                   </OuiInsightCard>
 
-                  <OuiInsightCard title="Request throughput" onMouseEnter={() => handleInsightHover(5)} onMouseDown={() => handleInsightMouseDown(5)} onMouseUp={() => handleInsightHover(5)} onClick={() => onOpenPageInNewSession('metrics', 'Metrics')} titleExtra={<span style={{ color: '#a5b4fc', fontWeight: 700, fontSize: 18 }}>18.2k/s</span>}>
-                    <svg viewBox="0 0 220 100" style={{ width: '100%', height: 100 }}>
-                      <line x1="30" y1="14" x2="210" y2="14" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
-                      <line x1="30" y1="38" x2="210" y2="38" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
-                      <line x1="30" y1="62" x2="210" y2="62" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
-                      <text x="22" y="17" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">25k</text>
-                      <text x="22" y="41" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">15k</text>
-                      <text x="22" y="65" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">5k</text>
-                      <defs><linearGradient id="rpsFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#a5b4fc" stopOpacity="0.25"/><stop offset="100%" stopColor="#a5b4fc" stopOpacity="0.03"/></linearGradient></defs>
-                      <path d="M40,60 L75,52 L110,56 L145,40 L175,46 L195,34 L210,38 V90 H40 Z" fill="url(#rpsFill)" />
-                      <polyline fill="none" stroke="#a5b4fc" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points="40,60 75,52 110,56 145,40 175,46 195,34 210,38" />
-                      <circle cx="40" cy="60" r="3" fill="#a5b4fc" />
-                      <circle cx="75" cy="52" r="3" fill="#a5b4fc" />
-                      <circle cx="110" cy="56" r="3" fill="#a5b4fc" />
-                      <circle cx="145" cy="40" r="3" fill="#a5b4fc" />
-                      <circle cx="175" cy="46" r="3" fill="#a5b4fc" />
-                      <circle cx="195" cy="34" r="3" fill="#a5b4fc" />
-                      <circle cx="210" cy="38" r="3" fill="#a5b4fc" />
-                      <text x="40" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">0m</text>
-                      <text x="85" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">15m</text>
-                      <text x="130" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">30m</text>
-                      <text x="175" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">45m</text>
-                      <text x="210" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">60m</text>
-                    </svg>
-                  </OuiInsightCard>
+                  {/* Row 4: Saved Queries + (empty slot, same row as resource util above via reorder) */}
+                  <div className="emptySessionPage__widgetList" onClick={() => onOpenPageInNewSession('logs', 'Logs')} role="button" tabIndex={0}>
+                    <div className="emptySessionPage__widgetListHeader">
+                      <span className="emptySessionPage__widgetListIcon"><OuiIcon type="search" size="m" /></span>
+                      <span className="emptySessionPage__widgetListTitle">Saved queries</span>
+                      <span className="emptySessionPage__widgetListAction">all ›</span>
+                    </div>
+                    <div className="emptySessionPage__widgetListItems">
+                      <div className="emptySessionPage__widgetListItem">
+                        <div>
+                          <strong>5xx by service</strong><br />
+                          <span style={{ fontSize: 11, opacity: 0.6 }}>last 1h</span>
+                        </div>
+                      </div>
+                      <div className="emptySessionPage__widgetListItem">
+                        <div>
+                          <strong>Slow traces &gt; 2s</strong><br />
+                          <span style={{ fontSize: 11, opacity: 0.6 }}>all services</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Row 5: Dashboards (wide) */}
+                  <div className="emptySessionPage__widget--wide emptySessionPage__widgetList" onClick={() => onOpenPageInNewSession('dashboards', 'Dashboards')} role="button" tabIndex={0}>
+                    <div className="emptySessionPage__widgetListHeader">
+                      <span className="emptySessionPage__widgetListIcon"><OuiIcon type="grid" size="m" /></span>
+                      <span className="emptySessionPage__widgetListTitle">Dashboards</span>
+                      <span className="emptySessionPage__widgetListAction">all ›</span>
+                    </div>
+                    <div className="emptySessionPage__widgetListItems">
+                      <div className="emptySessionPage__widgetListItem">
+                        <div>
+                          <strong>Service overview</strong><br />
+                          <span style={{ fontSize: 11, opacity: 0.6 }}>12 panels · opened 2h ago</span>
+                        </div>
+                        <svg viewBox="0 0 60 20" style={{ width: 60, height: 20, flexShrink: 0 }}>
+                          <polyline fill="none" stroke="#34d399" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points="0,14 10,10 20,12 30,8 40,10 50,6 60,8" />
+                        </svg>
+                      </div>
+                      <div className="emptySessionPage__widgetListItem">
+                        <div>
+                          <strong>p99 latency</strong><br />
+                          <span style={{ fontSize: 11, opacity: 0.6 }}>8 panels · opened today</span>
+                        </div>
+                        <svg viewBox="0 0 60 20" style={{ width: 60, height: 20, flexShrink: 0 }}>
+                          <polyline fill="none" stroke="#d97706" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points="0,16 10,14 20,12 30,10 40,8 50,6 60,4" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 </div>
               </div>
