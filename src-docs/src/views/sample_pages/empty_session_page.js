@@ -321,6 +321,7 @@ const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, 
                   aria-label="Add attachment"
                   size="s"
                   color="text"
+                  onMouseDown={(e) => e.preventDefault()}
                   onClick={() => setIsAttachMenuOpen((open) => !open)}
                 />
               }
