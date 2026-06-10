@@ -621,7 +621,7 @@ const NarrativeLink = ({ sessionId, children, onClick }) => {
             iconType="arrowRight"
             iconSide="right"
             size="xs"
-            color="primary"
+            color="text"
             style={{ borderRadius: 999 }}
             onClick={(e) => { e.stopPropagation(); setIsOpen(false); onClick(); }}>
             Investigate
