@@ -277,7 +277,7 @@
 // ─── Session Preview (shown in popover on hover) ──────────────────────
 .emptySessionPage__previewPopover {
   width: 480px;
-  border-radius: $ouiBorderRadius !important; // sass-lint:disable-line no-important
+  border-radius: $ouiBorderRadiusLarge !important; // sass-lint:disable-line no-important
 }
 
 .emptySessionPage__sessionPreview {
@@ -286,6 +286,14 @@
   gap: 16px;
   padding: 16px;
   width: 100%;
+
+  // Investigate button — no active/focus background
+  .ouiButtonEmpty {
+    &:focus,
+    &:active {
+      background-color: transparent !important; // sass-lint:disable-line no-important
+    }
+  }
 }
 
 .emptySessionPage__previewSummary {
