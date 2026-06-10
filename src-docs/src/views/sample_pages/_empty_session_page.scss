@@ -277,7 +277,7 @@
 // ─── Session Preview (shown in popover on hover) ──────────────────────
 .emptySessionPage__previewPopover {
   width: 480px;
-  border-radius: $ouiBorderRadiusLarge !important; // sass-lint:disable-line no-important
+  border-radius: 18px !important; // sass-lint:disable-line no-important
 }
 
 .emptySessionPage__sessionPreview {
