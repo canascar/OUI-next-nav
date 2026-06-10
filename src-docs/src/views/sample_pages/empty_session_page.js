@@ -24,6 +24,7 @@ import {
   OuiTabs,
   OuiText,
   OuiTitle,
+  OuiToolTip,
 } from '../../../../src/components';
 
 import {
@@ -39,7 +40,6 @@ import { SOURCE_PAGE_MOCK } from './session_models';
 import { OllyAvatar } from './olly_avatar';
 import { Mascot } from '../../../../olly-mascot/Mascot';
 import { ThemeContext } from '../../components/with_theme';
-import { OllyIdle } from './olly_idle';
 
 /**
  * Quick access shortcut definitions.
@@ -56,6 +56,65 @@ const FILTER_CHIPS = [
   { key: 'monitor', label: 'Monitor', icon: 'navAlerting' },
   { key: 'more', label: 'More', icon: 'apps' },
 ];
+
+/**
+ * "Open a page" grid items. Clicking one opens the related page in a new session.
+ */
+const OPEN_PAGE_ITEMS = [
+  { label: 'Logs', pageKey: 'logs', icon: 'navDiscover' },
+  { label: 'Metrics', pageKey: 'metrics', icon: 'visArea' },
+  { label: 'Dashboards', pageKey: 'dashboards', icon: 'navDashboards' },
+  { label: 'Alerts', pageKey: 'alerts', icon: 'navAlerting' },
+  { label: 'Application Map', pageKey: 'app-map', icon: 'navServiceMap' },
+  { label: 'Application Services', pageKey: 'app-perf-services', icon: 'navOverview' },
+  { label: 'Application Traces', pageKey: 'app-traces', icon: 'apmTrace' },
+  { label: 'Forecasting', pageKey: 'forecasting', icon: 'visLine' },
+  { label: 'Agent traces', pageKey: 'app-traces', icon: 'apmTrace' },
+  { label: 'Agent spans', pageKey: 'agent-spans', icon: 'visTagCloud' },
+];
+
+/**
+ * Hover preview data for narrative links.
+ * Shown in the right panel when hovering a session link in the left column.
+ */
+const SESSION_PREVIEWS = {
+  'latency-spike-session': {
+    summary: 'Payment-service P99 crossed 2,000ms. Connection pool exhaustion identified on 3 of 4 pods.',
+    stats: [
+      { label: 'P99', value: '2,340ms', color: 'danger' },
+      { label: 'Errors', value: '0.2%', color: 'success' },
+      { label: 'Throughput', value: '1,240/s', color: 'default' },
+      { label: 'Pool Util', value: '98%', color: 'danger' },
+    ],
+    finding: 'Connection pool at 98% — requests queuing rather than failing fast. 847 connection-acquire-timeout entries in the last 30 min.',
+    action: 'Increase pool max 50 → 150, enable circuit breaker, add monitoring dashboard.',
+    meta: 'Created by AI · 15 min ago · Alert triggered · No recent deployments · 3 of 4 pods affected',
+  },
+  'error-rate-spike-session': {
+    summary: 'Checkout error rate spiked to 12.4%. Auth-service deployment regression identified — OIDC token validation timing out.',
+    stats: [
+      { label: 'Error Rate', value: '12.4%', color: 'danger' },
+      { label: 'P99', value: '890ms', color: 'warning' },
+      { label: 'Affected', value: 'checkout', color: 'default' },
+      { label: 'Deploy', value: '2h ago', color: 'warning' },
+    ],
+    finding: 'Auth-service v2.4.1 introduced a regression in OIDC token validation — tokens expire before refresh, causing cascading 401s on the checkout path.',
+    action: 'Rollback auth-service to v2.3.9, verify error rate normalizes, then hotfix the token refresh logic.',
+    meta: 'Shared by team · 2 hours ago · Deployment correlated · Checkout path affected',
+  },
+  'dns-timeout-session': {
+    summary: 'DNS resolution timeouts spiking on os-data-3. Upstream resolver intermittently unresponsive — queries exceeding 5s threshold.',
+    stats: [
+      { label: 'Timeouts', value: '142', color: 'warning' },
+      { label: 'Avg Resolve', value: '4.8s', color: 'warning' },
+      { label: 'Affected', value: 'os-data-3', color: 'default' },
+      { label: 'Duration', value: '3h', color: 'default' },
+    ],
+    finding: 'Upstream DNS resolver 10.0.1.53 intermittently dropping UDP packets — correlates with network maintenance window on the resolver host.',
+    action: 'Add secondary resolver fallback, increase timeout to 10s, escalate to network team if recurrence continues.',
+    meta: 'Detected by AI · 3 hours ago · Single node affected · No customer impact yet',
+  },
+};
 
 /**
  * Mock data for each filter chip.
@@ -488,6 +547,70 @@ function formatRelativeTime(timestamp) {
 }
 
 /**
+ * NarrativeLink — Inline link with a hover popover showing session preview.
+ */
+const NarrativeLink = ({ sessionId, children, onClick }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const timerRef = useRef(null);
+  const preview = SESSION_PREVIEWS[sessionId];
+
+  const handleMouseEnter = () => {
+    timerRef.current = setTimeout(() => setIsOpen(true), 300);
+  };
+  const handleMouseLeave = () => {
+    clearTimeout(timerRef.current);
+    setIsOpen(false);
+  };
+
+  const button = (
+    // eslint-disable-next-line jsx-a11y/anchor-is-valid
+    <a
+      className="emptySessionPage__narrativeLink"
+      onClick={onClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}>
+      {children}
+    </a>
+  );
+
+  if (!preview) return button;
+
+  return (
+    <OuiPopover
+      button={button}
+      isOpen={isOpen}
+      closePopover={() => setIsOpen(false)}
+      anchorPosition="downCenter"
+      panelPaddingSize="none"
+      hasArrow={false}
+      panelClassName="emptySessionPage__previewPopover"
+      onMouseEnter={() => { clearTimeout(timerRef.current); setIsOpen(true); }}
+      onMouseLeave={handleMouseLeave}>
+      <div className="emptySessionPage__sessionPreview">
+        <p className="emptySessionPage__previewSummary">{preview.summary}</p>
+        <div className="emptySessionPage__previewStats">
+          {preview.stats.map((stat, i) => (
+            <div key={i} className={`emptySessionPage__previewStat emptySessionPage__previewStat--${stat.color}`}>
+              <span className="emptySessionPage__previewStatValue">{stat.value}</span>
+              <span className="emptySessionPage__previewStatLabel">{stat.label}</span>
+            </div>
+          ))}
+        </div>
+        <div className="emptySessionPage__previewSection">
+          <span className="emptySessionPage__previewSectionLabel">Finding</span>
+          <p className="emptySessionPage__previewSectionText">{preview.finding}</p>
+        </div>
+        <div className="emptySessionPage__previewSection">
+          <span className="emptySessionPage__previewSectionLabel">Recommended action</span>
+          <p className="emptySessionPage__previewSectionText">{preview.action}</p>
+        </div>
+        <p className="emptySessionPage__previewMeta">{preview.meta}</p>
+      </div>
+    </OuiPopover>
+  );
+};
+
+/**
  * EmptySessionPage — The welcome experience shown when a session has no thread and no pages open.
  *
  * Displays a centered panel with:
@@ -507,6 +630,7 @@ function formatRelativeTime(timestamp) {
 export const EmptySessionPage = ({
   onStartThread,
   onOpenPage,
+  onOpenPageInNewSession,
   onViewSession,
   onStartInvestigation,
   onSelectSession,
@@ -542,7 +666,7 @@ export const EmptySessionPage = ({
   const [hoveredCard, setHoveredCard] = useState(null);
   const [scrolledFromTop, setScrolledFromTop] = useState(false);
   const [mascotExpression, setMascotExpression] = useState(undefined);
-  const [rightPanelTab, setRightPanelTab] = useState('recent');
+  const [rightPanelTab, setRightPanelTab] = useState('insights');
   const [hasAnimatedBriefing, setHasAnimatedBriefing] = useState(false);
   const scrollRef = useRef(null);
   const briefingRef = useRef(null);
@@ -554,118 +678,10 @@ export const EmptySessionPage = ({
     return () => clearTimeout(timer);
   }, []);
 
-  // Typewriter for text lines
-  const textLines = useMemo(() => [
-    { text: 'All 247 services are running normally.', boldStart: 4, boldEnd: 16 },
-    { text: 'I found 3 items that need your attention.', boldStart: 8, boldEnd: 15 },
-    { text: "Let me know if you'd like me to dig deeper into any of these, or ask me anything below.", boldStart: -1, boldEnd: -1 },
-  ], []);
-  const [typedLines, setTypedLines] = useState(['', '', '']);
-  const [typingLineIdx, setTypingLineIdx] = useState(-1);
-  const [spinningLineIdx, setSpinningLineIdx] = useState(-1);
-  const [typingDone, setTypingDone] = useState(false);
-  const typeTimers = useRef([]);
-
-  React.useEffect(() => {
-    typeTimers.current.forEach(clearTimeout);
-    typeTimers.current = [];
-
-    const CHAR_SPEED = 18;
-    const LINE_PAUSE = 300;
-    const SPIN_DURATION = 2000;
-    const INITIAL_DELAY = 1200;
-    let lineIdx = 0;
-    let charIdx = 0;
-
-    const typeNext = () => {
-      if (lineIdx >= textLines.length) {
-        setTypingDone(true);
-        setTypingLineIdx(-1);
-        setSpinningLineIdx(-1);
-        return;
-      }
-      if (charIdx < textLines[lineIdx].text.length) {
-        charIdx++;
-        const li = lineIdx;
-        const ci = charIdx;
-        setTypedLines(prev => {
-          const next = [...prev];
-          next[li] = textLines[li].text.slice(0, ci);
-          return next;
-        });
-        setTypingLineIdx(lineIdx);
-        const timer = setTimeout(typeNext, CHAR_SPEED);
-        typeTimers.current.push(timer);
-      } else {
-        lineIdx++;
-        charIdx = 0;
-        if (lineIdx < textLines.length) {
-          // Show spinner before next line
-          setTypingLineIdx(-1);
-          setSpinningLineIdx(lineIdx);
-          const timer = setTimeout(() => {
-            setSpinningLineIdx(-1);
-            typeNext();
-          }, SPIN_DURATION);
-          typeTimers.current.push(timer);
-        } else {
-          setTypingDone(true);
-          setTypingLineIdx(-1);
-          setSpinningLineIdx(-1);
-        }
-      }
-    };
-
-    // Show spinner before first line
-    const startTimer = setTimeout(() => {
-      setSpinningLineIdx(0);
-      const spinTimer = setTimeout(() => {
-        setSpinningLineIdx(-1);
-        typeNext();
-      }, SPIN_DURATION);
-      typeTimers.current.push(spinTimer);
-    }, INITIAL_DELAY);
-    typeTimers.current.push(startTimer);
-    return () => typeTimers.current.forEach(clearTimeout);
-  }, [textLines]);
-
   const handleScroll = useCallback(() => {
     if (scrollRef.current) {
       setScrolledFromTop(scrollRef.current.scrollTop > 0);
     }
-  }, []);
-
-  const handleBriefingHover = useCallback((hoveredIndex) => {
-    if (!briefingRef.current) return;
-    const items = briefingRef.current.querySelectorAll('.emptySessionPage__briefingItem');
-    const separators = briefingRef.current.querySelectorAll('.emptySessionPage__briefingSeparator');
-    items.forEach((el, i) => {
-      const distance = Math.abs(i - hoveredIndex);
-      let scale = 1;
-      if (distance === 0) scale = 1.03;
-      else if (distance === 1) scale = 1.015;
-      else if (distance === 2) scale = 1.005;
-      el.style.transform = `scale(${scale})`;
-    });
-    separators.forEach((el, i) => {
-      const distBefore = Math.abs(i - hoveredIndex);
-      const distAfter = Math.abs(i + 1 - hoveredIndex);
-      const minDist = Math.min(distBefore, distAfter);
-      el.style.opacity = minDist === 0 ? '0' : '1';
-    });
-  }, []);
-
-  const handleBriefingMouseDown = useCallback((pressedIndex) => {
-    if (!briefingRef.current) return;
-    const items = briefingRef.current.querySelectorAll('.emptySessionPage__briefingItem');
-    items.forEach((el, i) => {
-      const distance = Math.abs(i - pressedIndex);
-      let scale = 1;
-      if (distance === 0) scale = 0.97;
-      else if (distance === 1) scale = 0.985;
-      else if (distance === 2) scale = 0.995;
-      el.style.transform = `scale(${scale})`;
-    });
   }, []);
 
   // Insight card hover — single card only, no proximity
@@ -726,7 +742,22 @@ export const EmptySessionPage = ({
           <div className="emptySessionPage__leftCol">
             {/* Mascot + status — above title */}
             <div className="emptySessionPage__headerRow">
-              <OllyIdle size={32} winkOnMount={false} className="emptySessionPage__avatarWrap" />
+              <div
+                className="emptySessionPage__avatarWrap"
+                onMouseDown={(e) => {
+                  e.currentTarget.style.transform = 'scale(0.85)';
+                  setMascotExpression('heart');
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  setMascotExpression(undefined);
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  setMascotExpression(undefined);
+                }}>
+                <Mascot size={32} expression={mascotExpression} idle={!mascotExpression} bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />
+              </div>
               <span className="emptySessionPage__onlineStatus">
                 <span className="emptySessionPage__onlineDot" />
                 Olly is online
@@ -736,31 +767,29 @@ export const EmptySessionPage = ({
               <h1>{greeting}</h1>
             </OuiTitle>
 
-            <OuiText size="s" style={{ maxWidth: 640, width: '100%', marginLeft: 'auto' }}>
-              <p>
-                {textLines.map((line, i) => {
-                  const typed = typedLines[i];
-                  const isSpinning = spinningLineIdx === i;
-                  let content;
-                  if (typed) {
-                    if (line.boldStart >= 0 && typed.length > line.boldStart) {
-                      const before = typed.slice(0, line.boldStart);
-                      const boldPart = typed.slice(line.boldStart, Math.min(typed.length, line.boldEnd));
-                      const after = typed.length > line.boldEnd ? typed.slice(line.boldEnd) : '';
-                      content = <>{before}<strong>{boldPart}</strong>{after}</>;
-                    } else {
-                      content = typed;
-                    }
-                  }
-                  return (
-                    <span key={i} className={`emptySessionPage__textLine${typed || isSpinning ? ' emptySessionPage__textLine--visible' : ''}${typingLineIdx === i ? ' emptySessionPage__textLine--active' : ''}`}>
-                      {isSpinning && !typed && <span className="emptySessionPage__textSpinner" />}
-                      {content}
-                    </span>
-                  );
-                })}
+            <div className="emptySessionPage__briefingNarrative emptySessionPage__briefingNarrative--news">
+              <p className="emptySessionPage__narrativePara emptySessionPage__narrativePara--1 emptySessionPage__newsSummary">
+                <strong>244 of 247</strong> services healthy. No degradation, no cascading failures.
               </p>
-            </OuiText>
+              <div className="emptySessionPage__narrativePara emptySessionPage__narrativePara--2 emptySessionPage__newsItem">
+                <span className="emptySessionPage__newsBadge emptySessionPage__newsBadge--critical">Critical</span>
+                <span className="emptySessionPage__newsBody">
+                  <NarrativeLink sessionId="latency-spike-session" onClick={() => onSelectSession('latency-spike-session')}>Payment service P99 breached 2,000ms</NarrativeLink> — connection pool exhaustion on 3 of 4 pods. Root cause identified.
+                </span>
+              </div>
+              <div className="emptySessionPage__narrativePara emptySessionPage__narrativePara--3 emptySessionPage__newsItem">
+                <span className="emptySessionPage__newsBadge emptySessionPage__newsBadge--warning">Warning</span>
+                <span className="emptySessionPage__newsBody">
+                  <NarrativeLink sessionId="error-rate-spike-session" onClick={() => onSelectSession('error-rate-spike-session')}>Checkout error-rate spike</NarrativeLink> tied to auth-service regression. Elevated but not yet customer-impacting.
+                </span>
+              </div>
+              <div className="emptySessionPage__narrativePara emptySessionPage__narrativePara--4 emptySessionPage__newsItem">
+                <span className="emptySessionPage__newsBadge emptySessionPage__newsBadge--warning">Warning</span>
+                <span className="emptySessionPage__newsBody">
+                  <NarrativeLink sessionId="dns-timeout-session" onClick={() => onSelectSession('dns-timeout-session')}>DNS resolution timeout</NarrativeLink> flagged 3 hours ago — not yet resolved. Monitoring for recurrence.
+                </span>
+              </div>
+            </div>
 
             {/* Chat input — fixed at bottom of container */}
             <div className="emptySessionPage__inlineInput">
@@ -789,66 +818,48 @@ export const EmptySessionPage = ({
                   briefingRef.current.querySelectorAll('.emptySessionPage__briefingSeparator').forEach(el => { el.style.opacity = ''; });
                 }
               }}>
+              <div className="emptySessionPage__tabRow emptySessionPage__tabRow--sticky">
               <OuiTabs size="s" display="condensed" style={{ maxWidth: 'fit-content' }}>
-                <OuiTab isSelected={rightPanelTab === 'recent'} onClick={() => setRightPanelTab('recent')}>
-                  Recent <span className="emptySessionPage__tabBadge">3</span>
-                </OuiTab>
                 <OuiTab isSelected={rightPanelTab === 'insights'} onClick={() => setRightPanelTab('insights')}>
-                  Insights <span className="emptySessionPage__tabBadge">5</span>
+                  Overview
+                </OuiTab>
+                <OuiTab isSelected={rightPanelTab === 'open-page'} onClick={() => setRightPanelTab('open-page')}>
+                  Open a page
                 </OuiTab>
               </OuiTabs>
+              {rightPanelTab === 'insights' && (
+                <OuiToolTip content="Customize" position="left">
+                  <OuiButtonIcon
+                    iconType="gear"
+                    aria-label="Customize"
+                    size="xs"
+                    color="text"
+                    display="empty"
+                  />
+                </OuiToolTip>
+              )}
+              </div>
 
               <div className="emptySessionPage__briefingContent">
-                <div className={`emptySessionPage__briefingPanel${rightPanelTab !== 'recent' ? ' emptySessionPage__briefingPanel--hidden' : ''}`}>
-              <div
-                className="emptySessionPage__briefingItem"
-                onClick={() => onSelectSession(CHIP_DATA.activity[0].sessionId)}
-                onMouseEnter={() => handleBriefingHover(0)}
-                onMouseDown={() => handleBriefingMouseDown(0)}
-                onMouseUp={() => handleBriefingHover(0)}>
-                <OuiText size="s">
-                  <p><strong>Payment service P99 latency breach</strong></p>
-                  <p>P99 crossed 2,000ms with connection pool exhaustion on 3 of 4 pods. I've started an investigation and identified a likely root cause.</p>
-                  <p style={{ fontSize: 10.5, opacity: 0.6 }}>Created by AI · 15 min ago</p>
-                </OuiText>
-                <span className="emptySessionPage__briefingArrow">→</span>
-              </div>
-
-              <div className="emptySessionPage__briefingSeparator" />
-
-              <div
-                className="emptySessionPage__briefingItem"
-                onClick={() => onSelectSession(CHIP_DATA.activity[1].sessionId)}
-                onMouseEnter={() => handleBriefingHover(1)}
-                onMouseDown={() => handleBriefingMouseDown(1)}
-                onMouseUp={() => handleBriefingHover(1)}>
-                <OuiText size="s">
-                  <p><strong>Error Rate Spike — Checkout Service</strong></p>
-                  <p>Checkout error rate spiked to 12.4% around the same time. Auth-service deployment regression identified.</p>
-                  <p style={{ fontSize: 10.5, opacity: 0.6 }}>Shared by team · 2 hours ago</p>
-                </OuiText>
-                <span className="emptySessionPage__briefingArrow">→</span>
-              </div>
-
-              <div className="emptySessionPage__briefingSeparator" />
-
-              <div
-                className="emptySessionPage__briefingItem"
-                onMouseEnter={() => handleBriefingHover(2)}
-                onMouseDown={() => handleBriefingMouseDown(2)}
-                onMouseUp={() => handleBriefingHover(2)}>
-                <OuiText size="s">
-                  <p><strong>DNS Resolution Timeout</strong></p>
-                  <p>Resolved after the upstream fix was deployed. No further action needed.</p>
-                  <p style={{ fontSize: 10.5, opacity: 0.6 }}>Resolved · 3 hours ago</p>
-                </OuiText>
-                <span className="emptySessionPage__briefingArrow">→</span>
-              </div>
+                <div className={`emptySessionPage__briefingPanel${rightPanelTab !== 'open-page' ? ' emptySessionPage__briefingPanel--hidden' : ''}`}>
+                  <div className="emptySessionPage__openPageGrid">
+                    {OPEN_PAGE_ITEMS.map((item, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        className="emptySessionPage__openPageItem"
+                        onClick={() => onOpenPageInNewSession(item.pageKey, item.label)}>
+                        <OuiIcon type={item.icon} size="m" />
+                        <span>{item.label}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <div className={`emptySessionPage__briefingPanel${rightPanelTab !== 'insights' ? ' emptySessionPage__briefingPanel--hidden' : ''}`}>
-                <div className="emptySessionPage__insightsGrid emptySessionPage__insightsGrid--2col" ref={insightsRef} onMouseLeave={handleInsightMouseLeave}>
-                  <OuiInsightCard title="Top services by fault rate" onMouseEnter={() => handleInsightHover(0)} onMouseDown={() => handleInsightMouseDown(0)} onMouseUp={() => handleInsightHover(0)}>
+                <div className="emptySessionPage__widgetGrid" ref={insightsRef} onMouseLeave={handleInsightMouseLeave}>
+                  {/* Row 1: Top services + Connection timeout errors */}
+                  <OuiInsightCard title="Top services by fault rate" onMouseEnter={() => handleInsightHover(0)} onMouseDown={() => handleInsightMouseDown(0)} onMouseUp={() => handleInsightHover(0)} onClick={() => onOpenPageInNewSession('app-perf-services', 'Application Services')}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600, opacity: 0.65, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                         <span>Service</span><span>Fault rate</span>
@@ -869,10 +880,9 @@ export const EmptySessionPage = ({
                         <span style={{ fontWeight: 600 }}>14.29%</span>
                       </div>
                     </div>
-                  <div className="emptySessionPage__insightInspect"><OuiIcon type="inspect" size="s" /><span>Inspect</span></div>
                   </OuiInsightCard>
 
-                  <OuiInsightCard title="Connection timeout errors" onMouseEnter={() => handleInsightHover(1)} onMouseDown={() => handleInsightMouseDown(1)} onMouseUp={() => handleInsightHover(1)}>
+                  <OuiInsightCard title="Connection timeout errors" onMouseEnter={() => handleInsightHover(1)} onMouseDown={() => handleInsightMouseDown(1)} onMouseUp={() => handleInsightHover(1)} onClick={() => onOpenPageInNewSession('logs', 'Logs')}>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
                       <span style={{ color: '#d97706', fontWeight: 700, fontSize: 28, lineHeight: 1 }}>847</span>
                       <span style={{ fontSize: 13, color: '#d97706', fontWeight: 600 }}>↑ 312%</span>
@@ -882,10 +892,10 @@ export const EmptySessionPage = ({
                       <path d="M0,48 C40,48 80,46 120,42 S170,20 200,10 V50 H0 Z" fill="url(#connFill)" />
                       <path d="M0,48 C40,48 80,46 120,42 S170,20 200,10" fill="none" stroke="#d97706" strokeWidth="2.5" strokeLinecap="round" />
                     </svg>
-                  <div className="emptySessionPage__insightInspect"><OuiIcon type="inspect" size="s" /><span>Inspect</span></div>
                   </OuiInsightCard>
 
-                  <OuiInsightCard title="Recent alerts" onMouseEnter={() => handleInsightHover(2)} onMouseDown={() => handleInsightMouseDown(2)} onMouseUp={() => handleInsightHover(2)}>
+                  {/* Row 2: Recent alerts + Deployment timeline */}
+                  <OuiInsightCard title="Recent alerts" onMouseEnter={() => handleInsightHover(2)} onMouseDown={() => handleInsightMouseDown(2)} onMouseUp={() => handleInsightHover(2)} onClick={() => onOpenPageInNewSession('alerts', 'Alerts')}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600, opacity: 0.65, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                         <span>Alert</span><span>Status</span>
@@ -900,46 +910,38 @@ export const EmptySessionPage = ({
                         <span>Error rate spike</span><span style={{ color: '#f87171', fontWeight: 600 }}>Critical</span>
                       </div>
                     </div>
-                  <div className="emptySessionPage__insightInspect"><OuiIcon type="inspect" size="s" /><span>Inspect</span></div>
                   </OuiInsightCard>
 
-                  <OuiInsightCard title="Deployment timeline" onMouseEnter={() => handleInsightHover(3)} onMouseDown={() => handleInsightMouseDown(3)} onMouseUp={() => handleInsightHover(3)}>
+                  <OuiInsightCard title="Deployment timeline" onMouseEnter={() => handleInsightHover(3)} onMouseDown={() => handleInsightMouseDown(3)} onMouseUp={() => handleInsightHover(3)} onClick={() => onOpenPageInNewSession('dashboards', 'Dashboards')}>
                     <svg viewBox="0 0 200 100" style={{ width: '100%', height: 100 }}>
-                      {/* Bars — wider, rounded top, spaced evenly */}
                       <rect x="12" y="55" width="28" height="35" rx="4" fill="#34d399" />
                       <rect x="50" y="30" width="28" height="60" rx="4" fill="#34d399" />
                       <rect x="88" y="12" width="28" height="78" rx="4" fill="#34d399" />
                       <rect x="126" y="38" width="28" height="52" rx="4" fill="#34d399" />
                       <rect x="164" y="48" width="28" height="42" rx="4" fill="#34d399" />
-                      {/* X-axis labels */}
                       <text x="26" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">1–3</text>
                       <text x="64" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">5–7</text>
                       <text x="102" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">9–11</text>
                       <text x="140" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">13–15</text>
                       <text x="178" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">17–23</text>
                     </svg>
-                  <div className="emptySessionPage__insightInspect"><OuiIcon type="inspect" size="s" /><span>Inspect</span></div>
                   </OuiInsightCard>
 
-                  <OuiInsightCard title="Resource utilization" onMouseEnter={() => handleInsightHover(4)} onMouseDown={() => handleInsightMouseDown(4)} onMouseUp={() => handleInsightHover(4)} titleExtra={<span style={{ color: '#34d399', fontWeight: 700, fontSize: 18 }}>56%</span>}>
+                  {/* Row 3: Resource utilization + Log Explorer */}
+                  <OuiInsightCard title="Resource utilization" onMouseEnter={() => handleInsightHover(4)} onMouseDown={() => handleInsightMouseDown(4)} onMouseUp={() => handleInsightHover(4)} onClick={() => onOpenPageInNewSession('metrics', 'Metrics')} titleExtra={<span style={{ color: '#34d399', fontWeight: 700, fontSize: 18 }}>56%</span>}>
                     <svg viewBox="0 0 220 100" style={{ width: '100%', height: 100 }}>
-                      {/* Grid lines */}
                       <line x1="30" y1="10" x2="210" y2="10" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
                       <line x1="30" y1="32" x2="210" y2="32" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
                       <line x1="30" y1="54" x2="210" y2="54" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
                       <line x1="30" y1="76" x2="210" y2="76" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
-                      {/* Y-axis labels */}
                       <text x="22" y="13" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">100</text>
                       <text x="22" y="35" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">75</text>
                       <text x="22" y="57" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">50</text>
                       <text x="22" y="79" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">25</text>
                       <text x="22" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">0</text>
-                      {/* Area fill */}
                       <defs><linearGradient id="resFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#34d399" stopOpacity="0.25"/><stop offset="100%" stopColor="#34d399" stopOpacity="0.03"/></linearGradient></defs>
                       <path d="M40,58 L75,54 L110,50 L145,52 L175,46 L195,44 L210,46 V96 H40 Z" fill="url(#resFill)" />
-                      {/* Line */}
                       <polyline fill="none" stroke="#34d399" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points="40,58 75,54 110,50 145,52 175,46 195,44 210,46" />
-                      {/* Dots */}
                       <circle cx="40" cy="58" r="3" fill="#34d399" />
                       <circle cx="75" cy="54" r="3" fill="#34d399" />
                       <circle cx="110" cy="50" r="3" fill="#34d399" />
@@ -947,15 +949,65 @@ export const EmptySessionPage = ({
                       <circle cx="175" cy="46" r="3" fill="#34d399" />
                       <circle cx="195" cy="44" r="3" fill="#34d399" />
                       <circle cx="210" cy="46" r="3" fill="#34d399" />
-                      {/* X-axis labels */}
                       <text x="40" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">0m</text>
                       <text x="85" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">15m</text>
                       <text x="130" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">30m</text>
                       <text x="175" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">45m</text>
                       <text x="210" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">60m</text>
                     </svg>
-                  <div className="emptySessionPage__insightInspect"><OuiIcon type="inspect" size="s" /><span>Inspect</span></div>
                   </OuiInsightCard>
+
+                  {/* Row 4: Saved Queries + (empty slot, same row as resource util above via reorder) */}
+                  <div className="emptySessionPage__widgetList" onClick={() => onOpenPageInNewSession('logs', 'Logs')} role="button" tabIndex={0}>
+                    <div className="emptySessionPage__widgetListHeader">
+                      <span className="emptySessionPage__widgetListIcon"><OuiIcon type="search" size="m" /></span>
+                      <span className="emptySessionPage__widgetListTitle">Saved queries</span>
+                      <span className="emptySessionPage__widgetListAction"><OuiIcon type="arrowRight" size="s" /></span>
+                    </div>
+                    <div className="emptySessionPage__widgetListItems">
+                      <div className="emptySessionPage__widgetListItem">
+                        <div>
+                          <strong>5xx by service</strong><br />
+                          <span style={{ fontSize: 11, opacity: 0.6 }}>last 1h</span>
+                        </div>
+                      </div>
+                      <div className="emptySessionPage__widgetListItem">
+                        <div>
+                          <strong>Slow traces &gt; 2s</strong><br />
+                          <span style={{ fontSize: 11, opacity: 0.6 }}>all services</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Row 5: Dashboards (wide) */}
+                  <div className="emptySessionPage__widget--wide emptySessionPage__widgetList" onClick={() => onOpenPageInNewSession('dashboards', 'Dashboards')} role="button" tabIndex={0}>
+                    <div className="emptySessionPage__widgetListHeader">
+                      <span className="emptySessionPage__widgetListIcon"><OuiIcon type="grid" size="m" /></span>
+                      <span className="emptySessionPage__widgetListTitle">Dashboards</span>
+                      <span className="emptySessionPage__widgetListAction"><OuiIcon type="arrowRight" size="s" /></span>
+                    </div>
+                    <div className="emptySessionPage__widgetListItems">
+                      <div className="emptySessionPage__widgetListItem">
+                        <div>
+                          <strong>Service overview</strong><br />
+                          <span style={{ fontSize: 11, opacity: 0.6 }}>12 panels · opened 2h ago</span>
+                        </div>
+                        <svg viewBox="0 0 60 20" style={{ width: 60, height: 20, flexShrink: 0 }}>
+                          <polyline fill="none" stroke="#34d399" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points="0,14 10,10 20,12 30,8 40,10 50,6 60,8" />
+                        </svg>
+                      </div>
+                      <div className="emptySessionPage__widgetListItem">
+                        <div>
+                          <strong>p99 latency</strong><br />
+                          <span style={{ fontSize: 11, opacity: 0.6 }}>8 panels · opened today</span>
+                        </div>
+                        <svg viewBox="0 0 60 20" style={{ width: 60, height: 20, flexShrink: 0 }}>
+                          <polyline fill="none" stroke="#d97706" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points="0,16 10,14 20,12 30,10 40,8 50,6 60,4" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 </div>
               </div>
