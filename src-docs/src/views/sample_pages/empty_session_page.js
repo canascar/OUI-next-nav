@@ -621,6 +621,7 @@ const NarrativeLink = ({ sessionId, children, onClick }) => {
             iconType="arrowRight"
             iconSide="right"
             size="xs"
+            color="ghost"
             onClick={(e) => { e.stopPropagation(); setIsOpen(false); onClick(); }}>
             Investigate
           </OuiSmallButtonEmpty>
