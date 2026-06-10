@@ -738,9 +738,9 @@ export const EmptySessionPage = ({
                 </span>
               </div>
               <div className="emptySessionPage__narrativePara emptySessionPage__narrativePara--4 emptySessionPage__newsItem">
-                <span className="emptySessionPage__newsBadge emptySessionPage__newsBadge--resolved">Resolved</span>
+                <span className="emptySessionPage__newsBadge emptySessionPage__newsBadge--warning">Warning</span>
                 <span className="emptySessionPage__newsBody">
-                  DNS resolution timeout flagged 3 hours ago — resolved on its own. Logged for pattern tracking.
+                  <NarrativeLink sessionId="dns-timeout-session" onClick={() => onSelectSession('dns-timeout-session')}>DNS resolution timeout</NarrativeLink> flagged 3 hours ago — not yet resolved. Monitoring for recurrence.
                 </span>
               </div>
             </div>
