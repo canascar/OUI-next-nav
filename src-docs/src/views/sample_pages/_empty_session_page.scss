@@ -811,20 +811,12 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  border: 1px solid $ouiFormBorderColor;
+  border: 1px solid $ouiColorPrimary;
   border-radius: $ouiFormControlBorderRadius;
   background-color: $ouiFormBackgroundColor;
+  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(99, 102, 241, 0.12), rgba(0, 0, 0, 0.25));
   transition: border-color 200ms ease, box-shadow 200ms ease;
   overflow: hidden;
-
-  &:hover {
-    border-color: lightOrDarkTheme(#e0e0e4, lighten($ouiFormBorderColor, 8%));
-  }
-
-  &:focus-within {
-    border-color: $ouiColorPrimary;
-    box-shadow: 0 4px 12px lightOrDarkTheme(rgba(99, 102, 241, 0.12), rgba(0, 0, 0, 0.25));
-  }
 }
 
 // Textarea overrides — no border on the textarea itself (outer layout handles it)
