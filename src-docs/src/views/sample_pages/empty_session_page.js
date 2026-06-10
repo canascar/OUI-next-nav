@@ -557,7 +557,6 @@ const NarrativeLink = ({ sessionId, children, onClick }) => {
 
   const handleMouseEnter = () => {
     clearTimeout(closeTimerRef.current);
-    if (document.activeElement) document.activeElement.blur();
     timerRef.current = setTimeout(() => setIsOpen(true), 300);
   };
   const handleMouseLeave = () => {
