@@ -309,6 +309,7 @@ const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, 
           rows={3}
           resize="none"
           fullWidth
+          autoFocus
           className="emptySessionPage__textarea"
         />
         <div className="emptySessionPage__inputActions">
@@ -556,6 +557,7 @@ const NarrativeLink = ({ sessionId, children, onClick }) => {
 
   const handleMouseEnter = () => {
     clearTimeout(closeTimerRef.current);
+    if (document.activeElement) document.activeElement.blur();
     timerRef.current = setTimeout(() => setIsOpen(true), 300);
   };
   const handleMouseLeave = () => {
