@@ -576,6 +576,7 @@ const NarrativeLink = ({ sessionId, children, onClick }) => {
     <a
       className="emptySessionPage__narrativeLink"
       onClick={onClick}
+      onMouseDown={(e) => e.preventDefault()}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}>
       {children}
