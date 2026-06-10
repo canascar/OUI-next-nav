@@ -351,18 +351,19 @@ const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, 
               ]}
             />
           </OuiPopover>
-          <OuiButtonIcon
-            iconType="microphone"
-            aria-label="Voice input"
-            size="s"
-            color="text"
-            display="empty"
-          />
-          <OuiButtonIcon
-            iconType="sortUp"
-            aria-label="Send"
-            display="fill"
-            size="s"
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <OuiButtonIcon
+              iconType="microphone"
+              aria-label="Voice input"
+              size="s"
+              color="text"
+              display="empty"
+            />
+            <OuiButtonIcon
+              iconType="sortUp"
+              aria-label="Send"
+              display="fill"
+              size="s"
             isDisabled={!inputValue.trim()}
             onClick={() => {
               if (inputValue.trim()) {
@@ -380,6 +381,7 @@ const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, 
               }
             }}
           />
+          </div>
         </div>
       </div>
     </div>
