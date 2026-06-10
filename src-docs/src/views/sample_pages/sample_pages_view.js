@@ -1697,6 +1697,7 @@ export const SessionPagesView = () => {
         <EmptySessionPage
           onStartThread={handleStartThread}
           onOpenPage={handleOpenPage}
+          onOpenPageInNewSession={handleOpenCanvasPage}
           onViewSession={() => {
             handleSelectSession('latency-spike-session');
           }}
