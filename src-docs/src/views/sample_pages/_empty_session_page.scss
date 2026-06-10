@@ -176,7 +176,7 @@
       filter: blur(2px);
       opacity: 0.5;
       transform: scale(0.98);
-      transition: filter 400ms cubic-bezier(0.16, 1, 0.3, 1), opacity 400ms cubic-bezier(0.16, 1, 0.3, 1), transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+      transition: filter 600ms cubic-bezier(0.4, 0, 0.2, 1), opacity 600ms cubic-bezier(0.4, 0, 0.2, 1), transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     > .emptySessionPage__newsItem:has(.ouiPopover-isOpen) {
@@ -224,7 +224,7 @@
   gap: 16px;
   padding: 16px 0;
   border-bottom: 1px solid $ouiBorderColor;
-  transition: filter 400ms cubic-bezier(0.16, 1, 0.3, 1), opacity 400ms cubic-bezier(0.16, 1, 0.3, 1), transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: filter 600ms cubic-bezier(0.4, 0, 0.2, 1), opacity 600ms cubic-bezier(0.4, 0, 0.2, 1), transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &:last-child {
     border-bottom: none;
