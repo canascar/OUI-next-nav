@@ -273,7 +273,7 @@ export const SessionContainer = ({
   // Calculate explicit widths for both panes
   // Left pane: 0% when minimized, threadPanelWidth% when side-by-side, ~100% when full-screen
   // Right pane: gets the rest
-  const COLLAPSED_WIDTH = 48; // px for collapsed strip
+  const COLLAPSED_WIDTH = 52; // px for collapsed strip
   let leftWidth;
   let rightStyle;
 
@@ -281,7 +281,7 @@ export const SessionContainer = ({
     leftWidth = '0px';
     rightStyle = { flex: 1 };
   } else if (isFullScreen) {
-    leftWidth = `calc(100% - ${COLLAPSED_WIDTH}px - 8px)`;
+    leftWidth = `calc(100% - ${COLLAPSED_WIDTH}px - 10px)`;
     rightStyle = { width: `${COLLAPSED_WIDTH}px`, flex: 'none' };
   } else {
     leftWidth = `${threadPanelWidth}%`;
@@ -349,23 +349,24 @@ export const SessionContainer = ({
         <div
           className="sessionContainer__collapsedPanel"
           style={{ display: isFullScreen ? 'flex' : 'none' }}>
-          <div className="sessionContainer__collapsedPanelHeader">
-            <OuiPopover
-              button={
-                <OuiButtonIcon
-                  iconType="list"
-                  aria-label="Browse all tabs"
-                  size="s"
-                  color="text"
-                  display="empty"
-                  isDisabled={session.tabs.length === 0}
-                  onClick={() => setIsCollapsedListOpen((open) => !open)}
-                />
-              }
-              isOpen={isCollapsedListOpen}
-              closePopover={() => setIsCollapsedListOpen(false)}
-              anchorPosition="downRight"
-              panelPaddingSize="s">
+          <div className="sessionContainer__collapsedTabs">
+            <OuiToolTip content="View tabs" position="left" delay="regular">
+              <OuiPopover
+                button={
+                  <OuiButtonIcon
+                    iconType="list"
+                    aria-label="View tabs"
+                    size="s"
+                    color="text"
+                    display="empty"
+                    isDisabled={session.tabs.length === 0}
+                    onClick={() => setIsCollapsedListOpen((open) => !open)}
+                  />
+                }
+                isOpen={isCollapsedListOpen}
+                closePopover={() => setIsCollapsedListOpen(false)}
+                anchorPosition="downRight"
+                panelPaddingSize="s">
               <div className="pagePanel__tabListPopover">
                 {session.tabs.map((tab) => (
                   <button
@@ -386,8 +387,7 @@ export const SessionContainer = ({
                 ))}
               </div>
             </OuiPopover>
-          </div>
-          <div className="sessionContainer__collapsedTabs">
+            </OuiToolTip>
             {session.tabs.map((tab) => (
               <OuiToolTip key={tab.id} content={tab.title} position="left">
                 <OuiButtonIcon
@@ -403,17 +403,19 @@ export const SessionContainer = ({
                 />
               </OuiToolTip>
             ))}
-            <OuiButtonIcon
-              iconType="plus"
-              aria-label="Add new tab"
-              size="s"
-              color="text"
-              display="empty"
-              onClick={() => {
-                handleAddTab();
-                handleSizeChange('side-by-side');
-              }}
-            />
+            <OuiToolTip content="Add new tab" position="left">
+              <OuiButtonIcon
+                iconType="plus"
+                aria-label="Add new tab"
+                size="s"
+                color="text"
+                display="empty"
+                onClick={() => {
+                  handleAddTab();
+                  handleSizeChange('side-by-side');
+                }}
+              />
+            </OuiToolTip>
           </div>
         </div>
       {/* Olly chat pill — rendered inside page panel wrap for positioning */}
@@ -434,7 +436,6 @@ export const SessionContainer = ({
             onActivate={(val) => handleExpandChat(val)}
           />
         </div>
-      )}
       )}
       </div>
 

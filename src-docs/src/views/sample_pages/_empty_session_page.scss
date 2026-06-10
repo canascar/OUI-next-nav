@@ -169,6 +169,21 @@
   &--news {
     gap: 0;
   }
+
+  // When a popover is open, blur/dim sibling news items (not the summary)
+  &:has(.ouiPopover-isOpen) {
+    > .emptySessionPage__newsItem:not(:has(.ouiPopover-isOpen)) {
+      filter: blur(2px);
+      opacity: 0.5;
+      transform: scale(0.98);
+      transition: filter 600ms cubic-bezier(0.4, 0, 0.2, 1), opacity 600ms cubic-bezier(0.4, 0, 0.2, 1), transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    > .emptySessionPage__newsItem:has(.ouiPopover-isOpen) {
+      position: relative;
+      z-index: 2;
+    }
+  }
 }
 
 .emptySessionPage__narrativePara {
@@ -209,6 +224,7 @@
   gap: 16px;
   padding: 16px 0;
   border-bottom: 1px solid $ouiBorderColor;
+  transition: filter 600ms cubic-bezier(0.4, 0, 0.2, 1), opacity 600ms cubic-bezier(0.4, 0, 0.2, 1), transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &:last-child {
     border-bottom: none;
@@ -277,7 +293,7 @@
 // ─── Session Preview (shown in popover on hover) ──────────────────────
 .emptySessionPage__previewPopover {
   width: 480px;
-  border-radius: $ouiBorderRadius !important; // sass-lint:disable-line no-important
+  border-radius: 18px !important; // sass-lint:disable-line no-important
 }
 
 .emptySessionPage__sessionPreview {
@@ -286,6 +302,18 @@
   gap: 16px;
   padding: 16px;
   width: 100%;
+
+  // Investigate button — no active/focus background, but show hover
+  .ouiButtonEmpty {
+    &:hover {
+      background-color: rgba($ouiColorPrimary, 0.08) !important; // sass-lint:disable-line no-important
+    }
+
+    &:focus,
+    &:active {
+      background-color: transparent !important; // sass-lint:disable-line no-important
+    }
+  }
 }
 
 .emptySessionPage__previewSummary {
@@ -656,13 +684,14 @@
     background-color 180ms ease;
 
   &:hover {
-    transform: translateY(-2px);
+    transform: scale(1.03);
     border-color: $ouiColorPrimary;
     box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
   }
 
   &:active {
-    transform: translateY(0) scale(0.98);
+    transform: scale(0.97);
+    box-shadow: none;
   }
 }
 
@@ -787,10 +816,6 @@
   background-color: $ouiFormBackgroundColor;
   transition: border-color 200ms ease, box-shadow 200ms ease;
   overflow: hidden;
-
-  &:hover {
-    border-color: lightOrDarkTheme(#e0e0e4, lighten($ouiFormBorderColor, 8%));
-  }
 
   &:focus-within {
     border-color: $ouiColorPrimary;
@@ -970,7 +995,9 @@ textarea.emptySessionPage__textarea {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  width: 100%;
+  width: calc(100% + 24px);
+  margin-left: -12px;
+  padding: 6px 12px;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -1008,6 +1035,13 @@ textarea.emptySessionPage__textarea {
   &:hover {
     background-color: rgba($ouiColorPrimary, 0.08);
     border-color: rgba($ouiColorPrimary, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: none;
   }
 
   &--activityLayout {
@@ -1238,11 +1272,18 @@ textarea.emptySessionPage__textarea {
   cursor: pointer;
   font-size: $ouiFontSizeS;
   color: $ouiTextColor;
-  transition: background-color 200ms ease, border-color 200ms ease;
+  transition: background-color 200ms ease, border-color 200ms ease, transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 200ms ease;
 
   &:hover {
     background-color: rgba($ouiColorPrimary, 0.08);
     border-color: rgba($ouiColorPrimary, 0.3);
+    transform: scale(1.02);
+    box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
+  }
+
+  &:active {
+    transform: scale(0.97);
+    box-shadow: none;
   }
 
   &--disabled {
@@ -1253,6 +1294,8 @@ textarea.emptySessionPage__textarea {
     &:hover {
       background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(24, 16, 40, 0.4));
       border-color: lightOrDarkTheme(rgba(10, 10, 10, 0.14), rgba(250, 250, 250, 0.16));
+      transform: none;
+      box-shadow: none;
     }
   }
 }
@@ -1828,10 +1871,10 @@ textarea.emptySessionPage__textarea {
 
   .ouiInsightCard {
     cursor: pointer;
-    transition: transform 250ms cubic-bezier(0.2, 0.7, 0.2, 1), border-color 200ms ease, box-shadow 250ms ease;
+    transition: transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1), border-color 200ms ease, box-shadow 250ms ease;
 
     &:hover {
-      transform: translateY(-2px);
+      transform: scale(1.02);
       border-color: lightOrDarkTheme(rgba(99, 102, 241, 0.3), rgba(165, 180, 252, 0.2));
       box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
 
@@ -1841,7 +1884,8 @@ textarea.emptySessionPage__textarea {
     }
 
     &:active {
-      transform: translateY(0) scale(0.98);
+      transform: scale(0.97);
+      box-shadow: none;
     }
   }
 }
@@ -1857,16 +1901,17 @@ textarea.emptySessionPage__textarea {
   .ouiInsightCard,
   .emptySessionPage__widgetList {
     cursor: pointer;
-    transition: transform 250ms cubic-bezier(0.2, 0.7, 0.2, 1), border-color 200ms ease, box-shadow 250ms ease;
+    transition: transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1), border-color 200ms ease, box-shadow 250ms ease;
 
     &:hover {
-      transform: translateY(-2px);
+      transform: scale(1.02);
       border-color: lightOrDarkTheme(rgba(99, 102, 241, 0.3), rgba(165, 180, 252, 0.2));
       box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
     }
 
     &:active {
-      transform: translateY(0) scale(0.98);
+      transform: scale(0.97);
+      box-shadow: none;
     }
   }
 }

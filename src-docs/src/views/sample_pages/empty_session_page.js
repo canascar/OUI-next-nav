@@ -14,11 +14,12 @@ import React, { useState, useMemo, useRef, useCallback, useContext } from 'react
 import {
   OuiButtonIcon,
   OuiCompressedTextArea,
+  OuiContextMenu,
   OuiIcon,
   OuiInsightCard,
   OuiInsightCallout,
-  OuiSmallButtonEmpty,
   OuiPopover,
+  OuiSmallButtonEmpty,
   OuiTab,
   OuiTabs,
   OuiText,
@@ -257,6 +258,7 @@ const SystemCallout = ({ alert, onAction }) => {
 const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, onBlur, onHoverStart, onHoverEnd, borderActive }) => {
   const [inputValue, setInputValue] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isAttachMenuOpen, setIsAttachMenuOpen] = useState(false);
 
   const matchingPages = useMemo(() => {
     if (!inputValue.trim()) return [];
@@ -311,17 +313,57 @@ const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, 
           className="emptySessionPage__textarea"
         />
         <div className="emptySessionPage__inputActions">
-          <OuiButtonIcon
-            iconType="plus"
-            aria-label="Add attachment"
-            size="s"
-            color="text"
-          />
-          <OuiButtonIcon
-            iconType="sortUp"
-            aria-label="Send"
-            display="fill"
-            size="s"
+          <OuiPopover
+            button={
+              <OuiButtonIcon
+                iconType="plus"
+                aria-label="Add attachment"
+                size="s"
+                color="text"
+                onClick={() => setIsAttachMenuOpen((open) => !open)}
+              />
+            }
+            isOpen={isAttachMenuOpen}
+            closePopover={() => setIsAttachMenuOpen(false)}
+            anchorPosition="upLeft"
+            panelPaddingSize="s">
+            <OuiContextMenu
+              initialPanelId={0}
+              panels={[
+                {
+                  id: 0,
+                  items: [
+                    { name: 'Upload data', icon: 'importAction', onClick: () => setIsAttachMenuOpen(false) },
+                    { name: 'Upload file or photo', icon: 'document', onClick: () => setIsAttachMenuOpen(false) },
+                    { name: 'Take screenshot', icon: 'fullScreen', onClick: () => setIsAttachMenuOpen(false) },
+                    { name: 'Add to session', icon: 'folderOpen', panel: 1 },
+                  ],
+                },
+                {
+                  id: 1,
+                  title: 'Recent sessions',
+                  items: [
+                    { name: 'Latency spike investigation', onClick: () => setIsAttachMenuOpen(false) },
+                    { name: 'Checkout error rate alert', onClick: () => setIsAttachMenuOpen(false) },
+                    { name: 'Node disk pressure alerts', onClick: () => setIsAttachMenuOpen(false) },
+                  ],
+                },
+              ]}
+            />
+          </OuiPopover>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <OuiButtonIcon
+              iconType="microphone"
+              aria-label="Voice input"
+              size="s"
+              color="text"
+              display="empty"
+            />
+            <OuiButtonIcon
+              iconType="sortUp"
+              aria-label="Send"
+              display="fill"
+              size="s"
             isDisabled={!inputValue.trim()}
             onClick={() => {
               if (inputValue.trim()) {
@@ -339,6 +381,7 @@ const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, 
               }
             }}
           />
+          </div>
         </div>
       </div>
     </div>
@@ -518,14 +561,23 @@ function formatRelativeTime(timestamp) {
 const NarrativeLink = ({ sessionId, children, onClick }) => {
   const [isOpen, setIsOpen] = useState(false);
   const timerRef = useRef(null);
+  const closeTimerRef = useRef(null);
   const preview = SESSION_PREVIEWS[sessionId];
 
   const handleMouseEnter = () => {
+    clearTimeout(closeTimerRef.current);
     timerRef.current = setTimeout(() => setIsOpen(true), 300);
   };
   const handleMouseLeave = () => {
     clearTimeout(timerRef.current);
-    setIsOpen(false);
+    closeTimerRef.current = setTimeout(() => setIsOpen(false), 200);
+  };
+  const handlePopoverEnter = () => {
+    clearTimeout(closeTimerRef.current);
+    clearTimeout(timerRef.current);
+  };
+  const handlePopoverLeave = () => {
+    closeTimerRef.current = setTimeout(() => setIsOpen(false), 150);
   };
 
   const button = (
@@ -533,6 +585,7 @@ const NarrativeLink = ({ sessionId, children, onClick }) => {
     <a
       className="emptySessionPage__narrativeLink"
       onClick={onClick}
+      onMouseDown={(e) => e.preventDefault()}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}>
       {children}
@@ -550,8 +603,10 @@ const NarrativeLink = ({ sessionId, children, onClick }) => {
       panelPaddingSize="none"
       hasArrow={false}
       panelClassName="emptySessionPage__previewPopover"
-      onMouseEnter={() => { clearTimeout(timerRef.current); setIsOpen(true); }}
-      onMouseLeave={handleMouseLeave}>
+      panelProps={{
+        onMouseEnter: handlePopoverEnter,
+        onMouseLeave: handlePopoverLeave,
+      }}>
       <div className="emptySessionPage__sessionPreview">
         <p className="emptySessionPage__previewSummary">{preview.summary}</p>
         <div className="emptySessionPage__previewStats">
@@ -571,6 +626,17 @@ const NarrativeLink = ({ sessionId, children, onClick }) => {
           <p className="emptySessionPage__previewSectionText">{preview.action}</p>
         </div>
         <p className="emptySessionPage__previewMeta">{preview.meta}</p>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
+          <OuiSmallButtonEmpty
+            iconType="arrowRight"
+            iconSide="right"
+            size="xs"
+            color="text"
+            style={{ borderRadius: 999 }}
+            onClick={(e) => { e.stopPropagation(); setIsOpen(false); onClick(); }}>
+            Investigate
+          </OuiSmallButtonEmpty>
+        </div>
       </div>
     </OuiPopover>
   );

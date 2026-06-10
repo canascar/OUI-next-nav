@@ -67,7 +67,7 @@ import {
   setActiveSession,
   openCanvasPage,
 } from './session_state_manager';
-import { LATENCY_SPIKE_SESSION, ERROR_RATE_SPIKE_SESSION } from './session_mock_data';
+import { LATENCY_SPIKE_SESSION, ERROR_RATE_SPIKE_SESSION, DNS_TIMEOUT_SESSION } from './session_mock_data';
 
 const renderPage = (
   activePage,
@@ -1063,6 +1063,10 @@ export const SamplePagesView = () => {
   };
 
   const handlePageChange = (page) => {
+    if (page === 'login') {
+      window.location.href = '#/login';
+      return;
+    }
     if (page === activePage) {
       // Re-clicking the same tab — reopen the panel if it was closed
       if (!PANEL_CLOSED_BY_DEFAULT.has(page)) {
@@ -1489,14 +1493,14 @@ function initializeSessionState() {
     pendingThread: null,
     title: 'New Session',
     threadPanelState: 'minimized',
-    threadPanelWidth: 40,
+    threadPanelWidth: 30,
     tabs: [],
     activeTabId: null,
     createdAt: Date.now(),
   };
 
   return {
-    sessions: [emptySession, LATENCY_SPIKE_SESSION, ERROR_RATE_SPIKE_SESSION],
+    sessions: [emptySession, LATENCY_SPIKE_SESSION, ERROR_RATE_SPIKE_SESSION, DNS_TIMEOUT_SESSION],
     activeSessionId: emptySession.id,
     version: 1,
   };
@@ -1633,28 +1637,6 @@ export const SessionPagesView = () => {
     [handleOpenCanvasPage]
   );
 
-  /** Create a new session and open the page as a tab in its right pane */
-  const handleOpenPageInNewSession = useCallback((pageKey, title) => {
-    const pageEntry = SOURCE_PAGE_MOCK[pageKey];
-    const displayTitle = title || (pageEntry ? pageEntry.title : pageKey);
-    setSessionState((prev) => {
-      const next = createSession(prev);
-      const newSessionId = next.activeSessionId;
-      const tab = {
-        id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-        pageKey,
-        title: displayTitle,
-      };
-      return updateSession(next, newSessionId, {
-        tabs: [tab],
-        activeTabId: tab.id,
-        threadPanelState: 'minimized',
-        title: displayTitle,
-      });
-    });
-    setActiveView('session');
-  }, []);
-
   // --- Render ---
 
   /** Determine if the active session should show EmptySessionPage */
@@ -1715,7 +1697,7 @@ export const SessionPagesView = () => {
         <EmptySessionPage
           onStartThread={handleStartThread}
           onOpenPage={handleOpenPage}
-          onOpenPageInNewSession={handleOpenPageInNewSession}
+          onOpenPageInNewSession={handleOpenCanvasPage}
           onViewSession={() => {
             handleSelectSession('latency-spike-session');
           }}
