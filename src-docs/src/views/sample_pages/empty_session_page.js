@@ -354,7 +354,7 @@ const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, 
           </OuiPopover>
           </OuiToolTip>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <OuiToolTip content="Voice input" position="top">
+            <OuiToolTip content="Dictate" position="top">
               <OuiButtonIcon
                 iconType="microphone"
                 aria-label="Voice input"
