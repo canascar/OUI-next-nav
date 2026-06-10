@@ -101,6 +101,18 @@ const SESSION_PREVIEWS = {
     action: 'Rollback auth-service to v2.3.9, verify error rate normalizes, then hotfix the token refresh logic.',
     meta: 'Shared by team · 2 hours ago · Deployment correlated · Checkout path affected',
   },
+  'dns-timeout-session': {
+    summary: 'DNS resolution timeouts spiking on os-data-3. Upstream resolver intermittently unresponsive — queries exceeding 5s threshold.',
+    stats: [
+      { label: 'Timeouts', value: '142', color: 'warning' },
+      { label: 'Avg Resolve', value: '4.8s', color: 'warning' },
+      { label: 'Affected', value: 'os-data-3', color: 'default' },
+      { label: 'Duration', value: '3h', color: 'default' },
+    ],
+    finding: 'Upstream DNS resolver 10.0.1.53 intermittently dropping UDP packets — correlates with network maintenance window on the resolver host.',
+    action: 'Add secondary resolver fallback, increase timeout to 10s, escalate to network team if recurrence continues.',
+    meta: 'Detected by AI · 3 hours ago · Single node affected · No customer impact yet',
+  },
 };
 
 /**
