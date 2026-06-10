@@ -352,6 +352,13 @@ const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, 
             />
           </OuiPopover>
           <OuiButtonIcon
+            iconType="pulse"
+            aria-label="Voice input"
+            size="s"
+            color="text"
+            display="empty"
+          />
+          <OuiButtonIcon
             iconType="sortUp"
             aria-label="Send"
             display="fill"
