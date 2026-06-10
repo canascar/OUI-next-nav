@@ -313,16 +313,17 @@ const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, 
           className="emptySessionPage__textarea"
         />
         <div className="emptySessionPage__inputActions">
-          <OuiPopover
-            button={
-              <OuiButtonIcon
-                iconType="plus"
-                aria-label="Add attachment"
-                size="s"
-                color="text"
-                onClick={() => setIsAttachMenuOpen((open) => !open)}
-              />
-            }
+          <OuiToolTip content="Attach" position="top">
+            <OuiPopover
+              button={
+                <OuiButtonIcon
+                  iconType="plus"
+                  aria-label="Add attachment"
+                  size="s"
+                  color="text"
+                  onClick={() => setIsAttachMenuOpen((open) => !open)}
+                />
+              }
             isOpen={isAttachMenuOpen}
             closePopover={() => setIsAttachMenuOpen(false)}
             anchorPosition="upLeft"
@@ -351,19 +352,23 @@ const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, 
               ]}
             />
           </OuiPopover>
+          </OuiToolTip>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <OuiButtonIcon
-              iconType="microphone"
-              aria-label="Voice input"
-              size="s"
-              color="text"
-              display="empty"
-            />
-            <OuiButtonIcon
-              iconType="sortUp"
-              aria-label="Send"
-              display="fill"
-              size="s"
+            <OuiToolTip content="Voice input" position="top">
+              <OuiButtonIcon
+                iconType="microphone"
+                aria-label="Voice input"
+                size="s"
+                color="text"
+                display="empty"
+              />
+            </OuiToolTip>
+            <OuiToolTip content="Send message" position="top">
+              <OuiButtonIcon
+                iconType="sortUp"
+                aria-label="Send"
+                display="fill"
+                size="s"
             isDisabled={!inputValue.trim()}
             onClick={() => {
               if (inputValue.trim()) {
@@ -381,6 +386,7 @@ const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, 
               }
             }}
           />
+            </OuiToolTip>
           </div>
         </div>
       </div>
