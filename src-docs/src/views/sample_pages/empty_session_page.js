@@ -593,8 +593,10 @@ const NarrativeLink = ({ sessionId, children, onClick }) => {
       panelPaddingSize="none"
       hasArrow={false}
       panelClassName="emptySessionPage__previewPopover"
-      onMouseEnter={handlePopoverEnter}
-      onMouseLeave={handlePopoverLeave}>
+      panelProps={{
+        onMouseEnter: handlePopoverEnter,
+        onMouseLeave: handlePopoverLeave,
+      }}>
       <div className="emptySessionPage__sessionPreview">
         <p className="emptySessionPage__previewSummary">{preview.summary}</p>
         <div className="emptySessionPage__previewStats">
