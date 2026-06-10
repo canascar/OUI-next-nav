@@ -616,6 +616,15 @@ const NarrativeLink = ({ sessionId, children, onClick }) => {
           <p className="emptySessionPage__previewSectionText">{preview.action}</p>
         </div>
         <p className="emptySessionPage__previewMeta">{preview.meta}</p>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
+          <OuiSmallButtonEmpty
+            iconType="arrowRight"
+            iconSide="right"
+            size="xs"
+            onClick={(e) => { e.stopPropagation(); setIsOpen(false); onClick(); }}>
+            Investigate
+          </OuiSmallButtonEmpty>
+        </div>
       </div>
     </OuiPopover>
   );
@@ -891,7 +900,6 @@ export const EmptySessionPage = ({
                         <span style={{ fontWeight: 600 }}>14.29%</span>
                       </div>
                     </div>
-                    <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 8 }}><OuiSmallButtonEmpty iconType="arrowRight" iconSide="right" size="xs" onClick={(e) => { e.stopPropagation(); onSelectSession("latency-spike-session"); }}>Investigate</OuiSmallButtonEmpty></div>
                   </OuiInsightCard>
 
                   <OuiInsightCard title="Connection timeout errors" onMouseEnter={() => handleInsightHover(1)} onMouseDown={() => handleInsightMouseDown(1)} onMouseUp={() => handleInsightHover(1)} onClick={() => onOpenPageInNewSession('logs', 'Logs')}>
@@ -904,7 +912,6 @@ export const EmptySessionPage = ({
                       <path d="M0,48 C40,48 80,46 120,42 S170,20 200,10 V50 H0 Z" fill="url(#connFill)" />
                       <path d="M0,48 C40,48 80,46 120,42 S170,20 200,10" fill="none" stroke="#d97706" strokeWidth="2.5" strokeLinecap="round" />
                     </svg>
-                    <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 8 }}><OuiSmallButtonEmpty iconType="arrowRight" iconSide="right" size="xs" onClick={(e) => { e.stopPropagation(); onSelectSession("latency-spike-session"); }}>Investigate</OuiSmallButtonEmpty></div>
                   </OuiInsightCard>
 
                   {/* Row 2: Recent alerts + Deployment timeline */}
