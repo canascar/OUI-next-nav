@@ -67,7 +67,7 @@ import {
   setActiveSession,
   openCanvasPage,
 } from './session_state_manager';
-import { LATENCY_SPIKE_SESSION, ERROR_RATE_SPIKE_SESSION } from './session_mock_data';
+import { LATENCY_SPIKE_SESSION, ERROR_RATE_SPIKE_SESSION, DNS_TIMEOUT_SESSION } from './session_mock_data';
 
 const renderPage = (
   activePage,
@@ -1500,7 +1500,7 @@ function initializeSessionState() {
   };
 
   return {
-    sessions: [emptySession, LATENCY_SPIKE_SESSION, ERROR_RATE_SPIKE_SESSION],
+    sessions: [emptySession, LATENCY_SPIKE_SESSION, ERROR_RATE_SPIKE_SESSION, DNS_TIMEOUT_SESSION],
     activeSessionId: emptySession.id,
     version: 1,
   };

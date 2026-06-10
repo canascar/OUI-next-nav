@@ -271,6 +271,26 @@ export const ERROR_RATE_SPIKE_SESSION = {
   hidden: true,
 };
 
+/**
+ * DNS Resolution Timeout — Warning-level session.
+ * Flagged 3 hours ago, monitoring for recurrence.
+ */
+export const DNS_TIMEOUT_SESSION = {
+  id: 'dns-timeout-session',
+  threadKey: 'connection-timeout',
+  pendingThread: null,
+  title: 'DNS Resolution Timeout',
+  summary: 'DNS resolution timeout flagged 3 hours ago. Intermittent failures on external lookups — monitoring for recurrence.',
+  threadPanelState: 'side-by-side',
+  threadPanelWidth: 30,
+  tabs: [
+    { id: 'tab-logs-dns-1', pageKey: 'logs', title: 'DNS timeout logs' },
+  ],
+  activeTabId: 'tab-logs-dns-1',
+  createdAt: Date.now() - 10800000, // 3 hours ago
+  hidden: true,
+};
+
 // ---------------------------------------------------------------------------
 // Mock Flow 2: Page-First Flow — Session Object
 // ---------------------------------------------------------------------------
