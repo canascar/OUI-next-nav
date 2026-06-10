@@ -169,6 +169,21 @@
   &--news {
     gap: 0;
   }
+
+  // When a popover is open, blur/dim siblings and scale down content
+  &:has(.ouiPopover-isOpen) {
+    > *:not(:has(.ouiPopover-isOpen)) {
+      filter: blur(2px);
+      opacity: 0.5;
+      transform: scale(0.98);
+      transition: filter 250ms ease, opacity 250ms ease, transform 250ms ease;
+    }
+
+    > *:has(.ouiPopover-isOpen) {
+      position: relative;
+      z-index: 2;
+    }
+  }
 }
 
 .emptySessionPage__narrativePara {
@@ -209,6 +224,7 @@
   gap: 16px;
   padding: 16px 0;
   border-bottom: 1px solid $ouiBorderColor;
+  transition: filter 250ms ease, opacity 250ms ease, transform 250ms ease;
 
   &:last-child {
     border-bottom: none;
