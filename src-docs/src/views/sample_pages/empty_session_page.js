@@ -552,14 +552,23 @@ function formatRelativeTime(timestamp) {
 const NarrativeLink = ({ sessionId, children, onClick }) => {
   const [isOpen, setIsOpen] = useState(false);
   const timerRef = useRef(null);
+  const closeTimerRef = useRef(null);
   const preview = SESSION_PREVIEWS[sessionId];
 
   const handleMouseEnter = () => {
+    clearTimeout(closeTimerRef.current);
     timerRef.current = setTimeout(() => setIsOpen(true), 300);
   };
   const handleMouseLeave = () => {
     clearTimeout(timerRef.current);
-    setIsOpen(false);
+    closeTimerRef.current = setTimeout(() => setIsOpen(false), 200);
+  };
+  const handlePopoverEnter = () => {
+    clearTimeout(closeTimerRef.current);
+    clearTimeout(timerRef.current);
+  };
+  const handlePopoverLeave = () => {
+    closeTimerRef.current = setTimeout(() => setIsOpen(false), 150);
   };
 
   const button = (
@@ -584,8 +593,8 @@ const NarrativeLink = ({ sessionId, children, onClick }) => {
       panelPaddingSize="none"
       hasArrow={false}
       panelClassName="emptySessionPage__previewPopover"
-      onMouseEnter={() => { clearTimeout(timerRef.current); setIsOpen(true); }}
-      onMouseLeave={handleMouseLeave}>
+      onMouseEnter={handlePopoverEnter}
+      onMouseLeave={handlePopoverLeave}>
       <div className="emptySessionPage__sessionPreview">
         <p className="emptySessionPage__previewSummary">{preview.summary}</p>
         <div className="emptySessionPage__previewStats">
