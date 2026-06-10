@@ -287,8 +287,12 @@
   padding: 16px;
   width: 100%;
 
-  // Investigate button — no active/focus background
+  // Investigate button — no active/focus background, but show hover
   .ouiButtonEmpty {
+    &:hover {
+      background-color: rgba($ouiColorPrimary, 0.08) !important; // sass-lint:disable-line no-important
+    }
+
     &:focus,
     &:active {
       background-color: transparent !important; // sass-lint:disable-line no-important
