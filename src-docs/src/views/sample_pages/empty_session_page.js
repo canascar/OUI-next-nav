@@ -14,9 +14,11 @@ import React, { useState, useMemo, useRef, useCallback, useContext } from 'react
 import {
   OuiButtonIcon,
   OuiCompressedTextArea,
+  OuiContextMenu,
   OuiIcon,
   OuiInsightCard,
   OuiInsightCallout,
+  OuiPopover,
   OuiSmallButtonEmpty,
   OuiTab,
   OuiTabs,
@@ -197,6 +199,7 @@ const SystemCallout = ({ alert, onAction }) => {
 const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, onBlur, onHoverStart, onHoverEnd, borderActive }) => {
   const [inputValue, setInputValue] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isAttachMenuOpen, setIsAttachMenuOpen] = useState(false);
 
   const matchingPages = useMemo(() => {
     if (!inputValue.trim()) return [];
@@ -251,12 +254,44 @@ const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, 
           className="emptySessionPage__textarea"
         />
         <div className="emptySessionPage__inputActions">
-          <OuiButtonIcon
-            iconType="plus"
-            aria-label="Add attachment"
-            size="s"
-            color="text"
-          />
+          <OuiPopover
+            button={
+              <OuiButtonIcon
+                iconType="plus"
+                aria-label="Add attachment"
+                size="s"
+                color="text"
+                onClick={() => setIsAttachMenuOpen((open) => !open)}
+              />
+            }
+            isOpen={isAttachMenuOpen}
+            closePopover={() => setIsAttachMenuOpen(false)}
+            anchorPosition="upLeft"
+            panelPaddingSize="s">
+            <OuiContextMenu
+              initialPanelId={0}
+              panels={[
+                {
+                  id: 0,
+                  items: [
+                    { name: 'Upload data', icon: 'importAction', onClick: () => setIsAttachMenuOpen(false) },
+                    { name: 'Upload file or photo', icon: 'document', onClick: () => setIsAttachMenuOpen(false) },
+                    { name: 'Take screenshot', icon: 'fullScreen', onClick: () => setIsAttachMenuOpen(false) },
+                    { name: 'Add to session', icon: 'folderOpen', panel: 1 },
+                  ],
+                },
+                {
+                  id: 1,
+                  title: 'Recent sessions',
+                  items: [
+                    { name: 'Latency spike investigation', onClick: () => setIsAttachMenuOpen(false) },
+                    { name: 'Checkout error rate alert', onClick: () => setIsAttachMenuOpen(false) },
+                    { name: 'Node disk pressure alerts', onClick: () => setIsAttachMenuOpen(false) },
+                  ],
+                },
+              ]}
+            />
+          </OuiPopover>
           <OuiButtonIcon
             iconType="sortUp"
             aria-label="Send"

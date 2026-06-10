@@ -156,28 +156,31 @@ const TabBar = ({ tabs, activeTabId, onTabSelect, onTabClose, onAddTab, onExpand
           );
         })}
         {tabs.length > 0 && <div className="pagePanel__tabSeparator" />}
-        <OuiButtonIcon
-          iconType="plus"
-          aria-label="Add new tab"
-          size="s"
-          color="text"
-          display="empty"
-          onClick={onAddTab}
-          className="pagePanel__addTabButton"
-        />
+        <OuiToolTip content="Add new tab" position="bottom">
+          <OuiButtonIcon
+            iconType="plus"
+            aria-label="Add new tab"
+            size="s"
+            color="text"
+            display="empty"
+            onClick={onAddTab}
+            className="pagePanel__addTabButton"
+          />
+        </OuiToolTip>
       </div>
 
       {/* List icon — far right, shows popover with all tabs */}
       <div className="pagePanel__tabListAction">
-        <OuiPopover
-          button={
-            <OuiButtonIcon
-              iconType="list"
-              aria-label="Browse all tabs"
-              size="s"
-              color="text"
-              display="empty"
-              isDisabled={tabs.length === 0}
+        <OuiToolTip content="View tabs" position="bottom">
+          <OuiPopover
+            button={
+              <OuiButtonIcon
+                iconType="list"
+                aria-label="View tabs"
+                size="s"
+                color="text"
+                display="empty"
+                isDisabled={tabs.length === 0}
               onClick={() => setIsListOpen((open) => !open)}
             />
           }
@@ -214,6 +217,7 @@ const TabBar = ({ tabs, activeTabId, onTabSelect, onTabClose, onAddTab, onExpand
             </button>
           </div>
         </OuiPopover>
+        </OuiToolTip>
       </div>
     </div>
   );

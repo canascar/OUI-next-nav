@@ -16,6 +16,7 @@ import {
   OuiCodeBlock,
   OuiContextMenuPanel,
   OuiContextMenuItem,
+  OuiContextMenu,
   OuiFlyoutHeader,
   OuiFlyoutBody,
   OuiFlexGroup,
@@ -1603,6 +1604,7 @@ export const ThreadPage = ({
   const responseIndex = useRef(0);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [feedScrolled, setFeedScrolled] = useState(false);
+  const [isAttachMenuOpen, setIsAttachMenuOpen] = useState(false);
   const [completedScriptedIds, setCompletedScriptedIds] = useState(new Set());
 
   const streamTimers = useRef([]);
@@ -2359,12 +2361,44 @@ export const ThreadPage = ({
                 className="threadPage__textarea"
               />
               <div className="threadPage__inputActions">
-                <OuiButtonIcon
-                  iconType="plus"
-                  aria-label="Add attachment"
-                  size="s"
-                  color="text"
-                />
+                <OuiPopover
+                  button={
+                    <OuiButtonIcon
+                      iconType="plus"
+                      aria-label="Add attachment"
+                      size="s"
+                      color="text"
+                      onClick={() => setIsAttachMenuOpen((open) => !open)}
+                    />
+                  }
+                  isOpen={isAttachMenuOpen}
+                  closePopover={() => setIsAttachMenuOpen(false)}
+                  anchorPosition="upLeft"
+                  panelPaddingSize="s">
+                  <OuiContextMenu
+                    initialPanelId={0}
+                    panels={[
+                      {
+                        id: 0,
+                        items: [
+                          { name: 'Upload data', icon: 'importAction', onClick: () => setIsAttachMenuOpen(false) },
+                          { name: 'Upload file or photo', icon: 'document', onClick: () => setIsAttachMenuOpen(false) },
+                          { name: 'Take screenshot', icon: 'fullScreen', onClick: () => setIsAttachMenuOpen(false) },
+                          { name: 'Add to session', icon: 'folderOpen', panel: 1 },
+                        ],
+                      },
+                      {
+                        id: 1,
+                        title: 'Recent sessions',
+                        items: [
+                          { name: 'Latency spike investigation', onClick: () => setIsAttachMenuOpen(false) },
+                          { name: 'Checkout error rate alert', onClick: () => setIsAttachMenuOpen(false) },
+                          { name: 'Node disk pressure alerts', onClick: () => setIsAttachMenuOpen(false) },
+                        ],
+                      },
+                    ]}
+                  />
+                </OuiPopover>
                 <OuiButtonIcon
                   iconType="sortUp"
                   aria-label="Send message"
@@ -2375,7 +2409,7 @@ export const ThreadPage = ({
                     isTyping ||
                     messages.some((m) => m.streaming)
                   }
-                  onClick={handleSend}
+                  onClick={() => handleSend()}
                 />
               </div>
             </div>
