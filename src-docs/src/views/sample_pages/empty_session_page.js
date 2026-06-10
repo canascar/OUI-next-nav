@@ -309,7 +309,6 @@ const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, 
           rows={3}
           resize="none"
           fullWidth
-          autoFocus
           className="emptySessionPage__textarea"
         />
         <div className="emptySessionPage__inputActions">
