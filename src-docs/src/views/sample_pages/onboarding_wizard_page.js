@@ -1465,6 +1465,7 @@ export const OnboardingWizardPage = () => {
   if (showIntro) {
     return (
       <div
+        className="onboardWizard__introWrapper"
         style={{
           display: 'flex',
           position: 'absolute',
@@ -1528,6 +1529,7 @@ export const OnboardingWizardPage = () => {
 
   return (
     <div
+      className="onboardWizard__outerWrapper"
       style={{
         display: 'flex',
         position: 'absolute',
@@ -1662,18 +1664,18 @@ export const OnboardingWizardPage = () => {
                 />
               </div>
             </div>
-
-            {/* Skip onboarding — bottom right */}
-            <div className="onboardWizard__skipLink--fixed">
-              <OuiSmallButtonEmpty
-                iconType="arrowRight"
-                iconSide="right"
-                onClick={() => { window.location.hash = '/sample-pages'; }}>
-                Skip onboarding
-              </OuiSmallButtonEmpty>
-            </div>
           </div>
         </div>
+      </div>
+
+      {/* Skip onboarding — bottom center, outside overflow:hidden containers */}
+      <div className="onboardWizard__skipLink--fixed">
+        <OuiSmallButtonEmpty
+          iconType="arrowRight"
+          iconSide="right"
+          onClick={() => { window.location.hash = '/sample-pages'; }}>
+          Skip onboarding
+        </OuiSmallButtonEmpty>
       </div>
     </div>
   );

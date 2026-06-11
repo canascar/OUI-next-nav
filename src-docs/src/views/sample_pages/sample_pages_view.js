@@ -1528,26 +1528,6 @@ export const SessionPagesView = () => {
 
   // Active view: 'session' (show active session) or 'session-list' (browse all sessions)
   const [activeView, setActiveView] = useState('session');
-  const isPopstateRef = useRef(false);
-
-  const navigateToView = useCallback((view) => {
-    if (!isPopstateRef.current) {
-      window.history.pushState({ view }, '', null);
-    }
-    isPopstateRef.current = false;
-    setActiveView(view);
-  }, []);
-
-  useEffect(() => {
-    const handlePopState = (e) => {
-      const view = e.state?.view || 'session';
-      isPopstateRef.current = true;
-      navigateToView(view);
-    };
-    window.history.replaceState({ view: 'session' }, '', null);
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, [navigateToView]);
 
   // Derive active session from state
   const activeSession = sessionState.sessions.find(
@@ -1572,20 +1552,20 @@ export const SessionPagesView = () => {
       // Otherwise create a new session
       return createSession(prev);
     });
-    navigateToView('session');
-  }, [navigateToView]);
+    setActiveView('session');
+  }, []);
 
   /** Sessions_Button: show the session list */
   const handleBrowseSessions = useCallback(() => {
-    navigateToView('session-list');
-  }, [navigateToView]);
+    setActiveView('session-list');
+  }, []);
 
   /** Library_Button: show the library page */
   const [libraryDefaultTab, setLibraryDefaultTab] = useState(null);
   const handleBrowseLibrary = useCallback((defaultTab) => {
     setLibraryDefaultTab(defaultTab || null);
-    navigateToView('library');
-  }, [navigateToView]);
+    setActiveView('library');
+  }, []);
 
   // --- Session List handlers ---
 
@@ -1601,8 +1581,8 @@ export const SessionPagesView = () => {
         ),
       };
     });
-    navigateToView('session');
-  }, [navigateToView]);
+    setActiveView('session');
+  }, []);
 
   // --- Session Container handlers ---
 
@@ -1633,17 +1613,11 @@ export const SessionPagesView = () => {
       const threadKey = `thread-${Date.now()}-${Math.random()
         .toString(36)
         .slice(2, 9)}`;
-      const briefingMessage = {
-        role: 'assistant',
-        content: '**System Status**\n\n244 of 247 services healthy. No degradation, no cascading failures.\n\n**Active Alerts**\n\n- Critical: Payment service P99 breached 2,000ms — connection pool exhaustion on 3 of 4 pods. Root cause identified.\n- Warning: Checkout error-rate spike tied to auth-service regression. Elevated but not yet customer-impacting.\n- Warning: DNS resolution timeout flagged 3 hours ago — not yet resolved. Monitoring for recurrence.',
-      };
-      const messages = [briefingMessage];
-      if (prompt) {
-        messages.push({ role: 'user', author: 'You', content: prompt });
-      }
       const pendingThread = {
         key: threadKey,
-        messages,
+        messages: prompt
+          ? [{ role: 'user', author: 'You', content: prompt }]
+          : [],
         sourcePageTitle: null,
       };
       return updateSession(prev, prev.activeSessionId, {
@@ -1711,7 +1685,7 @@ export const SessionPagesView = () => {
                 title,
               });
             });
-            navigateToView('session');
+            setActiveView('session');
           }}
         />
       );

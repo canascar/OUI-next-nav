@@ -136,7 +136,7 @@ export function createDefaultSession(id) {
     tabs: [],
     activeTabId: null,
     threadPanelState: 'minimized',
-    threadPanelWidth: 40,
+    threadPanelWidth: 50,
     createdAt: Date.now(),
     title: 'New Session',
   };

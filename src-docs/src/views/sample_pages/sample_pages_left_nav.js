@@ -1738,7 +1738,7 @@ const SettingsPopoverContent = ({
 };
 
 // Profile popover content
-const ProfilePopoverContent = () => {
+const ProfilePopoverContent = ({ onPageChange }) => {
   const [helpOpen, setHelpOpen] = useState(false);
   return (
     <div className="samplePagesLeftNav__toolsPopover">
@@ -1757,20 +1757,20 @@ const ProfilePopoverContent = () => {
           <span>Roles and identities</span>
         </button>
         <div className="samplePagesLeftNav__toolsPopoverGroup">
-          <div className="samplePagesLeftNav__toolsPopoverItem samplePagesLeftNav__toolsPopoverItem--parent">
+          <div
+            className="samplePagesLeftNav__toolsPopoverItem samplePagesLeftNav__toolsPopoverItem--parent"
+            style={{ cursor: 'pointer' }}
+            onClick={() => setHelpOpen(!helpOpen)}>
             <div className="samplePagesLeftNav__navItemIconWrap">
               <OuiIcon type="help" size="m" />
             </div>
             <span className="samplePagesLeftNav__toolsPopoverItemLabel">
               Help
             </span>
-            <OuiButtonIcon
-              iconType={helpOpen ? 'minus' : 'plus'}
-              aria-label="Toggle Help"
-              size="xs"
-              color="text"
-              display="empty"
-              onClick={() => setHelpOpen(!helpOpen)}
+            <OuiIcon
+              type={helpOpen ? 'minus' : 'plus'}
+              size="s"
+              color="subdued"
             />
           </div>
           {helpOpen && (
@@ -1778,7 +1778,7 @@ const ProfilePopoverContent = () => {
               <button
                 type="button"
                 className="samplePagesLeftNav__toolsPopoverItem samplePagesLeftNav__toolsPopoverItem--child"
-                onClick={() => {}}>
+                onClick={() => { window.location.hash = '#/'; }}>
                 <div className="samplePagesLeftNav__treeLine" />
                 <span>Documentation</span>
               </button>
@@ -1818,7 +1818,7 @@ const ProfilePopoverContent = () => {
         <button
           type="button"
           className="samplePagesLeftNav__toolsPopoverItem"
-          onClick={() => {}}>
+          onClick={() => { if (onPageChange) onPageChange('login'); }}>
           <div className="samplePagesLeftNav__navItemIconWrap">
             <OuiIcon type="exit" size="m" />
           </div>
@@ -2845,7 +2845,7 @@ export const SamplePagesLeftNav = ({
                 <div
                   onMouseEnter={() => openNavPopover('profile')}
                   onMouseLeave={() => closeNavPopover()}>
-                  <ProfilePopoverContent />
+                  <ProfilePopoverContent onPageChange={(page) => { setNavPopover(null); onPageChange(page); }} />
                 </div>
               </OuiPopover>
             </div>
@@ -3116,7 +3116,7 @@ export const SamplePagesLeftNav = ({
             <div
               onMouseEnter={() => openNavPopover('profile')}
               onMouseLeave={() => closeNavPopover()}>
-              <ProfilePopoverContent />
+              <ProfilePopoverContent onPageChange={(page) => { setNavPopover(null); onPageChange(page); }} />
             </div>
           </OuiPopover>
         </div>
@@ -3836,7 +3836,7 @@ export const SamplePagesLeftNav = ({
               </div>
               {showUserHelp && (
                 <div className="userMenuChildren">
-                  <div className="userMenuChild">Documentation</div>
+                  <div className="userMenuChild" onClick={() => { window.location.hash = '#/'; }}>Documentation</div>
                   <div className="userMenuChild">Community</div>
                   <div className="userMenuChild">Give feedback</div>
                   <div className="userMenuChild">Keyboard shortcut</div>

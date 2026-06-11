@@ -209,6 +209,7 @@ export {
   OuiInsightCallout,
   OuiOllyChatPill,
   OuiSessionRecents,
+  OuiAgenticSpinner,
 } from './headless';
 
 export { OuiHighlight } from './highlight';
