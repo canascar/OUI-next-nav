@@ -1528,6 +1528,26 @@ export const SessionPagesView = () => {
 
   // Active view: 'session' (show active session) or 'session-list' (browse all sessions)
   const [activeView, setActiveView] = useState('session');
+  const isPopstateRef = useRef(false);
+
+  const navigateToView = useCallback((view) => {
+    if (!isPopstateRef.current) {
+      window.history.pushState({ view }, '', null);
+    }
+    isPopstateRef.current = false;
+    setActiveView(view);
+  }, []);
+
+  useEffect(() => {
+    const handlePopState = (e) => {
+      const view = e.state?.view || 'session';
+      isPopstateRef.current = true;
+      navigateToView(view);
+    };
+    window.history.replaceState({ view: 'session' }, '', null);
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [navigateToView]);
 
   // Derive active session from state
   const activeSession = sessionState.sessions.find(
@@ -1552,20 +1572,20 @@ export const SessionPagesView = () => {
       // Otherwise create a new session
       return createSession(prev);
     });
-    setActiveView('session');
-  }, []);
+    navigateToView('session');
+  }, [navigateToView]);
 
   /** Sessions_Button: show the session list */
   const handleBrowseSessions = useCallback(() => {
-    setActiveView('session-list');
-  }, []);
+    navigateToView('session-list');
+  }, [navigateToView]);
 
   /** Library_Button: show the library page */
   const [libraryDefaultTab, setLibraryDefaultTab] = useState(null);
   const handleBrowseLibrary = useCallback((defaultTab) => {
     setLibraryDefaultTab(defaultTab || null);
-    setActiveView('library');
-  }, []);
+    navigateToView('library');
+  }, [navigateToView]);
 
   // --- Session List handlers ---
 
@@ -1581,8 +1601,8 @@ export const SessionPagesView = () => {
         ),
       };
     });
-    setActiveView('session');
-  }, []);
+    navigateToView('session');
+  }, [navigateToView]);
 
   // --- Session Container handlers ---
 
@@ -1691,7 +1711,7 @@ export const SessionPagesView = () => {
                 title,
               });
             });
-            setActiveView('session');
+            navigateToView('session');
           }}
         />
       );
