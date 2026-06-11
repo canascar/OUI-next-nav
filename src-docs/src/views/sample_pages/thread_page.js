@@ -1749,19 +1749,39 @@ export const ThreadPage = ({
     if (
       pendingMessages &&
       pendingMessages.length > 0 &&
-      pendingMessages[pendingMessages.length - 1].role === 'user' &&
-      !pendingMessages.some((m) => m.role === 'assistant')
+      pendingMessages[pendingMessages.length - 1].role === 'user'
     ) {
       hasInteracted.current = true;
 
       // Use specific response for investigate-alert flow
-      const isInvestigateAlert = pendingMessages.some(
-        (m) => m.content && /investigate.*alert|P99.*latency/i.test(m.content)
-      );
+      const lastUserMsg = pendingMessages[pendingMessages.length - 1].content || '';
+      const isInvestigateAll = /investigate.*all|look into.*all|check.*all.*alert|investigate.*everything/i.test(lastUserMsg);
+      const isInvestigateAlert = /investigate.*alert|P99.*latency/i.test(lastUserMsg);
 
       let mockResponse;
       let tasks;
-      if (isInvestigateAlert) {
+      if (isInvestigateAll) {
+        tasks = [
+          { label: 'Scanning all active alerts', description: 'Pulling data for 3 active alerts across services' },
+          { label: 'Correlating across services', description: 'Checking for shared root causes and dependencies' },
+          { label: 'Generating triage summary', description: 'Ranking by severity and customer impact' },
+        ];
+        mockResponse = {
+          content: 'I\'ve investigated all 3 active alerts. Here\'s the triage:\n\n**1. Payment service P99 latency (Critical)**\nConnection pool exhaustion on 3 of 4 pods. Pool utilization at 98%, requests queuing. Root cause: pool max of 50 is insufficient under current load. Fix ready — increase to 150 + circuit breaker.\n\n**2. Checkout error-rate spike (Warning)**\nAuth-service v2.4.1 deployed 2h ago introduced an OIDC token validation regression. 12.4% error rate on checkout path. Rollback to v2.3.9 recommended.\n\n**3. DNS resolution timeout (Warning)**\nUpstream resolver 10.0.1.53 intermittently dropping UDP packets on os-data-3. Correlates with network maintenance window. Single node, no customer impact yet.\n\n**Cross-service analysis:** Issues #1 and #2 are independent — no shared root cause. Issue #3 is isolated to one data node. Recommend prioritizing #1 (customer-facing latency), then #2 (error rate trending up), then #3 (monitoring only).',
+          attachments: [
+            {
+              type: 'link-preview',
+              title: 'Payment service — connection pool metrics',
+              description: 'Pool utilization spiked from 40% to 98% on 3 of 4 pods starting at 14:29:58 UTC.',
+            },
+            {
+              type: 'link-preview',
+              title: 'Auth-service deployment timeline',
+              description: 'v2.4.1 deployed at 12:15 UTC. Error rate began climbing at 12:18 UTC on checkout path.',
+            },
+          ],
+        };
+      } else if (isInvestigateAlert) {
         tasks = [
           { label: 'Querying payment-service metrics', description: 'Pulling P99 latency and connection pool data for the last hour' },
           { label: 'Correlating with trace data', description: 'Analyzing spans for payment-service dependencies' },

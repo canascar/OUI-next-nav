@@ -1613,11 +1613,17 @@ export const SessionPagesView = () => {
       const threadKey = `thread-${Date.now()}-${Math.random()
         .toString(36)
         .slice(2, 9)}`;
+      const briefingMessage = {
+        role: 'assistant',
+        content: '**System Status**\n\n244 of 247 services healthy. No degradation, no cascading failures.\n\n**Active Alerts**\n\n- Critical: Payment service P99 breached 2,000ms — connection pool exhaustion on 3 of 4 pods. Root cause identified.\n- Warning: Checkout error-rate spike tied to auth-service regression. Elevated but not yet customer-impacting.\n- Warning: DNS resolution timeout flagged 3 hours ago — not yet resolved. Monitoring for recurrence.',
+      };
+      const messages = [briefingMessage];
+      if (prompt) {
+        messages.push({ role: 'user', author: 'You', content: prompt });
+      }
       const pendingThread = {
         key: threadKey,
-        messages: prompt
-          ? [{ role: 'user', author: 'You', content: prompt }]
-          : [],
+        messages,
         sourcePageTitle: null,
       };
       return updateSession(prev, prev.activeSessionId, {
