@@ -1561,7 +1561,9 @@ export const SessionPagesView = () => {
   }, []);
 
   /** Library_Button: show the library page */
-  const handleBrowseLibrary = useCallback(() => {
+  const [libraryDefaultTab, setLibraryDefaultTab] = useState(null);
+  const handleBrowseLibrary = useCallback((defaultTab) => {
+    setLibraryDefaultTab(defaultTab || null);
     setActiveView('library');
   }, []);
 
@@ -1665,6 +1667,7 @@ export const SessionPagesView = () => {
     if (activeView === 'library') {
       return (
         <LibraryPage
+          defaultTab={libraryDefaultTab}
           onSelectPage={(pageKey, title) => {
             // Create a new session with the page open and chat minimized
             setSessionState((prev) => {
@@ -1698,6 +1701,7 @@ export const SessionPagesView = () => {
           onStartThread={handleStartThread}
           onOpenPage={handleOpenPage}
           onOpenPageInNewSession={handleOpenCanvasPage}
+          onBrowseLibrary={handleBrowseLibrary}
           onViewSession={() => {
             handleSelectSession('latency-spike-session');
           }}
