@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useState, useMemo, useRef, useCallback, useContext } from 'react';
+import React, { useState, useMemo, useRef, useCallback, useContext, useEffect } from 'react';
 
 import {
   OuiButtonIcon,
@@ -38,6 +38,7 @@ import {
 
 import { SOURCE_PAGE_MOCK } from './session_models';
 import { OllyAvatar } from './olly_avatar';
+import { OuiAgenticSpinner } from '../../../../src/components/headless/agentic_spinner';
 import { Mascot } from '../../../../olly-mascot/Mascot';
 import { ThemeContext } from '../../components/with_theme';
 
@@ -700,6 +701,15 @@ export const EmptySessionPage = ({
     return greetings[Math.floor(Math.random() * greetings.length)];
   });
 
+  const [briefingPhase, setBriefingPhase] = useState('loading-summary');
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setBriefingPhase('summary-visible'), 500);
+    const t2 = setTimeout(() => setBriefingPhase('loading-alerts'), 1000);
+    const t3 = setTimeout(() => setBriefingPhase('done'), 1700);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, []);
+
   const [activeChip, setActiveChip] = useState('activity');
   const [searchQuery, setSearchQuery] = useState('');
   const [dismissedItems, setDismissedItems] = useState(new Set());
@@ -840,27 +850,43 @@ export const EmptySessionPage = ({
             </OuiTitle>
 
             <div className="emptySessionPage__briefingNarrative emptySessionPage__briefingNarrative--news">
-              <p className="emptySessionPage__narrativePara emptySessionPage__narrativePara--1 emptySessionPage__newsSummary">
-                <strong>244 of 247</strong> services healthy. No degradation, no cascading failures.
-              </p>
-              <div className="emptySessionPage__narrativePara emptySessionPage__narrativePara--2 emptySessionPage__newsItem">
-                <span className="emptySessionPage__newsBadge emptySessionPage__newsBadge--critical">Critical</span>
-                <span className="emptySessionPage__newsBody">
-                  <NarrativeLink sessionId="latency-spike-session" onClick={() => onSelectSession('latency-spike-session')}>Payment service P99 breached 2,000ms</NarrativeLink> — connection pool exhaustion on 3 of 4 pods. Root cause identified.
-                </span>
-              </div>
-              <div className="emptySessionPage__narrativePara emptySessionPage__narrativePara--3 emptySessionPage__newsItem">
-                <span className="emptySessionPage__newsBadge emptySessionPage__newsBadge--warning">Warning</span>
-                <span className="emptySessionPage__newsBody">
-                  <NarrativeLink sessionId="error-rate-spike-session" onClick={() => onSelectSession('error-rate-spike-session')}>Checkout error-rate spike</NarrativeLink> tied to auth-service regression. Elevated but not yet customer-impacting.
-                </span>
-              </div>
-              <div className="emptySessionPage__narrativePara emptySessionPage__narrativePara--4 emptySessionPage__newsItem">
-                <span className="emptySessionPage__newsBadge emptySessionPage__newsBadge--warning">Warning</span>
-                <span className="emptySessionPage__newsBody">
-                  <NarrativeLink sessionId="dns-timeout-session" onClick={() => onSelectSession('dns-timeout-session')}>DNS resolution timeout</NarrativeLink> flagged 3 hours ago — not yet resolved. Monitoring for recurrence.
-                </span>
-              </div>
+              {briefingPhase === 'loading-summary' && (
+                <div className="emptySessionPage__briefingSpinner">
+                  <OuiAgenticSpinner size="s" />
+                </div>
+              )}
+              {briefingPhase !== 'loading-summary' && (
+                <p className="emptySessionPage__narrativePara emptySessionPage__newsSummary emptySessionPage__briefingFadeIn">
+                  <strong>244 of 247</strong> services healthy. No degradation, no cascading failures.
+                </p>
+              )}
+              {briefingPhase === 'loading-alerts' && (
+                <div className="emptySessionPage__briefingSpinner">
+                  <OuiAgenticSpinner size="s" />
+                </div>
+              )}
+              {briefingPhase === 'done' && (
+                <>
+                  <div className="emptySessionPage__newsItem emptySessionPage__briefingFadeIn">
+                    <span className="emptySessionPage__newsBadge emptySessionPage__newsBadge--critical">Critical</span>
+                    <span className="emptySessionPage__newsBody">
+                      <NarrativeLink sessionId="latency-spike-session" onClick={() => onSelectSession('latency-spike-session')}>Payment service P99 breached 2,000ms</NarrativeLink> — connection pool exhaustion on 3 of 4 pods. Root cause identified.
+                    </span>
+                  </div>
+                  <div className="emptySessionPage__newsItem emptySessionPage__briefingFadeIn emptySessionPage__briefingFadeIn--2">
+                    <span className="emptySessionPage__newsBadge emptySessionPage__newsBadge--warning">Warning</span>
+                    <span className="emptySessionPage__newsBody">
+                      <NarrativeLink sessionId="error-rate-spike-session" onClick={() => onSelectSession('error-rate-spike-session')}>Checkout error-rate spike</NarrativeLink> tied to auth-service regression. Elevated but not yet customer-impacting.
+                    </span>
+                  </div>
+                  <div className="emptySessionPage__newsItem emptySessionPage__briefingFadeIn emptySessionPage__briefingFadeIn--3">
+                    <span className="emptySessionPage__newsBadge emptySessionPage__newsBadge--warning">Warning</span>
+                    <span className="emptySessionPage__newsBody">
+                      <NarrativeLink sessionId="dns-timeout-session" onClick={() => onSelectSession('dns-timeout-session')}>DNS resolution timeout</NarrativeLink> flagged 3 hours ago — not yet resolved. Monitoring for recurrence.
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Chat input — fixed at bottom of container */}
