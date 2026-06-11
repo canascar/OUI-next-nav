@@ -350,7 +350,7 @@ export const SessionContainer = ({
           className="sessionContainer__collapsedPanel"
           style={{ display: isFullScreen ? 'flex' : 'none' }}>
           <div className="sessionContainer__collapsedTabs">
-            <OuiToolTip content="View tabs" position="left" delay="regular">
+            <OuiToolTip content={isCollapsedListOpen ? '' : 'View tabs'} position="left" delay="regular">
               <OuiPopover
                 button={
                   <OuiButtonIcon

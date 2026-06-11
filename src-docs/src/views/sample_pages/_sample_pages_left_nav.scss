@@ -18,7 +18,7 @@
   background-color: $ouiPageBackgroundColor;
   background-image: lightOrDarkTheme(
     unquote("radial-gradient(ellipse 80% 70% at 0% 0%, hsla(245, 45%, 78%, 0.42), transparent 65%), radial-gradient(ellipse 60% 55% at 95% 5%, hsla(210, 30%, 82%, 0.36), transparent 60%), radial-gradient(ellipse 50% 45% at 12% 85%, hsla(230, 25%, 84%, 0.32), transparent 60%), radial-gradient(ellipse 90% 80% at 50% 100%, hsla(220, 20%, 85%, 0.32), transparent 70%), radial-gradient(ellipse 55% 50% at 75% 55%, hsla(260, 25%, 82%, 0.28), transparent 60%), radial-gradient(ellipse 42% 38% at 35% 20%, hsla(0, 0%, 88%, 0.36), transparent 55%), radial-gradient(ellipse 48% 42% at 80% 30%, hsla(0, 0%, 90%, 0.32), transparent 55%), radial-gradient(ellipse 65% 50% at 25% 50%, hsla(220, 10%, 90%, 0.26), transparent 60%), radial-gradient(ellipse 100% 55% at 50% 40%, hsla(0, 0%, 94%, 0.28), transparent 65%)"),
-    unquote("radial-gradient(ellipse 80% 70% at 0% 0%, hsla(255, 40%, 34%, 0.48), transparent 65%), radial-gradient(ellipse 60% 55% at 95% 5%, hsla(230, 28%, 36%, 0.4), transparent 60%), radial-gradient(ellipse 50% 45% at 12% 85%, hsla(245, 22%, 32%, 0.38), transparent 60%), radial-gradient(ellipse 90% 80% at 50% 100%, hsla(240, 20%, 30%, 0.32), transparent 70%), radial-gradient(ellipse 55% 50% at 75% 55%, hsla(270, 25%, 33%, 0.32), transparent 60%), radial-gradient(ellipse 42% 38% at 35% 20%, hsla(0, 0%, 55%, 0.2), transparent 55%), radial-gradient(ellipse 48% 42% at 80% 30%, hsla(0, 0%, 52%, 0.18), transparent 55%), radial-gradient(ellipse 65% 50% at 25% 50%, hsla(220, 8%, 48%, 0.16), transparent 60%), radial-gradient(ellipse 100% 55% at 50% 40%, hsla(0, 0%, 52%, 0.16), transparent 65%)")
+    unquote("radial-gradient(ellipse 80% 70% at 0% 0%, hsla(255, 22%, 34%, 0.48), transparent 65%), radial-gradient(ellipse 60% 55% at 95% 5%, hsla(230, 20%, 36%, 0.4), transparent 60%), radial-gradient(ellipse 50% 45% at 12% 85%, hsla(245, 13%, 32%, 0.38), transparent 60%), radial-gradient(ellipse 90% 80% at 50% 100%, hsla(240, 12%, 30%, 0.32), transparent 70%), radial-gradient(ellipse 55% 50% at 75% 55%, hsla(270, 14%, 33%, 0.32), transparent 60%), radial-gradient(ellipse 42% 38% at 35% 20%, hsla(0, 0%, 55%, 0.2), transparent 55%), radial-gradient(ellipse 48% 42% at 80% 30%, hsla(0, 0%, 52%, 0.18), transparent 55%), radial-gradient(ellipse 65% 50% at 25% 50%, hsla(220, 8%, 48%, 0.16), transparent 60%), radial-gradient(ellipse 100% 55% at 50% 40%, hsla(0, 0%, 52%, 0.16), transparent 65%)")
   );
 }
 
@@ -339,7 +339,7 @@
 .samplePagesLeftNav {
   width: 48px;
   min-width: 48px;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.45), rgba(24, 16, 40, 0.55)); // sass-lint:disable-line no-color-literals
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.45), rgba(26, 23, 33, 0.55)); // sass-lint:disable-line no-color-literals
   -webkit-backdrop-filter: blur(26px) saturate(175%);
   backdrop-filter: blur(26px) saturate(175%);
   border-right: 1px solid lightOrDarkTheme(#ececef, rgba(255, 255, 255, 0.08));
@@ -539,7 +539,7 @@
 .samplePagesLeftNav__expandedPanel {
   width: 320px;
   min-width: 320px;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.62), rgba(24, 16, 40, 0.55)); // sass-lint:disable-line no-color-literals
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.62), rgba(26, 23, 33, 0.55)); // sass-lint:disable-line no-color-literals
   backdrop-filter: blur(30px) saturate(185%);
   -webkit-backdrop-filter: blur(30px) saturate(185%);
   border-right: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.10));
@@ -844,7 +844,7 @@
   left: 60px;
   width: 320px;
   max-height: 400px;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.62), rgba(24, 16, 40, 0.55)); // sass-lint:disable-line no-color-literals
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.62), rgba(26, 23, 33, 0.55)); // sass-lint:disable-line no-color-literals
   -webkit-backdrop-filter: blur(30px) saturate(185%);
   backdrop-filter: blur(30px) saturate(185%);
   border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.12)); // sass-lint:disable-line no-color-literals

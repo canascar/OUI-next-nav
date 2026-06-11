@@ -654,7 +654,7 @@
 .emptySessionPage__addCardChip {
   appearance: none;
   border: 1px solid $ouiColorLightShade;
-  background: lightOrDarkTheme(#f7f7f5, #1f1633);
+  background: lightOrDarkTheme(#f7f7f5, $ouiColorHighlight);
   border-radius: 999px;
   padding: 6px 16px;
   font-size: $ouiFontSizeS;
@@ -664,8 +664,8 @@
   transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
 
   &:hover {
-    background: lightOrDarkTheme(#ececef, #2c2042);
-    border-color: lightOrDarkTheme(#e0e0e4, #392a54);
+    background: lightOrDarkTheme(#ececef, $ouiFormBackgroundColor);
+    border-color: lightOrDarkTheme(#e0e0e4, $ouiBorderColor);
     color: $ouiTextColor;
   }
 }
@@ -726,7 +726,7 @@
 
   &:hover {
     transform: scale(1.03);
-    border-color: $ouiColorPrimary;
+    border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.35), rgba($ouiColorPrimary, 0.30));
     box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
   }
 
@@ -749,7 +749,7 @@
   gap: 2px;
   width: 100%;
   padding: 10px 14px;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.7), rgba(24, 16, 40, 0.4));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.7), rgba(26, 23, 33, 0.4));
   border: none;
   border-left: 3px solid lightOrDarkTheme(rgba(10, 10, 10, 0.2), rgba(250, 250, 250, 0.3));
   cursor: pointer;
@@ -795,7 +795,7 @@
   justify-content: center;
   width: 100%;
   padding: 20px;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.5), rgba(24, 16, 40, 0.3));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.5), rgba(26, 23, 33, 0.3));
   border: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.08), rgba(250, 250, 250, 0.1));
   cursor: pointer;
   font-size: $ouiFontSizeS;
@@ -1059,7 +1059,7 @@ textarea.emptySessionPage__textarea {
   padding: 10px 20px;
   border: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.14), rgba(250, 250, 250, 0.16));
   border-radius: 12px;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(24, 16, 40, 0.4));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(26, 23, 33, 0.4));
   cursor: pointer;
   text-align: left;
   font-size: $ouiFontSizeS;
@@ -1309,7 +1309,7 @@ textarea.emptySessionPage__textarea {
   height: 64px;
   border: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.14), rgba(250, 250, 250, 0.16));
   border-radius: 12px;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(24, 16, 40, 0.4));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(26, 23, 33, 0.4));
   cursor: pointer;
   font-size: $ouiFontSizeS;
   color: $ouiTextColor;
@@ -1333,7 +1333,7 @@ textarea.emptySessionPage__textarea {
     pointer-events: none;
 
     &:hover {
-      background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(24, 16, 40, 0.4));
+      background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(26, 23, 33, 0.4));
       border-color: lightOrDarkTheme(rgba(10, 10, 10, 0.14), rgba(250, 250, 250, 0.16));
       transform: none;
       box-shadow: none;
@@ -1484,7 +1484,7 @@ textarea.emptySessionPage__textarea {
   gap: 8px;
   border: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.14), rgba(250, 250, 250, 0.16));
   border-radius: 0;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(24, 16, 40, 0.4));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(26, 23, 33, 0.4));
   padding: $ouiSize;
   position: relative;
   cursor: pointer;
@@ -1494,7 +1494,7 @@ textarea.emptySessionPage__textarea {
   overflow: hidden;
 
   &:hover {
-    background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.85), rgba(24, 16, 40, 0.6));
+    background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.85), rgba(26, 23, 33, 0.6));
   }
 }
 
@@ -1578,7 +1578,7 @@ textarea.emptySessionPage__textarea {
 .emptySessionPage__favoritePanel {
   border: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.14), rgba(250, 250, 250, 0.16));
   border-radius: 0;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(24, 16, 40, 0.4));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(26, 23, 33, 0.4));
   padding: $ouiSize;
   position: relative;
 }

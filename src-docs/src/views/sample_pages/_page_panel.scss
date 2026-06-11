@@ -181,6 +181,7 @@
 .pagePanel__tabListPopover {
   display: flex;
   flex-direction: column;
+  gap: 1px;
   min-width: 180px;
 }
 
@@ -195,14 +196,19 @@
   color: $ouiTextColor;
   cursor: pointer;
   border-radius: $ouiBorderRadius;
+  transition: background-color 120ms ease;
 
   &:hover {
-    background-color: $ouiColorLightestShade;
+    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.10), rgba($ouiColorPrimary, 0.18));
   }
 
   &--active {
     font-weight: 600;
-    background-color: rgba($ouiColorPrimary, 0.05);
+    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.14), rgba($ouiColorPrimary, 0.24));
+  }
+
+  &--active:hover {
+    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.18), rgba($ouiColorPrimary, 0.30));
   }
 
   &--new {

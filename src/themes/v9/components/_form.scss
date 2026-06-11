@@ -88,8 +88,18 @@
 .ouiComboBoxOption,
 .ouiSelectableListItem,
 .ouiContextMenuItem,
+.ouiListGroupItem,
 .ouiFilterSelectItem {
   border-radius: $ouiBorderRadiusSmall !important; // sass-lint:disable-line no-important
+}
+
+// Contextual popover menu items: 1px breathing room between each option
+.ouiContextMenuItem {
+  margin-bottom: 1px !important; // sass-lint:disable-line no-important
+
+  &:last-child {
+    margin-bottom: 0 !important; // sass-lint:disable-line no-important
+  }
 }
 
 // Ensure standalone form inputs inherit the v9 border radius and background
@@ -165,7 +175,7 @@
 .ouiComboBoxOption:hover,
 .ouiComboBoxOption:focus {
   // sass-lint:disable no-important
-  background-color: lightOrDarkTheme(rgba(99, 102, 241, .08), rgba(165, 180, 252, .12)) !important;
+  background-color: lightOrDarkTheme(rgba(99, 102, 241, .12), rgba(165, 180, 252, .18)) !important;
   // sass-lint:enable no-important
 }
 
@@ -212,6 +222,7 @@
 
 .ouiFormControlLayout--group:focus-within {
   background-color: $ouiFormBackgroundColor !important;
+  border-color: $ouiColorPrimary !important;
 }
 
 // Remove shadow from nested panels to prevent overlap
@@ -449,6 +460,18 @@
 // Thread/session textareas — remove inner border on focus (outer layout handles it)
 .ouiTextArea.threadPage__textarea:focus,
 .ouiTextArea.emptySessionPage__textarea:focus {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+// Fields inside a group (with append/prepend buttons or labels): don't
+// highlight the inner input on focus — the parent group container shows
+// the focus border instead (see .ouiFormControlLayout--group:focus-within).
+.ouiFormControlLayout--group .ouiFieldText:focus,
+.ouiFormControlLayout--group .ouiFieldSearch:focus,
+.ouiFormControlLayout--group .ouiFieldNumber:focus,
+.ouiFormControlLayout--group .ouiFieldPassword:focus,
+.ouiFormControlLayout--group .ouiSelect:focus {
   border-color: transparent !important;
   box-shadow: none !important;
 }

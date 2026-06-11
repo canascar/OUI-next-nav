@@ -58,10 +58,10 @@
 
   // ---- Surfaces ----
   --g-surface: #{$ouiColorEmptyShade};
-  --g-surface-muted: #{lightOrDarkTheme(#f7f7f5, #1f1633)};
+  --g-surface-muted: #{lightOrDarkTheme(#f7f7f5, $ouiColorHighlight)};
   --g-surface-subtle: #{$ouiColorLightestShade};
   --g-surface-border: #{$ouiColorLightShade};
-  --g-surface-border-strong: #{lightOrDarkTheme(#e0e0e4, #392a54)};
+  --g-surface-border-strong: #{lightOrDarkTheme(#e0e0e4, $ouiBorderColor)};
 
   // ---- Frosted glass ----
   --g-glass: rgba(255, 255, 255, 0.62);
