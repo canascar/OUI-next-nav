@@ -9,7 +9,6 @@
 // sass-lint:disable no-important, no-color-literals
 
 // Force light text/icons on filled buttons in light mode
-.ouiButton--primary.ouiButton--fill:not(.ouiButton-isDisabled),
 .ouiButton--success.ouiButton--fill:not(.ouiButton-isDisabled),
 .ouiButton--text.ouiButton--fill:not(.ouiButton-isDisabled),
 .ouiButton--danger.ouiButton--fill:not(.ouiButton-isDisabled) {
@@ -21,21 +20,32 @@
   }
 }
 
-// Filled primary — indigo with glow
+// Filled primary
+// Light mode: indigo bg + white text
+// Dark mode: full-shade (white) bg + empty-shade (dark surface) contents
 .ouiButton--primary.ouiButton--fill:not(.ouiButton-isDisabled) {
-  background-color: $ouiColorPrimary !important;
-  border-color: $ouiColorPrimary !important;
-  box-shadow: 0 8px 22px -10px $ouiColorPrimary !important;
+  background-color: lightOrDarkTheme($ouiColorPrimary, $ouiColorFullShade) !important;
+  border-color: lightOrDarkTheme($ouiColorPrimary, $ouiColorFullShade) !important;
+  color: lightOrDarkTheme(#fff, $ouiColorEmptyShade) !important;
+  box-shadow: lightOrDarkTheme(
+    #{0 8px 22px -10px $ouiColorPrimary},
+    #{0 8px 22px -10px rgba(255, 255, 255, 0.35)}
+  ) !important;
+
+  .ouiButton__text,
+  .ouiButton__icon {
+    color: lightOrDarkTheme(#fff, $ouiColorEmptyShade) !important;
+  }
 
   &:hover,
   &:focus {
-    background-color: lighten($ouiColorPrimary, 5%) !important;
-    border-color: lighten($ouiColorPrimary, 5%) !important;
+    background-color: lightOrDarkTheme(lighten($ouiColorPrimary, 5%), darken($ouiColorFullShade, 6%)) !important;
+    border-color: lightOrDarkTheme(lighten($ouiColorPrimary, 5%), darken($ouiColorFullShade, 6%)) !important;
   }
 
   &:active {
-    background-color: darken($ouiColorPrimary, 5%) !important;
-    border-color: darken($ouiColorPrimary, 5%) !important;
+    background-color: lightOrDarkTheme(darken($ouiColorPrimary, 5%), darken($ouiColorFullShade, 12%)) !important;
+    border-color: lightOrDarkTheme(darken($ouiColorPrimary, 5%), darken($ouiColorFullShade, 12%)) !important;
   }
 }
 
@@ -89,17 +99,22 @@
 
 // Filled icon buttons
 .ouiButtonIcon--primary.ouiButtonIcon--fill:not(.ouiButtonIcon-isDisabled) {
-  background-color: $ouiColorPrimary !important;
-  border-color: $ouiColorPrimary !important;
+  background-color: lightOrDarkTheme($ouiColorPrimary, $ouiColorFullShade) !important;
+  border-color: lightOrDarkTheme($ouiColorPrimary, $ouiColorFullShade) !important;
+  color: lightOrDarkTheme(#fff, $ouiColorEmptyShade) !important;
+
+  .ouiButtonIcon__icon {
+    color: lightOrDarkTheme(#fff, $ouiColorEmptyShade) !important;
+    fill: lightOrDarkTheme(#fff, $ouiColorEmptyShade) !important;
+  }
 
   &:hover,
   &:focus {
-    background-color: lighten($ouiColorPrimary, 5%) !important;
-    border-color: lighten($ouiColorPrimary, 5%) !important;
+    background-color: lightOrDarkTheme(lighten($ouiColorPrimary, 5%), darken($ouiColorFullShade, 6%)) !important;
+    border-color: lightOrDarkTheme(lighten($ouiColorPrimary, 5%), darken($ouiColorFullShade, 6%)) !important;
   }
 }
 
-.ouiButtonIcon--primary.ouiButtonIcon--fill,
 .ouiButtonIcon--success.ouiButtonIcon--fill,
 .ouiButtonIcon--danger.ouiButtonIcon--fill {
   color: #fff !important;

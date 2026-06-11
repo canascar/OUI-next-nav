@@ -12,10 +12,10 @@
   html {
     background-color: $ouiPageBackgroundColor;
     background-image:
-      radial-gradient(ellipse 80% 70% at 0% 0%, hsla(250, 35%, 38%, 0.4), transparent 70%),
-      radial-gradient(ellipse 70% 60% at 100% 10%, hsla(220, 25%, 42%, 0.35), transparent 70%),
-      radial-gradient(ellipse 90% 80% at 50% 100%, hsla(240, 20%, 36%, 0.3), transparent 70%),
-      radial-gradient(ellipse 60% 50% at 80% 80%, hsla(260, 25%, 36%, 0.3), transparent 70%),
+      radial-gradient(ellipse 80% 70% at 0% 0%, hsla(250, 18%, 38%, 0.4), transparent 70%),
+      radial-gradient(ellipse 70% 60% at 100% 10%, hsla(220, 18%, 42%, 0.35), transparent 70%),
+      radial-gradient(ellipse 90% 80% at 50% 100%, hsla(240, 12%, 36%, 0.3), transparent 70%),
+      radial-gradient(ellipse 60% 50% at 80% 80%, hsla(260, 14%, 36%, 0.3), transparent 70%),
       radial-gradient(ellipse 100% 60% at 50% 40%, hsla(0, 0%, 50%, 0.15), transparent 65%);
     background-attachment: fixed;
     min-height: 100vh;

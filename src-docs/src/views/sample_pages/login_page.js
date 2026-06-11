@@ -46,7 +46,7 @@ export const LoginPage = ({ onLogin }) => {
   // Glass theme tokens
   const bgColor = isDark ? '#0d0818' : '#f8f7fc';
   const panelBg = isDark
-    ? 'rgba(24, 16, 40, 0.55)'
+    ? 'rgba(26, 23, 33, 0.55)'
     : 'rgba(255, 255, 255, 0.62)';
   const borderColor = isDark
     ? 'rgba(255, 255, 255, 0.10)'

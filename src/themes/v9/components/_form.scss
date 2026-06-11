@@ -222,6 +222,7 @@
 
 .ouiFormControlLayout--group:focus-within {
   background-color: $ouiFormBackgroundColor !important;
+  border-color: $ouiColorPrimary !important;
 }
 
 // Remove shadow from nested panels to prevent overlap
@@ -459,6 +460,18 @@
 // Thread/session textareas — remove inner border on focus (outer layout handles it)
 .ouiTextArea.threadPage__textarea:focus,
 .ouiTextArea.emptySessionPage__textarea:focus {
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+// Fields inside a group (with append/prepend buttons or labels): don't
+// highlight the inner input on focus — the parent group container shows
+// the focus border instead (see .ouiFormControlLayout--group:focus-within).
+.ouiFormControlLayout--group .ouiFieldText:focus,
+.ouiFormControlLayout--group .ouiFieldSearch:focus,
+.ouiFormControlLayout--group .ouiFieldNumber:focus,
+.ouiFormControlLayout--group .ouiFieldPassword:focus,
+.ouiFormControlLayout--group .ouiSelect:focus {
   border-color: transparent !important;
   box-shadow: none !important;
 }
