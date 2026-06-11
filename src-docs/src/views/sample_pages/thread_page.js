@@ -2361,7 +2361,7 @@ export const ThreadPage = ({
                 className="threadPage__textarea"
               />
               <div className="threadPage__inputActions">
-                <OuiToolTip content="Attach" position="top">
+                <OuiToolTip content={isAttachMenuOpen ? '' : 'Attach'} position="top">
                   <OuiPopover
                     button={
                       <OuiButtonIcon

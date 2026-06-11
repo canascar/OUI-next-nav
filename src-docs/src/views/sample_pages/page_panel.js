@@ -171,7 +171,7 @@ const TabBar = ({ tabs, activeTabId, onTabSelect, onTabClose, onAddTab, onExpand
 
       {/* List icon — far right, shows popover with all tabs */}
       <div className="pagePanel__tabListAction">
-        <OuiToolTip content="View tabs" position="bottom">
+        <OuiToolTip content={isListOpen ? '' : 'View tabs'} position="bottom">
           <OuiPopover
             button={
               <OuiButtonIcon

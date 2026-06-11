@@ -313,7 +313,7 @@ const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, 
           className="emptySessionPage__textarea"
         />
         <div className="emptySessionPage__inputActions">
-          <OuiToolTip content="Attach" position="top">
+          <OuiToolTip content={isAttachMenuOpen ? '' : 'Attach'} position="top">
             <OuiPopover
               button={
                 <OuiButtonIcon

@@ -88,8 +88,18 @@
 .ouiComboBoxOption,
 .ouiSelectableListItem,
 .ouiContextMenuItem,
+.ouiListGroupItem,
 .ouiFilterSelectItem {
   border-radius: $ouiBorderRadiusSmall !important; // sass-lint:disable-line no-important
+}
+
+// Contextual popover menu items: 1px breathing room between each option
+.ouiContextMenuItem {
+  margin-bottom: 1px !important; // sass-lint:disable-line no-important
+
+  &:last-child {
+    margin-bottom: 0 !important; // sass-lint:disable-line no-important
+  }
 }
 
 // Ensure standalone form inputs inherit the v9 border radius and background
@@ -165,7 +175,7 @@
 .ouiComboBoxOption:hover,
 .ouiComboBoxOption:focus {
   // sass-lint:disable no-important
-  background-color: lightOrDarkTheme(rgba(99, 102, 241, .08), rgba(165, 180, 252, .12)) !important;
+  background-color: lightOrDarkTheme(rgba(99, 102, 241, .12), rgba(165, 180, 252, .18)) !important;
   // sass-lint:enable no-important
 }
 
