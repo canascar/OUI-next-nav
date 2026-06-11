@@ -129,7 +129,8 @@ export const ResizeHandle = ({ onResize, onResizeEnd, isActive }) => {
       aria-valuenow={Math.round(currentWidth)}
       aria-valuemin={MIN_WIDTH}
       aria-valuemax={MAX_WIDTH}
-      tabIndex={0}
-    />
+      tabIndex={0}>
+      <span className="resizeHandle__grip" />
+    </div>
   );
 };
