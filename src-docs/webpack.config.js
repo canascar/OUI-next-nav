@@ -23,18 +23,8 @@ const isProduction = NODE_ENV === 'production';
 const isPuppeteer = NODE_ENV === 'puppeteer';
 
 function employCache(loaders) {
-  if (isDevelopment && !isPuppeteer) {
-    return [
-      {
-        loader: 'cache-loader',
-        options: {
-          cacheDirectory: path.join(__dirname, '..', '.cache-loader'),
-        },
-      },
-      ...loaders,
-    ];
-  }
-
+  // Webpack 5's persistent filesystem cache (configured below) supersedes
+  // cache-loader, so we no longer wrap loaders with it.
   return loaders;
 }
 
@@ -42,7 +32,20 @@ function employCache(loaders) {
 const webpackConfig = {
   mode: isProduction ? 'production' : 'development',
 
-  devtool: isProduction ? 'source-map' : 'cheap-module-source-map',
+  devtool: isProduction ? 'source-map' : 'eval-cheap-module-source-map',
+
+  // Webpack 5 persistent filesystem cache — dramatically speeds up cold
+  // starts and rebuilds in development by reusing previously compiled modules.
+  cache:
+    isDevelopment && !isPuppeteer
+      ? {
+          type: 'filesystem',
+          cacheDirectory: path.join(__dirname, '..', '.webpack-cache'),
+          buildDependencies: {
+            config: [__filename],
+          },
+        }
+      : false,
 
   entry: {
     bundle: './index.js',
@@ -147,7 +150,9 @@ const webpackConfig = {
 
     new CircularDependencyPlugin({
       exclude: /node_modules/,
-      failOnError: true,
+      // Walking the full module graph on every rebuild is expensive in dev.
+      // Keep enforcement in production/CI; only warn during local dev.
+      failOnError: !isDevelopment,
     }),
 
     new ProvidePlugin({

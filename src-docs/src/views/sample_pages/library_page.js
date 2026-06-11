@@ -72,9 +72,9 @@ const TABS = [
  * @param {Object} props
  * @param {(pageKey: string, title: string) => void} props.onSelectPage - Opens a page
  */
-export const LibraryPage = ({ onSelectPage }) => {
+export const LibraryPage = ({ onSelectPage, defaultTab }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('all');
+  const [activeTab, setActiveTab] = useState(defaultTab || 'all');
   const listRef = useRef(null);
   const pageRef = useRef(null);
   const chipsRef = useRef(null);

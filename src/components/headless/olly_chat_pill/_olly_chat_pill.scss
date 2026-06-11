@@ -158,7 +158,7 @@
 
 @keyframes ollyChatPillPulse {
   0%, 100% { box-shadow: none; }
-  50% { box-shadow: 0 0 0 4px lightOrDarkTheme(rgba($ouiColorPrimary, 0.2), rgba($ouiColorPrimary, 0.28)); }
+  50% { box-shadow: 0 0 0 4px rgba($ouiColorPrimary, 0.15); }
 }
 
 // Text input — borderless, transparent

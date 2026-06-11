@@ -265,6 +265,30 @@
   color: $ouiTextSubduedColor;
 }
 
+// Briefing loading spinner
+.emptySessionPage__briefingSpinner {
+  padding: 8px 0;
+}
+
+// Fade-in for briefing content after spinner
+.emptySessionPage__briefingFadeIn {
+  animation: briefingFadeIn 400ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+
+  &--2 { animation-delay: 80ms; }
+  &--3 { animation-delay: 160ms; }
+}
+
+@keyframes briefingFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 // Inline link — bold + underline + primary color, clickable
 .emptySessionPage__narrativeLink {
   font-weight: $ouiFontWeightSemiBold;
@@ -422,11 +446,28 @@
   margin-bottom: 8px;
 
   &--sticky {
-    position: sticky;
-    top: 0;
+    position: relative;
     z-index: 10;
-    background: inherit;
-    padding-bottom: 8px;
+    padding: 4px;
+    margin-bottom: 16px;
+    border-radius: $ouiBorderRadius * 2;
+
+    .ouiTabs {
+      gap: 0;
+    }
+
+    .ouiTab {
+      border-radius: $ouiBorderRadius * 1.5;
+      padding: 6px 14px;
+      font-size: $ouiFontSizeXS;
+      font-weight: $ouiFontWeightMedium;
+
+      &[aria-selected="true"],
+      &.ouiTab-isSelected {
+        background: lightOrDarkTheme($ouiColorEmptyShade, rgba(255, 255, 255, 0.1));
+        box-shadow: 0 1px 3px lightOrDarkTheme(rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.3));
+      }
+    }
   }
 }
 
@@ -483,7 +524,7 @@
 .emptySessionPage__rightCol {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: flex-start;
   gap: 0;
   flex: 1 1 50%;
@@ -1950,6 +1991,18 @@ textarea.emptySessionPage__textarea {
 .emptySessionPage__widgetListAction {
   font-size: $ouiFontSizeXS;
   opacity: 0.5;
+  background: none;
+  border: none;
+  padding: 4px;
+  border-radius: $ouiBorderRadius;
+  cursor: pointer;
+  color: $ouiTextColor;
+  transition: opacity 150ms ease, background 150ms ease;
+
+  &:hover {
+    opacity: 1;
+    background: lightOrDarkTheme(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.08));
+  }
 }
 
 .emptySessionPage__widgetListItems {
@@ -2042,6 +2095,219 @@ textarea.emptySessionPage__textarea {
   font-size: 20px;
   opacity: 0.4;
   transition: transform 200ms ease, opacity 200ms ease;
+}
+
+// Edit mode — widgets get outlines and jiggle
+.emptySessionPage__widgetGrid--editing {
+  .emptySessionPage__widgetWrap {
+    position: relative;
+    border: 2px dashed lightOrDarkTheme(rgba(99, 102, 241, 0.4), rgba(165, 180, 252, 0.3));
+    border-radius: $ouiBorderRadius + 2;
+    cursor: grab;
+    animation: widgetJiggle 0.3s ease-in-out infinite alternate;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+
+    &:nth-child(2n) { animation-delay: 0.1s; }
+    &:nth-child(3n) { animation-delay: 0.15s; }
+
+    &:hover {
+      border-color: $ouiColorPrimary;
+      box-shadow: 0 0 0 3px lightOrDarkTheme(rgba(99, 102, 241, 0.1), rgba(165, 180, 252, 0.08));
+      animation: none;
+    }
+
+    &:active {
+      cursor: grabbing;
+      opacity: 0.8;
+      transform: scale(0.97);
+    }
+
+    .ouiInsightCard,
+    .emptySessionPage__widgetList {
+      pointer-events: none;
+    }
+  }
+}
+
+.emptySessionPage__widgetWrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+  > .ouiInsightCard,
+  > .emptySessionPage__widgetList {
+    flex: 1;
+  }
+}
+
+.emptySessionPage__widgetDragHandle {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: lightOrDarkTheme(rgba(255, 255, 255, 0.9), rgba(30, 30, 40, 0.9));
+  box-shadow: 0 1px 4px lightOrDarkTheme(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4));
+  cursor: grab;
+  opacity: 0.7;
+  transition: opacity 150ms ease, transform 150ms ease;
+
+  &:hover {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.emptySessionPage__widgetResizeHandle {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: none;
+  background: lightOrDarkTheme(rgba(255, 255, 255, 0.9), rgba(30, 30, 40, 0.9));
+  box-shadow: 0 1px 4px lightOrDarkTheme(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4));
+  cursor: nwse-resize;
+  opacity: 0.7;
+  transition: opacity 150ms ease, transform 150ms ease;
+  color: $ouiTextColor;
+
+  &:hover {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes widgetJiggle {
+  0% { transform: rotate(-0.3deg); }
+  100% { transform: rotate(0.3deg); }
+}
+
+// Widget Gallery panel (edit mode)
+.emptySessionPage__widgetGallery {
+  margin-top: 16px;
+  border: 1px solid $ouiBorderColor;
+  border-radius: $ouiBorderRadius * 2;
+  background: lightOrDarkTheme(rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.04));
+  overflow: hidden;
+  animation: gallerySlideIn 250ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+@keyframes gallerySlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.emptySessionPage__galleryHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px;
+  border-bottom: 1px solid $ouiBorderColor;
+
+  strong {
+    font-size: $ouiFontSizeS;
+  }
+}
+
+.emptySessionPage__gallerySearch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 16px;
+  padding: 8px 12px;
+  border-radius: $ouiBorderRadius;
+  background: lightOrDarkTheme(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.06));
+  border: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.08));
+}
+
+.emptySessionPage__gallerySearchIcon {
+  opacity: 0.4;
+  flex-shrink: 0;
+}
+
+.emptySessionPage__gallerySearchInput {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-size: $ouiFontSizeXS;
+  color: $ouiTextColor;
+
+  &::placeholder {
+    color: $ouiTextSubduedColor;
+  }
+}
+
+.emptySessionPage__galleryCategories {
+  padding: 0 16px 12px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.emptySessionPage__galleryCategory {
+  margin-bottom: 12px;
+}
+
+.emptySessionPage__galleryCategoryTitle {
+  display: block;
+  font-size: 11px;
+  font-weight: $ouiFontWeightSemiBold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.5;
+  margin-bottom: 6px;
+}
+
+.emptySessionPage__galleryItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: $ouiBorderRadius;
+  cursor: grab;
+  transition: background 120ms ease;
+
+  &:hover {
+    background: lightOrDarkTheme(rgba(99, 102, 241, 0.06), rgba(165, 180, 252, 0.08));
+  }
+
+  &:active {
+    cursor: grabbing;
+    opacity: 0.7;
+  }
+}
+
+.emptySessionPage__galleryItemLabel {
+  flex: 1;
+  font-size: $ouiFontSizeXS;
+  font-weight: $ouiFontWeightMedium;
+}
+
+.emptySessionPage__galleryItemSize {
+  font-size: 10px;
+  opacity: 0.4;
+  font-family: monospace;
+}
+
+.emptySessionPage__galleryFooter {
+  padding: 10px 16px;
+  border-top: 1px solid $ouiBorderColor;
+  text-align: center;
 }
 
 // Inspect label inside insight cards

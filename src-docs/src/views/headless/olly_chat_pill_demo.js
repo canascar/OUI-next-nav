@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 
 import {
   OuiOllyChatPill,
@@ -12,14 +12,8 @@ import {
 } from '../../../../src/components';
 
 import { Mascot } from '../../../../olly-mascot/Mascot';
-import { ThemeContext } from '../../components/with_theme';
 
 export default () => {
-  const themeContext = useContext(ThemeContext);
-  const isDark = themeContext.theme === 'v9-dark';
-  const mascotColor = isDark ? ['#FFFFFF', '#D9DEE5'] : ['#14558E', '#153A5A'];
-  const mascotEyeColor = isDark ? '#181028' : '#fff';
-
   const [message, setMessage] = useState(
     'I noticed a latency spike on the checkout service. Want me to investigate?'
   );
@@ -31,9 +25,9 @@ export default () => {
       </OuiText>
       <OuiSpacer size="m" />
       <OuiOllyChatPill
-        avatar={<Mascot size={28} idle bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />}
-        avatarHover={<Mascot size={28} expression="happy" idle={false} bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />}
-        avatarFocused={<Mascot size={28} expression="blink" idle={false} bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />}
+        avatar={<Mascot size={28} idle bob={false} follow={false} />}
+        avatarHover={<Mascot size={28} expression="happy" idle={false} bob={false} follow={false} />}
+        avatarFocused={<Mascot size={28} expression="blink" idle={false} bob={false} follow={false} />}
         onSubmit={(val) => alert(`Submitted: ${val}`)}
         onActivate={() => alert('Chat activated')}
       />
@@ -45,9 +39,9 @@ export default () => {
       </OuiText>
       <OuiSpacer size="m" />
       <OuiOllyChatPill
-        avatar={<Mascot size={28} idle bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />}
-        avatarHover={<Mascot size={28} expression="happy" idle={false} bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />}
-        avatarFocused={<Mascot size={28} expression="blink" idle={false} bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />}
+        avatar={<Mascot size={28} idle bob={false} follow={false} />}
+        avatarHover={<Mascot size={28} expression="happy" idle={false} bob={false} follow={false} />}
+        avatarFocused={<Mascot size={28} expression="blink" idle={false} bob={false} follow={false} />}
         message={message}
         quickReplies={[
           { label: 'Yes, investigate', primary: true },
@@ -66,9 +60,9 @@ export default () => {
       </OuiText>
       <OuiSpacer size="m" />
       <OuiOllyChatPill
-        avatar={<Mascot size={28} idle bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />}
-        avatarHover={<Mascot size={28} expression="happy" idle={false} bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />}
-        avatarFocused={<Mascot size={28} expression="blink" idle={false} bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />}
+        avatar={<Mascot size={28} idle bob={false} follow={false} />}
+        avatarHover={<Mascot size={28} expression="happy" idle={false} bob={false} follow={false} />}
+        avatarFocused={<Mascot size={28} expression="blink" idle={false} bob={false} follow={false} />}
         placeholder="Search or ask a question..."
         onSubmit={(val) => alert(`Submitted: ${val}`)}
       />

@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useState, useMemo, useRef, useCallback, useContext } from 'react';
+import React, { useState, useMemo, useRef, useCallback, useContext, useEffect } from 'react';
 
 import {
   OuiButtonIcon,
@@ -38,6 +38,7 @@ import {
 
 import { SOURCE_PAGE_MOCK } from './session_models';
 import { OllyAvatar } from './olly_avatar';
+import { OuiAgenticSpinner } from '../../../../src/components/headless/agentic_spinner';
 import { Mascot } from '../../../../olly-mascot/Mascot';
 import { ThemeContext } from '../../components/with_theme';
 
@@ -674,6 +675,7 @@ export const EmptySessionPage = ({
   onStartThread,
   onOpenPage,
   onOpenPageInNewSession,
+  onBrowseLibrary,
   onViewSession,
   onStartInvestigation,
   onSelectSession,
@@ -693,11 +695,20 @@ export const EmptySessionPage = ({
       'What are you working on John?',
       'Where should we start today John?',
       'Hey hey, John!',
-      '¯\\_(ツ)_/¯',
+      'Ready when you are, John',
       "What's for today John?",
     ];
     return greetings[Math.floor(Math.random() * greetings.length)];
   });
+
+  const [briefingPhase, setBriefingPhase] = useState('loading-summary');
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setBriefingPhase('summary-visible'), 500);
+    const t2 = setTimeout(() => setBriefingPhase('loading-alerts'), 1000);
+    const t3 = setTimeout(() => setBriefingPhase('done'), 1700);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, []);
 
   const [activeChip, setActiveChip] = useState('activity');
   const [searchQuery, setSearchQuery] = useState('');
@@ -710,6 +721,35 @@ export const EmptySessionPage = ({
   const [scrolledFromTop, setScrolledFromTop] = useState(false);
   const [mascotExpression, setMascotExpression] = useState(undefined);
   const [rightPanelTab, setRightPanelTab] = useState('insights');
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [gallerySearch, setGallerySearch] = useState('');
+  const [widgetOrder, setWidgetOrder] = useState([
+    'top-services', 'connection-timeout', 'recent-alerts', 'deployment-timeline',
+    'resource-utilization', 'saved-queries', 'dashboards',
+  ]);
+  const [widgetSizes, setWidgetSizes] = useState({ dashboards: 2 });
+  const dragWidget = useRef(null);
+  const dragOverWidget = useRef(null);
+  const resizingWidget = useRef(null);
+
+  const handleWidgetDragStart = (idx) => { dragWidget.current = idx; };
+  const handleWidgetDragOver = (e, idx) => { e.preventDefault(); dragOverWidget.current = idx; };
+  const handleWidgetDrop = () => {
+    if (dragWidget.current === null || dragOverWidget.current === null) return;
+    const newOrder = [...widgetOrder];
+    const [dragged] = newOrder.splice(dragWidget.current, 1);
+    newOrder.splice(dragOverWidget.current, 0, dragged);
+    setWidgetOrder(newOrder);
+    dragWidget.current = null;
+    dragOverWidget.current = null;
+  };
+  const handleWidgetResize = (widgetId) => {
+    setWidgetSizes(prev => {
+      const current = prev[widgetId] || 1;
+      const next = current >= 2 ? 1 : 2;
+      return { ...prev, [widgetId]: next };
+    });
+  };
   const [hasAnimatedBriefing, setHasAnimatedBriefing] = useState(false);
   const scrollRef = useRef(null);
   const briefingRef = useRef(null);
@@ -802,7 +842,6 @@ export const EmptySessionPage = ({
                 <Mascot size={32} expression={mascotExpression} idle={!mascotExpression} bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />
               </div>
               <span className="emptySessionPage__onlineStatus">
-                <span className="emptySessionPage__onlineDot" />
                 Olly is online
               </span>
             </div>
@@ -811,27 +850,43 @@ export const EmptySessionPage = ({
             </OuiTitle>
 
             <div className="emptySessionPage__briefingNarrative emptySessionPage__briefingNarrative--news">
-              <p className="emptySessionPage__narrativePara emptySessionPage__narrativePara--1 emptySessionPage__newsSummary">
-                <strong>244 of 247</strong> services healthy. No degradation, no cascading failures.
-              </p>
-              <div className="emptySessionPage__narrativePara emptySessionPage__narrativePara--2 emptySessionPage__newsItem">
-                <span className="emptySessionPage__newsBadge emptySessionPage__newsBadge--critical">Critical</span>
-                <span className="emptySessionPage__newsBody">
-                  <NarrativeLink sessionId="latency-spike-session" onClick={() => onSelectSession('latency-spike-session')}>Payment service P99 breached 2,000ms</NarrativeLink> — connection pool exhaustion on 3 of 4 pods. Root cause identified.
-                </span>
-              </div>
-              <div className="emptySessionPage__narrativePara emptySessionPage__narrativePara--3 emptySessionPage__newsItem">
-                <span className="emptySessionPage__newsBadge emptySessionPage__newsBadge--warning">Warning</span>
-                <span className="emptySessionPage__newsBody">
-                  <NarrativeLink sessionId="error-rate-spike-session" onClick={() => onSelectSession('error-rate-spike-session')}>Checkout error-rate spike</NarrativeLink> tied to auth-service regression. Elevated but not yet customer-impacting.
-                </span>
-              </div>
-              <div className="emptySessionPage__narrativePara emptySessionPage__narrativePara--4 emptySessionPage__newsItem">
-                <span className="emptySessionPage__newsBadge emptySessionPage__newsBadge--warning">Warning</span>
-                <span className="emptySessionPage__newsBody">
-                  <NarrativeLink sessionId="dns-timeout-session" onClick={() => onSelectSession('dns-timeout-session')}>DNS resolution timeout</NarrativeLink> flagged 3 hours ago — not yet resolved. Monitoring for recurrence.
-                </span>
-              </div>
+              {briefingPhase === 'loading-summary' && (
+                <div className="emptySessionPage__briefingSpinner">
+                  <OuiAgenticSpinner size="s" />
+                </div>
+              )}
+              {briefingPhase !== 'loading-summary' && (
+                <p className="emptySessionPage__narrativePara emptySessionPage__newsSummary emptySessionPage__briefingFadeIn">
+                  <strong>244 of 247</strong> services healthy. No degradation, no cascading failures.
+                </p>
+              )}
+              {briefingPhase === 'loading-alerts' && (
+                <div className="emptySessionPage__briefingSpinner">
+                  <OuiAgenticSpinner size="s" />
+                </div>
+              )}
+              {briefingPhase === 'done' && (
+                <>
+                  <div className="emptySessionPage__newsItem emptySessionPage__briefingFadeIn">
+                    <span className="emptySessionPage__newsBadge emptySessionPage__newsBadge--critical">Critical</span>
+                    <span className="emptySessionPage__newsBody">
+                      <NarrativeLink sessionId="latency-spike-session" onClick={() => onSelectSession('latency-spike-session')}>Payment service P99 breached 2,000ms</NarrativeLink> — connection pool exhaustion on 3 of 4 pods. Root cause identified.
+                    </span>
+                  </div>
+                  <div className="emptySessionPage__newsItem emptySessionPage__briefingFadeIn emptySessionPage__briefingFadeIn--2">
+                    <span className="emptySessionPage__newsBadge emptySessionPage__newsBadge--warning">Warning</span>
+                    <span className="emptySessionPage__newsBody">
+                      <NarrativeLink sessionId="error-rate-spike-session" onClick={() => onSelectSession('error-rate-spike-session')}>Checkout error-rate spike</NarrativeLink> tied to auth-service regression. Elevated but not yet customer-impacting.
+                    </span>
+                  </div>
+                  <div className="emptySessionPage__newsItem emptySessionPage__briefingFadeIn emptySessionPage__briefingFadeIn--3">
+                    <span className="emptySessionPage__newsBadge emptySessionPage__newsBadge--warning">Warning</span>
+                    <span className="emptySessionPage__newsBody">
+                      <NarrativeLink sessionId="dns-timeout-session" onClick={() => onSelectSession('dns-timeout-session')}>DNS resolution timeout</NarrativeLink> flagged 3 hours ago — not yet resolved. Monitoring for recurrence.
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Chat input — fixed at bottom of container */}
@@ -871,15 +926,29 @@ export const EmptySessionPage = ({
                 </OuiTab>
               </OuiTabs>
               {rightPanelTab === 'insights' && (
-                <OuiToolTip content="Customize" position="left">
-                  <OuiButtonIcon
-                    iconType="gear"
-                    aria-label="Customize"
+                isEditMode ? (
+                  <OuiSmallButtonEmpty
                     size="xs"
-                    color="text"
-                    display="empty"
-                  />
-                </OuiToolTip>
+                    color="primary"
+                    onClick={() => setIsEditMode(false)}>
+                    Done
+                  </OuiSmallButtonEmpty>
+                ) : (
+                  <OuiToolTip content="Edit widgets" position="left">
+                    <OuiButtonIcon
+                      iconType="controlsHorizontal"
+                      aria-label="Edit widgets"
+                      size="s"
+                      color="text"
+                      display="empty"
+                      onClick={() => {
+                        setIsEditMode(true);
+                        const rightCol = document.querySelector('.emptySessionPage__rightCol');
+                        if (rightCol) rightCol.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                    />
+                  </OuiToolTip>
+                )
               )}
               </div>
 
@@ -900,158 +969,161 @@ export const EmptySessionPage = ({
                 </div>
 
                 <div className={`emptySessionPage__briefingPanel${rightPanelTab !== 'insights' ? ' emptySessionPage__briefingPanel--hidden' : ''}`}>
-                <div className="emptySessionPage__widgetGrid" ref={insightsRef} onMouseLeave={handleInsightMouseLeave}>
-                  {/* Row 1: Top services + Connection timeout errors */}
-                  <OuiInsightCard title="Top services by fault rate" onMouseEnter={() => handleInsightHover(0)} onMouseDown={() => handleInsightMouseDown(0)} onMouseUp={() => handleInsightHover(0)} onClick={() => onOpenPageInNewSession('app-perf-services', 'Application Services')}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600, opacity: 0.65, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                        <span>Service</span><span>Fault rate</span>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
-                        <span style={{ flex: '0 0 100px' }}>checkout</span>
-                        <span style={{ flex: 1, height: 8, borderRadius: 4, background: 'linear-gradient(90deg, #a5b4fc 66.67%, transparent 66.67%)' }} />
-                        <span style={{ fontWeight: 600 }}>66.67%</span>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
-                        <span style={{ flex: '0 0 100px' }}>frontend</span>
-                        <span style={{ flex: 1, height: 8, borderRadius: 4, background: 'linear-gradient(90deg, #a5b4fc 14.49%, transparent 14.49%)' }} />
-                        <span style={{ fontWeight: 600 }}>14.49%</span>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
-                        <span style={{ flex: '0 0 100px' }}>frontend-proxy</span>
-                        <span style={{ flex: 1, height: 8, borderRadius: 4, background: 'linear-gradient(90deg, #a5b4fc 14.29%, transparent 14.29%)' }} />
-                        <span style={{ fontWeight: 600 }}>14.29%</span>
-                      </div>
-                    </div>
-                  </OuiInsightCard>
+                <div className={`emptySessionPage__widgetGrid${isEditMode ? ' emptySessionPage__widgetGrid--editing' : ''}`} ref={insightsRef} onMouseLeave={handleInsightMouseLeave}>
+                  {widgetOrder.map((widgetId, idx) => {
+                    const size = widgetSizes[widgetId] || 1;
+                    const wrapClass = `emptySessionPage__widgetWrap${size >= 2 ? ' emptySessionPage__widget--wide' : ''}`;
+                    const dragProps = isEditMode ? {
+                      draggable: true,
+                      onDragStart: () => handleWidgetDragStart(idx),
+                      onDragOver: (e) => handleWidgetDragOver(e, idx),
+                      onDrop: handleWidgetDrop,
+                    } : {};
 
-                  <OuiInsightCard title="Connection timeout errors" onMouseEnter={() => handleInsightHover(1)} onMouseDown={() => handleInsightMouseDown(1)} onMouseUp={() => handleInsightHover(1)} onClick={() => onOpenPageInNewSession('logs', 'Logs')}>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}>
-                      <span style={{ color: '#d97706', fontWeight: 700, fontSize: 28, lineHeight: 1 }}>847</span>
-                      <span style={{ fontSize: 13, color: '#d97706', fontWeight: 600 }}>↑ 312%</span>
-                    </div>
-                    <svg viewBox="0 0 200 50" style={{ width: '100%', height: 50 }}>
-                      <defs><linearGradient id="connFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#d97706" stopOpacity="0.15"/><stop offset="100%" stopColor="#d97706" stopOpacity="0.01"/></linearGradient></defs>
-                      <path d="M0,48 C40,48 80,46 120,42 S170,20 200,10 V50 H0 Z" fill="url(#connFill)" />
-                      <path d="M0,48 C40,48 80,46 120,42 S170,20 200,10" fill="none" stroke="#d97706" strokeWidth="2.5" strokeLinecap="round" />
-                    </svg>
-                  </OuiInsightCard>
+                    const renderWidget = () => {
+                      switch (widgetId) {
+                        case 'top-services':
+                          return (
+                            <OuiInsightCard title="Top services by fault rate" onClick={() => !isEditMode && onOpenPageInNewSession('app-perf-services', 'Application Services')}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600, opacity: 0.65, textTransform: 'uppercase', letterSpacing: 0.5 }}><span>Service</span><span>Fault rate</span></div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}><span style={{ flex: '0 0 100px' }}>checkout</span><span style={{ flex: 1, height: 8, borderRadius: 4, background: 'linear-gradient(90deg, #a5b4fc 66.67%, transparent 66.67%)' }} /><span style={{ fontWeight: 600 }}>66.67%</span></div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}><span style={{ flex: '0 0 100px' }}>frontend</span><span style={{ flex: 1, height: 8, borderRadius: 4, background: 'linear-gradient(90deg, #a5b4fc 14.49%, transparent 14.49%)' }} /><span style={{ fontWeight: 600 }}>14.49%</span></div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}><span style={{ flex: '0 0 100px' }}>frontend-proxy</span><span style={{ flex: 1, height: 8, borderRadius: 4, background: 'linear-gradient(90deg, #a5b4fc 14.29%, transparent 14.29%)' }} /><span style={{ fontWeight: 600 }}>14.29%</span></div>
+                              </div>
+                            </OuiInsightCard>
+                          );
+                        case 'connection-timeout':
+                          return (
+                            <OuiInsightCard title="Connection timeout errors" onClick={() => !isEditMode && onOpenPageInNewSession('logs', 'Logs')}>
+                              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 8 }}><span style={{ color: '#d97706', fontWeight: 700, fontSize: 28, lineHeight: 1 }}>847</span><span style={{ fontSize: 13, color: '#d97706', fontWeight: 600 }}>↑ 312%</span></div>
+                              <svg viewBox="0 0 200 50" style={{ width: '100%', height: 50 }}><defs><linearGradient id="connFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#d97706" stopOpacity="0.15"/><stop offset="100%" stopColor="#d97706" stopOpacity="0.01"/></linearGradient></defs><path d="M0,48 C40,48 80,46 120,42 S170,20 200,10 V50 H0 Z" fill="url(#connFill)" /><path d="M0,48 C40,48 80,46 120,42 S170,20 200,10" fill="none" stroke="#d97706" strokeWidth="2.5" strokeLinecap="round" /></svg>
+                            </OuiInsightCard>
+                          );
+                        case 'recent-alerts':
+                          return (
+                            <OuiInsightCard title="Recent alerts" onClick={() => !isEditMode && onOpenPageInNewSession('alerts', 'Alerts')}>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600, opacity: 0.65, textTransform: 'uppercase', letterSpacing: 0.5 }}><span>Alert</span><span>Status</span></div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}><span>P99 latency breach</span><span style={{ color: '#f87171', fontWeight: 600 }}>Critical</span></div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}><span>Disk usage warning</span><span style={{ color: '#fbbf24', fontWeight: 600 }}>Warning</span></div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}><span>Error rate spike</span><span style={{ color: '#f87171', fontWeight: 600 }}>Critical</span></div>
+                              </div>
+                            </OuiInsightCard>
+                          );
+                        case 'deployment-timeline':
+                          return (
+                            <OuiInsightCard title="Deployment timeline" onClick={() => !isEditMode && onOpenPageInNewSession('dashboards', 'Dashboards')}>
+                              <svg viewBox="0 0 200 100" style={{ width: '100%', height: 100 }}><rect x="12" y="55" width="28" height="35" rx="4" fill="#34d399" /><rect x="50" y="30" width="28" height="60" rx="4" fill="#34d399" /><rect x="88" y="12" width="28" height="78" rx="4" fill="#34d399" /><rect x="126" y="38" width="28" height="52" rx="4" fill="#34d399" /><rect x="164" y="48" width="28" height="42" rx="4" fill="#34d399" /><text x="26" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">1–3</text><text x="64" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">5–7</text><text x="102" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">9–11</text><text x="140" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">13–15</text><text x="178" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">17–23</text></svg>
+                            </OuiInsightCard>
+                          );
+                        case 'resource-utilization':
+                          return (
+                            <OuiInsightCard title="Resource utilization" onClick={() => !isEditMode && onOpenPageInNewSession('metrics', 'Metrics')} titleExtra={<span style={{ color: '#34d399', fontWeight: 700, fontSize: 18 }}>56%</span>}>
+                              <svg viewBox="0 0 220 100" style={{ width: '100%', height: 100 }}><line x1="30" y1="10" x2="210" y2="10" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" /><line x1="30" y1="32" x2="210" y2="32" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" /><line x1="30" y1="54" x2="210" y2="54" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" /><line x1="30" y1="76" x2="210" y2="76" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" /><text x="22" y="13" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">100</text><text x="22" y="35" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">75</text><text x="22" y="57" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">50</text><text x="22" y="79" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">25</text><text x="22" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">0</text><defs><linearGradient id="resFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#34d399" stopOpacity="0.25"/><stop offset="100%" stopColor="#34d399" stopOpacity="0.03"/></linearGradient></defs><path d="M40,58 L75,54 L110,50 L145,52 L175,46 L195,44 L210,46 V96 H40 Z" fill="url(#resFill)" /><polyline fill="none" stroke="#34d399" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points="40,58 75,54 110,50 145,52 175,46 195,44 210,46" /><circle cx="40" cy="58" r="3" fill="#34d399" /><circle cx="75" cy="54" r="3" fill="#34d399" /><circle cx="110" cy="50" r="3" fill="#34d399" /><circle cx="145" cy="52" r="3" fill="#34d399" /><circle cx="175" cy="46" r="3" fill="#34d399" /><circle cx="195" cy="44" r="3" fill="#34d399" /><circle cx="210" cy="46" r="3" fill="#34d399" /><text x="40" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">0m</text><text x="85" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">15m</text><text x="130" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">30m</text><text x="175" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">45m</text><text x="210" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">60m</text></svg>
+                            </OuiInsightCard>
+                          );
+                        case 'saved-queries':
+                          return (
+                            <div className="emptySessionPage__widgetList" onClick={() => !isEditMode && onOpenPageInNewSession('logs', 'Logs')} role="button" tabIndex={0}>
+                              <div className="emptySessionPage__widgetListHeader"><span className="emptySessionPage__widgetListIcon"><OuiIcon type="search" size="m" /></span><span className="emptySessionPage__widgetListTitle">Saved queries</span><button type="button" className="emptySessionPage__widgetListAction" onClick={(e) => { e.stopPropagation(); onBrowseLibrary && onBrowseLibrary('query'); }}><OuiIcon type="arrowRight" size="s" /></button></div>
+                              <div className="emptySessionPage__widgetListItems"><div className="emptySessionPage__widgetListItem"><div><strong>5xx by service</strong><br /><span style={{ fontSize: 11, opacity: 0.6 }}>last 1h</span></div></div><div className="emptySessionPage__widgetListItem"><div><strong>Slow traces &gt; 2s</strong><br /><span style={{ fontSize: 11, opacity: 0.6 }}>all services</span></div></div></div>
+                            </div>
+                          );
+                        case 'dashboards':
+                          return (
+                            <div className="emptySessionPage__widgetList" onClick={() => !isEditMode && onOpenPageInNewSession('dashboards', 'Dashboards')} role="button" tabIndex={0}>
+                              <div className="emptySessionPage__widgetListHeader"><span className="emptySessionPage__widgetListIcon"><OuiIcon type="grid" size="m" /></span><span className="emptySessionPage__widgetListTitle">Dashboards</span><button type="button" className="emptySessionPage__widgetListAction" onClick={(e) => { e.stopPropagation(); onBrowseLibrary && onBrowseLibrary('dashboard'); }}><OuiIcon type="arrowRight" size="s" /></button></div>
+                              <div className="emptySessionPage__widgetListItems"><div className="emptySessionPage__widgetListItem"><div><strong>Service overview</strong><br /><span style={{ fontSize: 11, opacity: 0.6 }}>12 panels · opened 2h ago</span></div><svg viewBox="0 0 60 20" style={{ width: 60, height: 20, flexShrink: 0 }}><polyline fill="none" stroke="#34d399" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points="0,14 10,10 20,12 30,8 40,10 50,6 60,8" /></svg></div><div className="emptySessionPage__widgetListItem"><div><strong>p99 latency</strong><br /><span style={{ fontSize: 11, opacity: 0.6 }}>8 panels · opened today</span></div><svg viewBox="0 0 60 20" style={{ width: 60, height: 20, flexShrink: 0 }}><polyline fill="none" stroke="#d97706" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points="0,16 10,14 20,12 30,10 40,8 50,6 60,4" /></svg></div></div>
+                            </div>
+                          );
+                        default: return null;
+                      }
+                    };
 
-                  {/* Row 2: Recent alerts + Deployment timeline */}
-                  <OuiInsightCard title="Recent alerts" onMouseEnter={() => handleInsightHover(2)} onMouseDown={() => handleInsightMouseDown(2)} onMouseUp={() => handleInsightHover(2)} onClick={() => onOpenPageInNewSession('alerts', 'Alerts')}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 600, opacity: 0.65, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                        <span>Alert</span><span>Status</span>
+                    return (
+                      <div key={widgetId} className={wrapClass} {...dragProps}>
+                        {isEditMode && (
+                          <>
+                            <div className="emptySessionPage__widgetDragHandle" title="Drag to reorder">
+                              <OuiIcon type="grab" size="s" />
+                            </div>
+                            <button
+                              type="button"
+                              className="emptySessionPage__widgetResizeHandle"
+                              title={size >= 2 ? 'Shrink to 1×1' : 'Expand to 2×1'}
+                              onClick={(e) => { e.stopPropagation(); handleWidgetResize(widgetId); }}>
+                              <OuiIcon type={size >= 2 ? 'minimize' : 'expand'} size="s" />
+                            </button>
+                          </>
+                        )}
+                        {renderWidget()}
                       </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-                        <span>P99 latency breach</span><span style={{ color: '#f87171', fontWeight: 600 }}>Critical</span>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-                        <span>Disk usage warning</span><span style={{ color: '#fbbf24', fontWeight: 600 }}>Warning</span>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
-                        <span>Error rate spike</span><span style={{ color: '#f87171', fontWeight: 600 }}>Critical</span>
-                      </div>
-                    </div>
-                  </OuiInsightCard>
-
-                  <OuiInsightCard title="Deployment timeline" onMouseEnter={() => handleInsightHover(3)} onMouseDown={() => handleInsightMouseDown(3)} onMouseUp={() => handleInsightHover(3)} onClick={() => onOpenPageInNewSession('dashboards', 'Dashboards')}>
-                    <svg viewBox="0 0 200 100" style={{ width: '100%', height: 100 }}>
-                      <rect x="12" y="55" width="28" height="35" rx="4" fill="#34d399" />
-                      <rect x="50" y="30" width="28" height="60" rx="4" fill="#34d399" />
-                      <rect x="88" y="12" width="28" height="78" rx="4" fill="#34d399" />
-                      <rect x="126" y="38" width="28" height="52" rx="4" fill="#34d399" />
-                      <rect x="164" y="48" width="28" height="42" rx="4" fill="#34d399" />
-                      <text x="26" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">1–3</text>
-                      <text x="64" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">5–7</text>
-                      <text x="102" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">9–11</text>
-                      <text x="140" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">13–15</text>
-                      <text x="178" y="98" fontSize="8" fill="currentColor" opacity="0.65" textAnchor="middle">17–23</text>
-                    </svg>
-                  </OuiInsightCard>
-
-                  {/* Row 3: Resource utilization + Log Explorer */}
-                  <OuiInsightCard title="Resource utilization" onMouseEnter={() => handleInsightHover(4)} onMouseDown={() => handleInsightMouseDown(4)} onMouseUp={() => handleInsightHover(4)} onClick={() => onOpenPageInNewSession('metrics', 'Metrics')} titleExtra={<span style={{ color: '#34d399', fontWeight: 700, fontSize: 18 }}>56%</span>}>
-                    <svg viewBox="0 0 220 100" style={{ width: '100%', height: 100 }}>
-                      <line x1="30" y1="10" x2="210" y2="10" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
-                      <line x1="30" y1="32" x2="210" y2="32" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
-                      <line x1="30" y1="54" x2="210" y2="54" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
-                      <line x1="30" y1="76" x2="210" y2="76" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
-                      <text x="22" y="13" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">100</text>
-                      <text x="22" y="35" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">75</text>
-                      <text x="22" y="57" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">50</text>
-                      <text x="22" y="79" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">25</text>
-                      <text x="22" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">0</text>
-                      <defs><linearGradient id="resFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#34d399" stopOpacity="0.25"/><stop offset="100%" stopColor="#34d399" stopOpacity="0.03"/></linearGradient></defs>
-                      <path d="M40,58 L75,54 L110,50 L145,52 L175,46 L195,44 L210,46 V96 H40 Z" fill="url(#resFill)" />
-                      <polyline fill="none" stroke="#34d399" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points="40,58 75,54 110,50 145,52 175,46 195,44 210,46" />
-                      <circle cx="40" cy="58" r="3" fill="#34d399" />
-                      <circle cx="75" cy="54" r="3" fill="#34d399" />
-                      <circle cx="110" cy="50" r="3" fill="#34d399" />
-                      <circle cx="145" cy="52" r="3" fill="#34d399" />
-                      <circle cx="175" cy="46" r="3" fill="#34d399" />
-                      <circle cx="195" cy="44" r="3" fill="#34d399" />
-                      <circle cx="210" cy="46" r="3" fill="#34d399" />
-                      <text x="40" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">0m</text>
-                      <text x="85" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">15m</text>
-                      <text x="130" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">30m</text>
-                      <text x="175" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">45m</text>
-                      <text x="210" y="96" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">60m</text>
-                    </svg>
-                  </OuiInsightCard>
-
-                  {/* Row 4: Saved Queries + (empty slot, same row as resource util above via reorder) */}
-                  <div className="emptySessionPage__widgetList" onClick={() => onOpenPageInNewSession('logs', 'Logs')} role="button" tabIndex={0}>
-                    <div className="emptySessionPage__widgetListHeader">
-                      <span className="emptySessionPage__widgetListIcon"><OuiIcon type="search" size="m" /></span>
-                      <span className="emptySessionPage__widgetListTitle">Saved queries</span>
-                      <span className="emptySessionPage__widgetListAction"><OuiIcon type="arrowRight" size="s" /></span>
-                    </div>
-                    <div className="emptySessionPage__widgetListItems">
-                      <div className="emptySessionPage__widgetListItem">
-                        <div>
-                          <strong>5xx by service</strong><br />
-                          <span style={{ fontSize: 11, opacity: 0.6 }}>last 1h</span>
-                        </div>
-                      </div>
-                      <div className="emptySessionPage__widgetListItem">
-                        <div>
-                          <strong>Slow traces &gt; 2s</strong><br />
-                          <span style={{ fontSize: 11, opacity: 0.6 }}>all services</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Row 5: Dashboards (wide) */}
-                  <div className="emptySessionPage__widget--wide emptySessionPage__widgetList" onClick={() => onOpenPageInNewSession('dashboards', 'Dashboards')} role="button" tabIndex={0}>
-                    <div className="emptySessionPage__widgetListHeader">
-                      <span className="emptySessionPage__widgetListIcon"><OuiIcon type="grid" size="m" /></span>
-                      <span className="emptySessionPage__widgetListTitle">Dashboards</span>
-                      <span className="emptySessionPage__widgetListAction"><OuiIcon type="arrowRight" size="s" /></span>
-                    </div>
-                    <div className="emptySessionPage__widgetListItems">
-                      <div className="emptySessionPage__widgetListItem">
-                        <div>
-                          <strong>Service overview</strong><br />
-                          <span style={{ fontSize: 11, opacity: 0.6 }}>12 panels · opened 2h ago</span>
-                        </div>
-                        <svg viewBox="0 0 60 20" style={{ width: 60, height: 20, flexShrink: 0 }}>
-                          <polyline fill="none" stroke="#34d399" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points="0,14 10,10 20,12 30,8 40,10 50,6 60,8" />
-                        </svg>
-                      </div>
-                      <div className="emptySessionPage__widgetListItem">
-                        <div>
-                          <strong>p99 latency</strong><br />
-                          <span style={{ fontSize: 11, opacity: 0.6 }}>8 panels · opened today</span>
-                        </div>
-                        <svg viewBox="0 0 60 20" style={{ width: 60, height: 20, flexShrink: 0 }}>
-                          <polyline fill="none" stroke="#d97706" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points="0,16 10,14 20,12 30,10 40,8 50,6 60,4" />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
+                    );
+                  })}
                 </div>
+
+                {/* Widget Gallery — visible in edit mode */}
+                {isEditMode && (
+                  <div className="emptySessionPage__widgetGallery">
+                    <div className="emptySessionPage__galleryHeader">
+                      <OuiIcon type="apps" size="m" />
+                      <strong>Widget Gallery</strong>
+                    </div>
+                    <div className="emptySessionPage__gallerySearch">
+                      <OuiIcon type="search" size="s" className="emptySessionPage__gallerySearchIcon" />
+                      <input
+                        type="text"
+                        placeholder="Search dashboards, queries, links..."
+                        value={gallerySearch}
+                        onChange={(e) => setGallerySearch(e.target.value)}
+                        className="emptySessionPage__gallerySearchInput"
+                      />
+                    </div>
+                    <div className="emptySessionPage__galleryCategories">
+                      {[
+                        { category: 'Dashboards', items: [
+                          { icon: 'grid', label: 'System overview', size: '2×1' },
+                          { icon: 'grid', label: 'Payment service pool', size: '1×1' },
+                          { icon: 'grid', label: 'Network traffic', size: '2×1' },
+                        ]},
+                        { category: 'Queries', items: [
+                          { icon: 'search', label: '5xx by service', size: '1×1' },
+                          { icon: 'search', label: 'Slow traces > 2s', size: '1×1' },
+                          { icon: 'search', label: 'Auth failures last 24h', size: '1×1' },
+                        ]},
+                        { category: 'Monitoring', items: [
+                          { icon: 'visArea', label: 'CPU utilization', size: '1×1' },
+                          { icon: 'visLine', label: 'Request throughput', size: '2×1' },
+                          { icon: 'apmTrace', label: 'Trace explorer', size: '1×1' },
+                        ]},
+                        { category: 'Links', items: [
+                          { icon: 'link', label: 'Runbook: On-call playbook', size: '1×1' },
+                          { icon: 'link', label: 'Team Slack channel', size: '1×1' },
+                        ]},
+                      ].filter(cat => !gallerySearch || cat.items.some(item => item.label.toLowerCase().includes(gallerySearch.toLowerCase())))
+                       .map((cat, ci) => (
+                        <div key={ci} className="emptySessionPage__galleryCategory">
+                          <span className="emptySessionPage__galleryCategoryTitle">{cat.category}</span>
+                          {cat.items
+                            .filter(item => !gallerySearch || item.label.toLowerCase().includes(gallerySearch.toLowerCase()))
+                            .map((item, ii) => (
+                            <div key={ii} className="emptySessionPage__galleryItem" draggable>
+                              <OuiIcon type={item.icon} size="s" />
+                              <span className="emptySessionPage__galleryItemLabel">{item.label}</span>
+                              <span className="emptySessionPage__galleryItemSize">{item.size}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="emptySessionPage__galleryFooter">
+                      <OuiText size="xs" color="subdued">
+                        <p>Drag items into the grid above, or click to add</p>
+                      </OuiText>
+                    </div>
+                  </div>
+                )}
                 </div>
               </div>
             </div>

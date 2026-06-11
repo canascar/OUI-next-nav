@@ -116,6 +116,7 @@ export function openCanvasPage(state, sessionId, pageKey, title) {
         return {
           ...session,
           activeTabId: existingTab.id,
+          threadPanelState: session.threadKey ? 'side-by-side' : session.threadPanelState,
         };
       }
 
@@ -130,6 +131,7 @@ export function openCanvasPage(state, sessionId, pageKey, title) {
         ...session,
         tabs: [...session.tabs, newTab],
         activeTabId: newTab.id,
+        threadPanelState: session.threadKey ? 'side-by-side' : session.threadPanelState,
       };
     }),
   };
