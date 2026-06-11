@@ -58,8 +58,14 @@ export const SessionLeftNav = ({
     navPopoverTimer.current = setTimeout(() => setNavPopover(null), 150);
   }, []);
 
+  // Glass nav surface is visible by default (empty session, recents, library,
+  // onboarding) and fades out when viewing an active (non-empty) session.
+  const inActiveSession = activeView === 'session' && !isEmptySession;
+
   return (
-    <nav className="sessionLeftNav" aria-label="Session navigation">
+    <nav
+      className={`sessionLeftNav${inActiveSession ? ' sessionLeftNav--inSession' : ''}`}
+      aria-label="Session navigation">
       {/* Logo */}
       <div className="sessionLeftNav__logo">
         <OuiIcon type="logoOpenSearch" size="l" />

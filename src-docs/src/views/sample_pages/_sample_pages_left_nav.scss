@@ -339,9 +339,14 @@
 .samplePagesLeftNav {
   width: 48px;
   min-width: 48px;
-  background-color: transparent;
-  border-right: none;
-  box-shadow: none;
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.45), rgba(26, 23, 33, 0.55)); // sass-lint:disable-line no-color-literals
+  -webkit-backdrop-filter: blur(26px) saturate(175%);
+  backdrop-filter: blur(26px) saturate(175%);
+  border-right: 1px solid lightOrDarkTheme(#ececef, rgba(255, 255, 255, 0.08));
+  box-shadow: lightOrDarkTheme(
+    #{inset 0 1px 0 rgba(255, 255, 255, 0.85), inset -1px 0 0 rgba(255, 255, 255, 0.30)},
+    #{inset 0 1px 0 rgba(255, 255, 255, 0.05), inset -1px 0 0 rgba(255, 255, 255, 0.04)}
+  );
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -534,8 +539,10 @@
 .samplePagesLeftNav__expandedPanel {
   width: 320px;
   min-width: 320px;
-  background-color: transparent;
-  border-right: none;
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.62), rgba(26, 23, 33, 0.55)); // sass-lint:disable-line no-color-literals
+  backdrop-filter: blur(30px) saturate(185%);
+  -webkit-backdrop-filter: blur(30px) saturate(185%);
+  border-right: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.10));
   border-left: none;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
@@ -794,8 +801,8 @@
 .samplePagesLeftNav__expandedPanel {
   width: 280px;
   min-width: 280px;
-  background-color: transparent;
-  border-right: none;
+  background-color: lightOrDarkTheme($ouiColorEmptyShade, $ouiColorEmptyShade);
+  border-right: 1px solid $ouiBorderColor;
   border-top-right-radius: 24px;
   border-bottom-right-radius: 0;
   height: 100%;
