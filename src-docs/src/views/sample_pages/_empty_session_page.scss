@@ -2192,6 +2192,69 @@ textarea.emptySessionPage__textarea {
   }
 }
 
+// Remove (trash) button — top-right in edit mode
+.emptySessionPage__widgetRemoveHandle {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: none;
+  background: lightOrDarkTheme(rgba(255, 255, 255, 0.9), rgba(30, 30, 40, 0.9));
+  box-shadow: 0 1px 4px lightOrDarkTheme(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4));
+  color: $ouiColorDanger;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 150ms ease, transform 150ms ease, background-color 150ms ease;
+
+  &:hover {
+    opacity: 1;
+    transform: scale(1.1);
+    background: lightOrDarkTheme(rgba($ouiColorDanger, 0.12), rgba($ouiColorDanger, 0.20));
+  }
+}
+
+// Removal confirmation overlay — covers the widget
+.emptySessionPage__widgetConfirm {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: inherit;
+  text-align: center;
+  background: lightOrDarkTheme(rgba(255, 255, 255, 0.82), rgba(20, 22, 34, 0.82));
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
+  backdrop-filter: blur(8px) saturate(140%);
+  animation: widgetConfirmIn 160ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.emptySessionPage__widgetConfirmText {
+  font-size: $ouiFontSizeS;
+  font-weight: 600;
+  color: $ouiTitleColor;
+}
+
+.emptySessionPage__widgetConfirmActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@keyframes widgetConfirmIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
 @keyframes widgetJiggle {
   0% { transform: rotate(-0.3deg); }
   100% { transform: rotate(0.3deg); }

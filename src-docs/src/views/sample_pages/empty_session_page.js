@@ -19,6 +19,7 @@ import {
   OuiInsightCard,
   OuiInsightCallout,
   OuiPopover,
+  OuiSmallButton,
   OuiSmallButtonEmpty,
   OuiTab,
   OuiTabs,
@@ -728,6 +729,7 @@ export const EmptySessionPage = ({
     'resource-utilization', 'saved-queries', 'dashboards',
   ]);
   const [widgetSizes, setWidgetSizes] = useState({ dashboards: 2 });
+  const [confirmingRemoval, setConfirmingRemoval] = useState(null);
   const dragWidget = useRef(null);
   const dragOverWidget = useRef(null);
   const resizingWidget = useRef(null);
@@ -749,6 +751,10 @@ export const EmptySessionPage = ({
       const next = current >= 2 ? 1 : 2;
       return { ...prev, [widgetId]: next };
     });
+  };
+  const handleWidgetRemove = (widgetId) => {
+    setWidgetOrder(prev => prev.filter(id => id !== widgetId));
+    setConfirmingRemoval(null);
   };
   const [hasAnimatedBriefing, setHasAnimatedBriefing] = useState(false);
   const scrollRef = useRef(null);
@@ -973,7 +979,7 @@ export const EmptySessionPage = ({
                   {widgetOrder.map((widgetId, idx) => {
                     const size = widgetSizes[widgetId] || 1;
                     const wrapClass = `emptySessionPage__widgetWrap${size >= 2 ? ' emptySessionPage__widget--wide' : ''}`;
-                    const dragProps = isEditMode ? {
+                    const dragProps = isEditMode && !confirmingRemoval ? {
                       draggable: true,
                       onDragStart: () => handleWidgetDragStart(idx),
                       onDragOver: (e) => handleWidgetDragOver(e, idx),
@@ -1055,7 +1061,37 @@ export const EmptySessionPage = ({
                               onClick={(e) => { e.stopPropagation(); handleWidgetResize(widgetId); }}>
                               <OuiIcon type={size >= 2 ? 'minimize' : 'expand'} size="s" />
                             </button>
+                            <button
+                              type="button"
+                              className="emptySessionPage__widgetRemoveHandle"
+                              title="Remove widget"
+                              aria-label="Remove widget"
+                              onClick={(e) => { e.stopPropagation(); setConfirmingRemoval(widgetId); }}>
+                              <OuiIcon type="trash" size="s" />
+                            </button>
                           </>
+                        )}
+                        {isEditMode && confirmingRemoval === widgetId && (
+                          <div
+                            className="emptySessionPage__widgetConfirm"
+                            onClick={(e) => e.stopPropagation()}>
+                            <span className="emptySessionPage__widgetConfirmText">
+                              Remove this widget?
+                            </span>
+                            <div className="emptySessionPage__widgetConfirmActions">
+                              <OuiSmallButton
+                                color="text"
+                                onClick={(e) => { e.stopPropagation(); setConfirmingRemoval(null); }}>
+                                Cancel
+                              </OuiSmallButton>
+                              <OuiSmallButton
+                                fill
+                                color="danger"
+                                onClick={(e) => { e.stopPropagation(); handleWidgetRemove(widgetId); }}>
+                                Remove
+                              </OuiSmallButton>
+                            </div>
+                          </div>
                         )}
                         {renderWidget()}
                       </div>
