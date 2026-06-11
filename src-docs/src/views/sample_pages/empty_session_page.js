@@ -313,16 +313,18 @@ const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, 
           className="emptySessionPage__textarea"
         />
         <div className="emptySessionPage__inputActions">
-          <OuiPopover
-            button={
-              <OuiButtonIcon
-                iconType="plus"
-                aria-label="Add attachment"
-                size="s"
-                color="text"
-                onClick={() => setIsAttachMenuOpen((open) => !open)}
-              />
-            }
+          <OuiToolTip content="Attach" position="top">
+            <OuiPopover
+              button={
+                <OuiButtonIcon
+                  iconType="plus"
+                  aria-label="Add attachment"
+                  size="s"
+                  color="text"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => setIsAttachMenuOpen((open) => !open)}
+                />
+              }
             isOpen={isAttachMenuOpen}
             closePopover={() => setIsAttachMenuOpen(false)}
             anchorPosition="upLeft"
@@ -351,19 +353,27 @@ const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, 
               ]}
             />
           </OuiPopover>
+          </OuiToolTip>
           <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <OuiButtonIcon
-              iconType="microphone"
-              aria-label="Voice input"
-              size="s"
-              color="text"
-              display="empty"
-            />
-            <OuiButtonIcon
-              iconType="sortUp"
-              aria-label="Send"
-              display="fill"
-              size="s"
+            <OuiToolTip content="Dictate" position="top">
+              <OuiButtonIcon
+                aria-label="Dictate"
+                size="s"
+                color="text"
+                display="empty"
+                iconType={() => (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/>
+                  </svg>
+                )}
+              />
+            </OuiToolTip>
+            <OuiToolTip content="Send message" position="top">
+              <OuiButtonIcon
+                iconType="sortUp"
+                aria-label="Send"
+                display="fill"
+                size="s"
             isDisabled={!inputValue.trim()}
             onClick={() => {
               if (inputValue.trim()) {
@@ -381,6 +391,7 @@ const DualPurposeInput = ({ onStartThread, onOpenPage, onSearchChange, onFocus, 
               }
             }}
           />
+            </OuiToolTip>
           </div>
         </div>
       </div>

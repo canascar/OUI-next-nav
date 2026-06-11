@@ -2361,56 +2361,76 @@ export const ThreadPage = ({
                 className="threadPage__textarea"
               />
               <div className="threadPage__inputActions">
-                <OuiPopover
-                  button={
+                <OuiToolTip content="Attach" position="top">
+                  <OuiPopover
+                    button={
+                      <OuiButtonIcon
+                        iconType="plus"
+                        aria-label="Add attachment"
+                        size="s"
+                        color="text"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => setIsAttachMenuOpen((open) => !open)}
+                      />
+                    }
+                    isOpen={isAttachMenuOpen}
+                    closePopover={() => setIsAttachMenuOpen(false)}
+                    anchorPosition="upLeft"
+                    panelPaddingSize="s">
+                    <OuiContextMenu
+                      initialPanelId={0}
+                      panels={[
+                        {
+                          id: 0,
+                          items: [
+                            { name: 'Upload data', icon: 'importAction', onClick: () => setIsAttachMenuOpen(false) },
+                            { name: 'Upload file or photo', icon: 'document', onClick: () => setIsAttachMenuOpen(false) },
+                            { name: 'Take screenshot', icon: 'fullScreen', onClick: () => setIsAttachMenuOpen(false) },
+                            { name: 'Add to session', icon: 'folderOpen', panel: 1 },
+                          ],
+                        },
+                        {
+                          id: 1,
+                          title: 'Recent sessions',
+                          items: [
+                            { name: 'Latency spike investigation', onClick: () => setIsAttachMenuOpen(false) },
+                            { name: 'Checkout error rate alert', onClick: () => setIsAttachMenuOpen(false) },
+                            { name: 'Node disk pressure alerts', onClick: () => setIsAttachMenuOpen(false) },
+                          ],
+                        },
+                      ]}
+                    />
+                  </OuiPopover>
+                </OuiToolTip>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <OuiToolTip content="Dictate" position="top">
                     <OuiButtonIcon
-                      iconType="plus"
-                      aria-label="Add attachment"
+                      aria-label="Dictate"
                       size="s"
                       color="text"
-                      onClick={() => setIsAttachMenuOpen((open) => !open)}
+                      display="empty"
+                      iconType={() => (
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/>
+                        </svg>
+                      )}
                     />
-                  }
-                  isOpen={isAttachMenuOpen}
-                  closePopover={() => setIsAttachMenuOpen(false)}
-                  anchorPosition="upLeft"
-                  panelPaddingSize="s">
-                  <OuiContextMenu
-                    initialPanelId={0}
-                    panels={[
-                      {
-                        id: 0,
-                        items: [
-                          { name: 'Upload data', icon: 'importAction', onClick: () => setIsAttachMenuOpen(false) },
-                          { name: 'Upload file or photo', icon: 'document', onClick: () => setIsAttachMenuOpen(false) },
-                          { name: 'Take screenshot', icon: 'fullScreen', onClick: () => setIsAttachMenuOpen(false) },
-                          { name: 'Add to session', icon: 'folderOpen', panel: 1 },
-                        ],
-                      },
-                      {
-                        id: 1,
-                        title: 'Recent sessions',
-                        items: [
-                          { name: 'Latency spike investigation', onClick: () => setIsAttachMenuOpen(false) },
-                          { name: 'Checkout error rate alert', onClick: () => setIsAttachMenuOpen(false) },
-                          { name: 'Node disk pressure alerts', onClick: () => setIsAttachMenuOpen(false) },
-                        ],
-                      },
-                    ]}
-                  />
-                </OuiPopover>
-                <OuiButtonIcon
-                  iconType="sortUp"
-                  aria-label="Send message"
-                  display="fill"
-                  size="s"
-                  isDisabled={
-                    !message.trim() ||
-                    isTyping ||
-                    messages.some((m) => m.streaming)
-                  }
-                  onClick={() => handleSend()}
-                />
+                  </OuiToolTip>
+                  <OuiToolTip content="Send message" position="top">
+                    <OuiButtonIcon
+                      iconType="sortUp"
+                      aria-label="Send message"
+                      display="fill"
+                      size="s"
+                      isDisabled={
+                        !message.trim() ||
+                        isTyping ||
+                        messages.some((m) => m.streaming)
+                      }
+                      onClick={() => handleSend()}
+                    />
+                  </OuiToolTip>
+                </div>
               </div>
             </div>
           </div>
