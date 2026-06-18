@@ -1563,7 +1563,7 @@ export const SessionPagesView = () => {
   /** Library_Button: show the library page */
   const [libraryDefaultTab, setLibraryDefaultTab] = useState(null);
   const handleBrowseLibrary = useCallback((defaultTab) => {
-    setLibraryDefaultTab(defaultTab || null);
+    setLibraryDefaultTab(typeof defaultTab === 'string' ? defaultTab : null);
     setActiveView('library');
   }, []);
 

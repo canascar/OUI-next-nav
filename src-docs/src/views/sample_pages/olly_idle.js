@@ -31,7 +31,7 @@ const IDLE_TOOLTIPS = [
  *   winkOnMount: whether to wink before going idle (default true)
  *   className: optional wrapper class
  */
-export const OllyIdle = ({ size = 24, expression, winkOnMount = true, showTooltip = false, className, style }) => {
+export const OllyIdle = ({ size = 24, expression, winkOnMount = true, showTooltip = false, follow = false, className, style }) => {
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
   const mascotColor = isDark ? ['#FFFFFF', '#D9DEE5'] : ['#14558E', '#153A5A'];
@@ -106,7 +106,7 @@ export const OllyIdle = ({ size = 24, expression, winkOnMount = true, showToolti
         expression={activeExpr}
         idle={!activeExpr}
         bob={false}
-        follow={false}
+        follow={follow}
         color={mascotColor}
         eyeColor={mascotEyeColor}
       />

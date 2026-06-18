@@ -2196,7 +2196,7 @@ export const ThreadPage = ({
             }}>
             {messages.length === 0 && !isTyping && (
               <div className="threadPage__emptyState">
-                <OllyIdle size={48} winkOnMount={false} className="threadPage__emptyMascot" />
+                <OllyIdle size={48} winkOnMount={false} follow className="threadPage__emptyMascot" />
                 <h3 className="threadPage__emptyTitle">{emptyChatTitle}</h3>
                 <div className="threadPage__emptySuggestions">
                   <button
