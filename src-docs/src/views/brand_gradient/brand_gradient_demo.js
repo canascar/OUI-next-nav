@@ -108,7 +108,10 @@ export default () => {
           </OuiTitle>
           <OuiSpacer size="s" />
           <OuiText color="subdued">
-            <p>Brand gradient backgrounds for login pages, hero sections, and more.</p>
+            <p>
+              Brand gradient backgrounds for login pages, hero sections, and
+              more.
+            </p>
           </OuiText>
         </div>
       </OuiBrandGradient>

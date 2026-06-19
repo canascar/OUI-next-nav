@@ -10,13 +10,21 @@
  */
 
 import React from 'react';
-import { OuiFlexGroup, OuiFlexItem, OuiText, OuiSpacer } from '../../../../src/components';
+import {
+  OuiFlexGroup,
+  OuiFlexItem,
+  OuiText,
+  OuiSpacer,
+} from '../../../../src/components';
 import { TempVisualizationCard } from '../sample_pages/temp_visualization_card';
 
 export default () => (
   <>
     <OuiText size="s">
-      <p>The component supports multiple chart types for different visualization needs:</p>
+      <p>
+        The component supports multiple chart types for different visualization
+        needs:
+      </p>
     </OuiText>
     <OuiSpacer size="m" />
     <OuiFlexGroup gutterSize="m" wrap>

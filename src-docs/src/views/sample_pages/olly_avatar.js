@@ -12,8 +12,10 @@
 import React, { useContext } from 'react';
 import { ThemeContext } from '../../components/with_theme';
 
-const EYE_L = 'M 34.683 36.338 C 35.807 36.175 37.166 35.792 38.484 34.55 C 41.213 31.978 41.23 27.557 38.948 25.291 C 38.054 24.404 36.446 24.068 35.112 25.325 C 34.532 25.871 34.42 26.47 34.547 27.187 C 34.667 27.87 34.994 28.604 35.365 29.436 C 35.813 30.44 36.34 31.599 36.409 32.77 C 36.491 34.173 36.241 35.386 34.683 36.338 Z';
-const EYE_R = 'M 52.683 36.338 C 53.807 36.175 55.166 35.792 56.484 34.55 C 59.213 31.978 59.23 27.557 56.948 25.291 C 56.054 24.404 54.446 24.068 53.112 25.325 C 52.532 25.871 52.42 26.47 52.547 27.187 C 52.667 27.87 52.994 28.604 53.365 29.436 C 53.813 30.44 54.34 31.599 54.409 32.77 C 54.491 34.173 54.241 35.386 52.683 36.338 Z';
+const EYE_L =
+  'M 34.683 36.338 C 35.807 36.175 37.166 35.792 38.484 34.55 C 41.213 31.978 41.23 27.557 38.948 25.291 C 38.054 24.404 36.446 24.068 35.112 25.325 C 34.532 25.871 34.42 26.47 34.547 27.187 C 34.667 27.87 34.994 28.604 35.365 29.436 C 35.813 30.44 36.34 31.599 36.409 32.77 C 36.491 34.173 36.241 35.386 34.683 36.338 Z';
+const EYE_R =
+  'M 52.683 36.338 C 53.807 36.175 55.166 35.792 56.484 34.55 C 59.213 31.978 59.23 27.557 56.948 25.291 C 56.054 24.404 54.446 24.068 53.112 25.325 C 52.532 25.871 52.42 26.47 52.547 27.187 C 52.667 27.87 52.994 28.604 53.365 29.436 C 53.813 30.44 54.34 31.599 54.409 32.77 C 54.491 34.173 54.241 35.386 52.683 36.338 Z';
 
 const LEFT_CX = 39;
 const RIGHT_CX = 57;
@@ -29,7 +31,11 @@ const PAIR_CX = 48;
  * @param {boolean} [props.lookingDown=false] - When true, eyes animate downward
  * @param {boolean} [props.highlight=false] - When true, shows a rotating highlight on the border
  */
-export const OllyAvatar = ({ size = 52, lookingDown = false, highlight = false }) => {
+export const OllyAvatar = ({
+  size = 52,
+  lookingDown = false,
+  highlight = false,
+}) => {
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
 
@@ -77,9 +83,23 @@ export const OllyAvatar = ({ size = 52, lookingDown = false, highlight = false }
       role="img"
       aria-label="Olly">
       {/* Outer ring */}
-      <circle cx="40" cy="40" r="38" fill={ringFill} stroke={cyanDim} strokeWidth={sw * 0.4} />
+      <circle
+        cx="40"
+        cy="40"
+        r="38"
+        fill={ringFill}
+        stroke={cyanDim}
+        strokeWidth={sw * 0.4}
+      />
       {/* Body disc */}
-      <circle cx="40" cy="40" r="34" fill={bodyFill} stroke={cyan} strokeWidth={sw} />
+      <circle
+        cx="40"
+        cy="40"
+        r="34"
+        fill={bodyFill}
+        stroke={cyan}
+        strokeWidth={sw}
+      />
       {/* Rotating highlight arc on the body border */}
       {highlight && (
         <circle
@@ -102,7 +122,15 @@ export const OllyAvatar = ({ size = 52, lookingDown = false, highlight = false }
         const x2 = 40 + Math.cos(r) * 38;
         const y2 = 40 + Math.sin(r) * 38;
         return (
-          <line key={a} x1={x1} y1={y1} x2={x2} y2={y2} stroke={cyan} strokeWidth={sw * 0.6} />
+          <line
+            key={a}
+            x1={x1}
+            y1={y1}
+            x2={x2}
+            y2={y2}
+            stroke={cyan}
+            strokeWidth={sw * 0.6}
+          />
         );
       })}
       {/* Left eye */}

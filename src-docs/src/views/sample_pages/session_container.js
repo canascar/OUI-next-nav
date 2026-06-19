@@ -9,7 +9,13 @@
  * GitHub history for details.
  */
 
-import React, { useCallback, useRef, useState, useEffect, useContext } from 'react';
+import React, {
+  useCallback,
+  useRef,
+  useState,
+  useEffect,
+  useContext,
+} from 'react';
 
 import {
   OuiButtonIcon,
@@ -63,7 +69,8 @@ export const SessionContainer = ({
       !proactiveTriggeredRef.current
     ) {
       proactiveTriggeredRef.current = true;
-      const proactiveMessage = 'I noticed you opened this page. Want me to summarize the key metrics or help you explore the data?';
+      const proactiveMessage =
+        'I noticed you opened this page. Want me to summarize the key metrics or help you explore the data?';
       const proactiveTimer = setTimeout(() => {
         setAiButtonHighlight(true);
         setAiPopoverVisible(true);
@@ -101,82 +108,100 @@ export const SessionContainer = ({
   }, []);
 
   /** Called when a page executes a query that should trigger AI insight */
-  const handleQueryExecute = useCallback((queryText) => {
-    if (highlightTimerRef.current) clearTimeout(highlightTimerRef.current);
-    streamTimersRef.current.forEach(clearTimeout);
-    streamTimersRef.current = [];
-    const mockResponse = 'I see 847 connection timeout errors to payments-db starting at 14:30. Want me to check the trace data for this dependency?';
-
-    if (threadPanelState !== 'minimized') {
-      // Chat pane is already open — show the message directly after 1s with streaming
-      highlightTimerRef.current = setTimeout(() => {
-        const threadKey = `thread-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-        const pendingThread = {
-          key: threadKey,
-          messages: [
-            { role: 'assistant', content: mockResponse, streaming: false },
-          ],
-          sourcePageTitle: 'Discover (log)',
-        };
-        onUpdateSession({ threadKey, pendingThread });
-      }, 1000);
-    } else {
-      // Chat pane is minimized — highlight icon and stream text in popover
-      highlightTimerRef.current = setTimeout(() => {
-        setAiButtonHighlight(true);
-        setAiPopoverVisible(true);
-        setAiPopoverText('');
-        setPendingAiResponse({ prompt: queryText, response: mockResponse });
-
-        // Stream word by word
-        const words = mockResponse.split(' ');
-        let built = '';
-        words.forEach((word, i) => {
-          const timer = setTimeout(() => {
-            built += (i === 0 ? '' : ' ') + word;
-            setAiPopoverText(built);
-          }, i * 40);
-          streamTimersRef.current.push(timer);
-        });
-      }, 1000);
-    }
-  }, [threadPanelState, onUpdateSession]);
-
-  /** Handle expand chat — if AI highlight is active, create thread with mock response */
-  const handleExpandChat = useCallback((prompt) => {
-    // If prompt is an event object (from onClick), treat as no prompt
-    const actualPrompt = (typeof prompt === 'string') ? prompt : null;
-    triggerAnimation();
-
-    if (aiButtonHighlight && pendingAiResponse) {
-      // Clear highlight state
-      setAiButtonHighlight(false);
-      setAiPopoverVisible(false);
+  const handleQueryExecute = useCallback(
+    (queryText) => {
+      if (highlightTimerRef.current) clearTimeout(highlightTimerRef.current);
       streamTimersRef.current.forEach(clearTimeout);
       streamTimersRef.current = [];
-      // Expand chat with the AI response + optional user prompt after it
-      const threadKey = `thread-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-      const messages = [
-        { role: 'assistant', content: pendingAiResponse.response, streaming: false },
-      ];
-      const pendingThread = {
-        key: threadKey,
-        messages,
-        sourcePageTitle: 'Discover (log)',
-      };
-      onUpdateSession({
-        threadPanelState: 'side-by-side',
-        threadKey,
-        pendingThread,
-        pendingInputValue: actualPrompt || undefined,
-      });
-      setPendingAiResponse(null);
-    } else if (actualPrompt) {
-      onUpdateSession({ threadPanelState: 'side-by-side', pendingInputValue: actualPrompt });
-    } else {
-      onUpdateSession({ threadPanelState: 'side-by-side' });
-    }
-  }, [triggerAnimation, onUpdateSession, aiButtonHighlight, pendingAiResponse]);
+      const mockResponse =
+        'I see 847 connection timeout errors to payments-db starting at 14:30. Want me to check the trace data for this dependency?';
+
+      if (threadPanelState !== 'minimized') {
+        // Chat pane is already open — show the message directly after 1s with streaming
+        highlightTimerRef.current = setTimeout(() => {
+          const threadKey = `thread-${Date.now()}-${Math.random()
+            .toString(36)
+            .slice(2, 9)}`;
+          const pendingThread = {
+            key: threadKey,
+            messages: [
+              { role: 'assistant', content: mockResponse, streaming: false },
+            ],
+            sourcePageTitle: 'Discover (log)',
+          };
+          onUpdateSession({ threadKey, pendingThread });
+        }, 1000);
+      } else {
+        // Chat pane is minimized — highlight icon and stream text in popover
+        highlightTimerRef.current = setTimeout(() => {
+          setAiButtonHighlight(true);
+          setAiPopoverVisible(true);
+          setAiPopoverText('');
+          setPendingAiResponse({ prompt: queryText, response: mockResponse });
+
+          // Stream word by word
+          const words = mockResponse.split(' ');
+          let built = '';
+          words.forEach((word, i) => {
+            const timer = setTimeout(() => {
+              built += (i === 0 ? '' : ' ') + word;
+              setAiPopoverText(built);
+            }, i * 40);
+            streamTimersRef.current.push(timer);
+          });
+        }, 1000);
+      }
+    },
+    [threadPanelState, onUpdateSession]
+  );
+
+  /** Handle expand chat — if AI highlight is active, create thread with mock response */
+  const handleExpandChat = useCallback(
+    (prompt) => {
+      // If prompt is an event object (from onClick), treat as no prompt
+      const actualPrompt = typeof prompt === 'string' ? prompt : null;
+      triggerAnimation();
+
+      if (aiButtonHighlight && pendingAiResponse) {
+        // Clear highlight state
+        setAiButtonHighlight(false);
+        setAiPopoverVisible(false);
+        streamTimersRef.current.forEach(clearTimeout);
+        streamTimersRef.current = [];
+        // Expand chat with the AI response + optional user prompt after it
+        const threadKey = `thread-${Date.now()}-${Math.random()
+          .toString(36)
+          .slice(2, 9)}`;
+        const messages = [
+          {
+            role: 'assistant',
+            content: pendingAiResponse.response,
+            streaming: false,
+          },
+        ];
+        const pendingThread = {
+          key: threadKey,
+          messages,
+          sourcePageTitle: 'Discover (log)',
+        };
+        onUpdateSession({
+          threadPanelState: 'side-by-side',
+          threadKey,
+          pendingThread,
+          pendingInputValue: actualPrompt || undefined,
+        });
+        setPendingAiResponse(null);
+      } else if (actualPrompt) {
+        onUpdateSession({
+          threadPanelState: 'side-by-side',
+          pendingInputValue: actualPrompt,
+        });
+      } else {
+        onUpdateSession({ threadPanelState: 'side-by-side' });
+      }
+    },
+    [triggerAnimation, onUpdateSession, aiButtonHighlight, pendingAiResponse]
+  );
 
   const handleDismissAiPopover = useCallback(() => {
     setAiButtonHighlight(false);
@@ -273,7 +298,7 @@ export const SessionContainer = ({
   // Calculate explicit widths for both panes
   // Left pane: 0% when minimized, threadPanelWidth% when side-by-side, ~100% when full-screen
   // Right pane: gets the rest
-  const COLLAPSED_WIDTH = 48; // px for collapsed strip
+  const COLLAPSED_WIDTH = 52; // px for collapsed strip
   let leftWidth;
   let rightStyle;
 
@@ -281,7 +306,7 @@ export const SessionContainer = ({
     leftWidth = '0px';
     rightStyle = { flex: 1 };
   } else if (isFullScreen) {
-    leftWidth = `calc(100% - ${COLLAPSED_WIDTH}px - 8px)`;
+    leftWidth = `calc(100% - ${COLLAPSED_WIDTH}px - 10px)`;
     rightStyle = { width: `${COLLAPSED_WIDTH}px`, flex: 'none' };
   } else {
     leftWidth = `${threadPanelWidth}%`;
@@ -349,45 +374,48 @@ export const SessionContainer = ({
         <div
           className="sessionContainer__collapsedPanel"
           style={{ display: isFullScreen ? 'flex' : 'none' }}>
-          <div className="sessionContainer__collapsedPanelHeader">
-            <OuiPopover
-              button={
-                <OuiButtonIcon
-                  iconType="list"
-                  aria-label="Browse all tabs"
-                  size="s"
-                  color="text"
-                  display="empty"
-                  isDisabled={session.tabs.length === 0}
-                  onClick={() => setIsCollapsedListOpen((open) => !open)}
-                />
-              }
-              isOpen={isCollapsedListOpen}
-              closePopover={() => setIsCollapsedListOpen(false)}
-              anchorPosition="downRight"
-              panelPaddingSize="s">
-              <div className="pagePanel__tabListPopover">
-                {session.tabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    className={`pagePanel__tabListItem${
-                      tab.id === session.activeTabId
-                        ? ' pagePanel__tabListItem--active'
-                        : ''
-                    }`}
-                    onClick={() => {
-                      handleTabSelect(tab.id);
-                      handleSizeChange('side-by-side');
-                      setIsCollapsedListOpen(false);
-                    }}>
-                    {tab.title}
-                  </button>
-                ))}
-              </div>
-            </OuiPopover>
-          </div>
           <div className="sessionContainer__collapsedTabs">
+            <OuiToolTip
+              content={isCollapsedListOpen ? '' : 'View tabs'}
+              position="left"
+              delay="regular">
+              <OuiPopover
+                button={
+                  <OuiButtonIcon
+                    iconType="list"
+                    aria-label="View tabs"
+                    size="s"
+                    color="text"
+                    display="empty"
+                    isDisabled={session.tabs.length === 0}
+                    onClick={() => setIsCollapsedListOpen((open) => !open)}
+                  />
+                }
+                isOpen={isCollapsedListOpen}
+                closePopover={() => setIsCollapsedListOpen(false)}
+                anchorPosition="downRight"
+                panelPaddingSize="s">
+                <div className="pagePanel__tabListPopover">
+                  {session.tabs.map((tab) => (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      className={`pagePanel__tabListItem${
+                        tab.id === session.activeTabId
+                          ? ' pagePanel__tabListItem--active'
+                          : ''
+                      }`}
+                      onClick={() => {
+                        handleTabSelect(tab.id);
+                        handleSizeChange('side-by-side');
+                        setIsCollapsedListOpen(false);
+                      }}>
+                      {tab.title}
+                    </button>
+                  ))}
+                </div>
+              </OuiPopover>
+            </OuiToolTip>
             {session.tabs.map((tab) => (
               <OuiToolTip key={tab.id} content={tab.title} position="left">
                 <OuiButtonIcon
@@ -403,41 +431,78 @@ export const SessionContainer = ({
                 />
               </OuiToolTip>
             ))}
-            <OuiButtonIcon
-              iconType="plus"
-              aria-label="Add new tab"
-              size="s"
-              color="text"
-              display="empty"
-              onClick={() => {
-                handleAddTab();
-                handleSizeChange('side-by-side');
-              }}
-            />
+            <OuiToolTip content="Add new tab" position="left">
+              <OuiButtonIcon
+                iconType="plus"
+                aria-label="Add new tab"
+                size="s"
+                color="text"
+                display="empty"
+                onClick={() => {
+                  handleAddTab();
+                  handleSizeChange('side-by-side');
+                }}
+              />
+            </OuiToolTip>
           </div>
         </div>
-      {/* Olly chat pill — rendered inside page panel wrap for positioning */}
-      {showPill && (
-        <div className="sessionContainer__ollyChatPill">
-          <OuiOllyChatPill
-            avatar={<Mascot size={28} idle bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />}
-            avatarHover={<Mascot size={28} expression="happy" idle={false} bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />}
-            avatarFocused={<Mascot size={28} expression="blink" idle={false} bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />}
-            message={aiButtonHighlight && aiPopoverVisible && aiPopoverText ? aiPopoverText : undefined}
-            quickReplies={aiButtonHighlight && aiPopoverVisible && aiPopoverText ? [
-              { label: 'Yes, investigate', primary: true },
-              { label: 'Show me the data' },
-            ] : undefined}
-            isHighlighted={aiButtonHighlight}
-            onDismiss={handleDismissAiPopover}
-            onSubmit={(val) => handleExpandChat(val)}
-            onActivate={(val) => handleExpandChat(val)}
-          />
-        </div>
-      )}
-      )}
+        {/* Olly chat pill — rendered inside page panel wrap for positioning */}
+        {showPill && (
+          <div className="sessionContainer__ollyChatPill">
+            <OuiOllyChatPill
+              avatar={
+                <Mascot
+                  size={28}
+                  idle
+                  bob={false}
+                  follow={false}
+                  color={mascotColor}
+                  eyeColor={mascotEyeColor}
+                />
+              }
+              avatarHover={
+                <Mascot
+                  size={28}
+                  expression="happy"
+                  idle={false}
+                  bob={false}
+                  follow={false}
+                  color={mascotColor}
+                  eyeColor={mascotEyeColor}
+                />
+              }
+              avatarFocused={
+                <Mascot
+                  size={28}
+                  expression="blink"
+                  idle={false}
+                  bob={false}
+                  follow={false}
+                  color={mascotColor}
+                  eyeColor={mascotEyeColor}
+                />
+              }
+              message={
+                aiButtonHighlight && aiPopoverVisible && aiPopoverText
+                  ? aiPopoverText
+                  : undefined
+              }
+              quickReplies={
+                aiButtonHighlight && aiPopoverVisible && aiPopoverText
+                  ? [
+                      { label: 'Yes, investigate', primary: true },
+                      { label: 'Show me the data' },
+                    ]
+                  : undefined
+              }
+              isHighlighted={aiButtonHighlight}
+              onDismiss={handleDismissAiPopover}
+              onSubmit={(val) => handleExpandChat(val)}
+              onActivate={(val) => handleExpandChat(val)}
+            />
+          </div>
+        )}
       </div>
-
     </div>
   );
 };

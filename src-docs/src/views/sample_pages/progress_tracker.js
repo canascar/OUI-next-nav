@@ -15,6 +15,7 @@ import {
   OuiLoadingSpinner,
   OuiText,
 } from '../../../../src/components';
+import { OuiAgenticSpinner } from '../../../../src/components/headless/agentic_spinner';
 import { Mascot } from '../../../../olly-mascot/Mascot';
 import { ThemeContext } from '../../components/with_theme';
 
@@ -42,7 +43,7 @@ const StepIcon = ({ status, mascotColor, mascotEyeColor }) => {
     case 'completed':
       return <OuiIcon type="checkInCircleEmpty" size="m" color="success" />;
     case 'in-progress':
-      return <Mascot size={16} idle bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />;
+      return <OuiAgenticSpinner size="s" />;
     case 'failed':
       return <OuiIcon type="crossInACircleFilled" size="m" color="danger" />;
     case 'pending':
@@ -113,7 +114,11 @@ export const ProgressTracker = ({ id, steps, elapsedTime, collapsed }) => {
               className={`progressTracker__step progressTracker__step--${step.status}`}
               aria-current={isCurrent ? 'step' : undefined}>
               <div className="progressTracker__stepIcon">
-                <StepIcon status={step.status} mascotColor={mascotColor} mascotEyeColor={mascotEyeColor} />
+                <StepIcon
+                  status={step.status}
+                  mascotColor={mascotColor}
+                  mascotEyeColor={mascotEyeColor}
+                />
               </div>
               <div className="progressTracker__stepContent">
                 <OuiText size="xs">

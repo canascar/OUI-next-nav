@@ -26,11 +26,4 @@ yarn-error.log
 # typescript output
 types/
 oui.d.ts
-
-# build caches
-.webpack-cache/
-
-# large bundle files
-docs/bundle.js
-docs/bundle.js.map
-docs/bundle.min.js.map
+.webpack-cache

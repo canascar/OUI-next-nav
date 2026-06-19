@@ -67,7 +67,11 @@ import {
   setActiveSession,
   openCanvasPage,
 } from './session_state_manager';
-import { LATENCY_SPIKE_SESSION, ERROR_RATE_SPIKE_SESSION } from './session_mock_data';
+import {
+  LATENCY_SPIKE_SESSION,
+  ERROR_RATE_SPIKE_SESSION,
+  DNS_TIMEOUT_SESSION,
+} from './session_mock_data';
 
 const renderPage = (
   activePage,
@@ -1063,6 +1067,10 @@ export const SamplePagesView = () => {
   };
 
   const handlePageChange = (page) => {
+    if (page === 'login') {
+      window.location.href = '#/login';
+      return;
+    }
     if (page === activePage) {
       // Re-clicking the same tab — reopen the panel if it was closed
       if (!PANEL_CLOSED_BY_DEFAULT.has(page)) {
@@ -1489,14 +1497,19 @@ function initializeSessionState() {
     pendingThread: null,
     title: 'New Session',
     threadPanelState: 'minimized',
-    threadPanelWidth: 40,
+    threadPanelWidth: 30,
     tabs: [],
     activeTabId: null,
     createdAt: Date.now(),
   };
 
   return {
-    sessions: [emptySession, LATENCY_SPIKE_SESSION, ERROR_RATE_SPIKE_SESSION],
+    sessions: [
+      emptySession,
+      LATENCY_SPIKE_SESSION,
+      ERROR_RATE_SPIKE_SESSION,
+      DNS_TIMEOUT_SESSION,
+    ],
     activeSessionId: emptySession.id,
     version: 1,
   };
@@ -1557,7 +1570,9 @@ export const SessionPagesView = () => {
   }, []);
 
   /** Library_Button: show the library page */
-  const handleBrowseLibrary = useCallback(() => {
+  const [libraryDefaultTab, setLibraryDefaultTab] = useState(null);
+  const handleBrowseLibrary = useCallback((defaultTab) => {
+    setLibraryDefaultTab(typeof defaultTab === 'string' ? defaultTab : null);
     setActiveView('library');
   }, []);
 
@@ -1633,28 +1648,6 @@ export const SessionPagesView = () => {
     [handleOpenCanvasPage]
   );
 
-  /** Create a new session and open the page as a tab in its right pane */
-  const handleOpenPageInNewSession = useCallback((pageKey, title) => {
-    const pageEntry = SOURCE_PAGE_MOCK[pageKey];
-    const displayTitle = title || (pageEntry ? pageEntry.title : pageKey);
-    setSessionState((prev) => {
-      const next = createSession(prev);
-      const newSessionId = next.activeSessionId;
-      const tab = {
-        id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-        pageKey,
-        title: displayTitle,
-      };
-      return updateSession(next, newSessionId, {
-        tabs: [tab],
-        activeTabId: tab.id,
-        threadPanelState: 'minimized',
-        title: displayTitle,
-      });
-    });
-    setActiveView('session');
-  }, []);
-
   // --- Render ---
 
   /** Determine if the active session should show EmptySessionPage */
@@ -1683,13 +1676,16 @@ export const SessionPagesView = () => {
     if (activeView === 'library') {
       return (
         <LibraryPage
+          defaultTab={libraryDefaultTab}
           onSelectPage={(pageKey, title) => {
             // Create a new session with the page open and chat minimized
             setSessionState((prev) => {
               const next = createSession(prev);
               const newSessionId = next.activeSessionId;
               const tab = {
-                id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+                id: `tab-${Date.now()}-${Math.random()
+                  .toString(36)
+                  .slice(2, 9)}`,
                 pageKey,
                 title,
               };
@@ -1715,18 +1711,26 @@ export const SessionPagesView = () => {
         <EmptySessionPage
           onStartThread={handleStartThread}
           onOpenPage={handleOpenPage}
-          onOpenPageInNewSession={handleOpenPageInNewSession}
+          onOpenPageInNewSession={handleOpenCanvasPage}
+          onBrowseLibrary={handleBrowseLibrary}
           onViewSession={() => {
             handleSelectSession('latency-spike-session');
           }}
           onStartInvestigation={() => {
             // Open alert page in the right pane, expand chat pane with investigation prompt
             handleOpenCanvasPage('alerts', 'Alert: P95 Latency > 2s');
-            const threadKey = `thread-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+            const threadKey = `thread-${Date.now()}-${Math.random()
+              .toString(36)
+              .slice(2, 9)}`;
             const pendingThread = {
               key: threadKey,
               messages: [
-                { role: 'user', author: 'You', content: 'Investigate the alert: payment-service P99 latency exceeded 2,000ms threshold on 3 of 4 pods.' },
+                {
+                  role: 'user',
+                  author: 'You',
+                  content:
+                    'Investigate the alert: payment-service P99 latency exceeded 2,000ms threshold on 3 of 4 pods.',
+                },
               ],
               sourcePageTitle: 'Alert: P95 Latency > 2s',
             };
@@ -1768,9 +1772,11 @@ export const SessionPagesView = () => {
         bottom: 0,
       }}>
       <SessionLeftNav
-        sessionCount={sessionState.sessions.filter(
-          (s) => s.threadKey || s.pendingThread || s.tabs.length > 0
-        ).length}
+        sessionCount={
+          sessionState.sessions.filter(
+            (s) => s.threadKey || s.pendingThread || s.tabs.length > 0
+          ).length
+        }
         sessions={sessionState.sessions.filter(
           (s) => s.threadKey || s.pendingThread || s.tabs.length > 0
         )}

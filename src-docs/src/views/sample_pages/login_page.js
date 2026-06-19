@@ -46,7 +46,7 @@ export const LoginPage = ({ onLogin }) => {
   // Glass theme tokens
   const bgColor = isDark ? '#0d0818' : '#f8f7fc';
   const panelBg = isDark
-    ? 'rgba(24, 16, 40, 0.55)'
+    ? 'rgba(26, 23, 33, 0.55)'
     : 'rgba(255, 255, 255, 0.62)';
   const borderColor = isDark
     ? 'rgba(255, 255, 255, 0.10)'
@@ -66,7 +66,6 @@ export const LoginPage = ({ onLogin }) => {
         position: 'relative',
         animation: 'screenFadeIn 500ms ease-out both',
       }}>
-
       {/* Back arrow */}
       <OuiButtonIcon
         iconType="arrowLeft"
@@ -89,7 +88,13 @@ export const LoginPage = ({ onLogin }) => {
         style={{ position: 'absolute', top: 16, right: 16, zIndex: 1 }}
       />
 
-      <div style={{ width: 440, maxWidth: '90vw', position: 'relative', zIndex: 1 }}>
+      <div
+        style={{
+          width: 440,
+          maxWidth: '90vw',
+          position: 'relative',
+          zIndex: 1,
+        }}>
         {/* Panel — Frosted glass: translucent, blur, hairline border, elevated shadow */}
         <div
           style={{
@@ -129,9 +134,7 @@ export const LoginPage = ({ onLogin }) => {
 
           {/* Title */}
           <OuiTitle size="m">
-            <h1 style={{ textAlign: 'center' }}>
-              Log in to OpenSearch
-            </h1>
+            <h1 style={{ textAlign: 'center' }}>Log in to OpenSearch</h1>
           </OuiTitle>
 
           <OuiSpacer size="s" />

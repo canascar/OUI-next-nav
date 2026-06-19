@@ -74,8 +74,8 @@ export const OpenSearch3DLogo = ({ size = 240 }) => {
     scene.add(modelGroup);
 
     // Physics — spring-based: always pulled toward idle oscillation
-    const springStrength = 0.002; // Pull toward home (softer = more travel)
-    const damping = 0.96; // Velocity decay (higher = more momentum on throw)
+    const springStrength = 0.006; // Pull toward home (higher = snappier snap-back on release)
+    const damping = 0.93; // Velocity decay (lower = settles faster / snappier)
     const velocity = { x: 0, y: 0, z: 0 };
     let isDragging = false;
     let hasInteracted = false;
@@ -84,16 +84,29 @@ export const OpenSearch3DLogo = ({ size = 240 }) => {
 
     // Design palette — light vs dark
     const palettLight = [
-      0x1565C0, 0x0F3D5C, 0x1565C0, 0x0F3D5C, 0x1565C0, 0x0F3D5C,
+      0x1565c0,
+      0x0f3d5c,
+      0x1565c0,
+      0x0f3d5c,
+      0x1565c0,
+      0x0f3d5c,
     ];
     const paletteDark = [
-      0x2B8BC7, 0x7DD3FC, 0x2B8BC7, 0x7DD3FC, 0x2B8BC7, 0x7DD3FC,
+      0x2b8bc7,
+      0x7dd3fc,
+      0x2b8bc7,
+      0x7dd3fc,
+      0x2b8bc7,
+      0x7dd3fc,
     ];
     const palette = isDarkRef.current ? paletteDark : palettLight;
 
     // Load GLB
     const loader = new GLTFLoader();
-    const modelPath = typeof MODEL_PATH === 'string' ? MODEL_PATH : MODEL_PATH.default || MODEL_PATH;
+    const modelPath =
+      typeof MODEL_PATH === 'string'
+        ? MODEL_PATH
+        : MODEL_PATH.default || MODEL_PATH;
 
     loader.load(modelPath, (gltf) => {
       const model = gltf.scene;
@@ -162,7 +175,7 @@ export const OpenSearch3DLogo = ({ size = 240 }) => {
       const dy = e.clientY - previousMouse.y;
       previousMouse = { x: e.clientX, y: e.clientY };
 
-      const sensitivity = 0.008;
+      const sensitivity = 0.018;
       // Directly rotate the object while dragging
       modelGroup.rotation.y += dx * sensitivity;
       modelGroup.rotation.x += dy * sensitivity;

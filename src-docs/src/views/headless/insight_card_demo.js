@@ -23,15 +23,21 @@ export default () => (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span>checkout</span>
-              <span style={{ fontFamily: 'var(--g-font-mono)', fontSize: 12 }}>66.67%</span>
+              <span style={{ fontFamily: 'var(--g-font-mono)', fontSize: 12 }}>
+                66.67%
+              </span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span>frontend</span>
-              <span style={{ fontFamily: 'var(--g-font-mono)', fontSize: 12 }}>14.49%</span>
+              <span style={{ fontFamily: 'var(--g-font-mono)', fontSize: 12 }}>
+                14.49%
+              </span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span>frontend-proxy</span>
-              <span style={{ fontFamily: 'var(--g-font-mono)', fontSize: 12 }}>14.29%</span>
+              <span style={{ fontFamily: 'var(--g-font-mono)', fontSize: 12 }}>
+                14.29%
+              </span>
             </div>
           </div>
         </OuiInsightCard>
@@ -70,26 +76,41 @@ export default () => (
       <OuiFlexItem grow={1}>
         <OuiInsightCard variant="glass" title="Frosted glass variant">
           <OuiText size="s" color="subdued">
-            <p>Use for floating or featured moments where the canvas gradient should bleed through.</p>
+            <p>
+              Use for floating or featured moments where the canvas gradient
+              should bleed through.
+            </p>
           </OuiText>
         </OuiInsightCard>
       </OuiFlexItem>
 
       <OuiFlexItem grow={1}>
         <OuiInsightCard variant="add" onClick={() => {}}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-            <span style={{
-              display: 'grid',
-              placeItems: 'center',
-              width: 40,
-              height: 40,
-              borderRadius: 10,
-              background: 'var(--g-accent, #6366f1)',
-              flexShrink: 0,
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              marginBottom: 16,
             }}>
+            <span
+              style={{
+                display: 'grid',
+                placeItems: 'center',
+                width: 40,
+                height: 40,
+                borderRadius: 10,
+                background: 'var(--g-accent, #6366f1)',
+                flexShrink: 0,
+              }}>
               <OuiIcon type="plus" size="m" color="ghost" />
             </span>
-            <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--g-ink-bright, #000)' }}>
+            <span
+              style={{
+                fontSize: 16,
+                fontWeight: 600,
+                color: 'var(--g-ink-bright, #000)',
+              }}>
               Open another page
             </span>
           </div>

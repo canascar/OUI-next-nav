@@ -311,10 +311,9 @@ export const OuiDatePickerUnified: React.FC<OuiDatePickerUnifiedProps> = ({
     () => moment(pendingStart, moment.ISO_8601, true),
     [pendingStart]
   );
-  const endMoment = useMemo(
-    () => moment(pendingEnd, moment.ISO_8601, true),
-    [pendingEnd]
-  );
+  const endMoment = useMemo(() => moment(pendingEnd, moment.ISO_8601, true), [
+    pendingEnd,
+  ]);
 
   // --- Render ---
 
@@ -378,9 +377,7 @@ export const OuiDatePickerUnified: React.FC<OuiDatePickerUnifiedProps> = ({
                     aria-label="Select start date from calendar"
                     display="base"
                     size="s"
-                    onClick={() =>
-                      setIsStartCalendarOpen(!isStartCalendarOpen)
-                    }
+                    onClick={() => setIsStartCalendarOpen(!isStartCalendarOpen)}
                   />
                 }
                 isOpen={isStartCalendarOpen}
@@ -478,10 +475,7 @@ export const OuiDatePickerUnified: React.FC<OuiDatePickerUnifiedProps> = ({
       <OuiSpacer size="m" />
 
       {/* Cancel / Apply buttons */}
-      <OuiFlexGroup
-        justifyContent="flexEnd"
-        gutterSize="s"
-        responsive={false}>
+      <OuiFlexGroup justifyContent="flexEnd" gutterSize="s" responsive={false}>
         <OuiFlexItem grow={false}>
           <OuiButtonEmpty
             size="s"

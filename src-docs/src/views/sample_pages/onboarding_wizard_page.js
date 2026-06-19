@@ -9,7 +9,14 @@
  * GitHub history for details.
  */
 
-import React, { useState, useEffect, useRef, useCallback, useMemo, useContext } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+  useContext,
+} from 'react';
 
 import {
   OuiButtonIcon,
@@ -150,8 +157,7 @@ const STEPS = [
       const messages = {
         'looks-good':
           'Telemetry will be stored in a new OpenSearch Serverless Collection with Optimized engine.',
-        customize:
-          'Telemetry storage customized. Configuration saved.',
+        customize: 'Telemetry storage customized. Configuration saved.',
         'store-existing':
           'Telemetry will be stored in your existing OpenSearch Serverless Collection.',
       };
@@ -175,7 +181,11 @@ const STEPS = [
     },
     optionType: 'chips',
     options: [
-      { key: 'deploy', label: 'Looks good \u2014 deploy my configuration', primary: true },
+      {
+        key: 'deploy',
+        label: 'Looks good \u2014 deploy my configuration',
+        primary: true,
+      },
       { key: 'changes', label: 'I want to make changes' },
     ],
     confirmation: () => 'Configuration deployed! Collecting data now.',
@@ -219,8 +229,14 @@ const OTEL_COMMAND = `docker run \\
 // ─────────────────────────────────────────────
 
 const CHECKLIST_STEPS = [
-  { label: 'Set observability goal', description: 'Choose what you want to observe' },
-  { label: 'Collect data from environment', description: 'Configure your collector and environment' },
+  {
+    label: 'Set observability goal',
+    description: 'Choose what you want to observe',
+  },
+  {
+    label: 'Collect data from environment',
+    description: 'Configure your collector and environment',
+  },
 ];
 
 const GettingStartedPanel = () => {
@@ -335,9 +351,24 @@ const EnvironmentPanel = ({ selectedOption }) => {
 };
 
 const EKS_DISCOVERY_CLUSTERS = [
-  { name: 'prod-app-cluster', region: 'us-west-2', services: 6, status: 'Active' },
-  { name: 'staging-services', region: 'us-west-2', services: 5, status: 'Active' },
-  { name: 'dev-playground', region: 'us-east-1', services: 3, status: 'Active' },
+  {
+    name: 'prod-app-cluster',
+    region: 'us-west-2',
+    services: 6,
+    status: 'Active',
+  },
+  {
+    name: 'staging-services',
+    region: 'us-west-2',
+    services: 5,
+    status: 'Active',
+  },
+  {
+    name: 'dev-playground',
+    region: 'us-east-1',
+    services: 3,
+    status: 'Active',
+  },
 ];
 
 const EKSDiscoveryPanel = ({ discoveryPhase }) => {
@@ -551,8 +582,9 @@ const TelemetryStoragePanel = ({ selectedOption }) => {
             <OuiSpacer size="s" />
             <OuiText size="xs" color="subdued">
               <p style={{ margin: 0 }}>
-                Adjust resource type, OCU allocation, replicas, retention policy,
-                and index naming from the Data Management page after setup.
+                Adjust resource type, OCU allocation, replicas, retention
+                policy, and index naming from the Data Management page after
+                setup.
               </p>
             </OuiText>
           </div>
@@ -633,7 +665,8 @@ const SummaryPanel = ({ allSelections }) => {
         'store-existing': 'Existing resource',
       },
       // When user chose "Instrument application" or "EKS", 1d is skipped — auto-recommended
-      skippedWhen: () => allSelections[0] === 'application' || allSelections[1] === 'eks',
+      skippedWhen: () =>
+        allSelections[0] === 'application' || allSelections[1] === 'eks',
       skippedLabel: 'OpenSearch Serverless Collection (Optimized engine)',
     },
   ];
@@ -686,8 +719,9 @@ const SummaryPanel = ({ allSelections }) => {
 
 // Generates initial data points for the streaming area chart
 const generateInitialData = (points, baseValue, variance) =>
-  Array.from({ length: points }, () =>
-    baseValue + Math.floor(Math.random() * variance)
+  Array.from(
+    { length: points },
+    () => baseValue + Math.floor(Math.random() * variance)
   );
 
 // Attempt a smooth cubic bezier path through points (mimics monotone interpolation)
@@ -718,16 +752,15 @@ const LiveStreamAreaChart = ({ color, data }) => {
   const width = 320;
   const height = 80;
   const padding = 4;
-  const gradientId = useMemo(
-    () => `area-grad-${color.replace('#', '')}`,
-    [color]
-  );
+  const gradientId = useMemo(() => `area-grad-${color.replace('#', '')}`, [
+    color,
+  ]);
 
   // Build a sharp polyline (no smooth curves — blueprint style)
   const points = data.map((val, i) => {
     const max = Math.max(...data);
     const x = (i / (data.length - 1)) * width;
-    const y = padding + ((1 - val / max) * (height - padding * 2));
+    const y = padding + (1 - val / max) * (height - padding * 2);
     return `${x},${y}`;
   });
   const linePath = `M ${points.join(' L ')}`;
@@ -747,12 +780,28 @@ const LiveStreamAreaChart = ({ color, data }) => {
       </defs>
       {/* Horizontal grid — dashed, blueprint style */}
       {[0.25, 0.5, 0.75].map((ratio, i) => (
-        <line key={i} x1="0" y1={height * ratio} x2={width} y2={height * ratio}
-          stroke="currentColor" strokeWidth="0.5" strokeDasharray="3 4" opacity="0.12" />
+        <line
+          key={i}
+          x1="0"
+          y1={height * ratio}
+          x2={width}
+          y2={height * ratio}
+          stroke="currentColor"
+          strokeWidth="0.5"
+          strokeDasharray="3 4"
+          opacity="0.12"
+        />
       ))}
       {/* Baseline */}
-      <line x1="0" y1={height} x2={width} y2={height}
-        stroke="currentColor" strokeWidth="0.7" opacity="0.15" />
+      <line
+        x1="0"
+        y1={height}
+        x2={width}
+        y2={height}
+        stroke="currentColor"
+        strokeWidth="0.7"
+        opacity="0.15"
+      />
       <path d={areaPath} fill={`url(#${gradientId})`} />
       <path
         d={linePath}
@@ -791,7 +840,10 @@ const LiveCountersPanel = () => {
 
       setChartData((prev) => ({
         logs: [...prev.logs.slice(1), 8 + Math.floor(Math.random() * 12)],
-        metrics: [...prev.metrics.slice(1), 12 + Math.floor(Math.random() * 18)],
+        metrics: [
+          ...prev.metrics.slice(1),
+          12 + Math.floor(Math.random() * 18),
+        ],
         traces: [...prev.traces.slice(1), 3 + Math.floor(Math.random() * 8)],
       }));
     }, 1200);
@@ -835,7 +887,9 @@ const LiveCountersPanel = () => {
       <OuiSpacer size="l" />
       <div className="onboardWizard__liveCounters">
         {counters.map((c) => (
-          <div key={c.key} className="onboardWizard__counterRow onboardWizard__counterRow--withChart">
+          <div
+            key={c.key}
+            className="onboardWizard__counterRow onboardWizard__counterRow--withChart">
             <div className="onboardWizard__counterMeta">
               <div className="onboardWizard__counterIcon">
                 <OuiIcon type={c.icon} size="l" color={c.color} />
@@ -857,10 +911,7 @@ const LiveCountersPanel = () => {
               </div>
             </div>
             <div className="onboardWizard__counterChart">
-              <LiveStreamAreaChart
-                color={c.color}
-                data={chartData[c.key]}
-              />
+              <LiveStreamAreaChart color={c.color} data={chartData[c.key]} />
             </div>
           </div>
         ))}
@@ -936,7 +987,13 @@ const RightPanelContent = ({
     case 'environment':
       return <EnvironmentPanel selectedOption={selectedOption} />;
     case 'eks-discovery':
-      return <EKSDiscoveryPanel discoveryPhase={confirmed ? 'found' : (selectedOption ? 'scanning' : 'scanning')} />;
+      return (
+        <EKSDiscoveryPanel
+          discoveryPhase={
+            confirmed ? 'found' : selectedOption ? 'scanning' : 'scanning'
+          }
+        />
+      );
     case 'collector-setup':
       return <CollectorSetupPanel confirmed={confirmed} />;
     case 'telemetry-storage':
@@ -998,7 +1055,8 @@ export const OnboardingWizardPage = () => {
   const totalSteps = STEPS.length;
   const totalMainSteps = STEPS[STEPS.length - 1].mainStep;
   const step = STEPS[currentStep];
-  const currentSelection = selections[currentStep] ?? step.defaultSelection ?? null;
+  const currentSelection =
+    selections[currentStep] ?? step.defaultSelection ?? null;
   const isConfirmed = !!confirmedSteps[currentStep];
 
   // Stream the current step's question text when step changes — character by character
@@ -1134,7 +1192,7 @@ export const OnboardingWizardPage = () => {
   //   - "eks" → go to EKS discovery (index 2), which auto-advances to Step 2 (Review)
   //   - Other → go to 1c (OTel collector, index 3)
   // If user selected "Instrument application" in step 1a:
-  //   - Skip sub-step 1d (index 4, telemetry storage) 
+  //   - Skip sub-step 1d (index 4, telemetry storage)
   useEffect(() => {
     if (isConfirmed && currentStep < totalSteps - 1) {
       const currentStepDef = STEPS[currentStep];
@@ -1151,7 +1209,7 @@ export const OnboardingWizardPage = () => {
 
       const timer = setTimeout(() => {
         setCurrentStep((prev) => {
-          let nextStep = prev + 1;
+          const nextStep = prev + 1;
 
           // From sub-step 1b (index 1): branch based on environment selection
           if (prev === 1) {
@@ -1163,7 +1221,7 @@ export const OnboardingWizardPage = () => {
             return 3;
           }
 
-          // From EKS discovery (index 2): this is handled by auto-advance above, 
+          // From EKS discovery (index 2): this is handled by auto-advance above,
           // but as safety: go to Step 2 (Review)
           if (prev === 2) {
             const step2Idx = STEPS.findIndex((s) => s.mainStep === 2);
@@ -1205,13 +1263,17 @@ export const OnboardingWizardPage = () => {
 
   const handleFinishLater = () => {
     setIsExiting(true);
-    setTimeout(() => { window.location.hash = '/sample-pages'; }, 600);
+    setTimeout(() => {
+      window.location.hash = '/sample-pages';
+    }, 600);
   };
 
   // Last step: selections navigate away
   const handleFinalNavigation = () => {
     setIsExiting(true);
-    setTimeout(() => { window.location.hash = '/sample-pages'; }, 600);
+    setTimeout(() => {
+      window.location.hash = '/sample-pages';
+    }, 600);
   };
 
   const handleSend = () => {
@@ -1250,7 +1312,9 @@ export const OnboardingWizardPage = () => {
 
       // Assistant question
       messages.push(
-        <div key={`q-${i}`} className="threadPage__message threadPage__message--assistant">
+        <div
+          key={`q-${i}`}
+          className="threadPage__message threadPage__message--assistant">
           <div className="threadPage__bubble threadPage__bubble--assistant">
             <OuiText size="s">
               <p>{pastStep.question}</p>
@@ -1263,7 +1327,9 @@ export const OnboardingWizardPage = () => {
       if (pastSelection) {
         const selectionLabel = getSelectionLabel(pastStep, pastSelection);
         messages.push(
-          <div key={`a-${i}`} className="threadPage__message threadPage__message--user">
+          <div
+            key={`a-${i}`}
+            className="threadPage__message threadPage__message--user">
             <div className="threadPage__bubble threadPage__bubble--user">
               <OuiText size="s">
                 <p>{selectionLabel}</p>
@@ -1276,7 +1342,9 @@ export const OnboardingWizardPage = () => {
       // Confirmation
       if (confirmedSteps[i] && pastStep.confirmation) {
         messages.push(
-          <div key={`c-${i}`} className="threadPage__message threadPage__message--assistant">
+          <div
+            key={`c-${i}`}
+            className="threadPage__message threadPage__message--assistant">
             <div className="threadPage__bubble threadPage__bubble--assistant">
               <div className="onboardWizard__confirmInline">
                 <OuiIcon type="checkInCircleFilled" size="s" color="success" />
@@ -1292,16 +1360,36 @@ export const OnboardingWizardPage = () => {
 
     // Current step: assistant question (with typing animation)
     messages.push(
-      <div key={`q-${currentStep}`} className="threadPage__message threadPage__message--assistant">
+      <div
+        key={`q-${currentStep}`}
+        className="threadPage__message threadPage__message--assistant">
         <div className="onboardWizard__assistantRow">
-          <div className={`onboardWizard__assistantAvatar onboardWizard__assistantAvatar--popIn${isStreaming && !streamedText ? ' onboardWizard__assistantAvatar--pulsing' : ''}`}>
-            <Mascot size={28} idle bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />
+          <div
+            className={`onboardWizard__assistantAvatar onboardWizard__assistantAvatar--popIn${
+              isStreaming && !streamedText
+                ? ' onboardWizard__assistantAvatar--pulsing'
+                : ''
+            }`}>
+            <Mascot
+              size={28}
+              idle
+              bob={false}
+              follow={false}
+              color={mascotColor}
+              eyeColor={mascotEyeColor}
+            />
           </div>
           <div className="threadPage__bubble threadPage__bubble--assistant">
             {streamedText && (
               <OuiText size="s">
                 {streamedText.split('\n\n').map((paragraph, idx) => (
-                  <p key={idx}>{paragraph}{isStreaming && idx === streamedText.split('\n\n').length - 1 && <span className="onboardWizard__typeCursor" />}</p>
+                  <p key={idx}>
+                    {paragraph}
+                    {isStreaming &&
+                      idx === streamedText.split('\n\n').length - 1 && (
+                        <span className="onboardWizard__typeCursor" />
+                      )}
+                  </p>
                 ))}
               </OuiText>
             )}
@@ -1319,7 +1407,9 @@ export const OnboardingWizardPage = () => {
     if (currentSelection && isConfirmed) {
       const selectionLabel = getSelectionLabel(step, currentSelection);
       messages.push(
-        <div key={`a-${currentStep}`} className="threadPage__message threadPage__message--user">
+        <div
+          key={`a-${currentStep}`}
+          className="threadPage__message threadPage__message--user">
           <div className="threadPage__bubble threadPage__bubble--user">
             <OuiText size="s">
               <p>{selectionLabel}</p>
@@ -1332,11 +1422,15 @@ export const OnboardingWizardPage = () => {
     // Processing indicator
     if (isProcessing) {
       messages.push(
-        <div key="processing" className="threadPage__message threadPage__message--assistant">
+        <div
+          key="processing"
+          className="threadPage__message threadPage__message--assistant">
           <div className="threadPage__bubble threadPage__bubble--assistant">
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <OuiLoadingSpinner size="s" />
-              <OuiText size="xs" color="subdued">Processing...</OuiText>
+              <OuiText size="xs" color="subdued">
+                Processing...
+              </OuiText>
             </div>
           </div>
         </div>
@@ -1346,7 +1440,9 @@ export const OnboardingWizardPage = () => {
     // Confirmation for current step
     if (isConfirmed && step.confirmation) {
       messages.push(
-        <div key={`c-${currentStep}`} className="threadPage__message threadPage__message--assistant">
+        <div
+          key={`c-${currentStep}`}
+          className="threadPage__message threadPage__message--assistant">
           <div className="threadPage__bubble threadPage__bubble--assistant">
             <div className="onboardWizard__confirmInline">
               <OuiIcon type="checkInCircleFilled" size="s" color="success" />
@@ -1378,7 +1474,9 @@ export const OnboardingWizardPage = () => {
                   currentSelection === opt.key
                     ? ' onboardWizard__chip--selected'
                     : ''
-                }${opt.primary ? ' onboardWizard__chip--confirm' : ''}${opt.empty ? ' onboardWizard__chip--empty' : ''}`}
+                }${opt.primary ? ' onboardWizard__chip--confirm' : ''}${
+                  opt.empty ? ' onboardWizard__chip--empty' : ''
+                }`}
                 onClick={() =>
                   isLastStep
                     ? handleFinalNavigation(opt.key)
@@ -1387,13 +1485,17 @@ export const OnboardingWizardPage = () => {
                 disabled={isConfirmed || isProcessing}>
                 <span>{opt.label}</span>
                 {opt.description && (
-                  <span className="onboardWizard__chipDescription">{opt.description}</span>
+                  <span className="onboardWizard__chipDescription">
+                    {opt.description}
+                  </span>
                 )}
               </button>
             ))}
           </div>
           {step.skipLabel && (
-            <div className="onboardWizard__multiActions" style={{ marginTop: 8 }}>
+            <div
+              className="onboardWizard__multiActions"
+              style={{ marginTop: 8 }}>
               <button
                 type="button"
                 className="onboardWizard__skipLink"
@@ -1465,6 +1567,7 @@ export const OnboardingWizardPage = () => {
   if (showIntro) {
     return (
       <div
+        className="onboardWizard__introWrapper"
         style={{
           display: 'flex',
           position: 'absolute',
@@ -1491,7 +1594,10 @@ export const OnboardingWizardPage = () => {
           <div
             className="samplePagesContentPanel"
             style={{ flex: 1, minWidth: 0, position: 'relative' }}>
-            <div className={`onboardWizard__intro${introExiting ? ' onboardWizard__intro--exiting' : ''}`}>
+            <div
+              className={`onboardWizard__intro${
+                introExiting ? ' onboardWizard__intro--exiting' : ''
+              }`}>
               <div className="onboardWizard__introContent">
                 <div className="onboardWizard__logoGlow">
                   <OpenSearch3DLogo size={320} />
@@ -1502,7 +1608,11 @@ export const OnboardingWizardPage = () => {
                 </OuiTitle>
                 <OuiSpacer size="s" />
                 <OuiText color="subdued">
-                  <p>Set up your observability pipeline in minutes. We'll guide you through connecting your data sources, configuring collectors, and getting insights from your telemetry.</p>
+                  <p>
+                    Set up your observability pipeline in minutes. We'll guide
+                    you through connecting your data sources, configuring
+                    collectors, and getting insights from your telemetry.
+                  </p>
                 </OuiText>
                 <OuiSpacer size="xl" />
                 <button
@@ -1515,7 +1625,9 @@ export const OnboardingWizardPage = () => {
                 <OuiSmallButtonEmpty
                   iconType="arrowRight"
                   iconSide="right"
-                  onClick={() => { window.location.hash = '/sample-pages'; }}>
+                  onClick={() => {
+                    window.location.hash = '/sample-pages';
+                  }}>
                   Skip onboarding
                 </OuiSmallButtonEmpty>
               </div>
@@ -1528,6 +1640,7 @@ export const OnboardingWizardPage = () => {
 
   return (
     <div
+      className="onboardWizard__outerWrapper"
       style={{
         display: 'flex',
         position: 'absolute',
@@ -1557,27 +1670,40 @@ export const OnboardingWizardPage = () => {
         <div
           className="samplePagesContentPanel"
           style={{ flex: 1, minWidth: 0, position: 'relative' }}>
-          <div className={`onboardWizard${isExiting ? ' onboardWizard--exiting' : ''}`}>
+          <div
+            className={`onboardWizard${
+              isExiting ? ' onboardWizard--exiting' : ''
+            }`}>
             {/* Left Panel — Thread-style chat interaction */}
             <div className="onboardWizard__left">
               <div className="onboardWizard__leftPanel">
                 <div className="threadPage__body">
                   <div className="threadPage__conversationCol">
                     {/* Step indicator header */}
-                    <div className="onboardWizard__stepIndicator" style={{ padding: '12px 16px 0' }}>
+                    <div
+                      className="onboardWizard__stepIndicator"
+                      style={{ padding: '12px 16px 0' }}>
                       <OuiTitle size="xxxs">
-                        <h6>Step {step.mainStep} of {totalMainSteps}</h6>
+                        <h6>
+                          Step {step.mainStep} of {totalMainSteps}
+                        </h6>
                       </OuiTitle>
                       <OuiTitle size="s">
                         <h3>{step.title}</h3>
                       </OuiTitle>
-                      <div className="onboardWizard__timeline" style={{ marginTop: 8 }}>
-                          {Array.from({ length: totalMainSteps }, (_, mainIdx) => {
+                      <div
+                        className="onboardWizard__timeline"
+                        style={{ marginTop: 8 }}>
+                        {Array.from(
+                          { length: totalMainSteps },
+                          (_, mainIdx) => {
                             const mainNum = mainIdx + 1;
                             const isMainDone = step.mainStep > mainNum;
                             const isMainCurrent = step.mainStep === mainNum;
                             // Find the first sub-step index for this main step (for navigation)
-                            const firstSubIdx = STEPS.findIndex((s) => s.mainStep === mainNum);
+                            const firstSubIdx = STEPS.findIndex(
+                              (s) => s.mainStep === mainNum
+                            );
                             if (isMainDone) {
                               return (
                                 <button
@@ -1604,8 +1730,9 @@ export const OnboardingWizardPage = () => {
                                 className="onboardWizard__timelineDot onboardWizard__timelineDot--inactive"
                               />
                             );
-                          })}
-                        </div>
+                          }
+                        )}
+                      </div>
                     </div>
 
                     {/* Conversation feed — reuses threadPage__feed pattern */}
@@ -1645,7 +1772,6 @@ export const OnboardingWizardPage = () => {
                         </div>
                       </div>
                     </div>
-
                   </div>
                 </div>
               </div>
@@ -1653,7 +1779,11 @@ export const OnboardingWizardPage = () => {
 
             {/* Right Panel */}
             <div className="onboardWizard__right">
-              <div className={`onboardWizard__rightPanel${rightPanelFade ? ' onboardWizard__rightPanel--fadeIn' : ''}`} key={currentStep}>
+              <div
+                className={`onboardWizard__rightPanel${
+                  rightPanelFade ? ' onboardWizard__rightPanel--fadeIn' : ''
+                }`}
+                key={currentStep}>
                 <RightPanelContent
                   step={step}
                   selectedOption={currentSelection}
@@ -1662,18 +1792,20 @@ export const OnboardingWizardPage = () => {
                 />
               </div>
             </div>
-
-            {/* Skip onboarding — bottom right */}
-            <div className="onboardWizard__skipLink--fixed">
-              <OuiSmallButtonEmpty
-                iconType="arrowRight"
-                iconSide="right"
-                onClick={() => { window.location.hash = '/sample-pages'; }}>
-                Skip onboarding
-              </OuiSmallButtonEmpty>
-            </div>
           </div>
         </div>
+      </div>
+
+      {/* Skip onboarding — bottom center, outside overflow:hidden containers */}
+      <div className="onboardWizard__skipLink--fixed">
+        <OuiSmallButtonEmpty
+          iconType="arrowRight"
+          iconSide="right"
+          onClick={() => {
+            window.location.hash = '/sample-pages';
+          }}>
+          Skip onboarding
+        </OuiSmallButtonEmpty>
       </div>
     </div>
   );

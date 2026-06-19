@@ -93,10 +93,7 @@ export default () => {
       </OuiTitle>
       <OuiSpacer size="m" />
 
-      <OuiSearchInput
-        placeholder="Input is disabled..."
-        isDisabled
-      />
+      <OuiSearchInput placeholder="Input is disabled..." isDisabled />
     </div>
   );
 };

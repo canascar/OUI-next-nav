@@ -10,4 +10,7 @@
  */
 
 export { OuiThreadInput, OuiThreadInputProps } from './thread_input';
-export { OuiThreadScrollButton, OuiThreadScrollButtonProps } from './thread_scroll_button';
+export {
+  OuiThreadScrollButton,
+  OuiThreadScrollButtonProps,
+} from './thread_scroll_button';

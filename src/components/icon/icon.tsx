@@ -358,6 +358,7 @@ const typeToPathMap = {
   popout: 'popout',
   power: 'power',
   pulse: 'pulse',
+  microphone: 'microphone',
   push: 'push',
   questionInCircle: 'question_in_circle',
   quote: 'quote',

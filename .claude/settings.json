@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(kill 39392)",
+      "Bash(echo \"Exit code: $?\")",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(git -C /Users/jasonlh/Desktop/KIRO/OUI-next-navigation-sicheng status -u)",
+      "Bash(git -C /Users/jasonlh/Desktop/KIRO/OUI-next-navigation-sicheng diff --stat)",
+      "Bash(git -C /Users/jasonlh/Desktop/KIRO/OUI-next-navigation-sicheng log --oneline -5)",
+      "Bash(git -C /Users/jasonlh/Desktop/KIRO/OUI-next-navigation-sicheng remote -v)",
+      "Bash(git -C /Users/jasonlh/Desktop/KIRO/OUI-next-navigation-sicheng status --short)",
+      "Bash(git -C /Users/jasonlh/Desktop/KIRO/OUI-next-navigation-sicheng commit -m ' *)",
+      "Bash(git -C /Users/jasonlh/Desktop/KIRO/OUI-next-navigation-sicheng log --oneline -1 origin/new-design-theme-v10)",
+      "Bash(git -C /Users/jasonlh/Desktop/KIRO/OUI-next-navigation-sicheng commit --no-verify -m ' *)",
+      "Bash(git -C /Users/jasonlh/Desktop/KIRO/OUI-next-navigation-sicheng push origin new-design-theme-v10)",
+      "Bash(git pull *)",
+      "Bash(yarn tsc *)",
+      "Bash(yarn eslint *)",
+      "Bash(git log *)",
+      "Bash(gh pr create --title 'Restyle overview page: simplified grid, glassmorphism, underline tabs' --body ' *)",
+      "Bash(gh pr create --title 'Restyle overview page: simplified grid, glassmorphism, underline tabs' --base origin/new-design-theme-v10 --body ' *)",
+      "Bash(gh pr create --repo sicheng-lu/OUI-next-navigation --head OUI-sample-pages --base new-design-theme-v10 --title 'Restyle overview page: simplified grid, glassmorphism, underline tabs' --body ' *)",
+      "Bash(gh pr create --repo sicheng-lu/OUI-next-navigation --head landing-layout-update --base OUI-sample-pages --title 'Layout uplevel: right panel, simplified grid, input fixes' --body ' *)",
+      "Bash(gh pr *)",
+      "Bash(grep -E \"\\\\.\\(tsx|ts|html\\)$\")"
+    ]
+  }
+}

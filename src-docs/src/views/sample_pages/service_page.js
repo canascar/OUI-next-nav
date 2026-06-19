@@ -173,15 +173,19 @@ const Sparkline = ({
     <svg width={width} height={height} style={{ verticalAlign: 'middle' }}>
       <defs>
         <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={fillColor || 'currentColor'} stopOpacity="0.3" />
-          <stop offset="100%" stopColor={fillColor || 'currentColor'} stopOpacity="0.05" />
+          <stop
+            offset="0%"
+            stopColor={fillColor || 'currentColor'}
+            stopOpacity="0.3"
+          />
+          <stop
+            offset="100%"
+            stopColor={fillColor || 'currentColor'}
+            stopOpacity="0.05"
+          />
         </linearGradient>
       </defs>
-      <polygon
-        fill={`url(#${id})`}
-        points={areaPoints}
-        stroke="none"
-      />
+      <polygon fill={`url(#${id})`} points={areaPoints} stroke="none" />
       <polyline
         fill="none"
         className={className}
@@ -198,11 +202,28 @@ const Sparkline = ({
 const FaultBar = ({ value, max = 100 }) => {
   const pct = (value / max) * 100;
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
-      <div style={{ flex: 1, height: 8, background: '#E4EAF2', borderRadius: 4, overflow: 'hidden' }}>
-        <div style={{ width: `${pct}%`, height: '100%', background: '#2E4A8F', borderRadius: 4 }} />
+    <div
+      style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
+      <div
+        style={{
+          flex: 1,
+          height: 8,
+          background: '#E4EAF2',
+          borderRadius: 4,
+          overflow: 'hidden',
+        }}>
+        <div
+          style={{
+            width: `${pct}%`,
+            height: '100%',
+            background: '#2E4A8F',
+            borderRadius: 4,
+          }}
+        />
       </div>
-      <span style={{ fontSize: 12, color: '#5A6D8A', whiteSpace: 'nowrap' }}>{value.toFixed(2)}%</span>
+      <span style={{ fontSize: 12, color: '#5A6D8A', whiteSpace: 'nowrap' }}>
+        {value.toFixed(2)}%
+      </span>
     </div>
   );
 };
@@ -354,7 +375,12 @@ const getFaultServiceColumns = (onSelectService) => [
     field: 'service',
     name: 'Service',
     render: (name) => (
-      <OuiLink href="#" onClick={(e) => { e.preventDefault(); if (onSelectService) onSelectService(name); }}>
+      <OuiLink
+        href="#"
+        onClick={(e) => {
+          e.preventDefault();
+          if (onSelectService) onSelectService(name);
+        }}>
         {name}
       </OuiLink>
     ),
@@ -386,7 +412,12 @@ const getDepPathColumns = (onSelectService) => [
     field: 'depService',
     name: 'Dependency service',
     render: (name) => (
-      <OuiLink href="#" onClick={(e) => { e.preventDefault(); if (onSelectService) onSelectService(name); }}>
+      <OuiLink
+        href="#"
+        onClick={(e) => {
+          e.preventDefault();
+          if (onSelectService) onSelectService(name);
+        }}>
         {name}
       </OuiLink>
     ),
@@ -395,7 +426,12 @@ const getDepPathColumns = (onSelectService) => [
     field: 'service',
     name: 'Service',
     render: (name) => (
-      <OuiLink href="#" onClick={(e) => { e.preventDefault(); if (onSelectService) onSelectService(name); }}>
+      <OuiLink
+        href="#"
+        onClick={(e) => {
+          e.preventDefault();
+          if (onSelectService) onSelectService(name);
+        }}>
         {name}
       </OuiLink>
     ),
@@ -444,7 +480,12 @@ const getCatalogColumns = (onSelectService) => [
           />
         </OuiFlexItem>
         <OuiFlexItem grow={false}>
-          <OuiLink href="#" onClick={(e) => { e.preventDefault(); if (onSelectService) onSelectService(name); }}>
+          <OuiLink
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              if (onSelectService) onSelectService(name);
+            }}>
             {name}
           </OuiLink>
         </OuiFlexItem>
@@ -544,7 +585,11 @@ const getCatalogColumns = (onSelectService) => [
         <OuiFlexItem grow={false}>
           <Sparkline
             values={ratio > 0 ? [4, 5, 6, 5.5, 5, 5.2] : [1, 1, 1, 1, 1, 1]}
-            className={ratio > 20 ? 'servicePage__sparkline--danger' : 'servicePage__sparkline--subdued'}
+            className={
+              ratio > 20
+                ? 'servicePage__sparkline--danger'
+                : 'servicePage__sparkline--subdued'
+            }
             fillColor={ratio > 20 ? '#ED6F73' : '#D4DCE8'}
           />
         </OuiFlexItem>
@@ -670,10 +715,24 @@ export const ServicePage = ({
             {/* Top summary panels */}
             <OuiFlexGroup gutterSize="m">
               <OuiFlexItem>
-                <TopFaultServicesPanel onSelectService={onOpenCanvasPage ? (name) => onOpenCanvasPage('service-detail', `Service: ${name}`) : undefined} />
+                <TopFaultServicesPanel
+                  onSelectService={
+                    onOpenCanvasPage
+                      ? (name) =>
+                          onOpenCanvasPage('service-detail', `Service: ${name}`)
+                      : undefined
+                  }
+                />
               </OuiFlexItem>
               <OuiFlexItem>
-                <TopDependencyPathsPanel onSelectService={onOpenCanvasPage ? (name) => onOpenCanvasPage('service-detail', `Service: ${name}`) : undefined} />
+                <TopDependencyPathsPanel
+                  onSelectService={
+                    onOpenCanvasPage
+                      ? (name) =>
+                          onOpenCanvasPage('service-detail', `Service: ${name}`)
+                      : undefined
+                  }
+                />
               </OuiFlexItem>
             </OuiFlexGroup>
 
@@ -711,7 +770,12 @@ export const ServicePage = ({
 
               <OuiBasicTable
                 items={SERVICES}
-                columns={getCatalogColumns(onOpenCanvasPage ? (name) => onOpenCanvasPage('service-detail', `Service: ${name}`) : undefined)}
+                columns={getCatalogColumns(
+                  onOpenCanvasPage
+                    ? (name) =>
+                        onOpenCanvasPage('service-detail', `Service: ${name}`)
+                    : undefined
+                )}
                 rowHeader="name"
                 tableLayout="fixed"
               />

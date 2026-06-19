@@ -140,11 +140,19 @@ const lifecyclePhases = [
 ];
 
 const scaleLadder = [
-  { size: '18px', context: 'Step pip', description: 'Tiny indicator in a step sequence' },
+  {
+    size: '18px',
+    context: 'Step pip',
+    description: 'Tiny indicator in a step sequence',
+  },
   { size: '28px', context: 'Status', description: 'Inline status badge' },
   { size: '44px', context: 'Inline', description: 'Within a message or card' },
   { size: '68px', context: 'Focus', description: 'Primary attention point' },
-  { size: '96px', context: 'Presence', description: 'Full presence, e.g. empty state' },
+  {
+    size: '96px',
+    context: 'Presence',
+    description: 'Full presence, e.g. empty state',
+  },
 ];
 
 const microMoments = [
@@ -189,12 +197,32 @@ const microMoments = [
 ];
 
 const principles = [
-  { rule: 'One mascot per message', detail: 'Never show multiple mascots in the same context.' },
-  { rule: 'Body is invariant', detail: 'Only the eyes change. The body shape stays constant.' },
-  { rule: 'Scale signals urgency', detail: 'Bigger means more important. Smaller means background.' },
-  { rule: 'State follows the current tool', detail: 'The expression maps to what the agent is doing right now.' },
-  { rule: "Don't wear the result", detail: "The mascot reacts, then returns to neutral. It doesn't stay happy forever." },
-  { rule: 'Gold means human-needed', detail: 'The only time the body color changes is when the agent needs your input.' },
+  {
+    rule: 'One mascot per message',
+    detail: 'Never show multiple mascots in the same context.',
+  },
+  {
+    rule: 'Body is invariant',
+    detail: 'Only the eyes change. The body shape stays constant.',
+  },
+  {
+    rule: 'Scale signals urgency',
+    detail: 'Bigger means more important. Smaller means background.',
+  },
+  {
+    rule: 'State follows the current tool',
+    detail: 'The expression maps to what the agent is doing right now.',
+  },
+  {
+    rule: "Don't wear the result",
+    detail:
+      "The mascot reacts, then returns to neutral. It doesn't stay happy forever.",
+  },
+  {
+    rule: 'Gold means human-needed',
+    detail:
+      'The only time the body color changes is when the agent needs your input.',
+  },
 ];
 
 export const MascotGuidelinesView = () => {
@@ -248,7 +276,9 @@ export const MascotGuidelinesView = () => {
               </OuiTitle>
               <OuiSpacer size="xs" />
               <OuiText size="xs" color="subdued">
-                <p><strong>{expr.states}</strong></p>
+                <p>
+                  <strong>{expr.states}</strong>
+                </p>
               </OuiText>
               <OuiSpacer size="xs" />
               <OuiText size="xs">
@@ -361,7 +391,12 @@ export const MascotGuidelinesView = () => {
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}>
-                <MascotSVG size={parseInt(step.size)} expression="comma" color={mascotColor} eyeColor={mascotEyeColor} />
+                <MascotSVG
+                  size={parseInt(step.size)}
+                  expression="comma"
+                  color={mascotColor}
+                  eyeColor={mascotEyeColor}
+                />
               </OuiFlexItem>
               <OuiFlexItem grow={false} style={{ minWidth: 60 }}>
                 <OuiCode>{step.size}</OuiCode>

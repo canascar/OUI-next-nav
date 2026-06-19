@@ -135,6 +135,12 @@ import { OllyChatPillExample } from './views/headless/olly_chat_pill_example';
 
 import { SessionRecentsExample } from './views/headless/session_recents_example';
 
+import { AgenticSpinnerExample } from './views/headless/agentic_spinner_example';
+
+import { SessionThreadExample } from './views/headless/session_thread_example';
+
+import { OllyIdleExample } from './views/headless/olly_idle_example';
+
 import { HighlightAndMarkExample } from './views/highlight_and_mark/highlight_and_mark_example';
 
 import { HorizontalRuleExample } from './views/horizontal_rule/horizontal_rule_example';
@@ -354,10 +360,6 @@ const navigation = [
         name: 'Sass',
         component: SassGuidelines,
       },
-      {
-        name: 'Mascot',
-        component: MascotGuidelinesView,
-      },
     ],
   },
   {
@@ -486,7 +488,28 @@ const navigation = [
       InsightCalloutExample,
       OllyChatPillExample,
       SessionRecentsExample,
-    ].map((example) => createExample(example)),
+      AgenticSpinnerExample,
+      SessionThreadExample,
+      OllyIdleExample,
+      {
+        title: 'Mascot',
+        sections: [
+          {
+            title: 'Mascot',
+            text: null,
+          },
+        ],
+      },
+    ].map((example) => {
+      if (example.title === 'Mascot') {
+        return {
+          name: 'Mascot',
+          component: MascotGuidelinesView,
+          sections: [],
+        };
+      }
+      return createExample(example);
+    }),
   },
   {
     name: 'Utilities',

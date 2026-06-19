@@ -48,13 +48,13 @@ export const ThreadListExample = {
         <>
           <p>
             <strong>OuiThreadList</strong> displays a list of thread items,
-            commonly used for showing recent conversations, investigations,
-            or activity feeds. Each item can have an icon, title, description,
+            commonly used for showing recent conversations, investigations, or
+            activity feeds. Each item can have an icon, title, description,
             status, and metadata.
           </p>
           <p>
-            Use the <OuiCode>bordered</OuiCode> prop to add a border around
-            the list, and <OuiCode>flush</OuiCode> to remove padding.
+            Use the <OuiCode>bordered</OuiCode> prop to add a border around the
+            list, and <OuiCode>flush</OuiCode> to remove padding.
           </p>
         </>
       ),
@@ -89,13 +89,13 @@ export const ThreadListExample = {
       text: (
         <>
           <p>
-            Use <OuiCode>statusColor</OuiCode> instead of <OuiCode>iconType</OuiCode>{' '}
-            to display a colored health indicator dot. This is useful for showing
-            severity or status at a glance.
+            Use <OuiCode>statusColor</OuiCode> instead of{' '}
+            <OuiCode>iconType</OuiCode> to display a colored health indicator
+            dot. This is useful for showing severity or status at a glance.
           </p>
           <p>
-            The <OuiCode>meta</OuiCode> and <OuiCode>metaSecondary</OuiCode> props
-            display additional information on the right side of each item.
+            The <OuiCode>meta</OuiCode> and <OuiCode>metaSecondary</OuiCode>{' '}
+            props display additional information on the right side of each item.
           </p>
         </>
       ),

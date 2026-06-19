@@ -9,12 +9,24 @@
  * GitHub history for details.
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useCallback } from 'react';
 import {
   OuiCompressedFieldSearch,
+  OuiFieldSearch,
   OuiIcon,
 } from '../../../../src/components';
 import { SOURCE_PAGE_MOCK } from './session_models';
+import { OpenSearch3DLogo } from './opensearch_3d_logo';
+
+const CANVAS_TITLES = [
+  'Your canvas is ready',
+  'Blank canvas ready for you',
+  'Unlimited discoveries await',
+  'An empty canvas ready for data exploration',
+  'This canvas is waiting for your visualizations',
+  'Visualize more than this empty canvas',
+  'A new canvas for opening searches',
+];
 
 /**
  * Filter chips for the new tab page (no Recent tab).
@@ -30,8 +42,20 @@ const TAB_FILTER_CHIPS = [
  */
 const TAB_CHIP_DATA = {
   favorite: [
-    { key: 'fav-1', title: 'System overview', subtitle: 'Dashboard', pageKey: 'dashboards', typeIcon: 'navDashboards' },
-    { key: 'fav-2', title: 'Error rate by service', subtitle: 'Saved log', pageKey: 'logs', typeIcon: 'navDiscover' },
+    {
+      key: 'fav-1',
+      title: 'System overview',
+      subtitle: 'Dashboard',
+      pageKey: 'dashboards',
+      typeIcon: 'navDashboards',
+    },
+    {
+      key: 'fav-2',
+      title: 'Error rate by service',
+      subtitle: 'Saved log',
+      pageKey: 'logs',
+      typeIcon: 'navDiscover',
+    },
   ],
 };
 
@@ -39,6 +63,53 @@ export const NewTabPage = ({ onSelectPage }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeChip, setActiveChip] = useState('discover');
   const [inputValue, setInputValue] = useState('');
+
+  // Pick a random title once per mount
+  const canvasTitle = useRef(
+    CANVAS_TITLES[Math.floor(Math.random() * CANVAS_TITLES.length)]
+  ).current;
+
+  const searchListRef = useRef(null);
+  const searchScrollRef = useRef(null);
+
+  const handleSearchHover = useCallback((hoveredIndex) => {
+    if (!searchListRef.current) return;
+    const items = searchListRef.current.querySelectorAll(
+      '.emptySessionPage__listItem'
+    );
+    items.forEach((el, i) => {
+      const distance = Math.abs(i - hoveredIndex);
+      let scale = 1;
+      if (distance === 0) scale = 1.03;
+      else if (distance === 1) scale = 1.015;
+      else if (distance === 2) scale = 1.005;
+      el.style.transform = `scale(${scale})`;
+    });
+  }, []);
+
+  const handleSearchMouseDown = useCallback((pressedIndex) => {
+    if (!searchListRef.current) return;
+    const items = searchListRef.current.querySelectorAll(
+      '.emptySessionPage__listItem'
+    );
+    items.forEach((el, i) => {
+      const distance = Math.abs(i - pressedIndex);
+      let scale = 1;
+      if (distance === 0) scale = 0.97;
+      else if (distance === 1) scale = 0.985;
+      else if (distance === 2) scale = 0.995;
+      el.style.transform = `scale(${scale})`;
+    });
+  }, []);
+
+  const handleSearchMouseLeave = useCallback(() => {
+    if (!searchListRef.current) return;
+    searchListRef.current
+      .querySelectorAll('.emptySessionPage__listItem')
+      .forEach((el) => {
+        el.style.transform = '';
+      });
+  }, []);
 
   // Build searchable items
   const allItems = useMemo(() => {
@@ -56,14 +127,34 @@ export const NewTabPage = ({ onSelectPage }) => {
     if (!searchQuery.trim()) return null;
     const query = searchQuery.toLowerCase();
     return allItems.filter(
-      (item) => item.title.toLowerCase().includes(query) || (item.subtitle && item.subtitle.toLowerCase().includes(query))
+      (item) =>
+        item.title.toLowerCase().includes(query) ||
+        (item.subtitle && item.subtitle.toLowerCase().includes(query))
     );
   }, [searchQuery, allItems]);
 
   return (
-    <div className="newTabPage">
+    <div
+      className="newTabPage"
+      onWheel={(e) => {
+        if (
+          searchScrollRef.current &&
+          !searchScrollRef.current.contains(e.target)
+        ) {
+          searchScrollRef.current.scrollTop += e.deltaY;
+          e.preventDefault();
+        }
+      }}>
+      {/* 3D Logo */}
+      <div className="newTabPage__logoWrap">
+        <OpenSearch3DLogo size={160} />
+      </div>
+
+      {/* Randomized title */}
+      <h2 className="newTabPage__title">{canvasTitle}</h2>
+
       {/* Search field */}
-      <OuiCompressedFieldSearch
+      <OuiFieldSearch
         placeholder="Search pages..."
         value={inputValue}
         onChange={(e) => {
@@ -74,23 +165,46 @@ export const NewTabPage = ({ onSelectPage }) => {
       />
 
       {searchResults ? (
-        <div className="emptySessionPage__tabContent">
+        <div
+          className="newTabPage__searchResults"
+          ref={searchListRef}
+          onMouseLeave={handleSearchMouseLeave}>
+          <span
+            className="emptySessionPage__searchLabel"
+            style={{ marginBottom: 8, flexShrink: 0 }}>
+            Suggested pages
+          </span>
           {searchResults.length === 0 ? (
-            <p style={{ color: '#676e75', textAlign: 'center', padding: '16px' }}>No results found</p>
+            <p
+              style={{
+                color: '#676e75',
+                textAlign: 'center',
+                padding: '16px',
+              }}>
+              No results found
+            </p>
           ) : (
-            <>
-              <span className="emptySessionPage__searchLabel">Suggested pages</span>
-              {searchResults.map((item) => (
+            <div
+              className="newTabPage__searchResultsList"
+              ref={searchScrollRef}>
+              {searchResults.map((item, idx) => (
                 <button
                   key={item.key}
                   type="button"
                   className="emptySessionPage__listItem"
+                  onMouseEnter={() => handleSearchHover(idx)}
+                  onMouseDown={() => handleSearchMouseDown(idx)}
+                  onMouseUp={() => handleSearchHover(idx)}
                   onClick={() => onSelectPage(item.pageKey, item.title)}>
-                  <span className="emptySessionPage__listItemTitle">{item.title}</span>
-                  <span className="emptySessionPage__listItemTime">{item.subtitle}</span>
+                  <span className="emptySessionPage__listItemTitle">
+                    {item.title}
+                  </span>
+                  <span className="emptySessionPage__listItemTime">
+                    {item.subtitle}
+                  </span>
                 </button>
               ))}
-            </>
+            </div>
           )}
         </div>
       ) : (
@@ -101,7 +215,11 @@ export const NewTabPage = ({ onSelectPage }) => {
               <button
                 key={chip.key}
                 type="button"
-                className={`emptySessionPage__chip${activeChip === chip.key ? ' emptySessionPage__chip--active' : ''}`}
+                className={`emptySessionPage__chip${
+                  activeChip === chip.key
+                    ? ' emptySessionPage__chip--active'
+                    : ''
+                }`}
                 onClick={() => setActiveChip(chip.key)}>
                 {chip.label}
               </button>
@@ -110,24 +228,34 @@ export const NewTabPage = ({ onSelectPage }) => {
 
           <div className="emptySessionPage__tabContent">
             {/* Discover grid */}
-            {activeChip === 'discover' && (
-              <div className="emptySessionPage__sectionHeader">// OPEN A PAGE TO DISCOVER</div>
-            )}
+            {activeChip === 'discover' && <h4>Open a page to discover</h4>}
             {activeChip === 'discover' && (
               <div className="emptySessionPage__discoverGrid">
-                <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onSelectPage('discover-log', 'Logs')}>
+                <button
+                  type="button"
+                  className="emptySessionPage__discoverGridItem"
+                  onClick={() => onSelectPage('discover-log', 'Logs')}>
                   <OuiIcon type="navDiscover" size="m" />
                   <span>Logs</span>
                 </button>
-                <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onSelectPage('discover-metric', 'Metrics')}>
+                <button
+                  type="button"
+                  className="emptySessionPage__discoverGridItem"
+                  onClick={() => onSelectPage('discover-metric', 'Metrics')}>
                   <OuiIcon type="visArea" size="m" />
                   <span>Metrics</span>
                 </button>
-                <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onSelectPage('dashboards-list', 'Dashboards')}>
+                <button
+                  type="button"
+                  className="emptySessionPage__discoverGridItem"
+                  onClick={() => onSelectPage('dashboards-list', 'Dashboards')}>
                   <OuiIcon type="navDashboards" size="m" />
                   <span>Dashboards</span>
                 </button>
-                <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onSelectPage('alerts-list', 'Alerts')}>
+                <button
+                  type="button"
+                  className="emptySessionPage__discoverGridItem"
+                  onClick={() => onSelectPage('alerts-list', 'Alerts')}>
                   <OuiIcon type="navAlerting" size="m" />
                   <span>Alerts</span>
                 </button>
@@ -135,32 +263,52 @@ export const NewTabPage = ({ onSelectPage }) => {
             )}
 
             {/* Monitor grid */}
-            {activeChip === 'monitor' && (
-              <div className="emptySessionPage__sectionHeader">// OPEN A PAGE TO MONITOR</div>
-            )}
+            {activeChip === 'monitor' && <h4>Open a page to monitor</h4>}
             {activeChip === 'monitor' && (
               <div className="emptySessionPage__discoverGrid">
-                <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onSelectPage('app-map', 'Application Map')}>
+                <button
+                  type="button"
+                  className="emptySessionPage__discoverGridItem"
+                  onClick={() => onSelectPage('app-map', 'Application Map')}>
                   <OuiIcon type="navServiceMap" size="m" />
                   <span>Application Map</span>
                 </button>
-                <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onSelectPage('app-perf-services', 'Application Services')}>
+                <button
+                  type="button"
+                  className="emptySessionPage__discoverGridItem"
+                  onClick={() =>
+                    onSelectPage('app-perf-services', 'Application Services')
+                  }>
                   <OuiIcon type="navOverview" size="m" />
                   <span>Application Services</span>
                 </button>
-                <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onSelectPage('app-traces', 'Application Traces')}>
+                <button
+                  type="button"
+                  className="emptySessionPage__discoverGridItem"
+                  onClick={() =>
+                    onSelectPage('app-traces', 'Application Traces')
+                  }>
                   <OuiIcon type="apmTrace" size="m" />
                   <span>Application Traces</span>
                 </button>
-                <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onSelectPage('forecasting', 'Forecasting')}>
+                <button
+                  type="button"
+                  className="emptySessionPage__discoverGridItem"
+                  onClick={() => onSelectPage('forecasting', 'Forecasting')}>
                   <OuiIcon type="visLine" size="m" />
                   <span>Forecasting</span>
                 </button>
-                <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onSelectPage('app-traces', 'Agent traces')}>
+                <button
+                  type="button"
+                  className="emptySessionPage__discoverGridItem"
+                  onClick={() => onSelectPage('app-traces', 'Agent traces')}>
                   <OuiIcon type="apmTrace" size="m" />
                   <span>Agent traces</span>
                 </button>
-                <button type="button" className="emptySessionPage__discoverGridItem" onClick={() => onSelectPage('agent-spans', 'Agent spans')}>
+                <button
+                  type="button"
+                  className="emptySessionPage__discoverGridItem"
+                  onClick={() => onSelectPage('agent-spans', 'Agent spans')}>
                   <OuiIcon type="visTagCloud" size="m" />
                   <span>Agent spans</span>
                 </button>
@@ -168,9 +316,7 @@ export const NewTabPage = ({ onSelectPage }) => {
             )}
 
             {/* More grid */}
-            {activeChip === 'more' && (
-              <div className="emptySessionPage__sectionHeader">// OPEN A PAGE</div>
-            )}
+            {activeChip === 'more' && <h4>Open a page</h4>}
             {activeChip === 'more' && (
               <div className="emptySessionPage__discoverGrid">
                 <div className="emptySessionPage__discoverGridItem emptySessionPage__discoverGridItem--disabled">
@@ -183,7 +329,6 @@ export const NewTabPage = ({ onSelectPage }) => {
                 </div>
               </div>
             )}
-
           </div>
         </>
       )}

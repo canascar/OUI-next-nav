@@ -955,29 +955,61 @@ const ExpandedRow = ({ item }) => {
         <div className="discoverPage__traceWaterfall">
           <div className="discoverPage__traceSpanRow">
             <span className="discoverPage__traceSpanName">payment-service</span>
-            <div className="discoverPage__traceSpanBarWrap" style={{ backgroundColor: 'rgba(0,119,204,0.15)' }}>
-              <div className="discoverPage__traceSpanBar" style={{ width: '100%', backgroundColor: '#0077CC' }} />
+            <div
+              className="discoverPage__traceSpanBarWrap"
+              style={{ backgroundColor: 'rgba(0,119,204,0.15)' }}>
+              <div
+                className="discoverPage__traceSpanBar"
+                style={{ width: '100%', backgroundColor: '#0077CC' }}
+              />
             </div>
             <span className="discoverPage__traceSpanDuration">8.4s</span>
           </div>
           <div className="discoverPage__traceSpanRow">
-            <span className="discoverPage__traceSpanName" style={{ paddingLeft: 12 }}>→ acquire_conn</span>
-            <div className="discoverPage__traceSpanBarWrap" style={{ backgroundColor: 'rgba(255,100,103,0.15)' }}>
-              <div className="discoverPage__traceSpanBar" style={{ width: '97.6%', backgroundColor: '#FF6467' }} />
+            <span
+              className="discoverPage__traceSpanName"
+              style={{ paddingLeft: 12 }}>
+              → acquire_conn
+            </span>
+            <div
+              className="discoverPage__traceSpanBarWrap"
+              style={{ backgroundColor: 'rgba(255,100,103,0.15)' }}>
+              <div
+                className="discoverPage__traceSpanBar"
+                style={{ width: '97.6%', backgroundColor: '#FF6467' }}
+              />
             </div>
             <span className="discoverPage__traceSpanDuration">8.2s</span>
           </div>
           <div className="discoverPage__traceSpanRow">
-            <span className="discoverPage__traceSpanName" style={{ paddingLeft: 12 }}>→ query payments-db</span>
-            <div className="discoverPage__traceSpanBarWrap" style={{ backgroundColor: 'rgba(0,191,179,0.15)' }}>
-              <div className="discoverPage__traceSpanBar" style={{ width: '1.4%', backgroundColor: '#00BFB3' }} />
+            <span
+              className="discoverPage__traceSpanName"
+              style={{ paddingLeft: 12 }}>
+              → query payments-db
+            </span>
+            <div
+              className="discoverPage__traceSpanBarWrap"
+              style={{ backgroundColor: 'rgba(0,191,179,0.15)' }}>
+              <div
+                className="discoverPage__traceSpanBar"
+                style={{ width: '1.4%', backgroundColor: '#00BFB3' }}
+              />
             </div>
             <span className="discoverPage__traceSpanDuration">12ms</span>
           </div>
           <div className="discoverPage__traceSpanRow">
-            <span className="discoverPage__traceSpanName" style={{ paddingLeft: 12 }}>→ serialize</span>
-            <div className="discoverPage__traceSpanBarWrap" style={{ backgroundColor: 'rgba(0,191,179,0.15)' }}>
-              <div className="discoverPage__traceSpanBar" style={{ width: '0.4%', backgroundColor: '#00BFB3' }} />
+            <span
+              className="discoverPage__traceSpanName"
+              style={{ paddingLeft: 12 }}>
+              → serialize
+            </span>
+            <div
+              className="discoverPage__traceSpanBarWrap"
+              style={{ backgroundColor: 'rgba(0,191,179,0.15)' }}>
+              <div
+                className="discoverPage__traceSpanBar"
+                style={{ width: '0.4%', backgroundColor: '#00BFB3' }}
+              />
             </div>
             <span className="discoverPage__traceSpanDuration">3ms</span>
           </div>

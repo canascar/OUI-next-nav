@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>opensearch mascot — concept</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="cli-styles.css">
+  <style>
+    /* --- theme variables --- */
+    /* Dark is the default; .theme-light on .show-stage flips everything. */
+    .show-stage {
+      --bg: #0B0E12;
+      --fg: #C8D1DA;
+      --dim: #5C6773;
+      --line: rgba(255,255,255,0.06);
+      --card-bg: rgba(255,255,255,0.012);
+      --hover-bg: rgba(123, 150, 169, 0.06);
+      --on-bg: rgba(123, 150, 169, 0.10);
+      --shadow: rgba(0,0,0,0.5);
+    }
+    .show-stage.theme-light {
+      --bg: #F4F5F7;
+      --fg: #15171C;
+      --dim: #6B7079;
+      --line: rgba(0,0,0,0.08);
+      --card-bg: rgba(0,0,0,0.012);
+      --hover-bg: rgba(0,0,0,0.04);
+      --on-bg: rgba(0,0,0,0.06);
+      --shadow: rgba(20,30,50,0.18);
+    }
+
+    /* --- showcase-specific layout --- */
+    body { background: #0B0E12; color: #C8D1DA; font-family: var(--font-mono); transition: background 240ms ease; }
+    body.theme-light { background: #F4F5F7; color: #15171C; }
+
+    .show-stage-wrap {
+      min-height: 100vh;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 32px 36px 64px;
+      display: flex;
+      flex-direction: column;
+      gap: 56px;
+      color: var(--fg);
+      transition: color 240ms ease;
+    }
+
+    /* topbar */
+    .show-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+    }
+    .show-top-left { display: flex; align-items: center; gap: 12px; }
+    .show-cursor {
+      display: inline-block;
+      width: 8px; height: 14px;
+      background: var(--mascot-accent, #7B96A9);
+      animation: cli-blink 1.1s steps(2, end) infinite;
+    }
+    .show-brand-name { text-transform: uppercase; letter-spacing: 0.08em; color: var(--fg); }
+    .show-top-meta { color: var(--dim); display: flex; gap: 12px; }
+    .show-top-meta a {
+      color: var(--dim);
+      text-decoration: none;
+      border-bottom: 1px dashed var(--line);
+      padding-bottom: 1px;
+      transition: color 150ms;
+    }
+    .show-top-meta a:hover { color: var(--fg); }
+
+    /* hero — split two-up */
+    .show-hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+      padding: 24px 0;
+    }
+
+    .show-hero-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .show-hero-cell .mascot-wrap { filter: drop-shadow(0 24px 36px var(--shadow)); }
+
+    .show-hero-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .show-hero-label::before {
+      content: "";
+      width: 6px; height: 6px;
+      background: var(--mascot-accent, #7B96A9);
+      border-radius: 50%;
+    }
+
+    /* Override the CLI mascot's color/glow to use the mascot accent variable */
+    .show-stage-wrap .cli-mascot {
+      color: var(--mascot-accent, #7B96A9);
+      text-shadow: 0 0 24px var(--mascot-accent-glow, rgba(123, 150, 169, 0.35));
+      font-size: 22px;
+      filter: drop-shadow(0 16px 28px var(--shadow));
+      transition: color 240ms ease, text-shadow 240ms ease;
+    }
+
+    /* heading */
+    .show-heading {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .show-h1 {
+      margin: 0;
+      font-family: var(--font-mono);
+      font-weight: 500;
+      font-size: 28px;
+      letter-spacing: -0.01em;
+      color: var(--fg);
+    }
+    .show-h1 .accent { color: var(--mascot-accent, #7B96A9); transition: color 240ms ease; }
+    .show-sub {
+      margin: 0;
+      color: var(--dim);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    /* expression vocab — shared underneath */
+    .show-vocab {
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 28px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .show-vocab-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+    .show-vocab-head .right { color: var(--dim); font-size: 10.5px; text-transform: none; letter-spacing: 0.02em; }
+
+    .show-vocab-grid {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 14px;
+    }
+    .show-vocab-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 6px;
+      border: 1px solid var(--line);
+      cursor: pointer;
+      background: var(--card-bg);
+      color: inherit;
+      font: inherit;
+      transition: background 150ms, border-color 150ms, transform 150ms;
+    }
+    .show-vocab-cell:hover {
+      border-color: var(--mascot-accent, #7B96A9);
+      background: var(--hover-bg);
+      transform: translateY(-2px);
+    }
+    .show-vocab-cell.on {
+      border-color: var(--mascot-accent, #7B96A9);
+      background: var(--on-bg);
+    }
+    .show-vocab-cell .mascot-wrap { filter: none; }
+    .show-vocab-eyes {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--mascot-accent, #7B96A9);
+      letter-spacing: 0.02em;
+    }
+    .show-vocab-name {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.04em;
+      color: var(--dim);
+      text-transform: uppercase;
+    }
+    .show-vocab-cell.on .show-vocab-name { color: var(--fg); }
+
+    /* spec strip */
+    .show-spec {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+    .show-spec-col { display: flex; flex-direction: column; gap: 10px; }
+    .show-spec-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+    .show-spec-body {
+      margin: 0;
+      color: var(--fg);
+      font-size: 13px;
+      line-height: 1.6;
+      max-width: 36ch;
+    }
+    .show-spec-body.mono { font-family: var(--font-mono); font-size: 12px; line-height: 1.9; color: var(--fg); }
+    .show-spec-body.mono .dim { color: var(--dim); }
+
+    /* --- size ramp section --- */
+    .show-ramp {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .show-ramp-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--dim);
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .show-ramp-head .meta {
+      font-size: 10.5px;
+      text-transform: none;
+      letter-spacing: 0.02em;
+    }
+    .show-ramp-track {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 40px;
+      padding: 18px 8px 8px;
+      overflow-x: auto;
+    }
+    .show-ramp-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex: 0 0 auto;
+    }
+    .show-ramp-cell .mascot-wrap { filter: drop-shadow(0 6px 12px var(--shadow)); }
+    .show-ramp-cell-label {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.04em;
+      color: var(--dim);
+    }
+    .show-ramp-cell-label .px { color: var(--fg); }
+
+    /* --- principles section --- */
+    .show-principles {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .show-principles-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--dim);
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+    .show-principles-head .meta {
+      font-size: 10.5px;
+      text-transform: none;
+      letter-spacing: 0.02em;
+    }
+    .show-principles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .show-principle {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      background: var(--card-bg);
+    }
+    .show-principle-num {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: var(--mascot-accent, #7B96A9);
+      letter-spacing: 0.06em;
+    }
+    .show-principle-title {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--fg);
+      margin: 0;
+      letter-spacing: -0.005em;
+    }
+    .show-principle-blurb {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.55;
+      color: var(--dim);
+    }
+    .show-principle-stage {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 12px;
+      background: var(--bg);
+      border: 1px dashed var(--line);
+      min-height: 86px;
+    }
+
+    /* --- mini mockup primitives (used inside principle illustrations) --- */
+    .mk {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--fg);
+      letter-spacing: 0.02em;
+      width: 100%;
+    }
+    .mk-row { display: flex; align-items: center; gap: 8px; }
+    .mk-input {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border: 1px solid var(--line);
+      background: var(--bg);
+      color: var(--fg);
+      width: 100%;
+    }
+    .mk-input .mk-caret { color: var(--mascot-accent, #7B96A9); }
+    .mk-input .mk-placeholder { color: var(--dim); flex: 1; }
+    .mk-spinner {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border: 1.5px solid var(--mascot-accent, #7B96A9);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: mk-spin 0.9s linear infinite;
+    }
+    @keyframes mk-spin {
+      to { transform: rotate(360deg); }
+    }
+    .mk-card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      background: var(--bg);
+      width: 100%;
+    }
+    .mk-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+    .mk-card-body { font-size: 11px; color: var(--fg); line-height: 1.4; }
+    .mk-amount {
+      font-family: var(--font-mono);
+      font-size: 15px;
+      color: var(--fg);
+      font-weight: 500;
+    }
+    .mk-btn {
+      display: inline-block;
+      padding: 4px 10px;
+      border: 1px solid var(--mascot-accent, #7B96A9);
+      background: transparent;
+      color: var(--mascot-accent, #7B96A9);
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+    }
+    .mk-btn-primary {
+      background: var(--mascot-accent, #7B96A9);
+      color: var(--bg);
+    }
+    .mk-btn-row { display: flex; gap: 6px; }
+    .mk-dim { color: var(--dim); }
+    .mk-tag {
+      display: inline-block;
+      padding: 2px 6px;
+      font-size: 10px;
+      border: 1px solid var(--line);
+      color: var(--dim);
+      letter-spacing: 0.04em;
+    }
+    .mk-tag-warn {
+      color: #E2B04C;
+      border-color: rgba(226,176,76,0.4);
+    }
+    .mk-tag-err {
+      color: #E27272;
+      border-color: rgba(226,114,114,0.4);
+    }
+    .mk-doc {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      background: var(--bg);
+      width: 100%;
+      position: relative;
+    }
+    .mk-doc-line {
+      height: 4px;
+      background: var(--dim);
+      opacity: 0.35;
+      border-radius: 1px;
+    }
+    .mk-doc-line.short { width: 60%; }
+    .mk-doc-line.mid   { width: 80%; }
+    .mk-corner-mascot {
+      position: absolute;
+      right: 6px;
+      bottom: 6px;
+    }
+    .mk-mascot-inline {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    /* --- color toggle (footer-anchored) --- */
+    .show-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 20px 22px;
+      border: 1px solid var(--line);
+      background: var(--card-bg);
+    }
+    .show-controls-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+    .show-controls-head .meta { font-size: 10.5px; text-transform: none; letter-spacing: 0.02em; }
+    .show-swatches {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .show-swatch {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px 8px 8px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--fg);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      cursor: pointer;
+      transition: border-color 150ms, background 150ms, transform 120ms;
+    }
+    .show-swatch:hover { transform: translateY(-1px); border-color: var(--fg); }
+    .show-swatch.on { border-color: var(--fg); background: var(--on-bg); }
+    .show-swatch-chip {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px var(--line);
+    }
+    .show-swatch-name { letter-spacing: 0.04em; }
+    .show-swatch-mode {
+      color: var(--dim);
+      font-size: 10.5px;
+      letter-spacing: 0.02em;
+    }
+
+    /* footer */
+    .show-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      color: var(--dim);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+    }
+
+    @media (max-width: 880px) {
+      .show-hero { grid-template-columns: 1fr; gap: 40px; }
+      .show-vocab-grid { grid-template-columns: repeat(3, 1fr); }
+      .show-spec { grid-template-columns: 1fr; gap: 20px; }
+      .show-principles-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <template id="__bundler_thumbnail">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100" height="100" fill="#0B0E12"/>
+      <circle cx="50" cy="50" r="26" fill="url(#g)"/>
+      <path d="M44.5 47.5 C45.4 47.5 46.5 47.4 47.5 46.5 C49.7 44.5 49.7 41.0 47.9 39.2 C47.2 38.5 46.0 38.3 44.9 39.3 C44.4 39.7 44.4 40.2 44.5 40.7 C44.5 41.3 44.8 41.8 45.1 42.5 C45.4 43.3 45.8 44.2 45.9 45.1 C46.0 46.2 45.8 47.2 44.5 47.9 Z" fill="#fff"/>
+      <path d="M58.5 47.5 C59.4 47.5 60.5 47.4 61.5 46.5 C63.7 44.5 63.7 41.0 61.9 39.2 C61.2 38.5 60.0 38.3 58.9 39.3 C58.4 39.7 58.4 40.2 58.5 40.7 C58.5 41.3 58.8 41.8 59.1 42.5 C59.4 43.3 59.8 44.2 59.9 45.1 C60.0 46.2 59.8 47.2 58.5 47.9 Z" fill="#fff"/>
+      <defs>
+        <linearGradient id="g" x1="50" y1="76" x2="50" y2="24" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#153A5A"/>
+          <stop offset="1" stop-color="#14558E"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  </template>
+
+  <script type="text/babel" src="Mascot.jsx"></script>
+  <script type="text/babel" src="cli-mascot.jsx"></script>
+
+  <script type="text/babel">
+
+const { useState, useEffect } = React;
+
+// Block-art template — option 04 from the CLI gallery, eyes upper-right.
+const PIXEL_TEMPLATE =
+`  ░▒▓█████▓▒░ 
+ ░▓        ▓░ 
+ ▓      {e} ▓ 
+ ▓          ▓ 
+ ▓          ▓ 
+ ░▓        ▓░ 
+  ░▒▓█████▓▒░ `;
+
+// Mascot color palettes. Each entry pairs a body gradient [top, bottom] with
+// an accent (used for the CLI mascot color, glow, header cursor, and accent text).
+// `forceMode` auto-flips theme on selection so the mascot stays legible:
+// pure white needs a dark canvas; pure black needs a light canvas.
+const COLORS = {
+  navy:   { label: "navy",   body: ["#14558E", "#153A5A"], eye: "#fff",    accent: "#7B96A9", glow: "rgba(123,150,169,0.45)" },
+  purple: { label: "purple", body: ["#6C4BD9", "#341E73"], eye: "#fff",    accent: "#A38AFF", glow: "rgba(163,138,255,0.45)" },
+  green:  { label: "green",  body: ["#2F8A5F", "#15402C"], eye: "#fff",    accent: "#5BD09A", glow: "rgba(91,208,154,0.45)" },
+  white:  { label: "white",  body: ["#FFFFFF", "#D9DEE5"], eye: "#15171C", accent: "#FFFFFF", glow: "rgba(255,255,255,0.45)", forceMode: "dark" },
+  black:  { label: "black",  body: ["#1A1D24", "#000000"], eye: "#FFFFFF", accent: "#15171C", glow: "rgba(0,0,0,0.35)",      forceMode: "light" },
+};
+const COLOR_ORDER = ["navy", "purple", "green", "white", "black"];
+
+function Showcase() {
+  const [locked, setLocked] = useState(null);
+  const [colorKey, setColorKey] = useState("navy");
+  const [mode, setMode] = useState("dark"); // 'dark' | 'light'
+
+  const color = COLORS[colorKey];
+
+  // When the user picks a swatch that demands a specific mode (white/black),
+  // auto-flip; otherwise leave their current mode alone.
+  const pickColor = (key) => {
+    setColorKey(key);
+    const force = COLORS[key].forceMode;
+    if (force) setMode(force);
+  };
+
+  // Keep the body class in sync with the React mode state, so non-react
+  // styles (body background transition) follow too.
+  useEffect(() => {
+    document.body.classList.toggle("theme-light", mode === "light");
+    document.body.classList.toggle("theme-dark", mode === "dark");
+  }, [mode]);
+
+  const stageClass = `show-stage-wrap theme-${mode}`;
+  // CSS custom props that drive the accent across topbar cursor, CLI mascot,
+  // hero label dot, vocab eyes, accent text in heading, etc.
+  const stageStyle = {
+    "--mascot-accent": color.accent,
+    "--mascot-accent-glow": color.glow,
+  };
+
+  const EXPRS = window.EXPRESSIONS;
+
+  return (
+    <div className={stageClass} style={stageStyle}>
+      <header className="show-top">
+        <div className="show-top-left">
+          <span className="show-cursor" />
+          <span className="show-brand-name">OPENSEARCH · MASCOT</span>
+        </div>
+        <div className="show-top-meta">
+          <a href="demo.html">demo</a>
+          <span>·</span>
+          <a href="README.md">readme</a>
+        </div>
+      </header>
+
+      <section className="show-heading">
+        <h1 className="show-h1">
+          one character, <span className="accent">two surfaces.</span>
+        </h1>
+        <p className="show-sub">
+          The comma-eye mascot, rendered as a vector for product surfaces and as
+          block-art for the terminal. Both share the same expression vocabulary
+          and idle rhythm.
+        </p>
+      </section>
+
+      <section className="show-hero">
+        <div className="show-hero-cell">
+          <div className="show-hero-label">product · svg</div>
+          <window.Mascot
+            size={300}
+            expression={locked || "comma"}
+            color={color.body}
+            eyeColor={color.eye}
+            follow={true}
+            idle={locked === null}
+            bob={true} />
+        </div>
+        <div className="show-hero-cell">
+          <div className="show-hero-label">terminal · ansi</div>
+          <window.CliMascot
+            template={PIXEL_TEMPLATE}
+            idle={locked === null}
+            seed={1}
+            expression={locked || undefined} />
+        </div>
+      </section>
+
+      <section className="show-vocab">
+        <div className="show-vocab-head">
+          <span>expression vocabulary</span>
+          <span className="right">
+            {locked
+              ? `locked · ${EXPRS.find((e) => e.id === locked)?.label}`
+              : "auto · idle cycling"}
+          </span>
+        </div>
+        <div className="show-vocab-grid">
+          <button
+            className={`show-vocab-cell ${locked === null ? "on" : ""}`}
+            onClick={() => setLocked(null)}>
+            <window.Mascot
+              size={48}
+              expression="comma"
+              color={color.body}
+              eyeColor={color.eye}
+              follow={false}
+              idle={true}
+              bob={false} />
+            <span className="show-vocab-name">auto</span>
+          </button>
+          {EXPRS.filter((e) => e.id !== "comma").map((e) => (
+            <button
+              key={e.id}
+              className={`show-vocab-cell ${locked === e.id ? "on" : ""}`}
+              onClick={() => setLocked(e.id)}>
+              <window.Mascot
+                size={48}
+                expression={e.id}
+                color={color.body}
+                eyeColor={color.eye}
+                follow={false}
+                idle={false}
+                bob={false} />
+              <span className="show-vocab-eyes">{e.emoji}</span>
+              <span className="show-vocab-name">{e.label}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="show-spec">
+        <div className="show-spec-col">
+          <span className="show-spec-label">concept</span>
+          <p className="show-spec-body">
+            The eye shape is the OpenSearch comma — borrowed directly from
+            the wordmark's S silhouette. The body is the logo's circle.
+            Personality lives entirely in the eye motion.
+          </p>
+        </div>
+        <div className="show-spec-col">
+          <span className="show-spec-label">vocabulary</span>
+          <p className="show-spec-body mono">
+            <span className="dim">, ,&nbsp;&nbsp;</span>default<br />
+            <span className="dim">_ _&nbsp;&nbsp;</span>blink<br />
+            <span className="dim">^ ^&nbsp;&nbsp;</span>happy<br />
+            <span className="dim">. .&nbsp;&nbsp;</span>alert<br />
+            <span className="dim">&gt; &lt;&nbsp;&nbsp;</span>squint<br />
+            <span className="dim">O O&nbsp;&nbsp;</span>wow<br />
+            <span className="dim">, _&nbsp;&nbsp;</span>wink<br />
+            <span className="dim">&lt;3&lt;3&nbsp;</span>love<br />
+            <span className="dim">x x&nbsp;&nbsp;</span>sleep
+          </p>
+        </div>
+        <div className="show-spec-col">
+          <span className="show-spec-label">behavior</span>
+          <p className="show-spec-body">
+            Idle: weighted rotation of micro-expressions, returning to <code>, ,</code>
+            between pulses. Blinks dominate (~40%), emotes hold longer.<br /><br />
+            Hover (svg only): eyes track cursor with a small offset.<br />
+            Click any state above to lock both surfaces in sync.
+          </p>
+        </div>
+      </section>
+
+      {/* Size ramp — demonstrates eye-scaling at small sizes. UI mascot only. */}
+      <section className="show-ramp">
+        <div className="show-ramp-head">
+          <span>size ramp · ui mascot</span>
+          <span className="meta">eyes scale up as the body shrinks, so the expression still reads</span>
+        </div>
+        <div className="show-ramp-track">
+          {[240, 160, 112, 80, 56, 40, 28, 20].map((s) => (
+            <div key={s} className="show-ramp-cell">
+              <window.Mascot
+                size={s}
+                expression={locked || "heart"}
+                color={color.body}
+                eyeColor={color.eye}
+                follow={false}
+                idle={locked === null}
+                bob={false}
+              />
+              <span className="show-ramp-cell-label">
+                <span className="px">{s}</span>px
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Principles — distilled philosophy with tiny in-context illustrations. */}
+      <section className="show-principles">
+        <div className="show-principles-head">
+          <span>principles in practice</span>
+          <span className="meta">where the face lives, and what it should be doing there</span>
+        </div>
+        <div className="show-principles-grid">
+          {/* 01 — STATUS OVER PERSONALITY */}
+          <article className="show-principle">
+            <span className="show-principle-num">01</span>
+            <h3 className="show-principle-title">status, not personality</h3>
+            <p className="show-principle-blurb">
+              Posture carries state — idle, thinking, blocked, done. Read at a glance.
+            </p>
+            <div className="show-principle-stage">
+              <div className="mk">
+                <div className="mk-input">
+                  <span className="mk-spinner" />
+                  <span className="mk-placeholder">searching across 14 sources…</span>
+                  <window.Mascot size={22} expression="wow" color={color.body} eyeColor={color.eye} follow={false} idle={false} bob={false} />
+                </div>
+              </div>
+            </div>
+          </article>
+
+          {/* 02 — AFFECT SCALES WITH STAKES */}
+          <article className="show-principle">
+            <span className="show-principle-num">02</span>
+            <h3 className="show-principle-title">affect scales with stakes</h3>
+            <p className="show-principle-blurb">
+              Quieter and more attentive as consequences grow. No bouncing while sending an invoice.
+            </p>
+            <div className="show-principle-stage">
+              <div className="mk-card">
+                <div className="mk-card-head">
+                  <span>confirm · client invoice</span>
+                  <span className="mk-tag mk-tag-warn">high stakes</span>
+                </div>
+                <div className="mk-row" style={{ justifyContent: "space-between" }}>
+                  <span className="mk-amount">$5,400.00</span>
+                  <window.Mascot size={26} expression="dot" color={color.body} eyeColor={color.eye} follow={false} idle={false} bob={false} />
+                </div>
+                <div className="mk-btn-row">
+                  <span className="mk-btn">cancel</span>
+                  <span className="mk-btn mk-btn-primary">send</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          {/* 03 — RESTRAINT */}
+          <article className="show-principle">
+            <span className="show-principle-num">03</span>
+            <h3 className="show-principle-title">restraint is the skill</h3>
+            <p className="show-principle-blurb">
+              Recede during focus. Surface only at real decisions or completions.
+            </p>
+            <div className="show-principle-stage">
+              <div className="mk-doc">
+                <div className="mk-doc-line mid" />
+                <div className="mk-doc-line" />
+                <div className="mk-doc-line short" />
+                <div className="mk-doc-line mid" />
+                <div className="mk-corner-mascot">
+                  <window.Mascot size={24} expression="comma" color={color.body} eyeColor={color.eye} follow={false} idle={true} bob={false} />
+                </div>
+              </div>
+            </div>
+          </article>
+
+          {/* 04 — HONESTY ABOUT UNCERTAINTY */}
+          <article className="show-principle">
+            <span className="show-principle-num">04</span>
+            <h3 className="show-principle-title">honest about uncertainty</h3>
+            <p className="show-principle-blurb">
+              When the agent isn't sure, the face shouldn't radiate confidence.
+            </p>
+            <div className="show-principle-stage">
+              <div className="mk-card">
+                <div className="mk-card-head">
+                  <span>result · top match</span>
+                  <span className="mk-tag">confidence 62%</span>
+                </div>
+                <div className="mk-row">
+                  <window.Mascot size={28} expression="squint" color={color.body} eyeColor={color.eye} follow={false} idle={false} bob={false} />
+                  <span className="mk-card-body">
+                    closest I found. <span className="mk-dim">worth a look before you ship.</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          {/* 05 — DON'T SIMULATE PERSONHOOD */}
+          <article className="show-principle">
+            <span className="show-principle-num">05</span>
+            <h3 className="show-principle-title">no fake personhood</h3>
+            <p className="show-principle-blurb">
+              States and reactions, yes. Wants, feelings, relationships — no.
+            </p>
+            <div className="show-principle-stage">
+              <div className="mk-card">
+                <div className="mk-row" style={{ gap: 10 }}>
+                  <window.Mascot size={26} expression="happy" color={color.body} eyeColor={color.eye} follow={false} idle={false} bob={false} />
+                  <span className="mk-card-body">
+                    task complete. <span className="mk-dim">3 files updated · 4s</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          {/* 06 — CONFIRMATION & RECOVERY */}
+          <article className="show-principle">
+            <span className="show-principle-num">06</span>
+            <h3 className="show-principle-title">soft surface for recovery</h3>
+            <p className="show-principle-blurb">
+              Errors land softer with a face. Clear next step, no melodrama.
+            </p>
+            <div className="show-principle-stage">
+              <div className="mk-card">
+                <div className="mk-card-head">
+                  <span>couldn't reach mail server</span>
+                  <span className="mk-tag mk-tag-err">error</span>
+                </div>
+                <div className="mk-row" style={{ justifyContent: "space-between" }}>
+                  <window.Mascot size={28} expression="xx" color={color.body} eyeColor={color.eye} follow={false} idle={false} bob={false} />
+                  <span className="mk-btn mk-btn-primary">retry</span>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      {/* Color + theme controls */}
+      <section className="show-controls">
+        <div className="show-controls-head">
+          <span>color · theme</span>
+          <span className="meta">
+            {color.label} · {mode} mode
+          </span>
+        </div>
+        <div className="show-swatches">
+          {COLOR_ORDER.map((k) => {
+            const c = COLORS[k];
+            const chipStyle = {
+              background: `linear-gradient(180deg, ${c.body[0]}, ${c.body[1]})`,
+            };
+            return (
+              <button
+                key={k}
+                className={`show-swatch ${colorKey === k ? "on" : ""}`}
+                onClick={() => pickColor(k)}
+              >
+                <span className="show-swatch-chip" style={chipStyle} />
+                <span className="show-swatch-name">{c.label}</span>
+                {c.forceMode && (
+                  <span className="show-swatch-mode">→ {c.forceMode}</span>
+                )}
+              </button>
+            );
+          })}
+          {/* Light/dark toggle — visualized as a half-disc that flips. */}
+          <button
+            className={`show-swatch ${mode === "light" ? "on" : ""}`}
+            onClick={() => setMode(mode === "dark" ? "light" : "dark")}
+            title="Toggle light/dark mode"
+            style={{ marginLeft: "auto" }}
+          >
+            <span
+              className="show-swatch-chip"
+              style={{
+                background: mode === "dark"
+                  ? "linear-gradient(90deg, #0B0E12 50%, #F4F5F7 50%)"
+                  : "linear-gradient(90deg, #F4F5F7 50%, #0B0E12 50%)",
+              }}
+            />
+            <span className="show-swatch-name">{mode === "dark" ? "dark" : "light"}</span>
+            <span className="show-swatch-mode">click to flip</span>
+          </button>
+        </div>
+      </section>
+
+      <footer className="show-foot">
+        <span># opensearch.mascot @jasonlh</span>
+        <span>{new Date().getFullYear()}</span>
+      </footer>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<Showcase />);
+</script>
+</body>
+</html>

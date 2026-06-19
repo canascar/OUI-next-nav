@@ -36,8 +36,7 @@ import {
   OuiText,
   OuiTitle,
 } from '../../../../src/components';
-import { LogsPageBody } from './logs_page';
-import { LogsPage } from './logs_page';
+import { LogsPageBody, LogsPage } from './logs_page';
 
 // Two-column key-value row
 const KVRow = ({ label, children }) => (
@@ -383,20 +382,38 @@ export const EmptyDiscoverPageMock = ({ onQueryExecute }) => (
 // Discover page with correlated logs query pre-filled and results showing
 export const CorrelatedLogsDiscoverMock = ({ onQueryExecute }) => (
   <div className="mockCanvasPage mockCanvasPage--fullBody">
-    <LogsPage selectedItem="connection-timeout-errors" hideAskAi onQueryExecute={onQueryExecute} />
+    <LogsPage
+      selectedItem="connection-timeout-errors"
+      hideAskAi
+      onQueryExecute={onQueryExecute}
+    />
   </div>
 );
 
 // Empty placeholder page for pages not yet implemented
 export const EmptyPlaceholderPage = ({ title }) => (
-  <div className="mockCanvasPage" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: '#676e75' }}>
+  <div
+    className="mockCanvasPage"
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      height: '100%',
+      color: '#676e75',
+    }}>
     <p>{title || 'This page is empty'}</p>
   </div>
 );
 
-export const AppMapPageMock = () => <EmptyPlaceholderPage title="Application Map" />;
-export const AppTracesPageMock = () => <EmptyPlaceholderPage title="Application Traces" />;
-export const AppServicesPageMock = () => <EmptyPlaceholderPage title="Application Services" />;
+export const AppMapPageMock = () => (
+  <EmptyPlaceholderPage title="Application Map" />
+);
+export const AppTracesPageMock = () => (
+  <EmptyPlaceholderPage title="Application Traces" />
+);
+export const AppServicesPageMock = () => (
+  <EmptyPlaceholderPage title="Application Services" />
+);
 
 // Trace analysis page mock — payments-db trace waterfall
 export const TraceAnalysisPageMock = () => (
@@ -838,17 +855,50 @@ export const DashboardPageMock = () => (
 
 // Dashboard list page mock
 const DASHBOARD_LIST_ITEMS = [
-  { id: 'dash-1', title: 'System overview', updated: '5 min ago', pageKey: 'dashboards' },
-  { id: 'dash-2', title: 'Web traffic analytics', updated: '15 min ago', pageKey: 'dashboards' },
-  { id: 'dash-3', title: 'API performance', updated: '30 min ago', pageKey: 'dashboards' },
-  { id: 'dash-4', title: 'Payment service — connection pool', updated: 'Just now', pageKey: 'dashboards' },
-  { id: 'dash-5', title: 'Infrastructure health', updated: '2 hours ago', pageKey: 'dashboards' },
-  { id: 'dash-6', title: 'Network throughput', updated: '1 day ago', pageKey: 'dashboards' },
+  {
+    id: 'dash-1',
+    title: 'System overview',
+    updated: '5 min ago',
+    pageKey: 'dashboards',
+  },
+  {
+    id: 'dash-2',
+    title: 'Web traffic analytics',
+    updated: '15 min ago',
+    pageKey: 'dashboards',
+  },
+  {
+    id: 'dash-3',
+    title: 'API performance',
+    updated: '30 min ago',
+    pageKey: 'dashboards',
+  },
+  {
+    id: 'dash-4',
+    title: 'Payment service — connection pool',
+    updated: 'Just now',
+    pageKey: 'dashboards',
+  },
+  {
+    id: 'dash-5',
+    title: 'Infrastructure health',
+    updated: '2 hours ago',
+    pageKey: 'dashboards',
+  },
+  {
+    id: 'dash-6',
+    title: 'Network throughput',
+    updated: '1 day ago',
+    pageKey: 'dashboards',
+  },
 ];
 
 export const DashboardListPageMock = ({ onSelectPage }) => (
-  <div className="mockCanvasPage mockCanvasPage--fullBody" style={{ padding: 24 }}>
-    <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
+  <div
+    className="mockCanvasPage mockCanvasPage--fullBody"
+    style={{ padding: 24 }}>
+    <div
+      style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
       <OuiButton iconType="plusInCircle" size="s">
         Create dashboard
       </OuiButton>
@@ -860,7 +910,8 @@ export const DashboardListPageMock = ({ onSelectPage }) => (
           field: 'title',
           name: 'Name',
           render: (title, item) => (
-            <OuiLink onClick={() => onSelectPage && onSelectPage(item.pageKey, title)}>
+            <OuiLink
+              onClick={() => onSelectPage && onSelectPage(item.pageKey, title)}>
               {title}
             </OuiLink>
           ),
@@ -874,17 +925,56 @@ export const DashboardListPageMock = ({ onSelectPage }) => (
 
 // Alert list page mock
 const ALERT_LIST_ITEMS = [
-  { id: 'alert-1', title: 'CPU threshold exceeded', severity: 'Critical', triggered: '10 min ago', pageKey: 'alerts' },
-  { id: 'alert-2', title: 'Disk usage warning', severity: 'Warning', triggered: '1 hour ago', pageKey: 'alerts' },
-  { id: 'alert-3', title: 'Error rate spike', severity: 'Critical', triggered: '3 hours ago', pageKey: 'alerts' },
-  { id: 'alert-4', title: 'Payment service P99 latency breach', severity: 'Critical', triggered: '15 min ago', pageKey: 'alerts' },
-  { id: 'alert-5', title: 'Memory pressure warning', severity: 'Warning', triggered: '6 hours ago', pageKey: 'alerts' },
-  { id: 'alert-6', title: 'Connection pool exhaustion', severity: 'Critical', triggered: '20 min ago', pageKey: 'alerts' },
+  {
+    id: 'alert-1',
+    title: 'CPU threshold exceeded',
+    severity: 'Critical',
+    triggered: '10 min ago',
+    pageKey: 'alerts',
+  },
+  {
+    id: 'alert-2',
+    title: 'Disk usage warning',
+    severity: 'Warning',
+    triggered: '1 hour ago',
+    pageKey: 'alerts',
+  },
+  {
+    id: 'alert-3',
+    title: 'Error rate spike',
+    severity: 'Critical',
+    triggered: '3 hours ago',
+    pageKey: 'alerts',
+  },
+  {
+    id: 'alert-4',
+    title: 'Payment service P99 latency breach',
+    severity: 'Critical',
+    triggered: '15 min ago',
+    pageKey: 'alerts',
+  },
+  {
+    id: 'alert-5',
+    title: 'Memory pressure warning',
+    severity: 'Warning',
+    triggered: '6 hours ago',
+    pageKey: 'alerts',
+  },
+  {
+    id: 'alert-6',
+    title: 'Connection pool exhaustion',
+    severity: 'Critical',
+    triggered: '20 min ago',
+    pageKey: 'alerts',
+  },
 ];
 
 export const AlertListPageMock = ({ onSelectPage }) => (
-  <div className="mockCanvasPage mockCanvasPage--fullBody" style={{ padding: 24 }}>
-    <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
+  <div
+    className="mockCanvasPage mockCanvasPage--fullBody"
+    style={{ padding: 24 }}>
+    <div
+      style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
       <OuiButton iconType="plusInCircle" size="s">
         Create monitor
       </OuiButton>
@@ -896,7 +986,8 @@ export const AlertListPageMock = ({ onSelectPage }) => (
           field: 'title',
           name: 'Alert',
           render: (title, item) => (
-            <OuiLink onClick={() => onSelectPage && onSelectPage(item.pageKey, title)}>
+            <OuiLink
+              onClick={() => onSelectPage && onSelectPage(item.pageKey, title)}>
               {title}
             </OuiLink>
           ),

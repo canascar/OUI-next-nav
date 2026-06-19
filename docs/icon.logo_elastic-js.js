@@ -1,0 +1,74 @@
+"use strict";
+(self["webpackChunk"] = self["webpackChunk"] || []).push([["icon.logo_elastic-js"],{
+
+/***/ "../../src/components/icon/assets/logo_elastic.js":
+/*!********************************************************!*\
+  !*** ../../src/components/icon/assets/logo_elastic.js ***!
+  \********************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   icon: function() { return /* binding */ icon; }
+/* harmony export */ });
+/* harmony import */ var core_js_modules_es_array_index_of__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! core-js/modules/es.array.index-of */ "../../node_modules/core-js/modules/es.array.index-of.js");
+/* harmony import */ var core_js_modules_es_array_index_of__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(core_js_modules_es_array_index_of__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "../../node_modules/react/index.js");
+
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) { ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } } return n; }, _extends.apply(null, arguments); }
+function _objectWithoutProperties(e, t) { if (null == e) return {}; var o, r, i = _objectWithoutPropertiesLoose(e, t); if (Object.getOwnPropertySymbols) { var n = Object.getOwnPropertySymbols(e); for (r = 0; r < n.length; r++) { o = n[r], -1 === t.indexOf(o) && {}.propertyIsEnumerable.call(e, o) && (i[o] = e[o]); } } return i; }
+function _objectWithoutPropertiesLoose(r, e) { if (null == r) return {}; var t = {}; for (var n in r) { if ({}.hasOwnProperty.call(r, n)) { if (-1 !== e.indexOf(n)) continue; t[n] = r[n]; } } return t; }
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+
+var OuiIconLogoElastic = function OuiIconLogoElastic(_ref) {
+  var title = _ref.title,
+    titleId = _ref.titleId,
+    props = _objectWithoutProperties(_ref, ["title", "titleId"]);
+  return /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement("svg", _extends({
+    xmlns: "http://www.w3.org/2000/svg",
+    width: 32,
+    height: 32,
+    fill: "none",
+    viewBox: "0 0 32 32",
+    "aria-labelledby": titleId
+  }, props), title ? /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement("title", {
+    id: titleId
+  }, title) : null, /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement("path", {
+    fill: "#FFF",
+    d: "M32 16.77a6.334 6.334 0 0 0-1.14-3.641 6.298 6.298 0 0 0-3.02-2.32 9.098 9.098 0 0 0-.873-5.965A9.05 9.05 0 0 0 22.56.746a9.007 9.007 0 0 0-5.994-.419 9.037 9.037 0 0 0-4.93 3.446 4.789 4.789 0 0 0-5.78-.07A4.833 4.833 0 0 0 4.198 9.26a6.384 6.384 0 0 0-3.035 2.33A6.42 6.42 0 0 0 0 15.242 6.341 6.341 0 0 0 1.145 18.9a6.305 6.305 0 0 0 3.039 2.321 9.334 9.334 0 0 0-.16 1.725 9.067 9.067 0 0 0 1.727 5.333 9.014 9.014 0 0 0 4.526 3.287 8.982 8.982 0 0 0 5.587-.023 9.016 9.016 0 0 0 4.5-3.322 4.789 4.789 0 0 0 5.77.074 4.833 4.833 0 0 0 1.672-5.542 6.383 6.383 0 0 0 3.032-2.331A6.419 6.419 0 0 0 32 16.77z"
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement("path", {
+    fill: "#FEC514",
+    d: "m12.58 13.787 7.002 3.211 7.066-6.213a7.854 7.854 0 0 0 .152-1.557 7.944 7.944 0 0 0-1.54-4.704 7.897 7.897 0 0 0-4.02-2.869 7.87 7.87 0 0 0-4.932.086 7.9 7.9 0 0 0-3.92 3.007l-1.174 6.118 1.367 2.92z"
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement("path", {
+    fill: "#00BFB3",
+    d: "M5.333 21.228A7.964 7.964 0 0 0 6.72 27.53a7.918 7.918 0 0 0 4.04 2.874 7.89 7.89 0 0 0 4.95-.097 7.921 7.921 0 0 0 3.926-3.03l1.166-6.102-1.555-2.985-7.03-3.211-6.885 6.248z"
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement("path", {
+    fill: "#F04E98",
+    d: "m5.288 9.067 4.8 1.137L11.14 4.73a3.785 3.785 0 0 0-4.538-.023A3.82 3.82 0 0 0 5.29 9.065"
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement("path", {
+    fill: "#1BA9F5",
+    d: "M4.872 10.214a5.294 5.294 0 0 0-2.595 1.882 5.324 5.324 0 0 0-.142 6.124 5.287 5.287 0 0 0 2.505 2l6.733-6.101-1.235-2.65-5.266-1.255z"
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement("path", {
+    fill: "#93C90E",
+    d: "M20.873 27.277a3.737 3.737 0 0 0 2.285.785 3.783 3.783 0 0 0 3.101-1.63 3.813 3.813 0 0 0 .451-3.484l-4.8-1.125-1.037 5.454z"
+  }), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.createElement("path", {
+    fill: "#07C",
+    d: "m21.848 20.563 5.28 1.238a5.34 5.34 0 0 0 2.622-1.938 5.37 5.37 0 0 0 1.013-3.106 5.312 5.312 0 0 0-.936-3.01 5.283 5.283 0 0 0-2.475-1.944l-6.904 6.07 1.4 2.69z"
+  }));
+};
+var icon = OuiIconLogoElastic;
+
+/***/ })
+
+}]);
+//# sourceMappingURL=icon.logo_elastic-js.js.map

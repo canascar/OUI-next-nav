@@ -17,10 +17,10 @@ export const OllyChatPillExample = {
       title: 'Olly chat pill',
       text: (
         <p>
-          <strong>OuiOllyChatPill</strong> is a floating chat input pill with
-          an avatar, borderless text input, and optional proactive message.
-          It expands on focus, shows a primary border when active, and lifts
-          on hover. Use it as a persistent entry point for AI chat in any page.
+          <strong>OuiOllyChatPill</strong> is a floating chat input pill with an
+          avatar, borderless text input, and optional proactive message. It
+          expands on focus, shows a primary border when active, and lifts on
+          hover. Use it as a persistent entry point for AI chat in any page.
         </p>
       ),
       source: [

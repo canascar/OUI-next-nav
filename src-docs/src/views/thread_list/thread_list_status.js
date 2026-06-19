@@ -48,6 +48,4 @@ const items = [
   },
 ];
 
-export default () => (
-  <OuiThreadList items={items} flush />
-);
+export default () => <OuiThreadList items={items} flush />;

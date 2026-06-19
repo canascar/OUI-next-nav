@@ -1,0 +1,97 @@
+/* v10 · Blueprint (D3) — CSS variable tokens
+   Apply [data-theme="dark"] or [data-theme="light"] on <html> or any wrapper.
+   These mirror tokens.json. Hand-edit BOTH if you change one. */
+
+:root {
+  --v10-font-sans: 'Outfit', system-ui, sans-serif;
+  --v10-font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --v10-radius: 0;
+  --v10-grid-fine-step: 16px;
+  --v10-grid-major-step: 80px;
+  --v10-motion-theme: 200ms ease;
+  --v10-motion-default: 150ms ease-out;
+}
+
+[data-theme="dark"] {
+  --v10-bg: #0d3057;
+  --v10-bg-deep: #0a2545;
+  --v10-panel: rgba(10, 37, 69, 0.55);
+  --v10-panel-solid: #103e6e;
+  --v10-ink: #cfe4f7;
+  --v10-ink-bright: #ffffff;
+  --v10-ink-dim: rgba(207, 228, 247, 0.62);
+  --v10-ink-fade: rgba(207, 228, 247, 0.34);
+  --v10-ink-ghost: rgba(207, 228, 247, 0.16);
+  --v10-cyan: #5dd9ff;
+  --v10-cyan-dim: rgba(93, 217, 255, 0.45);
+  --v10-cyan-soft: rgba(93, 217, 255, 0.10);
+  --v10-amber: #ffb86b;
+  --v10-amber-dim: rgba(255, 184, 107, 0.45);
+  --v10-amber-soft: rgba(255, 184, 107, 0.12);
+  --v10-green: #7be0a8;
+  --v10-green-dim: rgba(123, 224, 168, 0.45);
+  --v10-green-soft: rgba(123, 224, 168, 0.10);
+  --v10-red: #ff7a7a;
+  --v10-red-dim: rgba(255, 122, 122, 0.45);
+  --v10-red-soft: rgba(255, 122, 122, 0.10);
+  --v10-grid-fine: rgba(207, 228, 247, 0.05);
+  --v10-grid-major: rgba(207, 228, 247, 0.10);
+  --v10-input-bg: rgba(10, 37, 69, 0.45);
+  --v10-code-bg: rgba(10, 37, 69, 0.70);
+  --v10-scroll-thumb: rgba(207, 228, 247, 0.22);
+  --v10-scroll-thumb-hover: rgba(207, 228, 247, 0.38);
+}
+
+[data-theme="light"] {
+  --v10-bg: #eef2f7;
+  --v10-bg-deep: #dde4ee;
+  --v10-panel: rgba(255, 255, 255, 0.85);
+  --v10-panel-solid: #ffffff;
+  --v10-ink: #0d3057;
+  --v10-ink-bright: #06203f;
+  --v10-ink-dim: rgba(13, 48, 87, 0.62);
+  --v10-ink-fade: rgba(13, 48, 87, 0.32);
+  --v10-ink-ghost: rgba(13, 48, 87, 0.14);
+  --v10-cyan: #1f6cb5;
+  --v10-cyan-dim: rgba(31, 108, 181, 0.40);
+  --v10-cyan-soft: rgba(31, 108, 181, 0.08);
+  --v10-amber: #c47a1f;
+  --v10-amber-dim: rgba(196, 122, 31, 0.45);
+  --v10-amber-soft: rgba(196, 122, 31, 0.10);
+  --v10-green: #2e8b6f;
+  --v10-green-dim: rgba(46, 139, 111, 0.45);
+  --v10-green-soft: rgba(46, 139, 111, 0.08);
+  --v10-red: #c53961;
+  --v10-red-dim: rgba(197, 57, 97, 0.45);
+  --v10-red-soft: rgba(197, 57, 97, 0.08);
+  --v10-grid-fine: rgba(13, 48, 87, 0.05);
+  --v10-grid-major: rgba(13, 48, 87, 0.10);
+  --v10-input-bg: rgba(255, 255, 255, 0.70);
+  --v10-code-bg: rgba(13, 48, 87, 0.05);
+  --v10-scroll-thumb: rgba(13, 48, 87, 0.14);
+  --v10-scroll-thumb-hover: rgba(13, 48, 87, 0.24);
+}
+
+/* Page background — drafting grid */
+.v10-page {
+  background-color: var(--v10-bg);
+  background-image:
+    linear-gradient(to right,  var(--v10-grid-fine)  1px, transparent 1px),
+    linear-gradient(to bottom, var(--v10-grid-fine)  1px, transparent 1px),
+    linear-gradient(to right,  var(--v10-grid-major) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--v10-grid-major) 1px, transparent 1px);
+  background-size:
+    var(--v10-grid-fine-step) var(--v10-grid-fine-step),
+    var(--v10-grid-fine-step) var(--v10-grid-fine-step),
+    var(--v10-grid-major-step) var(--v10-grid-major-step),
+    var(--v10-grid-major-step) var(--v10-grid-major-step);
+  color: var(--v10-ink);
+  font-family: var(--v10-font-sans);
+  transition: background-color var(--v10-motion-theme), color var(--v10-motion-theme);
+}
+
+/* Scrollbars */
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: var(--v10-scroll-thumb); border-radius: 0; }
+*::-webkit-scrollbar-thumb:hover { background: var(--v10-scroll-thumb-hover); }

@@ -30,19 +30,20 @@ export const VisualizationCardExample = {
     <>
       <OuiText>
         <p>
-          <strong>TempVisualizationCard</strong> is a frosted glass card component 
-          designed for displaying mini chart visualizations. It features a backdrop 
-          blur effect, theme-aware styling, and smooth scale animations on interaction.
+          <strong>TempVisualizationCard</strong> is a frosted glass card
+          component designed for displaying mini chart visualizations. It
+          features a backdrop blur effect, theme-aware styling, and smooth scale
+          animations on interaction.
         </p>
       </OuiText>
       <OuiCallOut
         title="Experimental component"
         color="warning"
-        iconType="beaker"
-      >
+        iconType="beaker">
         <p>
-          This component is currently experimental and may change. It is designed 
-          for use in AI/assistant interfaces where visualization previews are needed.
+          This component is currently experimental and may change. It is
+          designed for use in AI/assistant interfaces where visualization
+          previews are needed.
         </p>
       </OuiCallOut>
     </>
@@ -59,15 +60,15 @@ export const VisualizationCardExample = {
       text: (
         <div>
           <p>
-            The <strong>TempVisualizationCard</strong> component displays a mini 
-            chart with a title and description. It uses a frosted glass effect 
-            with <OuiCode>backdrop-filter: blur(20px)</OuiCode> and a semi-transparent 
-            background.
+            The <strong>TempVisualizationCard</strong> component displays a mini
+            chart with a title and description. It uses a frosted glass effect
+            with <OuiCode>backdrop-filter: blur(20px)</OuiCode> and a
+            semi-transparent background.
           </p>
           <p>
-            Pass an <OuiCode>onClick</OuiCode> handler to make the card interactive. 
-            Interactive cards show a scale-up animation on hover and a bouncy 
-            scale-down on click.
+            Pass an <OuiCode>onClick</OuiCode> handler to make the card
+            interactive. Interactive cards show a scale-up animation on hover
+            and a bouncy scale-down on click.
           </p>
         </div>
       ),
@@ -90,10 +91,11 @@ export const VisualizationCardExample = {
       ],
       text: (
         <p>
-          The <OuiCode>type</OuiCode> prop accepts: <OuiCode>line</OuiCode>, 
-          <OuiCode>bar</OuiCode>, <OuiCode>area</OuiCode>, <OuiCode>gauge</OuiCode>, 
-          <OuiCode>pie</OuiCode>, <OuiCode>table</OuiCode>, <OuiCode>heatmap</OuiCode>, 
-          and <OuiCode>histogram</OuiCode>. Each renders a simple SVG placeholder 
+          The <OuiCode>type</OuiCode> prop accepts: <OuiCode>line</OuiCode>,
+          <OuiCode>bar</OuiCode>, <OuiCode>area</OuiCode>,{' '}
+          <OuiCode>gauge</OuiCode>,<OuiCode>pie</OuiCode>,{' '}
+          <OuiCode>table</OuiCode>, <OuiCode>heatmap</OuiCode>, and{' '}
+          <OuiCode>histogram</OuiCode>. Each renders a simple SVG placeholder
           visualization in the specified color.
         </p>
       ),
@@ -110,16 +112,23 @@ export const VisualizationCardExample = {
       text: (
         <div>
           <p>
-            When an <OuiCode>onClick</OuiCode> handler is provided, the card becomes 
-            interactive with the following animations:
+            When an <OuiCode>onClick</OuiCode> handler is provided, the card
+            becomes interactive with the following animations:
           </p>
           <ul>
-            <li><strong>Hover:</strong> Scale up to 1.03 with a smooth 150ms ease transition</li>
-            <li><strong>Active (click):</strong> Scale down to 0.97 with a bouncy spring-back effect</li>
+            <li>
+              <strong>Hover:</strong> Scale up to 1.03 with a smooth 150ms ease
+              transition
+            </li>
+            <li>
+              <strong>Active (click):</strong> Scale down to 0.97 with a bouncy
+              spring-back effect
+            </li>
           </ul>
           <p>
-            The bouncy effect uses a custom cubic-bezier timing function 
-            <OuiCode>(0.34, 1.56, 0.64, 1)</OuiCode> for a satisfying tactile feel.
+            The bouncy effect uses a custom cubic-bezier timing function
+            <OuiCode>(0.34, 1.56, 0.64, 1)</OuiCode> for a satisfying tactile
+            feel.
           </p>
         </div>
       ),

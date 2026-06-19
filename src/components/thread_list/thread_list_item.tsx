@@ -125,8 +125,7 @@ export const OuiThreadListItem: FunctionComponent<OuiThreadListItemProps> = ({
       role={onClick ? 'button' : undefined}
       tabIndex={onClick && !isDisabled ? 0 : undefined}
       aria-disabled={isDisabled}
-      {...rest}
-    >
+      {...rest}>
       {(iconType || statusColor) && (
         <div className="ouiThreadListItem__icon">
           {statusColor ? (
@@ -149,7 +148,9 @@ export const OuiThreadListItem: FunctionComponent<OuiThreadListItemProps> = ({
           {status && <div className={statusTextClasses}>{status}</div>}
           {meta && <div className="ouiThreadListItem__metaPrimary">{meta}</div>}
           {metaSecondary && (
-            <div className="ouiThreadListItem__metaSecondary">{metaSecondary}</div>
+            <div className="ouiThreadListItem__metaSecondary">
+              {metaSecondary}
+            </div>
           )}
         </div>
       )}

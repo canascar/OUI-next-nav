@@ -13,6 +13,7 @@ import React, { useState, useCallback, useRef } from 'react';
 
 import {
   OuiCompressedFieldSearch,
+  OuiFieldSearch,
   OuiIcon,
   OuiText,
   OuiTitle,
@@ -86,14 +87,19 @@ export const SessionList = ({
     });
   }, []);
 
-  const handleItemMouseUp = useCallback((hoveredIndex) => {
-    handleItemHover(hoveredIndex);
-  }, [handleItemHover]);
+  const handleItemMouseUp = useCallback(
+    (hoveredIndex) => {
+      handleItemHover(hoveredIndex);
+    },
+    [handleItemHover]
+  );
 
   const handleListMouseLeave = useCallback(() => {
     if (!listRef.current) return;
     const items = listRef.current.querySelectorAll('.sessionList__card');
-    items.forEach((el) => { el.style.transform = ''; });
+    items.forEach((el) => {
+      el.style.transform = '';
+    });
   }, []);
 
   return (
@@ -108,7 +114,7 @@ export const SessionList = ({
 
         {/* Search */}
         <div className="sessionList__search">
-          <OuiCompressedFieldSearch
+          <OuiFieldSearch
             placeholder="Search sessions..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -118,11 +124,18 @@ export const SessionList = ({
         </div>
 
         {/* Session cards */}
-        <div className="sessionList__cards" ref={listRef} onMouseLeave={handleListMouseLeave}>
+        <div
+          className="sessionList__cards"
+          ref={listRef}
+          onMouseLeave={handleListMouseLeave}>
           {filteredSessions.length === 0 ? (
             <div className="sessionList__empty">
               <OuiText size="s" color="subdued">
-                <p>{searchQuery.trim() ? 'No sessions match your search.' : 'No sessions yet. Create one to get started.'}</p>
+                <p>
+                  {searchQuery.trim()
+                    ? 'No sessions match your search.'
+                    : 'No sessions yet. Create one to get started.'}
+                </p>
               </OuiText>
             </div>
           ) : (
@@ -153,7 +166,9 @@ export const SessionList = ({
                       <div className="sessionList__cardPills">
                         <span className="sessionList__cardPill">
                           <OuiIcon type="generate" size="m" />
-                          <span className="sessionList__cardPillText">{session.summary}</span>
+                          <span className="sessionList__cardPillText">
+                            {session.summary}
+                          </span>
                           {session.tabs.length > 0 && (
                             <span className="sessionList__cardPillMeta">
                               {session.tabs.length}{' '}

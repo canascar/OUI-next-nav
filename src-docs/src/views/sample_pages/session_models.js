@@ -109,12 +109,24 @@ export const SOURCE_PAGE_MOCK = {
   metrics: { component: ConnectionPoolPageMock, title: 'Metrics' },
   discover: { component: LogsPageMock, title: 'Discover' },
   'discover-log': { component: EmptyDiscoverPageMock, title: 'Discover (log)' },
-  'discover-log-correlated': { component: CorrelatedLogsDiscoverMock, title: 'Correlated Logs' },
-  'discover-metric': { component: EmptyDiscoverPageMock, title: 'Discover (Metric)' },
+  'discover-log-correlated': {
+    component: CorrelatedLogsDiscoverMock,
+    title: 'Correlated Logs',
+  },
+  'discover-metric': {
+    component: EmptyDiscoverPageMock,
+    title: 'Discover (Metric)',
+  },
   'app-map': { component: AppMapPageMock, title: 'Application Map' },
   'app-traces': { component: AppTracesPageMock, title: 'Application Traces' },
-  'app-services': { component: AppServicesPageMock, title: 'Application Services' },
-  'app-perf-services': { component: ServicePage, title: 'Application Performance Services' },
+  'app-services': {
+    component: AppServicesPageMock,
+    title: 'Application Services',
+  },
+  'app-perf-services': {
+    component: ServicePage,
+    title: 'Application Performance Services',
+  },
   'service-detail': { component: ServiceDetailPage, title: 'Service Detail' },
   'alert-rule': { component: AlertRulePage, title: 'Alert Rule' },
   traces: { component: TraceAnalysisPageMock, title: 'Trace Analysis' },
@@ -136,7 +148,7 @@ export function createDefaultSession(id) {
     tabs: [],
     activeTabId: null,
     threadPanelState: 'minimized',
-    threadPanelWidth: 40,
+    threadPanelWidth: 50,
     createdAt: Date.now(),
     title: 'New Session',
   };
