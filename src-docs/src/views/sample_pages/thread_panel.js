@@ -203,27 +203,38 @@ export const ThreadPanel = forwardRef(
 
         {/* Share Modal */}
         {isShareModalOpen && (
-          <OuiModal onClose={() => setIsShareModalOpen(false)} style={{ maxWidth: 520 }}>
+          <OuiModal
+            onClose={() => setIsShareModalOpen(false)}
+            style={{ maxWidth: 520 }}>
             <OuiModalHeader>
               <OuiModalHeaderTitle>Share session</OuiModalHeaderTitle>
             </OuiModalHeader>
             <OuiModalBody>
               {/* Session summary */}
               <div className="threadPanel__shareSummary">
-                <OuiText size="s"><strong>{displayTitle}</strong></OuiText>
+                <OuiText size="s">
+                  <strong>{displayTitle}</strong>
+                </OuiText>
                 {sessionSummary && (
                   <>
                     <OuiSpacer size="xs" />
-                    <OuiFlexGroup gutterSize="s" alignItems="flexStart" responsive={false}>
+                    <OuiFlexGroup
+                      gutterSize="s"
+                      alignItems="flexStart"
+                      responsive={false}>
                       <OuiFlexItem grow={false}>
                         <OuiIcon type="generate" size="m" />
                       </OuiFlexItem>
                       <OuiFlexItem>
-                        <OuiText size="xs" color="subdued">{sessionSummary}</OuiText>
+                        <OuiText size="xs" color="subdued">
+                          {sessionSummary}
+                        </OuiText>
                       </OuiFlexItem>
                       {tabCount > 0 && (
                         <OuiFlexItem grow={false}>
-                          <OuiText size="xs" color="subdued">{tabCount} {tabCount === 1 ? 'tab' : 'tabs'}</OuiText>
+                          <OuiText size="xs" color="subdued">
+                            {tabCount} {tabCount === 1 ? 'tab' : 'tabs'}
+                          </OuiText>
                         </OuiFlexItem>
                       )}
                     </OuiFlexGroup>
@@ -233,7 +244,9 @@ export const ThreadPanel = forwardRef(
               <OuiSpacer size="m" />
 
               {/* Add members */}
-              <OuiText size="xs"><strong>Add team members</strong></OuiText>
+              <OuiText size="xs">
+                <strong>Add team members</strong>
+              </OuiText>
               <OuiSpacer size="xs" />
               <OuiFlexGroup gutterSize="s" responsive={false}>
                 <OuiFlexItem>
@@ -241,7 +254,9 @@ export const ThreadPanel = forwardRef(
                     placeholder="Enter name or email"
                     value={shareInput}
                     onChange={(e) => setShareInput(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === 'Enter') handleAddMember(); }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleAddMember();
+                    }}
                     fullWidth
                   />
                 </OuiFlexItem>
@@ -280,8 +295,13 @@ export const ThreadPanel = forwardRef(
               )}
             </OuiModalBody>
             <OuiModalFooter>
-              <OuiButtonEmpty onClick={() => setIsShareModalOpen(false)}>Cancel</OuiButtonEmpty>
-              <OuiButton fill onClick={() => setIsShareModalOpen(false)} isDisabled={sharedWith.length === 0}>
+              <OuiButtonEmpty onClick={() => setIsShareModalOpen(false)}>
+                Cancel
+              </OuiButtonEmpty>
+              <OuiButton
+                fill
+                onClick={() => setIsShareModalOpen(false)}
+                isDisabled={sharedWith.length === 0}>
                 Share
               </OuiButton>
             </OuiModalFooter>

@@ -43,8 +43,7 @@ export const OuiThreadScrollButton: FunctionComponent<OuiThreadScrollButtonProps
       className={classes}
       onClick={onClick}
       aria-label="Scroll to bottom"
-      {...rest}
-    >
+      {...rest}>
       <OuiIcon type="arrowDown" size="m" />
     </button>
   );

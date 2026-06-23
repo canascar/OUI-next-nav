@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"/>
+<title>v10 · Blueprint Theme Overview</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css"/>
+<style>
+  html, body { margin: 0; }
+  body { min-height: 100vh; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 32px 80px; }
+
+  .top-bar { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; }
+  .top-bar h1 { margin: 0; font-size: 32px; font-weight: 600; letter-spacing: -0.8px; color: var(--v10-ink-bright); flex: 1; }
+  .top-bar .meta { font-family: var(--v10-font-mono); font-size: 10.5px; letter-spacing: 1.4px; color: var(--v10-ink-dim); }
+
+  .section { margin-bottom: 44px; }
+  .section-label {
+    font-family: var(--v10-font-mono); font-size: 10.5px; letter-spacing: 1.8px;
+    color: var(--v10-cyan); font-weight: 700; margin-bottom: 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-label .rule { flex: 1; border-top: 1px dashed var(--v10-ink-ghost); }
+
+  .panel { background: var(--v10-panel); border: 1px solid var(--v10-ink-ghost); padding: 20px; position: relative; }
+
+  /* swatches */
+  .swatch-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .swatch { padding: 14px; border: 1px solid var(--v10-ink-ghost); background: var(--v10-panel); position: relative; }
+  .swatch-chip { width: 100%; height: 56px; margin-bottom: 8px; border: 1px solid var(--v10-ink-ghost); }
+  .swatch-name { font-family: var(--v10-font-mono); font-size: 10.5px; letter-spacing: 1.2px; color: var(--v10-ink-bright); font-weight: 700; }
+  .swatch-value { font-family: var(--v10-font-mono); font-size: 10px; color: var(--v10-ink-dim); margin-top: 2px; word-break: break-all; }
+
+  /* corner ticks */
+  .corner-ticks::before, .corner-ticks::after, .corner-ticks > .ct-bl, .corner-ticks > .ct-br {
+    content: ''; position: absolute; width: 6px; height: 6px; pointer-events: none;
+  }
+  .corner-ticks::before { top: -1px; left: -1px; border-top: 1px solid var(--v10-cyan-dim); border-left: 1px solid var(--v10-cyan-dim); }
+  .corner-ticks::after { top: -1px; right: -1px; border-top: 1px solid var(--v10-ink-fade); border-right: 1px solid var(--v10-ink-fade); }
+  .corner-ticks > .ct-bl { bottom: -1px; left: -1px; border-bottom: 1px solid var(--v10-cyan-dim); border-left: 1px solid var(--v10-cyan-dim); }
+  .corner-ticks > .ct-br { bottom: -1px; right: -1px; border-bottom: 1px solid var(--v10-ink-fade); border-right: 1px solid var(--v10-ink-fade); }
+
+  /* type ramp */
+  .type-row { display: flex; align-items: baseline; gap: 24px; padding: 10px 0; border-bottom: 1px dashed var(--v10-ink-ghost); }
+  .type-row:last-child { border-bottom: none; }
+  .type-spec { font-family: var(--v10-font-mono); font-size: 10px; letter-spacing: 1.2px; color: var(--v10-ink-dim); text-transform: uppercase; min-width: 220px; }
+  .type-name { color: var(--v10-cyan); font-weight: 700; }
+  .type-sample { color: var(--v10-ink-bright); }
+
+  /* spacing scale */
+  .spacing-row { display: grid; grid-template-columns: 60px 60px 1fr; align-items: center; gap: 12px; padding: 6px 0; }
+  .spacing-row .name { font-family: var(--v10-font-mono); font-size: 11px; color: var(--v10-cyan); font-weight: 700; }
+  .spacing-row .px { font-family: var(--v10-font-mono); font-size: 11px; color: var(--v10-ink-dim); }
+  .spacing-row .bar { height: 10px; background: var(--v10-cyan-soft); border: 1px solid var(--v10-cyan); }
+
+  /* component preview row */
+  .preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .preview-card { background: var(--v10-panel); border: 1px solid var(--v10-ink-ghost); padding: 16px 18px; position: relative; }
+  .preview-card.amber { border-left: 2px solid var(--v10-amber); }
+  .preview-card.cyan  { border-left: 2px solid var(--v10-cyan); }
+  .preview-card.green { border-left: 2px solid var(--v10-green); }
+  .preview-card .title { font-size: 16px; font-weight: 600; color: var(--v10-ink-bright); letter-spacing: -0.2px; }
+  .preview-card .meta {
+    font-family: var(--v10-font-mono); font-size: 9.5px; letter-spacing: 1.4px;
+    color: var(--v10-ink-dim); text-transform: uppercase; margin-top: 4px;
+  }
+
+  /* status pills */
+  .pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-family: var(--v10-font-mono); font-size: 9px; font-weight: 700;
+    padding: 2px 7px; letter-spacing: 1.4px;
+    border: 1px solid;
+  }
+  .pill.new   { background: var(--v10-amber-soft); border-color: var(--v10-amber-dim); color: var(--v10-amber); }
+  .pill.ack   { background: var(--v10-cyan-soft);  border-color: var(--v10-cyan-dim);  color: var(--v10-cyan); }
+  .pill.ok    { background: var(--v10-green-soft); border-color: var(--v10-green-dim); color: var(--v10-green); }
+  .pill.alert { background: var(--v10-red-soft);   border-color: var(--v10-red-dim);   color: var(--v10-red); }
+
+  /* buttons */
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 12px; border: 1px solid var(--v10-ink-fade);
+    color: var(--v10-ink-dim);
+    font-family: var(--v10-font-mono); font-size: 10.5px; letter-spacing: 1.2px;
+    font-weight: 600; text-transform: uppercase; background: transparent;
+    cursor: pointer;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 12px;
+    border: 1px solid var(--v10-cyan-dim);
+    background: var(--v10-cyan-soft);
+    color: var(--v10-cyan);
+    font-family: var(--v10-font-mono); font-size: 10.5px; letter-spacing: 1.2px;
+    font-weight: 700; text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  /* theme toggle */
+  .toggle { display: inline-flex; align-items: center; border: 1px solid var(--v10-ink-fade); background: var(--v10-panel); font-family: var(--v10-font-mono); font-size: 10px; letter-spacing: 1.4px; user-select: none; }
+  .toggle button {
+    appearance: none; border: none; padding: 6px 12px; cursor: pointer;
+    font-family: inherit; font-size: inherit; letter-spacing: inherit;
+    background: transparent; color: var(--v10-ink-dim); font-weight: 500;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .toggle button + button { border-left: 1px solid var(--v10-ink-fade); }
+  .toggle button.active { background: var(--v10-cyan-soft); color: var(--v10-cyan); font-weight: 700; }
+
+  /* icon strip */
+  .icon-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .icon-tile { width: 36px; height: 36px; border: 1px solid var(--v10-ink-fade); color: var(--v10-ink-dim); display: grid; place-items: center; }
+  .icon-tile.active { background: var(--v10-cyan-soft); border-color: var(--v10-cyan-dim); color: var(--v10-cyan); }
+
+  /* mini code block */
+  .code {
+    background: var(--v10-code-bg); border: 1px solid var(--v10-ink-ghost);
+    border-left: 2px solid var(--v10-cyan);
+    padding: 12px 14px; font-family: var(--v10-font-mono); font-size: 11.5px;
+    line-height: 1.55; white-space: pre; overflow-x: auto;
+    position: relative;
+  }
+  .code .cmd  { color: var(--v10-cyan); font-weight: 700; }
+  .code .str  { color: var(--v10-amber); }
+  .code .num  { color: var(--v10-green); }
+  .code .cmt  { color: var(--v10-ink-fade); font-style: italic; }
+  .code .flag { color: var(--v10-ink); }
+
+  /* iso cubes mini demo */
+  .iso-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+</style>
+</head>
+<body class="v10-page">
+<div class="container">
+  <div class="top-bar">
+    <h1>v10 · Blueprint</h1>
+    <span class="meta">D3 DRAFTING LANGUAGE · LIGHT + DARK</span>
+    <div class="toggle" id="toggle">
+      <button data-mode="light">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor"><circle cx="5.5" cy="5.5" r="2.4" stroke-width="1"/><g stroke-width="1"><line x1="5.5" y1="0.5" x2="5.5" y2="2"/><line x1="5.5" y1="9" x2="5.5" y2="10.5"/><line x1="0.5" y1="5.5" x2="2" y2="5.5"/><line x1="9" y1="5.5" x2="10.5" y2="5.5"/><line x1="1.7" y1="1.7" x2="2.8" y2="2.8"/><line x1="8.2" y1="8.2" x2="9.3" y2="9.3"/><line x1="1.7" y1="9.3" x2="2.8" y2="8.2"/><line x1="8.2" y1="2.8" x2="9.3" y2="1.7"/></g></svg>
+        LIGHT
+      </button>
+      <button data-mode="dark" class="active">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-linejoin="round"><path d="M8 6.4 A3.6 3.6 0 1 1 4.6 3 a2.8 2.8 0 0 0 3.4 3.4 Z" stroke-width="1"/></svg>
+        DARK
+      </button>
+    </div>
+  </div>
+
+  <!-- ─── COLORS ─── -->
+  <div class="section">
+    <div class="section-label"><span>// 01 · COLORS</span><span class="rule"></span></div>
+
+    <div style="margin-bottom: 14px; font-family: var(--v10-font-mono); font-size: 10px; letter-spacing: 1.4px; color: var(--v10-ink-dim); text-transform: uppercase;">CORE INK + PANEL</div>
+    <div class="swatch-grid" id="sw-core"></div>
+
+    <div style="margin: 22px 0 14px; font-family: var(--v10-font-mono); font-size: 10px; letter-spacing: 1.4px; color: var(--v10-ink-dim); text-transform: uppercase;">SEMANTIC</div>
+    <div class="swatch-grid" id="sw-semantic"></div>
+
+    <div style="margin: 22px 0 14px; font-family: var(--v10-font-mono); font-size: 10px; letter-spacing: 1.4px; color: var(--v10-ink-dim); text-transform: uppercase;">SURFACE + UTILITY</div>
+    <div class="swatch-grid" id="sw-utility"></div>
+  </div>
+
+  <!-- ─── TYPE ─── -->
+  <div class="section">
+    <div class="section-label"><span>// 02 · TYPOGRAPHY</span><span class="rule"></span></div>
+    <div class="panel corner-ticks"><span class="ct-bl"></span><span class="ct-br"></span>
+      <div style="font-family: var(--v10-font-mono); font-size: 10px; letter-spacing: 1.2px; color: var(--v10-ink-dim); margin-bottom: 14px; text-transform: uppercase;">SANS — OUTFIT (OFL 1.1)</div>
+      <div class="type-row">
+        <span class="type-spec"><span class="type-name">pageTitle</span> · 38 / 600 / -1</span>
+        <span class="type-sample" style="font-family: var(--v10-font-sans); font-size: 38px; font-weight: 600; letter-spacing: -1px;">Good morning, John</span>
+      </div>
+      <div class="type-row">
+        <span class="type-spec"><span class="type-name">screenTitle</span> · 32 / 600 / -0.8</span>
+        <span class="type-sample" style="font-family: var(--v10-font-sans); font-size: 32px; font-weight: 600; letter-spacing: -0.8px;">Findings</span>
+      </div>
+      <div class="type-row">
+        <span class="type-spec"><span class="type-name">panelTitle</span> · 22 / 600 / -0.4</span>
+        <span class="type-sample" style="font-family: var(--v10-font-sans); font-size: 22px; font-weight: 600; letter-spacing: -0.4px;">Alert: P95 Latency &gt; 2s</span>
+      </div>
+      <div class="type-row">
+        <span class="type-spec"><span class="type-name">cardTitle</span> · 17 / 600 / -0.2</span>
+        <span class="type-sample" style="font-family: var(--v10-font-sans); font-size: 17px; font-weight: 600; letter-spacing: -0.2px;">Latency Spike Investigation</span>
+      </div>
+      <div class="type-row">
+        <span class="type-spec"><span class="type-name">body</span> · 14.5 / 500 / -0.1</span>
+        <span class="type-sample" style="font-family: var(--v10-font-sans); font-size: 14.5px; font-weight: 500; letter-spacing: -0.1px;">Connection pool exhaustion identified on 3 of 4 pods.</span>
+      </div>
+      <div class="type-row">
+        <span class="type-spec"><span class="type-name">description</span> · 15 / 400</span>
+        <span class="type-sample" style="font-family: var(--v10-font-sans); font-size: 15px; font-weight: 400;">All 247 services steady. 2 activities to review.</span>
+      </div>
+    </div>
+
+    <div class="panel corner-ticks" style="margin-top: 14px;"><span class="ct-bl"></span><span class="ct-br"></span>
+      <div style="font-family: var(--v10-font-mono); font-size: 10px; letter-spacing: 1.2px; color: var(--v10-ink-dim); margin-bottom: 14px; text-transform: uppercase;">MONO — IBM PLEX MONO (OFL 1.1)</div>
+      <div class="type-row">
+        <span class="type-spec"><span class="type-name">label</span> · 10.5 / 700 / 1.8 / UC</span>
+        <span class="type-sample" style="font-family: var(--v10-font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: 1.8px; color: var(--v10-cyan); text-transform: uppercase;">// LATEST</span>
+      </div>
+      <div class="type-row">
+        <span class="type-spec"><span class="type-name">tinyLabel</span> · 9.5 / 600 / 1.4 / UC</span>
+        <span class="type-sample" style="font-family: var(--v10-font-mono); font-size: 9.5px; font-weight: 600; letter-spacing: 1.4px; text-transform: uppercase;">CREATED BY AI · 15 MIN AGO</span>
+      </div>
+      <div class="type-row">
+        <span class="type-spec"><span class="type-name">metric</span> · 11.5 / 700 / 0.3</span>
+        <span class="type-sample" style="font-family: var(--v10-font-mono); font-size: 11.5px; font-weight: 700; letter-spacing: 0.3px; color: var(--v10-ink-bright);">2,140ms <span style="color: var(--v10-ink-fade); font-size: 9.5px; letter-spacing: 1px;">P99</span> <span style="color: var(--v10-amber); font-size: 10px;">↑ +184%</span></span>
+      </div>
+      <div class="type-row">
+        <span class="type-spec"><span class="type-name">metricLarge</span> · 28 / 700 / -0.5</span>
+        <span class="type-sample" style="font-family: var(--v10-font-mono); font-size: 28px; font-weight: 700; letter-spacing: -0.5px; color: var(--v10-amber);">847</span>
+      </div>
+      <div class="type-row">
+        <span class="type-spec"><span class="type-name">code / filename</span> · 11.5–12.5 / 400–700</span>
+        <span class="type-sample" style="font-family: var(--v10-font-mono); font-size: 12.5px; font-weight: 700; letter-spacing: 0.3px; color: var(--v10-ink-bright);">apply-fix.sh</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SPACING ─── -->
+  <div class="section">
+    <div class="section-label"><span>// 03 · SPACING</span><span class="rule"></span></div>
+    <div class="panel corner-ticks"><span class="ct-bl"></span><span class="ct-br"></span>
+      <div id="spacing-list"></div>
+    </div>
+  </div>
+
+  <!-- ─── BORDERS + RADII + GRID ─── -->
+  <div class="section">
+    <div class="section-label"><span>// 04 · GRID + BORDERS</span><span class="rule"></span></div>
+    <div class="panel corner-ticks"><span class="ct-bl"></span><span class="ct-br"></span>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+        <div>
+          <div style="font-family: var(--v10-font-mono); font-size: 10px; letter-spacing: 1.4px; color: var(--v10-ink-dim); text-transform: uppercase; margin-bottom: 10px;">DRAFTING GRID</div>
+          <div style="height: 160px; border: 1px solid var(--v10-ink-ghost); background-color: var(--v10-bg); background-image: linear-gradient(to right, var(--v10-grid-fine) 1px, transparent 1px), linear-gradient(to bottom, var(--v10-grid-fine) 1px, transparent 1px), linear-gradient(to right, var(--v10-grid-major) 1px, transparent 1px), linear-gradient(to bottom, var(--v10-grid-major) 1px, transparent 1px); background-size: 16px 16px, 16px 16px, 80px 80px, 80px 80px;"></div>
+          <div style="font-family: var(--v10-font-mono); font-size: 10px; letter-spacing: 1.2px; color: var(--v10-ink-dim); margin-top: 8px;">FINE 16px · MAJOR 80px · ALL LINES 1px</div>
+        </div>
+        <div>
+          <div style="font-family: var(--v10-font-mono); font-size: 10px; letter-spacing: 1.4px; color: var(--v10-ink-dim); text-transform: uppercase; margin-bottom: 10px;">BORDERS · ALL SQUARE (radius 0)</div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="border: 1px solid var(--v10-ink-ghost); padding: 8px 12px; font-family: var(--v10-font-mono); font-size: 11px; color: var(--v10-ink); background: var(--v10-panel);">hairline · 1px · inkGhost</div>
+            <div style="border: 1px solid var(--v10-ink-fade); padding: 8px 12px; font-family: var(--v10-font-mono); font-size: 11px; color: var(--v10-ink); background: var(--v10-panel);">control · 1px · inkFade</div>
+            <div style="border: 1px solid var(--v10-cyan-dim); padding: 8px 12px; font-family: var(--v10-font-mono); font-size: 11px; color: var(--v10-cyan); background: var(--v10-cyan-soft);">accent · 1px · cyanDim</div>
+            <div style="border-left: 2px solid var(--v10-amber); border-top: 1px solid var(--v10-ink-ghost); border-right: 1px solid var(--v10-ink-ghost); border-bottom: 1px solid var(--v10-ink-ghost); padding: 8px 12px; font-family: var(--v10-font-mono); font-size: 11px; color: var(--v10-ink); background: var(--v10-panel);">card · 2px accent + 1px hairline</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── COMPONENTS ─── -->
+  <div class="section">
+    <div class="section-label"><span>// 05 · COMPONENTS</span><span class="rule"></span></div>
+
+    <!-- buttons -->
+    <div class="panel corner-ticks" style="margin-bottom: 14px;"><span class="ct-bl"></span><span class="ct-br"></span>
+      <div style="font-family: var(--v10-font-mono); font-size: 10px; letter-spacing: 1.4px; color: var(--v10-ink-dim); text-transform: uppercase; margin-bottom: 12px;">BUTTONS</div>
+      <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <button class="btn-primary">◢ PRIMARY</button>
+        <button class="btn-ghost">◷ GHOST</button>
+        <button class="btn-ghost" style="border-radius: 50%; width: 30px; height: 30px; padding: 0; place-items: center; display: inline-grid;">+</button>
+        <button class="btn-primary" style="border-radius: 50%; width: 30px; height: 30px; padding: 0; place-items: center; display: inline-grid;">↑</button>
+        <span class="pill new">● NEW</span>
+        <span class="pill ack">● ACK</span>
+        <span class="pill ok">● RESOLVED</span>
+        <span class="pill alert">● ALERT</span>
+      </div>
+    </div>
+
+    <!-- finding card -->
+    <div class="preview-grid" style="margin-bottom: 14px;">
+      <div class="preview-card amber corner-ticks"><span class="ct-bl"></span><span class="ct-br"></span>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-family: var(--v10-font-mono); font-size: 9.5px; letter-spacing: 1.4px; text-transform: uppercase;">
+          <span style="color: var(--v10-cyan); font-weight: 700;">F-1042</span>
+          <span class="pill new">● NEW</span>
+          <span style="color: var(--v10-amber); font-weight: 700;">P1</span>
+        </div>
+        <div class="title">Payment-service P99 crossed 2,000ms</div>
+        <div class="meta">3/4 pods · T+15M · CONF 92%</div>
+      </div>
+      <div class="preview-card cyan corner-ticks"><span class="ct-bl"></span><span class="ct-br"></span>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-family: var(--v10-font-mono); font-size: 9.5px; letter-spacing: 1.4px; text-transform: uppercase;">
+          <span style="color: var(--v10-cyan); font-weight: 700;">F-1039</span>
+          <span class="pill ack">● ACK</span>
+          <span style="color: var(--v10-cyan); font-weight: 700;">P2</span>
+        </div>
+        <div class="title">Checkout error rate at 12.4%</div>
+        <div class="meta">SHARED BY SICHEN · 2H AGO</div>
+      </div>
+    </div>
+
+    <!-- iso cubes -->
+    <div class="panel corner-ticks" style="margin-bottom: 14px;"><span class="ct-bl"></span><span class="ct-br"></span>
+      <div style="font-family: var(--v10-font-mono); font-size: 10px; letter-spacing: 1.4px; color: var(--v10-ink-dim); text-transform: uppercase; margin-bottom: 12px;">ISO CUBES · scope indicator</div>
+      <div class="iso-row" id="iso-row"></div>
+    </div>
+
+    <!-- code block -->
+    <div class="code">
+<span class="cmt">#!/bin/bash</span>
+<span class="cmt"># Patch payment-service connection pool</span>
+
+<span class="cmd">kubectl</span> patch configmap payment-service-config \
+  <span class="flag">-n</span> production \
+  <span class="flag">--type</span> merge \
+  <span class="flag">-p</span> <span class="str">'{"data":{"POOL_MAX_CONNECTIONS":"150"}}'</span>
+
+<span class="cmd">kubectl</span> rollout status deployment/payment-service \
+  <span class="flag">--timeout</span>=<span class="num">120s</span>
+
+<span class="cmd">echo</span> <span class="str">"Done."</span>
+    </div>
+  </div>
+
+  <!-- ─── ICONS ─── -->
+  <div class="section">
+    <div class="section-label"><span>// 06 · ICONS</span><span class="rule"></span></div>
+    <div class="panel corner-ticks"><span class="ct-bl"></span><span class="ct-br"></span>
+      <div style="font-family: var(--v10-font-mono); font-size: 10px; letter-spacing: 1.4px; color: var(--v10-ink-dim); text-transform: uppercase; margin-bottom: 12px;">INLINE SVG · 14–18px · STROKE 1.3–1.6</div>
+      <div class="icon-row" id="icon-row"></div>
+    </div>
+  </div>
+
+  <!-- ─── PAGES ─── -->
+  <div class="section">
+    <div class="section-label"><span>// 07 · CANONICAL PAGES</span><span class="rule"></span></div>
+    <div class="preview-grid">
+      <a href="Welcome D3.html" style="text-decoration: none; color: inherit;">
+        <div class="preview-card cyan corner-ticks" style="cursor: pointer;"><span class="ct-bl"></span><span class="ct-br"></span>
+          <div style="font-family: var(--v10-font-mono); font-size: 9.5px; letter-spacing: 1.4px; color: var(--v10-cyan); font-weight: 700; margin-bottom: 6px;">◢ WELCOME</div>
+          <div class="title">Good morning, John</div>
+          <div class="meta">Header · ask bar · tabs · latest · service · saved query · favorites</div>
+          <div style="margin-top: 12px; font-family: var(--v10-font-mono); font-size: 10.5px; color: var(--v10-cyan); letter-spacing: 1.4px;">OPEN →</div>
+        </div>
+      </a>
+      <a href="Dashboard D3.html" style="text-decoration: none; color: inherit;">
+        <div class="preview-card cyan corner-ticks" style="cursor: pointer;"><span class="ct-bl"></span><span class="ct-br"></span>
+          <div style="font-family: var(--v10-font-mono); font-size: 9.5px; letter-spacing: 1.4px; color: var(--v10-cyan); font-weight: 700; margin-bottom: 6px;">◢ DASHBOARD</div>
+          <div class="title">Latency Spike Investigation</div>
+          <div class="meta">Left rail · chat panel · canvas + tabs · charts · code</div>
+          <div style="margin-top: 12px; font-family: var(--v10-font-mono); font-size: 10.5px; color: var(--v10-cyan); letter-spacing: 1.4px;">OPEN →</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // theme toggle
+  const html = document.documentElement;
+  document.querySelectorAll('#toggle button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.mode;
+      html.dataset.theme = mode;
+      document.querySelectorAll('#toggle button').forEach(b => b.classList.toggle('active', b === btn));
+      buildSwatches();
+    });
+  });
+
+  // build swatches
+  const CORE = ['bg', 'panel', 'ink', 'inkBright', 'inkDim', 'inkFade', 'inkGhost', 'panelSolid'];
+  const SEMANTIC = ['cyan', 'cyanDim', 'cyanSoft', 'amber', 'amberDim', 'amberSoft', 'green', 'greenDim', 'greenSoft', 'red', 'redDim', 'redSoft'];
+  const UTILITY = ['gridFine', 'gridMajor', 'inputBg', 'codeBg', 'scrollThumb', 'scrollThumbHover', 'bgDeep'];
+
+  function camelToKebab(s) { return s.replace(/[A-Z]/g, m => '-' + m.toLowerCase()); }
+
+  function buildSwatches() {
+    const fill = (id, names) => {
+      const el = document.getElementById(id);
+      el.innerHTML = '';
+      names.forEach(n => {
+        const cssVar = '--v10-' + camelToKebab(n);
+        const val = getComputedStyle(html).getPropertyValue(cssVar).trim();
+        const cell = document.createElement('div');
+        cell.className = 'swatch corner-ticks';
+        cell.innerHTML = `
+          <span class="ct-bl"></span><span class="ct-br"></span>
+          <div class="swatch-chip" style="background: var(${cssVar});"></div>
+          <div class="swatch-name">${n}</div>
+          <div class="swatch-value">${val}</div>
+        `;
+        el.appendChild(cell);
+      });
+    };
+    fill('sw-core', CORE);
+    fill('sw-semantic', SEMANTIC);
+    fill('sw-utility', UTILITY);
+  }
+  buildSwatches();
+
+  // spacing scale
+  const SPACES = [2,4,6,8,10,12,14,16,18,20,22,24,28,32,36,40,48,56];
+  const sl = document.getElementById('spacing-list');
+  SPACES.forEach(px => {
+    const row = document.createElement('div');
+    row.className = 'spacing-row';
+    row.innerHTML = `<span class="name">s-${px}</span><span class="px">${px}px</span><div class="bar" style="width: ${px}px;"></div>`;
+    sl.appendChild(row);
+  });
+
+  // iso cubes via SVG
+  function isoCube(broken) {
+    const c = broken ? 'var(--v10-amber)' : 'var(--v10-cyan)';
+    const fill = broken ? 'var(--v10-amber-soft)' : 'var(--v10-cyan-soft)';
+    return `<svg width="20" height="24" viewBox="0 0 14 22"><polygon points="6,2 14,6 8,10 0,6" fill="${fill}" stroke="${c}" stroke-width="0.9"/><polygon points="0,6 8,10 8,18 0,14" fill="${fill}" stroke="${c}" stroke-width="0.9" opacity="0.85"/><polygon points="8,10 14,6 14,14 8,18" fill="${fill}" stroke="${c}" stroke-width="0.9" opacity="0.7"/>${broken ? `<line x1="2" y1="9" x2="12" y2="15" stroke="${c}" stroke-width="0.7"/>` : ''}</svg>`;
+  }
+  const isoRow = document.getElementById('iso-row');
+  let html5 = '';
+  for (let i = 0; i < 4; i++) html5 += isoCube(i < 3);
+  html5 += '<span style="font-family: var(--v10-font-mono); font-size: 11px; color: var(--v10-amber); font-weight: 700; letter-spacing: 0.5px; margin-left: 6px;">3/4 PODS</span>';
+  html5 += '<span style="margin: 0 14px; color: var(--v10-ink-fade);">│</span>';
+  for (let i = 0; i < 5; i++) html5 += isoCube(false);
+  html5 += '<span style="font-family: var(--v10-font-mono); font-size: 11px; color: var(--v10-cyan); font-weight: 700; letter-spacing: 0.5px; margin-left: 6px;">5/5 SERVICES</span>';
+  isoRow.innerHTML = html5;
+
+  // icon row
+  const ICONS = [
+    {label: 'plus', svg: '<line x1="9" y1="3" x2="9" y2="15"/><line x1="3" y1="9" x2="15" y2="9"/>'},
+    {label: 'chat', svg: '<path d="M3 4 H15 V12 H8 L4 15 V12 H3 Z"/>'},
+    {label: 'folder', svg: '<path d="M2 5 L7 5 L9 7 L16 7 L16 14 L2 14 Z"/>'},
+    {label: 'grid', svg: '<rect x="2" y="2" width="6" height="6"/><rect x="10" y="2" width="6" height="6"/><rect x="2" y="10" width="6" height="6"/><rect x="10" y="10" width="6" height="6"/>'},
+    {label: 'terminal', svg: '<polyline points="3,5 6,9 3,13"/><line x1="9" y1="13" x2="15" y2="13"/>'},
+    {label: 'settings', svg: '<circle cx="9" cy="9" r="2.4"/><path d="M9 1 L9 3 M9 15 L9 17 M1 9 L3 9 M15 9 L17 9 M3.3 3.3 L4.7 4.7 M13.3 13.3 L14.7 14.7 M3.3 14.7 L4.7 13.3 M13.3 4.7 L14.7 3.3"/>'},
+    {label: 'history', svg: '<circle cx="9" cy="9" r="6"/><polyline points="9,5 9,9 12,11"/>'},
+    {label: 'alert', svg: '<path d="M9 2 L16 14 H2 Z"/><line x1="9" y1="7" x2="9" y2="11"/><circle cx="9" cy="13" r="0.6" fill="currentColor"/>'},
+    {label: 'pin', svg: '<line x1="9" y1="3" x2="9" y2="6"/><polygon points="5,6 13,6 11,11 7,11"/><line x1="9" y1="11" x2="9" y2="15"/>'},
+    {label: 'arrow-up', svg: '<line x1="9" y1="13" x2="9" y2="5"/><polyline points="5,9 9,5 13,9"/>'},
+    {label: 'arrow-right', svg: '<line x1="3" y1="9" x2="15" y2="9"/><polyline points="11,5 15,9 11,13"/>'},
+    {label: 'close', svg: '<line x1="4" y1="4" x2="14" y2="14"/><line x1="14" y1="4" x2="4" y2="14"/>'},
+  ];
+  document.getElementById('icon-row').innerHTML = ICONS.map(i =>
+    `<div class="icon-tile" title="${i.label}"><svg width="14" height="14" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4">${i.svg}</svg></div>`
+  ).join('');
+</script>
+</body>
+</html>

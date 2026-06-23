@@ -20,7 +20,11 @@ import { OuiIcon } from '../../../../src/components/icon';
 import { OuiToolTip } from '../../../../src/components/tool_tip';
 import { OuiPopover } from '../../../../src/components/popover';
 import { useIsWithinBreakpoints } from '../../../../src/services/hooks';
-import { OuiButton, OuiButtonEmpty, OuiButtonIcon } from '../../../../src/components/button';
+import {
+  OuiButton,
+  OuiButtonEmpty,
+  OuiButtonIcon,
+} from '../../../../src/components/button';
 import {
   OuiContextMenuPanel,
   OuiContextMenuItem,

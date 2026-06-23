@@ -54,9 +54,7 @@ export const OuiInsightCard: FunctionComponent<OuiInsightCardProps> = ({
   );
 
   const Tag = onClick ? 'button' : 'div';
-  const buttonProps = onClick
-    ? { type: 'button' as const, onClick }
-    : {};
+  const buttonProps = onClick ? { type: 'button' as const, onClick } : {};
 
   return (
     <Tag className={classes} {...buttonProps} {...(rest as any)}>

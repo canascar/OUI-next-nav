@@ -117,7 +117,9 @@ export const OuiOllyChatPill: FunctionComponent<OuiOllyChatPillProps> = ({
       onMouseLeave={() => setIsHovered(false)}
       {...rest}>
       {message && !isDismissing && (
-        <div className="ouiOllyChatPill__message" onClick={() => onActivate && onActivate()}>
+        <div
+          className="ouiOllyChatPill__message"
+          onClick={() => onActivate && onActivate()}>
           <p className="ouiOllyChatPill__messageText">{message}</p>
           {onDismiss && (
             <OuiButtonIcon
@@ -126,7 +128,7 @@ export const OuiOllyChatPill: FunctionComponent<OuiOllyChatPillProps> = ({
               size="xs"
               color="text"
               className="ouiOllyChatPill__dismiss"
-              onClick={(e) => {
+              onClick={(e: React.MouseEvent) => {
                 e.stopPropagation();
                 setIsDismissing(true);
                 setTimeout(() => {
@@ -145,7 +147,9 @@ export const OuiOllyChatPill: FunctionComponent<OuiOllyChatPillProps> = ({
             <button
               key={i}
               type="button"
-              className={`ouiOllyChatPill__quickReply${reply.primary ? ' ouiOllyChatPill__quickReply--primary' : ''}`}
+              className={`ouiOllyChatPill__quickReply${
+                reply.primary ? ' ouiOllyChatPill__quickReply--primary' : ''
+              }`}
               onClick={(e) => {
                 e.stopPropagation();
                 if (onActivate) onActivate(reply.label);
@@ -160,7 +164,15 @@ export const OuiOllyChatPill: FunctionComponent<OuiOllyChatPillProps> = ({
           <OuiToolTip content="Open chat" position="top" delay="long">
             <button
               type="button"
-              className={`ouiOllyChatPill__avatar${(isHighlighted || isExpanded) ? ' ouiOllyChatPill__avatar--highlight' : ''}${(!isExpanded && !isHighlighted) ? ' ouiOllyChatPill__avatar--static' : ''}`}
+              className={`ouiOllyChatPill__avatar${
+                isHighlighted || isExpanded
+                  ? ' ouiOllyChatPill__avatar--highlight'
+                  : ''
+              }${
+                !isExpanded && !isHighlighted
+                  ? ' ouiOllyChatPill__avatar--static'
+                  : ''
+              }`}
               aria-label="Open chat"
               onMouseDown={(e) => {
                 // Prevent input blur so the click registers
@@ -169,7 +181,11 @@ export const OuiOllyChatPill: FunctionComponent<OuiOllyChatPillProps> = ({
               onClick={() => {
                 if (onActivate) onActivate();
               }}>
-              {isExpanded && avatarFocused ? avatarFocused : isHovered && avatarHover ? avatarHover : avatar}
+              {isExpanded && avatarFocused
+                ? avatarFocused
+                : isHovered && avatarHover
+                ? avatarHover
+                : avatar}
             </button>
           </OuiToolTip>
         )}

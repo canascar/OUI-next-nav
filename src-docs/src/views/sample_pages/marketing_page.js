@@ -58,22 +58,63 @@ const TopNav = () => (
       }}
       aria-label="AWS global navigation">
       <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-        <a href="#" style={topNavLinkStyle}>AWS Summits</a>
-        <a href="#" style={topNavLinkStyle}>Discover AWS</a>
-        <a href="#" style={topNavLinkStyle}>Products</a>
-        <a href="#" style={topNavLinkStyle}>Solutions</a>
-        <a href="#" style={topNavLinkStyle}>Pricing</a>
-        <a href="#" style={topNavLinkStyle}>Resources</a>
+        <a href="#" style={topNavLinkStyle}>
+          AWS Summits
+        </a>
+        <a href="#" style={topNavLinkStyle}>
+          Discover AWS
+        </a>
+        <a href="#" style={topNavLinkStyle}>
+          Products
+        </a>
+        <a href="#" style={topNavLinkStyle}>
+          Solutions
+        </a>
+        <a href="#" style={topNavLinkStyle}>
+          Pricing
+        </a>
+        <a href="#" style={topNavLinkStyle}>
+          Resources
+        </a>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-        <a href="#" style={{ ...topNavLinkStyle, display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" style={{ marginRight: '2px' }}>
-            <circle cx="7" cy="7" r="5.5" stroke="white" strokeWidth="1.5" fill="none" />
-            <line x1="11" y1="11" x2="14" y2="14" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+        <a
+          href="#"
+          style={{
+            ...topNavLinkStyle,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+          }}>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 16 16"
+            fill="none"
+            style={{ marginRight: '2px' }}>
+            <circle
+              cx="7"
+              cy="7"
+              r="5.5"
+              stroke="white"
+              strokeWidth="1.5"
+              fill="none"
+            />
+            <line
+              x1="11"
+              y1="11"
+              x2="14"
+              y2="14"
+              stroke="white"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
           </svg>
           Search
         </a>
-        <a href="#" style={topNavLinkStyle}>Sign in to console</a>
+        <a href="#" style={topNavLinkStyle}>
+          Sign in to console
+        </a>
         <button
           style={{
             backgroundColor: colors.awsOrange,
@@ -133,13 +174,34 @@ const SecondaryNav = () => (
         Amazon OpenSearch Service
       </span>
       <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-        <a href="#" style={{ ...tabStyle, color: colors.linkBlue, borderBottom: `2px solid ${colors.linkBlue}`, fontWeight: 600 }}>Overview</a>
-        <a href="#" style={tabStyle}>Features ›</a>
-        <a href="#" style={tabStyle}>Pricing</a>
-        <a href="#" style={tabStyle}>Getting Started ›</a>
-        <a href="#" style={tabStyle}>Resources ›</a>
-        <a href="#" style={tabStyle}>Migrations</a>
-        <a href="#" style={tabStyle}>More ›</a>
+        <a
+          href="#"
+          style={{
+            ...tabStyle,
+            color: colors.linkBlue,
+            borderBottom: `2px solid ${colors.linkBlue}`,
+            fontWeight: 600,
+          }}>
+          Overview
+        </a>
+        <a href="#" style={tabStyle}>
+          Features ›
+        </a>
+        <a href="#" style={tabStyle}>
+          Pricing
+        </a>
+        <a href="#" style={tabStyle}>
+          Getting Started ›
+        </a>
+        <a href="#" style={tabStyle}>
+          Resources ›
+        </a>
+        <a href="#" style={tabStyle}>
+          Migrations
+        </a>
+        <a href="#" style={tabStyle}>
+          More ›
+        </a>
       </div>
     </div>
   </nav>
@@ -163,19 +225,44 @@ const HeroSection = () => (
     style={{
       padding: '64px 24px 72px',
       fontFamily: fonts.base,
-      background: 'linear-gradient(135deg, #ffffff 0%, #fdf4ff 25%, #f5d0fe 50%, #e9b5f7 75%, #d8b4fe 100%)',
+      background:
+        'linear-gradient(135deg, #ffffff 0%, #fdf4ff 25%, #f5d0fe 50%, #e9b5f7 75%, #d8b4fe 100%)',
       position: 'relative',
       overflow: 'hidden',
     }}>
     <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
       <nav
-        style={{ fontSize: '13px', margin: '0 0 24px', display: 'flex', alignItems: 'center', gap: '6px' }}
+        style={{
+          fontSize: '13px',
+          margin: '0 0 24px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+        }}
         aria-label="Breadcrumb">
-        <a href="#" style={{ color: '#7c3aed', textDecoration: 'underline', textUnderlineOffset: '2px' }}>Products</a>
+        <a
+          href="#"
+          style={{
+            color: '#7c3aed',
+            textDecoration: 'underline',
+            textUnderlineOffset: '2px',
+          }}>
+          Products
+        </a>
         <span style={{ color: colors.textMuted }}>›</span>
-        <a href="#" style={{ color: '#7c3aed', textDecoration: 'underline', textUnderlineOffset: '2px' }}>Analytics</a>
+        <a
+          href="#"
+          style={{
+            color: '#7c3aed',
+            textDecoration: 'underline',
+            textUnderlineOffset: '2px',
+          }}>
+          Analytics
+        </a>
         <span style={{ color: colors.textMuted }}>›</span>
-        <span style={{ color: colors.textPrimary }}>Amazon OpenSearch Service</span>
+        <span style={{ color: colors.textPrimary }}>
+          Amazon OpenSearch Service
+        </span>
       </nav>
       <h1
         style={{
@@ -201,7 +288,9 @@ const HeroSection = () => (
       </p>
       <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
         <button
-          onClick={() => { window.location.href = '/#/onboarding-wizard'; }}
+          onClick={() => {
+            window.location.href = '/#/onboarding-wizard';
+          }}
           style={{
             backgroundColor: '#1a1a2e',
             color: '#ffffff',
@@ -240,7 +329,13 @@ const HeroSection = () => (
 const OverviewSection = () => (
   <section style={{ padding: '64px 24px', fontFamily: fonts.base }}>
     <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-      <h2 style={{ fontSize: '28px', fontWeight: 700, color: colors.textPrimary, margin: '0 0 24px' }}>
+      <h2
+        style={{
+          fontSize: '28px',
+          fontWeight: 700,
+          color: colors.textPrimary,
+          margin: '0 0 24px',
+        }}>
         Overview
       </h2>
       <div
@@ -251,17 +346,31 @@ const OverviewSection = () => (
           alignItems: 'start',
         }}>
         <div>
-          <p style={{ fontSize: '14px', lineHeight: 1.7, color: colors.textSecondary, margin: 0 }}>
-            OpenSearch Service unifies logs, metrics, and traces on a single OpenTelemetry-native platform.
-            Ingest telemetry from containers, serverless functions, applications, and infrastructure, then
-            correlate signals in real time to find the root cause of an issue in seconds instead of hours. Pre-built
-            dashboards for application performance, infrastructure health, and security give teams an instant
-            starting point, while intelligent storage tiering keeps recent data hot for fast queries and ages
-            older data into low-cost storage automatically. Available fully managed or serverless, with the
-            open-source flexibility of OpenSearch.
+          <p
+            style={{
+              fontSize: '14px',
+              lineHeight: 1.7,
+              color: colors.textSecondary,
+              margin: 0,
+            }}>
+            OpenSearch Service unifies logs, metrics, and traces on a single
+            OpenTelemetry-native platform. Ingest telemetry from containers,
+            serverless functions, applications, and infrastructure, then
+            correlate signals in real time to find the root cause of an issue in
+            seconds instead of hours. Pre-built dashboards for application
+            performance, infrastructure health, and security give teams an
+            instant starting point, while intelligent storage tiering keeps
+            recent data hot for fast queries and ages older data into low-cost
+            storage automatically. Available fully managed or serverless, with
+            the open-source flexibility of OpenSearch.
           </p>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
           <div
             style={{
               width: '100%',
@@ -336,7 +445,13 @@ const BenefitsSection = () => (
       fontFamily: fonts.base,
     }}>
     <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-      <h2 style={{ fontSize: '28px', fontWeight: 700, color: colors.textPrimary, margin: '0 0 32px' }}>
+      <h2
+        style={{
+          fontSize: '28px',
+          fontWeight: 700,
+          color: colors.textPrimary,
+          margin: '0 0 32px',
+        }}>
         Benefits
       </h2>
       <div
@@ -347,10 +462,22 @@ const BenefitsSection = () => (
         }}>
         {BENEFITS.map((benefit, idx) => (
           <div key={idx}>
-            <h3 style={{ fontSize: '15px', fontWeight: 700, color: colors.textPrimary, margin: '0 0 8px' }}>
+            <h3
+              style={{
+                fontSize: '15px',
+                fontWeight: 700,
+                color: colors.textPrimary,
+                margin: '0 0 8px',
+              }}>
               {benefit.title}
             </h3>
-            <p style={{ fontSize: '13px', lineHeight: 1.6, color: colors.textSecondary, margin: 0 }}>
+            <p
+              style={{
+                fontSize: '13px',
+                lineHeight: 1.6,
+                color: colors.textSecondary,
+                margin: 0,
+              }}>
               {benefit.description}
             </p>
           </div>
@@ -389,7 +516,13 @@ const USE_CASES = [
 const UseCasesSection = () => (
   <section style={{ padding: '64px 24px', fontFamily: fonts.base }}>
     <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-      <h2 style={{ fontSize: '28px', fontWeight: 700, color: colors.textPrimary, margin: '0 0 32px' }}>
+      <h2
+        style={{
+          fontSize: '28px',
+          fontWeight: 700,
+          color: colors.textPrimary,
+          margin: '0 0 32px',
+        }}>
         Use cases
       </h2>
       <div
@@ -407,10 +540,22 @@ const UseCasesSection = () => (
               borderRadius: '8px',
               padding: '24px',
             }}>
-            <h3 style={{ fontSize: '15px', fontWeight: 700, color: colors.textPrimary, margin: '0 0 8px' }}>
+            <h3
+              style={{
+                fontSize: '15px',
+                fontWeight: 700,
+                color: colors.textPrimary,
+                margin: '0 0 8px',
+              }}>
               {useCase.title}
             </h3>
-            <p style={{ fontSize: '13px', lineHeight: 1.6, color: colors.textSecondary, margin: 0 }}>
+            <p
+              style={{
+                fontSize: '13px',
+                lineHeight: 1.6,
+                color: colors.textSecondary,
+                margin: 0,
+              }}>
               {useCase.description}
             </p>
           </div>

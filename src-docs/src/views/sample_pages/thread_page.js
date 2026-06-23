@@ -9,13 +9,20 @@
  * GitHub history for details.
  */
 
-import React, { useState, useEffect, useRef, useCallback, useContext } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useContext,
+} from 'react';
 
 import {
   OuiButtonIcon,
   OuiCodeBlock,
   OuiContextMenuPanel,
   OuiContextMenuItem,
+  OuiContextMenu,
   OuiFlyoutHeader,
   OuiFlyoutBody,
   OuiFlexGroup,
@@ -30,12 +37,14 @@ import {
   OuiText,
   OuiToolTip,
   OuiCompressedTextArea,
+  OuiThreadScrollButton,
 } from '../../../../src/components';
 
 import { DetailPageHeader } from './detail_page_header';
 import { ProgressTracker } from './progress_tracker';
 import { Mascot } from '../../../../olly-mascot/Mascot';
 import { ThemeContext } from '../../components/with_theme';
+import { OllyIdle } from './olly_idle';
 import {
   Chart,
   Settings,
@@ -765,7 +774,13 @@ const TraceWaterfallAttachment = ({ title, spans }) => {
           {spans.map((span, i) => (
             <div key={i} className="threadPage__traceSpanRow">
               <span className="threadPage__traceSpanName">{span.name}</span>
-              <div className="threadPage__traceSpanBarWrap" style={{ backgroundColor: `${colorMap[span.color] || colorMap.primary}26` }}>
+              <div
+                className="threadPage__traceSpanBarWrap"
+                style={{
+                  backgroundColor: `${
+                    colorMap[span.color] || colorMap.primary
+                  }26`,
+                }}>
                 <div
                   className="threadPage__traceSpanBar"
                   style={{
@@ -776,7 +791,9 @@ const TraceWaterfallAttachment = ({ title, spans }) => {
                 />
               </div>
               <span className="threadPage__traceSpanDuration">
-                {span.duration >= 1000 ? `${(span.duration / 1000).toFixed(1)}s` : `${span.duration}ms`}
+                {span.duration >= 1000
+                  ? `${(span.duration / 1000).toFixed(1)}s`
+                  : `${span.duration}ms`}
               </span>
             </div>
           ))}
@@ -844,10 +861,19 @@ const CodeBlockAttachment = ({ title, language, code }) => {
 };
 
 // Attachment card: chart (Tool UI style — simple inline bar/sparkline chart)
-const ChartAttachment = ({ title, data, chartType, threshold, breachRange }) => {
+const ChartAttachment = ({
+  title,
+  data,
+  chartType,
+  threshold,
+  breachRange,
+}) => {
   // Line chart mode using @elastic/charts
   if (chartType === 'line') {
-    const lineData = data.map((d, i) => ({ x: d.x !== undefined ? d.x : i, y: d.y !== undefined ? d.y : d.value }));
+    const lineData = data.map((d, i) => ({
+      x: d.x !== undefined ? d.x : i,
+      y: d.y !== undefined ? d.y : d.value,
+    }));
     return (
       <div className="threadPage__attachmentWrap">
         <div className="threadPage__attachment threadPage__attachment--chart">
@@ -942,7 +968,10 @@ const ItemCarouselAttachment = ({ title, items }) => {
     const el = scrollRef.current;
     if (!el) return;
     const amount = 200;
-    el.scrollBy({ left: direction === 'left' ? -amount : amount, behavior: 'smooth' });
+    el.scrollBy({
+      left: direction === 'left' ? -amount : amount,
+      behavior: 'smooth',
+    });
   };
 
   return (
@@ -970,7 +999,10 @@ const ItemCarouselAttachment = ({ title, items }) => {
             {items.map((item, i) => (
               <div key={i} className="threadPage__carouselCard">
                 <div className="threadPage__carouselLabel">{item.label}</div>
-                <div className={`threadPage__carouselValue threadPage__carouselValue--${item.color || 'default'}`}>
+                <div
+                  className={`threadPage__carouselValue threadPage__carouselValue--${
+                    item.color || 'default'
+                  }`}>
                   {item.value}
                 </div>
               </div>
@@ -1016,7 +1048,16 @@ const renderSingleAttachment = (att, idx, onViewAsPage) => {
     );
   }
   if (att.type === 'chart') {
-    return <ChartAttachment key={idx} title={att.title} data={att.data} chartType={att.chartType} threshold={att.threshold} breachRange={att.breachRange} />;
+    return (
+      <ChartAttachment
+        key={idx}
+        title={att.title}
+        data={att.data}
+        chartType={att.chartType}
+        threshold={att.threshold}
+        breachRange={att.breachRange}
+      />
+    );
   }
   if (att.type === 'data-table') {
     return (
@@ -1034,10 +1075,14 @@ const renderSingleAttachment = (att, idx, onViewAsPage) => {
     );
   }
   if (att.type === 'trace-waterfall') {
-    return <TraceWaterfallAttachment key={idx} title={att.title} spans={att.spans} />;
+    return (
+      <TraceWaterfallAttachment key={idx} title={att.title} spans={att.spans} />
+    );
   }
   if (att.type === 'item-carousel') {
-    return <ItemCarouselAttachment key={idx} title={att.title} items={att.items} />;
+    return (
+      <ItemCarouselAttachment key={idx} title={att.title} items={att.items} />
+    );
   }
   return null;
 };
@@ -1049,33 +1094,75 @@ const AssistantMessage = ({
   attachment,
   attachments,
   onViewAsPage,
+  mascotColor,
+  mascotEyeColor,
+  isLastAssistant,
+  isTyping,
 }) => {
   const allAttachments = attachments || (attachment ? [attachment] : []);
+  const showMascot = isLastAssistant && !isTyping;
+
+  // Determine mascot expression based on state:
+  // - No content yet (pulsating delay): "blink"
+  // - Text streaming in: "dot" (attentive)
+  // - Done: idle (OllyIdle handles this)
+  const streamingExpression = !content ? 'blink' : 'dot';
+
   return (
     <div className="threadPage__message threadPage__message--assistant">
-      <div className="threadPage__bubble threadPage__bubble--assistant">
-        {content && <OuiText size="s">{parseContent(content)}</OuiText>}
-        {!streaming &&
-          allAttachments.map((att, idx) =>
-            renderSingleAttachment(att, idx, onViewAsPage)
+      {streaming ? (
+        // While streaming: Olly on left, text on right (row)
+        <div className="threadPage__assistantStreamRow">
+          {showMascot && (
+            <div
+              className={`threadPage__responseMascot${
+                !content ? ' threadPage__responseMascot--pulsing' : ''
+              }`}>
+              <Mascot
+                size={20}
+                expression={streamingExpression}
+                idle={false}
+                bob={false}
+                follow={false}
+                color={mascotColor}
+                eyeColor={mascotEyeColor}
+              />
+            </div>
           )}
-        {!streaming && (
-          <div className="threadPage__feedback">
-            <OuiButtonIcon
-              iconType="thumbsUp"
-              aria-label="Helpful"
-              size="xs"
-              color="text"
-            />
-            <OuiButtonIcon
-              iconType="thumbsDown"
-              aria-label="Not helpful"
-              size="xs"
-              color="text"
-            />
+          <div className="threadPage__bubble threadPage__bubble--assistant">
+            {content && <OuiText size="s">{parseContent(content)}</OuiText>}
           </div>
-        )}
-      </div>
+        </div>
+      ) : (
+        // Done: text full width, OllyIdle below on the left (with wink → idle)
+        <>
+          <div className="threadPage__bubble threadPage__bubble--assistant">
+            {content && <OuiText size="s">{parseContent(content)}</OuiText>}
+            {allAttachments.map((att, idx) =>
+              renderSingleAttachment(att, idx, onViewAsPage)
+            )}
+            <div className="threadPage__feedback">
+              <OuiButtonIcon
+                iconType="thumbsUp"
+                aria-label="Helpful"
+                size="xs"
+                color="text"
+              />
+              <OuiButtonIcon
+                iconType="thumbsDown"
+                aria-label="Not helpful"
+                size="xs"
+                color="text"
+              />
+            </div>
+          </div>
+          {showMascot && content && (
+            <div className="threadPage__responseMascot">
+              <OllyIdle size={20} showTooltip />
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 };
@@ -1279,16 +1366,19 @@ const SCRIPTED_RESPONSES = {
       ],
       followUps: [
         {
-          content: 'Here\'s a suggested fix — increase the connection pool max and add a circuit breaker:',
+          content:
+            "Here's a suggested fix — increase the connection pool max and add a circuit breaker:",
           attachment: {
             type: 'code-block',
             title: 'Suggested fix',
             language: 'bash',
-            code: 'kubectl patch configmap payments-db-config \\\n  -n production \\\n  --type merge \\\n  -p \'{"data":{"POOL_MAX_CONNECTIONS":"150","POOL_ACQUIRE_TIMEOUT":"5s"}}\'\n\nkubectl rollout restart deployment/payments-db -n production',
+            code:
+              'kubectl patch configmap payments-db-config \\\n  -n production \\\n  --type merge \\\n  -p \'{"data":{"POOL_MAX_CONNECTIONS":"150","POOL_ACQUIRE_TIMEOUT":"5s"}}\'\n\nkubectl rollout restart deployment/payments-db -n production',
           },
         },
         {
-          content: 'Want me to create an alert rule so you catch this earlier next time?',
+          content:
+            'Want me to create an alert rule so you catch this earlier next time?',
         },
       ],
     },
@@ -1488,6 +1578,13 @@ const CONCLUSION_MESSAGE = {
 
 const NEW_THREAD = { title: 'New thread', messages: [] };
 
+const EMPTY_CHAT_TITLES = [
+  'How can I help?',
+  'Ask and I will provide',
+  'Olly olly oxen free',
+  'What can I help you seek?',
+];
+
 export const ThreadPage = ({
   selectedItem,
   _onItemSelect,
@@ -1519,8 +1616,7 @@ export const ThreadPage = ({
       );
       if (hasConnectionTimeout) return 'connection-timeout';
       const hasInvestigateAlert = pendingMessages.some(
-        (m) =>
-          m.content && /investigate.*alert|P99.*latency/i.test(m.content)
+        (m) => m.content && /investigate.*alert|P99.*latency/i.test(m.content)
       );
       if (hasInvestigateAlert) return 'investigate-alert';
     }
@@ -1529,12 +1625,17 @@ export const ThreadPage = ({
 
   const [messages, setMessages] = useState(initialMessages);
   const [message, setMessage] = useState('');
+  const [mascotExpression, setMascotExpression] = useState(undefined);
   const sendRef = useRef(null);
   const lastProcessedInput = useRef(null);
+  const emptyChatTitle = useRef(
+    EMPTY_CHAT_TITLES[Math.floor(Math.random() * EMPTY_CHAT_TITLES.length)]
+  ).current;
 
   // When pendingInputValue changes, auto-send it
   useEffect(() => {
-    if (!pendingInputValue || pendingInputValue === lastProcessedInput.current) return;
+    if (!pendingInputValue || pendingInputValue === lastProcessedInput.current)
+      return;
     lastProcessedInput.current = pendingInputValue;
     const textToSend = pendingInputValue;
     const interval = setInterval(() => {
@@ -1557,6 +1658,9 @@ export const ThreadPage = ({
   const isDragging = useRef(false);
   const feedRef = useRef(null);
   const responseIndex = useRef(0);
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  const [feedScrolled, setFeedScrolled] = useState(false);
+  const [isAttachMenuOpen, setIsAttachMenuOpen] = useState(false);
   const [completedScriptedIds, setCompletedScriptedIds] = useState(new Set());
 
   const streamTimers = useRef([]);
@@ -1715,15 +1819,24 @@ export const ThreadPage = ({
       let tasks;
       if (isInvestigateAlert) {
         tasks = [
-          { label: 'Querying payment-service metrics', description: 'Pulling P99 latency and connection pool data for the last hour' },
-          { label: 'Correlating with trace data', description: 'Analyzing spans for payment-service dependencies' },
+          {
+            label: 'Querying payment-service metrics',
+            description:
+              'Pulling P99 latency and connection pool data for the last hour',
+          },
+          {
+            label: 'Correlating with trace data',
+            description: 'Analyzing spans for payment-service dependencies',
+          },
         ];
         mockResponse = {
-          content: 'I\'ve analyzed the payment-service alert. Here\'s what I found:\n\n• The latency spike began at 14:29:58 UTC and correlates with a sudden increase in active connections to payments-db.\n• Connection pool utilization jumped from 40% to 98% across pods 1, 2, and 4. Pod 3 remained healthy due to lower traffic allocation.\n• No deployments or config changes occurred in the 6 hours prior to the incident.\n• Upstream traffic volume remained steady — this doesn\'t appear to be load-driven.\n\nThe most likely root cause is connection pool exhaustion on the database side. Want me to open the trace analysis and connection pool metrics as pages?',
+          content:
+            "I've analyzed the payment-service alert. Here's what I found:\n\n• The latency spike began at 14:29:58 UTC and correlates with a sudden increase in active connections to payments-db.\n• Connection pool utilization jumped from 40% to 98% across pods 1, 2, and 4. Pod 3 remained healthy due to lower traffic allocation.\n• No deployments or config changes occurred in the 6 hours prior to the incident.\n• Upstream traffic volume remained steady — this doesn't appear to be load-driven.\n\nThe most likely root cause is connection pool exhaustion on the database side. Want me to open the trace analysis and connection pool metrics as pages?",
           attachment: {
             type: 'link-preview',
             title: 'Payment service — connection pool metrics',
-            description: 'Connection pool utilization spiked from 40% to 98% on 3 of 4 pods starting at 14:29:58 UTC.',
+            description:
+              'Connection pool utilization spiked from 40% to 98% on 3 of 4 pods starting at 14:29:58 UTC.',
           },
         };
       } else {
@@ -1737,7 +1850,12 @@ export const ThreadPage = ({
       const attachments = mockResponse.attachments;
 
       setIsTyping(true);
-      const taskMsg = { role: 'tasks', tasks, statuses: ['running'], collapsed: false };
+      const taskMsg = {
+        role: 'tasks',
+        tasks,
+        statuses: ['running'],
+        collapsed: false,
+      };
       const t0 = setTimeout(() => {
         setMessages((prev) => [...prev, taskMsg]);
       }, 500);
@@ -1747,7 +1865,8 @@ export const ThreadPage = ({
         setMessages((prev) => {
           const updated = [...prev];
           const ti = updated.findLastIndex((m) => m.role === 'tasks');
-          if (ti >= 0) updated[ti] = { ...updated[ti], statuses: ['done', 'running'] };
+          if (ti >= 0)
+            updated[ti] = { ...updated[ti], statuses: ['done', 'running'] };
           return updated;
         });
       }, 3000);
@@ -1757,7 +1876,8 @@ export const ThreadPage = ({
         setMessages((prev) => {
           const updated = [...prev];
           const ti = updated.findLastIndex((m) => m.role === 'tasks');
-          if (ti >= 0) updated[ti] = { ...updated[ti], statuses: ['done', 'done'] };
+          if (ti >= 0)
+            updated[ti] = { ...updated[ti], statuses: ['done', 'done'] };
           return updated;
         });
       }, 5500);
@@ -1771,20 +1891,39 @@ export const ThreadPage = ({
           return updated;
         });
         setIsTyping(false);
-        const tokens = fullContent.split(/(\s+)/);
-        setMessages((prev) => [...prev, { role: 'assistant', content: '', streaming: true, attachment, attachments }]);
-        let built = '';
-        tokens.forEach((token, i) => {
-          const timer = setTimeout(() => {
-            built += token;
-            setMessages((prev) => {
-              const updated = [...prev];
-              updated[updated.length - 1] = { role: 'assistant', content: built, streaming: i < tokens.length - 1, attachment, attachments };
-              return updated;
-            });
-          }, i * 30);
-          streamTimers.current.push(timer);
-        });
+        // Show Olly pulsating for 1.5s before text starts
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: '',
+            streaming: true,
+            attachment,
+            attachments,
+          },
+        ]);
+        const delayTimer = setTimeout(() => {
+          const tokens = fullContent.split(/(\s+)/);
+          let built = '';
+          tokens.forEach((token, i) => {
+            const timer = setTimeout(() => {
+              built += token;
+              setMessages((prev) => {
+                const updated = [...prev];
+                updated[updated.length - 1] = {
+                  role: 'assistant',
+                  content: built,
+                  streaming: i < tokens.length - 1,
+                  attachment,
+                  attachments,
+                };
+                return updated;
+              });
+            }, i * 30);
+            streamTimers.current.push(timer);
+          });
+        }, 2000);
+        streamTimers.current.push(delayTimer);
       }, 6000);
       streamTimers.current.push(t3);
     }
@@ -1895,9 +2034,7 @@ export const ThreadPage = ({
 
       setIsTyping(false);
 
-      // Split into words, preserving newlines as separate tokens
-      const tokens = fullContent.split(/(\s+)/);
-
+      // Show Olly pulsating for 1.5s before text starts
       setMessages((prev) => [
         ...prev,
         {
@@ -1909,109 +2046,120 @@ export const ThreadPage = ({
         },
       ]);
 
-      let built = '';
-      tokens.forEach((token, i) => {
-        const timer = setTimeout(() => {
-          built += token;
-          setMessages((prev) => {
-            const updated = [...prev];
-            updated[updated.length - 1] = {
-              role: 'assistant',
-              content: built,
-              streaming: i < tokens.length - 1,
-              attachment,
-              attachments,
-            };
-            return updated;
-          });
-          // After last token, add follow-up if both logs and traces are done
-          if (i === tokens.length - 1) {
-            // Add link-preview attachments to canvas
-            const newAtts = (
-              attachments || (attachment ? [attachment] : [])
-            ).filter((a) => a.type === 'link-preview');
-            if (newAtts.length > 0) {
-              setCanvasItems((prev) => [...prev, ...newAtts]);
-            }
-            if (mockResponse.id) {
-              setCompletedScriptedIds(
-                (prev) => new Set([...prev, mockResponse.id])
-              );
-            }
-            setCompletedScriptedIds((prev) => {
-              const next = new Set([...prev]);
-              if (mockResponse.id) next.add(mockResponse.id);
-              if (
-                next.has('logs') &&
-                next.has('traces') &&
-                !next.has('conclusion')
-              ) {
-                next.add('conclusion');
-                const conclusionContent = CONCLUSION_MESSAGE.content;
-                const conclusionTokens = conclusionContent.split(/(\s+)/);
-                const conclusionTimer = setTimeout(() => {
-                  setMessages((prev2) => [
-                    ...prev2,
-                    { role: 'assistant', content: '', streaming: true },
-                  ]);
-                  let conclusionBuilt = '';
-                  conclusionTokens.forEach((token, ci) => {
-                    const cTimer = setTimeout(() => {
-                      conclusionBuilt += token;
-                      setMessages((prev2) => {
-                        const updated = [...prev2];
-                        updated[updated.length - 1] = {
-                          role: 'assistant',
-                          content: conclusionBuilt,
-                          streaming: ci < conclusionTokens.length - 1,
-                        };
-                        return updated;
-                      });
-                    }, ci * 30);
-                    streamTimers.current.push(cTimer);
-                  });
-                }, 300);
-                streamTimers.current.push(conclusionTimer);
-              }
-              return next;
-            });
+      const textDelayTimer = setTimeout(() => {
+        // Split into words, preserving newlines as separate tokens
+        const tokens = fullContent.split(/(\s+)/);
 
-            // Stream follow-up messages if defined
-            if (mockResponse.followUps && mockResponse.followUps.length > 0) {
-              let followUpDelay = 800;
-              mockResponse.followUps.forEach((followUp) => {
-                const fuTimer = setTimeout(() => {
-                  const fuTokens = followUp.content.split(/(\s+)/);
-                  setMessages((prev2) => [
-                    ...prev2,
-                    { role: 'assistant', content: '', streaming: true, attachment: followUp.attachment },
-                  ]);
-                  let fuBuilt = '';
-                  fuTokens.forEach((fuToken, fi) => {
-                    const fTimer = setTimeout(() => {
-                      fuBuilt += fuToken;
-                      setMessages((prev2) => {
-                        const updated = [...prev2];
-                        updated[updated.length - 1] = {
-                          role: 'assistant',
-                          content: fuBuilt,
-                          streaming: fi < fuTokens.length - 1,
-                          attachment: followUp.attachment,
-                        };
-                        return updated;
-                      });
-                    }, fi * 30);
-                    streamTimers.current.push(fTimer);
-                  });
-                }, followUpDelay);
-                streamTimers.current.push(fuTimer);
-                followUpDelay += 1500;
+        let built = '';
+        tokens.forEach((token, i) => {
+          const timer = setTimeout(() => {
+            built += token;
+            setMessages((prev) => {
+              const updated = [...prev];
+              updated[updated.length - 1] = {
+                role: 'assistant',
+                content: built,
+                streaming: i < tokens.length - 1,
+                attachment,
+                attachments,
+              };
+              return updated;
+            });
+            // After last token, add follow-up if both logs and traces are done
+            if (i === tokens.length - 1) {
+              // Add link-preview attachments to canvas
+              const newAtts = (
+                attachments || (attachment ? [attachment] : [])
+              ).filter((a) => a.type === 'link-preview');
+              if (newAtts.length > 0) {
+                setCanvasItems((prev) => [...prev, ...newAtts]);
+              }
+              if (mockResponse.id) {
+                setCompletedScriptedIds(
+                  (prev) => new Set([...prev, mockResponse.id])
+                );
+              }
+              setCompletedScriptedIds((prev) => {
+                const next = new Set([...prev]);
+                if (mockResponse.id) next.add(mockResponse.id);
+                if (
+                  next.has('logs') &&
+                  next.has('traces') &&
+                  !next.has('conclusion')
+                ) {
+                  next.add('conclusion');
+                  const conclusionContent = CONCLUSION_MESSAGE.content;
+                  const conclusionTokens = conclusionContent.split(/(\s+)/);
+                  const conclusionTimer = setTimeout(() => {
+                    setMessages((prev2) => [
+                      ...prev2,
+                      { role: 'assistant', content: '', streaming: true },
+                    ]);
+                    let conclusionBuilt = '';
+                    conclusionTokens.forEach((token, ci) => {
+                      const cTimer = setTimeout(() => {
+                        conclusionBuilt += token;
+                        setMessages((prev2) => {
+                          const updated = [...prev2];
+                          updated[updated.length - 1] = {
+                            role: 'assistant',
+                            content: conclusionBuilt,
+                            streaming: ci < conclusionTokens.length - 1,
+                          };
+                          return updated;
+                        });
+                      }, ci * 30);
+                      streamTimers.current.push(cTimer);
+                    });
+                  }, 300);
+                  streamTimers.current.push(conclusionTimer);
+                }
+                return next;
               });
+
+              // Stream follow-up messages if defined
+              if (mockResponse.followUps && mockResponse.followUps.length > 0) {
+                let followUpDelay = 800;
+                mockResponse.followUps.forEach((followUp) => {
+                  const fuTimer = setTimeout(() => {
+                    const fuTokens = followUp.content.split(/(\s+)/);
+                    setMessages((prev2) => [
+                      ...prev2,
+                      {
+                        role: 'assistant',
+                        content: '',
+                        streaming: true,
+                        attachment: followUp.attachment,
+                      },
+                    ]);
+                    let fuBuilt = '';
+                    fuTokens.forEach((fuToken, fi) => {
+                      const fTimer = setTimeout(() => {
+                        fuBuilt += fuToken;
+                        setMessages((prev2) => {
+                          const updated = [...prev2];
+                          updated[updated.length - 1] = {
+                            role: 'assistant',
+                            content: fuBuilt,
+                            streaming: fi < fuTokens.length - 1,
+                            attachment: followUp.attachment,
+                          };
+                          return updated;
+                        });
+                      }, fi * 30);
+                      streamTimers.current.push(fTimer);
+                    });
+                  }, followUpDelay);
+                  streamTimers.current.push(fuTimer);
+                  followUpDelay += 1500;
+                });
+              }
             }
-          }
-        }, i * 30);
-        streamTimers.current.push(timer);
-      });
+          }, i * 30);
+          streamTimers.current.push(timer);
+        });
+      }, 2000);
+      streamTimers.current.push(textDelayTimer);
     }, 6500);
     streamTimers.current.push(t3);
   };
@@ -2115,52 +2263,63 @@ export const ThreadPage = ({
       {/* Body: feed + optional canvas flyout */}
       <div className="threadPage__body">
         {/* Conversation column */}
-        <div className="threadPage__conversationCol">
+        <div
+          className="threadPage__conversationCol"
+          onWheel={(e) => {
+            if (feedRef.current) {
+              const el = feedRef.current;
+              const isOverFeed = el.contains(e.target);
+              if (!isOverFeed) {
+                el.scrollTop += e.deltaY * 1.2;
+                e.preventDefault();
+              }
+            }
+          }}>
           {/* Conversation feed — scrollable */}
-          <div className="threadPage__feed" ref={feedRef}>
+          <div
+            className={`threadPage__feed${
+              feedScrolled ? ' threadPage__feed--hasOverflow' : ''
+            }`}
+            ref={feedRef}
+            onScroll={() => {
+              if (!feedRef.current) return;
+              const { scrollTop, scrollHeight, clientHeight } = feedRef.current;
+              const distFromBottom = scrollHeight - scrollTop - clientHeight;
+              setShowScrollButton(distFromBottom > 100);
+              setFeedScrolled(distFromBottom > 10);
+            }}>
             {messages.length === 0 && !isTyping && (
               <div className="threadPage__emptyState">
-                <div
-                  className="threadPage__emptyMascot threadPage__emptyMascot--popIn"
-                  ref={(el) => {
-                    if (el && !el.dataset.ready) {
-                      el.addEventListener('animationend', () => {
-                        el.classList.remove('threadPage__emptyMascot--popIn');
-                        el.classList.add('threadPage__emptyMascot--ready');
-                        el.dataset.ready = 'true';
-                      }, { once: true });
-                    }
-                  }}
-                  onMouseDown={(e) => {
-                    e.currentTarget.classList.add('threadPage__emptyMascot--squish');
-                  }}
-                  onMouseUp={(e) => {
-                    e.currentTarget.classList.remove('threadPage__emptyMascot--squish');
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.classList.remove('threadPage__emptyMascot--squish');
-                  }}
-                  style={{ cursor: 'pointer' }}>
-                  <Mascot size={48} expression={undefined} idle bob={false} follow={false} color={mascotColor} eyeColor={mascotEyeColor} />
-                </div>
-                <h3 className="threadPage__emptyTitle">How can I help?</h3>
+                <OllyIdle
+                  size={48}
+                  winkOnMount={false}
+                  follow
+                  className="threadPage__emptyMascot"
+                />
+                <h3 className="threadPage__emptyTitle">{emptyChatTitle}</h3>
                 <div className="threadPage__emptySuggestions">
                   <button
                     type="button"
                     className="threadPage__emptySuggestion"
-                    onClick={() => { setMessage('Summarize this page'); }}>
+                    onClick={() => {
+                      setMessage('Summarize this page');
+                    }}>
                     Summarize this page
                   </button>
                   <button
                     type="button"
                     className="threadPage__emptySuggestion"
-                    onClick={() => { setMessage('Find anomalies'); }}>
+                    onClick={() => {
+                      setMessage('Find anomalies');
+                    }}>
                     Find anomalies
                   </button>
                   <button
                     type="button"
                     className="threadPage__emptySuggestion"
-                    onClick={() => { setMessage('Explain the data'); }}>
+                    onClick={() => {
+                      setMessage('Explain the data');
+                    }}>
                     Explain the data
                   </button>
                 </div>
@@ -2205,14 +2364,17 @@ export const ThreadPage = ({
                   attachment={msg.attachment}
                   attachments={msg.attachments}
                   onViewAsPage={handleViewAsPage}
+                  mascotColor={mascotColor}
+                  mascotEyeColor={mascotEyeColor}
+                  isLastAssistant={
+                    i === messages.findLastIndex((m) => m.role === 'assistant')
+                  }
+                  isTyping={isTyping}
                 />
               );
             })}
             {isTyping && null}
-          </div>
-
-          {/* Input area — textarea with buttons inside at bottom */}
-          <div className="threadPage__inputArea">
+            {/* Suggested prompts — inside the chat feed */}
             {(() => {
               if (
                 message.trim() ||
@@ -2270,234 +2432,7 @@ export const ThreadPage = ({
                       onClick={() => {
                         setMessage(prompt);
                         hasInteracted.current = true;
-                        setTimeout(() => {
-                          setMessage('');
-                          const userMsg = {
-                            role: 'user',
-                            author: 'You',
-                            content: prompt,
-                          };
-                          setMessages((prev) => [...prev, userMsg]);
-                          setIsTyping(true);
-                          const scripted =
-                            SCRIPTED_RESPONSES[effectiveScriptedKey];
-                          let mockResponse;
-                          let tasks;
-                          if (scripted) {
-                            const matched = Object.values(scripted).find(
-                              (item) => item.match && item.match.test(prompt)
-                            );
-                            if (matched) {
-                              mockResponse = matched;
-                              tasks =
-                                matched.tasks ||
-                                MOCK_TASKS[
-                                  responseIndex.current % MOCK_TASKS.length
-                                ];
-                            } else {
-                              const idx =
-                                responseIndex.current % MOCK_RESPONSES.length;
-                              mockResponse = MOCK_RESPONSES[idx];
-                              tasks = MOCK_TASKS[idx % MOCK_TASKS.length];
-                            }
-                          } else {
-                            const idx =
-                              responseIndex.current % MOCK_RESPONSES.length;
-                            mockResponse = MOCK_RESPONSES[idx];
-                            tasks = MOCK_TASKS[idx % MOCK_TASKS.length];
-                          }
-                          responseIndex.current += 1;
-                          const fullContent = mockResponse.content;
-                          const attachment = mockResponse.attachment;
-                          const attachments = mockResponse.attachments;
-                          const taskMsg = {
-                            role: 'tasks',
-                            tasks,
-                            statuses: ['running'],
-                            collapsed: false,
-                          };
-                          setMessages((prev) => [...prev, taskMsg]);
-                          const t1 = setTimeout(() => {
-                            setMessages((prev) => {
-                              const updated = [...prev];
-                              const ti = updated.findLastIndex(
-                                (m) => m.role === 'tasks'
-                              );
-                              if (ti >= 0)
-                                updated[ti] = {
-                                  ...updated[ti],
-                                  statuses: ['done', 'running'],
-                                };
-                              return updated;
-                            });
-                          }, 3000);
-                          streamTimers.current.push(t1);
-                          const t2 = setTimeout(() => {
-                            setMessages((prev) => {
-                              const updated = [...prev];
-                              const ti = updated.findLastIndex(
-                                (m) => m.role === 'tasks'
-                              );
-                              if (ti >= 0)
-                                updated[ti] = {
-                                  ...updated[ti],
-                                  statuses: ['done', 'done'],
-                                };
-                              return updated;
-                            });
-                          }, 6000);
-                          streamTimers.current.push(t2);
-                          const t3 = setTimeout(() => {
-                            setMessages((prev) => {
-                              const updated = [...prev];
-                              const ti = updated.findLastIndex(
-                                (m) => m.role === 'tasks'
-                              );
-                              if (ti >= 0)
-                                updated[ti] = {
-                                  ...updated[ti],
-                                  collapsed: true,
-                                };
-                              return updated;
-                            });
-                            setIsTyping(false);
-                            const tokens = fullContent.split(/(\s+)/);
-                            setMessages((prev) => [
-                              ...prev,
-                              {
-                                role: 'assistant',
-                                content: '',
-                                streaming: true,
-                                attachment,
-                                attachments,
-                              },
-                            ]);
-                            let built = '';
-                            tokens.forEach((token, i) => {
-                              const timer = setTimeout(() => {
-                                built += token;
-                                setMessages((prev) => {
-                                  const updated = [...prev];
-                                  updated[updated.length - 1] = {
-                                    role: 'assistant',
-                                    content: built,
-                                    streaming: i < tokens.length - 1,
-                                    attachment,
-                                    attachments,
-                                  };
-                                  return updated;
-                                });
-                                if (i === tokens.length - 1) {
-                                  // Add link-preview attachments to canvas
-                                  const newAtts = (
-                                    attachments ||
-                                    (attachment ? [attachment] : [])
-                                  ).filter((a) => a.type === 'link-preview');
-                                  if (newAtts.length > 0) {
-                                    setCanvasItems((prev) => [
-                                      ...prev,
-                                      ...newAtts,
-                                    ]);
-                                  }
-                                  if (mockResponse.id) {
-                                    setCompletedScriptedIds(
-                                      (prev) =>
-                                        new Set([...prev, mockResponse.id])
-                                    );
-                                  }
-                                  setCompletedScriptedIds((prev) => {
-                                    const next = new Set([...prev]);
-                                    if (mockResponse.id)
-                                      next.add(mockResponse.id);
-                                    if (
-                                      next.has('logs') &&
-                                      next.has('traces') &&
-                                      !next.has('conclusion')
-                                    ) {
-                                      next.add('conclusion');
-                                      const conclusionContent =
-                                        CONCLUSION_MESSAGE.content;
-                                      const conclusionTokens = conclusionContent.split(
-                                        /(\s+)/
-                                      );
-                                      const conclusionTimer = setTimeout(() => {
-                                        setMessages((prev2) => [
-                                          ...prev2,
-                                          {
-                                            role: 'assistant',
-                                            content: '',
-                                            streaming: true,
-                                          },
-                                        ]);
-                                        let conclusionBuilt = '';
-                                        conclusionTokens.forEach(
-                                          (token2, ci) => {
-                                            const cTimer = setTimeout(() => {
-                                              conclusionBuilt += token2;
-                                              setMessages((prev2) => {
-                                                const updated2 = [...prev2];
-                                                updated2[
-                                                  updated2.length - 1
-                                                ] = {
-                                                  role: 'assistant',
-                                                  content: conclusionBuilt,
-                                                  streaming:
-                                                    ci <
-                                                    conclusionTokens.length - 1,
-                                                };
-                                                return updated2;
-                                              });
-                                            }, ci * 30);
-                                            streamTimers.current.push(cTimer);
-                                          }
-                                        );
-                                      }, 300);
-                                      streamTimers.current.push(
-                                        conclusionTimer
-                                      );
-                                    }
-                                    return next;
-                                  });
-
-                                  // Stream follow-up messages if defined
-                                  if (mockResponse.followUps && mockResponse.followUps.length > 0) {
-                                    let followUpDelay = 800;
-                                    mockResponse.followUps.forEach((followUp) => {
-                                      const fuTimer = setTimeout(() => {
-                                        const fuTokens = followUp.content.split(/(\s+)/);
-                                        setMessages((prev2) => [
-                                          ...prev2,
-                                          { role: 'assistant', content: '', streaming: true, attachment: followUp.attachment },
-                                        ]);
-                                        let fuBuilt = '';
-                                        fuTokens.forEach((fuToken, fi) => {
-                                          const fTimer = setTimeout(() => {
-                                            fuBuilt += fuToken;
-                                            setMessages((prev2) => {
-                                              const updated2 = [...prev2];
-                                              updated2[updated2.length - 1] = {
-                                                role: 'assistant',
-                                                content: fuBuilt,
-                                                streaming: fi < fuTokens.length - 1,
-                                                attachment: followUp.attachment,
-                                              };
-                                              return updated2;
-                                            });
-                                          }, fi * 30);
-                                          streamTimers.current.push(fTimer);
-                                        });
-                                      }, followUpDelay);
-                                      streamTimers.current.push(fuTimer);
-                                      followUpDelay += 1500;
-                                    });
-                                  }
-                                }
-                              }, i * 30);
-                              streamTimers.current.push(timer);
-                            });
-                          }, 6500);
-                          streamTimers.current.push(t3);
-                        }, 0);
+                        setTimeout(() => handleSend(prompt), 0);
                       }}>
                       {prompt}
                     </OuiSmallButtonEmpty>
@@ -2505,6 +2440,30 @@ export const ThreadPage = ({
                 </div>
               );
             })()}
+          </div>
+
+          <OuiThreadScrollButton
+            isVisible={showScrollButton}
+            onClick={() => {
+              if (feedRef.current) {
+                feedRef.current.scrollTo({
+                  top: feedRef.current.scrollHeight,
+                  behavior: 'smooth',
+                });
+                setShowScrollButton(false);
+              }
+            }}
+            style={{
+              position: 'absolute',
+              bottom: 140,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 5,
+            }}
+          />
+
+          {/* Input area — textarea with buttons inside at bottom */}
+          <div className="threadPage__inputArea">
             <div className="threadPage__inputWrapper">
               <OuiCompressedTextArea
                 placeholder="Ask anything. Type / for actions."
@@ -2518,24 +2477,114 @@ export const ThreadPage = ({
                 className="threadPage__textarea"
               />
               <div className="threadPage__inputActions">
-                <OuiButtonIcon
-                  iconType="plus"
-                  aria-label="Add attachment"
-                  size="s"
-                  color="text"
-                />
-                <OuiButtonIcon
-                  iconType="sortUp"
-                  aria-label="Send message"
-                  display="fill"
-                  size="s"
-                  isDisabled={
-                    !message.trim() ||
-                    isTyping ||
-                    messages.some((m) => m.streaming)
-                  }
-                  onClick={handleSend}
-                />
+                <OuiToolTip
+                  content={isAttachMenuOpen ? '' : 'Attach'}
+                  position="top">
+                  <OuiPopover
+                    button={
+                      <OuiButtonIcon
+                        iconType="plus"
+                        aria-label="Add attachment"
+                        size="s"
+                        color="text"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => setIsAttachMenuOpen((open) => !open)}
+                      />
+                    }
+                    isOpen={isAttachMenuOpen}
+                    closePopover={() => setIsAttachMenuOpen(false)}
+                    anchorPosition="upLeft"
+                    panelPaddingSize="s">
+                    <OuiContextMenu
+                      initialPanelId={0}
+                      panels={[
+                        {
+                          id: 0,
+                          items: [
+                            {
+                              name: 'Upload data',
+                              icon: 'importAction',
+                              onClick: () => setIsAttachMenuOpen(false),
+                            },
+                            {
+                              name: 'Upload file or photo',
+                              icon: 'document',
+                              onClick: () => setIsAttachMenuOpen(false),
+                            },
+                            {
+                              name: 'Take screenshot',
+                              icon: 'fullScreen',
+                              onClick: () => setIsAttachMenuOpen(false),
+                            },
+                            {
+                              name: 'Add to session',
+                              icon: 'folderOpen',
+                              panel: 1,
+                            },
+                          ],
+                        },
+                        {
+                          id: 1,
+                          title: 'Recent sessions',
+                          items: [
+                            {
+                              name: 'Latency spike investigation',
+                              onClick: () => setIsAttachMenuOpen(false),
+                            },
+                            {
+                              name: 'Checkout error rate alert',
+                              onClick: () => setIsAttachMenuOpen(false),
+                            },
+                            {
+                              name: 'Node disk pressure alerts',
+                              onClick: () => setIsAttachMenuOpen(false),
+                            },
+                          ],
+                        },
+                      ]}
+                    />
+                  </OuiPopover>
+                </OuiToolTip>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <OuiToolTip content="Dictate" position="top">
+                    <OuiButtonIcon
+                      aria-label="Dictate"
+                      size="s"
+                      color="text"
+                      display="empty"
+                      iconType={() => (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round">
+                          <path d="M12 19v3" />
+                          <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                          <rect x="9" y="2" width="6" height="13" rx="3" />
+                        </svg>
+                      )}
+                    />
+                  </OuiToolTip>
+                  <OuiToolTip content="Send message" position="top">
+                    <OuiButtonIcon
+                      iconType="sortUp"
+                      aria-label="Send message"
+                      display="fill"
+                      size="s"
+                      isDisabled={
+                        !message.trim() ||
+                        isTyping ||
+                        messages.some((m) => m.streaming)
+                      }
+                      onClick={() => handleSend()}
+                    />
+                  </OuiToolTip>
+                </div>
               </div>
             </div>
           </div>

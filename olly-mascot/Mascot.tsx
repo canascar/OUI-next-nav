@@ -139,7 +139,7 @@ export const Mascot: React.FC<MascotProps> = ({
 }) => {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [autoState, setAutoState] = useState<MascotExpression | null>(null);
-  const [pupilOffset, setPupilOffset] = useState({ x: 0, y: 0 });
+  const [pupilOffset, setPupilOffset] = useState({ x: 0, y: 0, rot: 0 });
 
   // Inject keyframes once.
   useEffect(() => { ensureKeyframes(); }, []);
@@ -179,7 +179,7 @@ export const Mascot: React.FC<MascotProps> = ({
 
   // Cursor tracking.
   useEffect(() => {
-    if (!follow) { setPupilOffset({ x: 0, y: 0 }); return; }
+    if (!follow) { setPupilOffset({ x: 0, y: 0, rot: 0 }); return; }
     const onMove = (e: MouseEvent) => {
       const el = wrapRef.current;
       if (!el) return;
@@ -189,9 +189,14 @@ export const Mascot: React.FC<MascotProps> = ({
       const dx = e.clientX - cx;
       const dy = e.clientY - cy;
       const len = Math.hypot(dx, dy) || 1;
-      const maxOff = 1.2;
+      const maxOff = 3;
+      const maxRot = 14; // degrees — eyes tilt toward the cursor
       const k = Math.min(len / 220, 1);
-      setPupilOffset({ x: (dx / len) * maxOff * k, y: (dy / len) * maxOff * k });
+      setPupilOffset({
+        x: (dx / len) * maxOff * k,
+        y: (dy / len) * maxOff * k,
+        rot: (dx / len) * maxRot * k,
+      });
     };
     window.addEventListener("mousemove", onMove);
     return () => window.removeEventListener("mousemove", onMove);
@@ -252,7 +257,8 @@ export const Mascot: React.FC<MascotProps> = ({
         <circle cx="40" cy="40" r="39.5" fill={`url(#${gid})`} />
         <ellipse cx="28" cy="22" rx="22" ry="14" fill={`url(#${gid}_hl)`} />
         <g
-          transform={`translate(${EYE_CX}, ${EYE_CY}) scale(${eyeScale}) translate(${-EYE_CX + pupilOffset.x / eyeScale}, ${-EYE_CY + pupilOffset.y / eyeScale})`}
+          transform={`translate(${EYE_CX}, ${EYE_CY}) rotate(${pupilOffset.rot}) scale(${eyeScale}) translate(${-EYE_CX + pupilOffset.x / eyeScale}, ${-EYE_CY + pupilOffset.y / eyeScale})`}
+          style={{ transition: "transform 120ms ease-out" }}
         >
           <path key={`l-${active}`} d={geom.left}  fill={eyeColor} style={{ animation: "__mascot_eye_pop__ 160ms ease-out", transformOrigin: "center" }} />
           <path key={`r-${active}`} d={geom.right} fill={eyeColor} style={{ animation: "__mascot_eye_pop__ 160ms ease-out", transformOrigin: "center" }} />

@@ -5,10 +5,7 @@
 
 import React from 'react';
 
-import {
-  OuiInsightCallout,
-  OuiSpacer,
-} from '../../../../src/components';
+import { OuiInsightCallout, OuiSpacer } from '../../../../src/components';
 
 export default () => (
   <div style={{ maxWidth: 480 }}>

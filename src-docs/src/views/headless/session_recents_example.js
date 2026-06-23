@@ -19,8 +19,8 @@ export const SessionRecentsExample = {
         <p>
           <strong>OuiSessionRecents</strong> displays a list of recent session
           items with a dock-magnification hover effect, mouse-down squish,
-          separator fading, and an animated arrow indicator. Use it for
-          AI investigation threads, recent alerts, or any clickable item list.
+          separator fading, and an animated arrow indicator. Use it for AI
+          investigation threads, recent alerts, or any clickable item list.
         </p>
       ),
       source: [

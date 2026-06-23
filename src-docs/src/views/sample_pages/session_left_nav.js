@@ -58,8 +58,16 @@ export const SessionLeftNav = ({
     navPopoverTimer.current = setTimeout(() => setNavPopover(null), 150);
   }, []);
 
+  // Glass nav surface is visible by default (empty session, recents, library,
+  // onboarding) and fades out when viewing an active (non-empty) session.
+  const inActiveSession = activeView === 'session' && !isEmptySession;
+
   return (
-    <nav className="sessionLeftNav" aria-label="Session navigation">
+    <nav
+      className={`sessionLeftNav${
+        inActiveSession ? ' sessionLeftNav--inSession' : ''
+      }`}
+      aria-label="Session navigation">
       {/* Logo */}
       <div className="sessionLeftNav__logo">
         <OuiIcon type="logoOpenSearch" size="l" />
@@ -99,62 +107,71 @@ export const SessionLeftNav = ({
             isDisabled
           />
         ) : (
-        <div
-          onMouseEnter={() => openNavPopover('sessions')}
-          onMouseLeave={() => closeNavPopover()}>
-          <OuiPopover
-            button={
-              <div className="sessionLeftNav__sessionsButtonWrap">
-                <OuiButtonIcon
-                  className="sessionLeftNav__actionButton"
-                  iconType="navTicketing"
-                  aria-label="All sessions"
-                  color="text"
-                  display="empty"
-                  onClick={onBrowseSessions}
-                />
-              </div>
-            }
-            isOpen={navPopover === 'sessions'}
-            closePopover={() => setNavPopover(null)}
-            anchorPosition="rightUp"
-            panelPaddingSize="s"
-            panelClassName="samplePagesLeftNav__popoverPanel">
-            <div
-              onMouseEnter={() => openNavPopover('sessions')}
-              onMouseLeave={() => closeNavPopover()}>
-              <div className="samplePagesLeftNav__threadPopover">
-                <div className="samplePagesLeftNav__threadPopoverHeader">
-                  <span>Recent sessions</span>
+          <div
+            onMouseEnter={() => openNavPopover('sessions')}
+            onMouseLeave={() => closeNavPopover()}>
+            <OuiPopover
+              button={
+                <div className="sessionLeftNav__sessionsButtonWrap">
+                  <OuiButtonIcon
+                    className="sessionLeftNav__actionButton"
+                    iconType="navTicketing"
+                    aria-label="All sessions"
+                    color="text"
+                    display="empty"
+                    onClick={onBrowseSessions}
+                  />
                 </div>
-                <div className="samplePagesLeftNav__threadPopoverContent">
-                  {sessions.slice(0, 5).map((session) => (
-                    <button
-                      key={session.id}
-                      type="button"
-                      className="samplePagesLeftNav__threadPopoverItem"
+              }
+              isOpen={navPopover === 'sessions'}
+              closePopover={() => setNavPopover(null)}
+              anchorPosition="rightUp"
+              panelPaddingSize="s"
+              panelClassName="samplePagesLeftNav__popoverPanel">
+              <div
+                onMouseEnter={() => openNavPopover('sessions')}
+                onMouseLeave={() => closeNavPopover()}>
+                <div className="samplePagesLeftNav__threadPopover">
+                  <div className="samplePagesLeftNav__threadPopoverHeader">
+                    <span>Recent sessions</span>
+                  </div>
+                  <div className="samplePagesLeftNav__threadPopoverContent">
+                    {sessions.slice(0, 5).map((session) => (
+                      <button
+                        key={session.id}
+                        type="button"
+                        className="samplePagesLeftNav__threadPopoverItem"
+                        onClick={() => {
+                          setNavPopover(null);
+                          onSelectSession(session.id);
+                        }}>
+                        <span className="samplePagesLeftNav__threadPopoverTitle">
+                          {session.title}
+                        </span>
+                        <span className="samplePagesLeftNav__threadPopoverSubtitle">
+                          {session.tabs.length > 0
+                            ? `${session.tabs.length} ${
+                                session.tabs.length === 1 ? 'tab' : 'tabs'
+                              }`
+                            : 'No tabs'}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                  <div className="samplePagesLeftNav__threadPopoverFooter">
+                    <OuiButtonEmpty
+                      size="xs"
                       onClick={() => {
                         setNavPopover(null);
-                        onSelectSession(session.id);
+                        onBrowseSessions();
                       }}>
-                      <span className="samplePagesLeftNav__threadPopoverTitle">
-                        {session.title}
-                      </span>
-                      <span className="samplePagesLeftNav__threadPopoverSubtitle">
-                        {session.tabs.length > 0 ? `${session.tabs.length} ${session.tabs.length === 1 ? 'tab' : 'tabs'}` : 'No tabs'}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-                <div className="samplePagesLeftNav__threadPopoverFooter">
-                  <OuiButtonEmpty size="xs" onClick={() => { setNavPopover(null); onBrowseSessions(); }}>
-                    View all
-                  </OuiButtonEmpty>
+                      View all
+                    </OuiButtonEmpty>
+                  </div>
                 </div>
               </div>
-            </div>
-          </OuiPopover>
-        </div>
+            </OuiPopover>
+          </div>
         )}
 
         {disableActions ? (
@@ -174,7 +191,9 @@ export const SessionLeftNav = ({
                   ? ' sessionLeftNav__actionButton--active'
                   : ''
               }`}
-              iconType={activeView === 'library' ? 'folderOpen' : 'folderClosed'}
+              iconType={
+                activeView === 'library' ? 'folderOpen' : 'folderClosed'
+              }
               aria-label="Library"
               color="text"
               display="empty"
@@ -198,45 +217,45 @@ export const SessionLeftNav = ({
             />
           </div>
         ) : (
-        <div
-          className="sessionLeftNav__footerButton"
-          onMouseEnter={() => openNavPopover('workspace-footer')}
-          onMouseLeave={() => closeNavPopover()}>
-          <OuiPopover
-            button={
-              <OuiButtonIcon
-                iconType="wsSelector"
-                aria-label="Workspace"
-                color="text"
-                display="empty"
-                size="xs"
-              />
-            }
-            isOpen={navPopover === 'workspace-footer'}
-            closePopover={() => setNavPopover(null)}
-            anchorPosition="rightDown"
-            panelPaddingSize="s"
-            panelClassName="samplePagesLeftNav__popoverPanel">
-            <div
-              onMouseEnter={() => openNavPopover('workspace-footer')}
-              onMouseLeave={() => closeNavPopover()}>
-              <WorkspaceNavPanelContent
-                onPageChange={() => {
-                  setNavPopover(null);
-                }}
-                onOpenPanel={() => {
-                  setNavPopover(null);
-                }}
-                onItemSelect={() => {
-                  setNavPopover(null);
-                }}
-                onPopoverNavigate={() => {
-                  setNavPopover(null);
-                }}
-              />
-            </div>
-          </OuiPopover>
-        </div>
+          <div
+            className="sessionLeftNav__footerButton"
+            onMouseEnter={() => openNavPopover('workspace-footer')}
+            onMouseLeave={() => closeNavPopover()}>
+            <OuiPopover
+              button={
+                <OuiButtonIcon
+                  iconType="wsSelector"
+                  aria-label="Workspace"
+                  color="text"
+                  display="empty"
+                  size="xs"
+                />
+              }
+              isOpen={navPopover === 'workspace-footer'}
+              closePopover={() => setNavPopover(null)}
+              anchorPosition="rightDown"
+              panelPaddingSize="s"
+              panelClassName="samplePagesLeftNav__popoverPanel">
+              <div
+                onMouseEnter={() => openNavPopover('workspace-footer')}
+                onMouseLeave={() => closeNavPopover()}>
+                <WorkspaceNavPanelContent
+                  onPageChange={() => {
+                    setNavPopover(null);
+                  }}
+                  onOpenPanel={() => {
+                    setNavPopover(null);
+                  }}
+                  onItemSelect={() => {
+                    setNavPopover(null);
+                  }}
+                  onPopoverNavigate={() => {
+                    setNavPopover(null);
+                  }}
+                />
+              </div>
+            </OuiPopover>
+          </div>
         )}
         <div className="sessionLeftNav__footerButton">
           <OuiToolTip content="Developer tools" position="right">
@@ -297,7 +316,12 @@ export const SessionLeftNav = ({
             <div
               onMouseEnter={() => openNavPopover('profile')}
               onMouseLeave={() => closeNavPopover()}>
-              <ProfilePopoverContent />
+              <ProfilePopoverContent
+                onPageChange={(page) => {
+                  setNavPopover(null);
+                  window.location.href = `#/${page}`;
+                }}
+              />
             </div>
           </OuiPopover>
         </div>

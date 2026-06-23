@@ -52,7 +52,8 @@ export const OuiThreadList: FunctionComponent<OuiThreadListProps> = ({
     {
       'ouiThreadList--flush': flush,
       'ouiThreadList--bordered': bordered,
-      [`ouiThreadList--gutterSize${gutterSize.toUpperCase()}`]: gutterSize !== 'none',
+      [`ouiThreadList--gutterSize${gutterSize.toUpperCase()}`]:
+        gutterSize !== 'none',
     },
     className
   );

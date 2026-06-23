@@ -40,7 +40,9 @@ export const OuiSessionRecents: FunctionComponent<OuiSessionRecentsProps> = ({
   const handleHover = useCallback((hoveredIndex: number) => {
     if (!listRef.current) return;
     const els = listRef.current.querySelectorAll('.ouiSessionRecents__item');
-    const seps = listRef.current.querySelectorAll('.ouiSessionRecents__separator');
+    const seps = listRef.current.querySelectorAll(
+      '.ouiSessionRecents__separator'
+    );
     els.forEach((el, i) => {
       const distance = Math.abs(i - hoveredIndex);
       let scale = 1;
@@ -72,18 +74,26 @@ export const OuiSessionRecents: FunctionComponent<OuiSessionRecentsProps> = ({
 
   const handleMouseLeave = useCallback(() => {
     if (!listRef.current) return;
-    listRef.current.querySelectorAll('.ouiSessionRecents__item').forEach((el) => {
-      (el as HTMLElement).style.transform = '';
-    });
-    listRef.current.querySelectorAll('.ouiSessionRecents__separator').forEach((el) => {
-      (el as HTMLElement).style.opacity = '';
-    });
+    listRef.current
+      .querySelectorAll('.ouiSessionRecents__item')
+      .forEach((el) => {
+        (el as HTMLElement).style.transform = '';
+      });
+    listRef.current
+      .querySelectorAll('.ouiSessionRecents__separator')
+      .forEach((el) => {
+        (el as HTMLElement).style.opacity = '';
+      });
   }, []);
 
   const classes = classNames('ouiSessionRecents', className);
 
   return (
-    <div className={classes} ref={listRef} onMouseLeave={handleMouseLeave} {...rest}>
+    <div
+      className={classes}
+      ref={listRef}
+      onMouseLeave={handleMouseLeave}
+      {...rest}>
       {title && (
         <div className="ouiSessionRecents__header">
           <h5 className="ouiSessionRecents__title">{title}</h5>
@@ -101,9 +111,17 @@ export const OuiSessionRecents: FunctionComponent<OuiSessionRecentsProps> = ({
             onMouseDown={() => handleMouseDown(index)}
             onMouseUp={() => handleHover(index)}>
             <div className="ouiSessionRecents__itemContent">
-              {item.title && <p className="ouiSessionRecents__itemTitle">{item.title}</p>}
-              {item.description && <p className="ouiSessionRecents__itemDescription">{item.description}</p>}
-              {item.meta && <p className="ouiSessionRecents__itemMeta">{item.meta}</p>}
+              {item.title && (
+                <p className="ouiSessionRecents__itemTitle">{item.title}</p>
+              )}
+              {item.description && (
+                <p className="ouiSessionRecents__itemDescription">
+                  {item.description}
+                </p>
+              )}
+              {item.meta && (
+                <p className="ouiSessionRecents__itemMeta">{item.meta}</p>
+              )}
             </div>
             <span className="ouiSessionRecents__arrow">→</span>
           </button>

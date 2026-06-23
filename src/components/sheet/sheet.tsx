@@ -64,7 +64,10 @@ export interface OuiSheetProps
   closeButtonAriaLabel?: string;
 }
 
-export const OuiSheet = forwardRef<HTMLDivElement, PropsWithChildren<OuiSheetProps>>(
+export const OuiSheet = forwardRef<
+  HTMLDivElement,
+  PropsWithChildren<OuiSheetProps>
+>(
   (
     {
       className,
@@ -103,9 +106,7 @@ export const OuiSheet = forwardRef<HTMLDivElement, PropsWithChildren<OuiSheetPro
     };
 
     const closeButton = !hideCloseButton && (
-      <OuiI18n
-        token="ouiSheet.closeAriaLabel"
-        default="Close this dialog">
+      <OuiI18n token="ouiSheet.closeAriaLabel" default="Close this dialog">
         {(closeAriaLabel: string) => (
           <OuiButtonIcon
             display="empty"

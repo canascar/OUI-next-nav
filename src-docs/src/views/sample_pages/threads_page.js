@@ -109,7 +109,7 @@ export const ThreadsPage = ({ onPageChange }) => {
   const [greeting, setGreeting] = useState(getRandomGreeting);
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
-  
+
   // Background color matching the parent container
   const bgColor = isDark ? '#060D1A' : '#F4F6FB';
 
@@ -150,15 +150,17 @@ export const ThreadsPage = ({ onPageChange }) => {
           z-index: 10;
         }
       `}</style>
-      
+
       {/* Sticky header section */}
-      <div className="threadsPageHeader" style={{ 
-        maxWidth: 900, 
-        width: '100%', 
-        margin: '0 auto',
-        padding: '24px 16px 0',
-        backgroundColor: bgColor,
-      }}>
+      <div
+        className="threadsPageHeader"
+        style={{
+          maxWidth: 900,
+          width: '100%',
+          margin: '0 auto',
+          padding: '24px 16px 0',
+          backgroundColor: bgColor,
+        }}>
         <OuiSpacer size="xl" />
 
         {/* Hero heading */}
@@ -208,31 +210,41 @@ export const ThreadsPage = ({ onPageChange }) => {
           justifyContent="center">
           {QUICK_ACTIONS.map((action, i) => (
             <OuiFlexItem key={i} grow={false}>
-              <OuiBadge iconType={action.icon} color="primary" onClick={() => {}} onClickAriaLabel={action.label}>
+              <OuiBadge
+                iconType={action.icon}
+                color="primary"
+                onClick={() => {}}
+                onClickAriaLabel={action.label}>
                 {action.label}
               </OuiBadge>
             </OuiFlexItem>
           ))}
           <OuiFlexItem grow={false}>
-            <OuiBadge iconType="plus" color="primary" onClick={() => {}} onClickAriaLabel="More">
+            <OuiBadge
+              iconType="plus"
+              color="primary"
+              onClick={() => {}}
+              onClickAriaLabel="More">
               More
             </OuiBadge>
           </OuiFlexItem>
         </OuiFlexGroup>
-        
+
         <OuiSpacer size="xl" />
       </div>
 
       {/* Scrollable content section */}
-      <div style={{ 
-        maxWidth: 900, 
-        width: '100%', 
-        margin: '0 auto',
-        padding: '0 16px 24px'
-      }}>
+      <div
+        style={{
+          maxWidth: 900,
+          width: '100%',
+          margin: '0 auto',
+          padding: '0 16px 24px',
+        }}>
         {/* Pick up where you left off */}
         <OuiText size="xs" color="subdued">
-          <strong style={{ letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+          <strong
+            style={{ letterSpacing: '0.05em', textTransform: 'uppercase' }}>
             Pick up where you left off
           </strong>
         </OuiText>
@@ -242,7 +254,9 @@ export const ThreadsPage = ({ onPageChange }) => {
 
         <OuiSpacer size="m" />
         <div style={{ textAlign: 'center' }}>
-          <OuiButtonEmpty size="s" onClick={() => onPageChange && onPageChange('recents')}>
+          <OuiButtonEmpty
+            size="s"
+            onClick={() => onPageChange && onPageChange('recents')}>
             View all threads
           </OuiButtonEmpty>
         </div>
@@ -251,7 +265,8 @@ export const ThreadsPage = ({ onPageChange }) => {
 
         {/* Start something afresh */}
         <OuiText size="xs" color="subdued">
-          <strong style={{ letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+          <strong
+            style={{ letterSpacing: '0.05em', textTransform: 'uppercase' }}>
             Start something afresh
           </strong>
         </OuiText>
@@ -259,7 +274,13 @@ export const ThreadsPage = ({ onPageChange }) => {
 
         <OuiFlexGroup gutterSize="m" wrap>
           {START_CARDS.map((card, i) => (
-            <OuiFlexItem key={i} grow={false} style={{ minWidth: 'calc(33.33% - 12px)', maxWidth: 'calc(33.33% - 12px)' }}>
+            <OuiFlexItem
+              key={i}
+              grow={false}
+              style={{
+                minWidth: 'calc(33.33% - 12px)',
+                maxWidth: 'calc(33.33% - 12px)',
+              }}>
               <OuiPanel paddingSize="m" hasBorder className="startCard">
                 <OuiFlexGroup
                   gutterSize="m"
@@ -281,7 +302,7 @@ export const ThreadsPage = ({ onPageChange }) => {
             </OuiFlexItem>
           ))}
         </OuiFlexGroup>
-        
+
         <OuiSpacer size="xl" />
       </div>
     </div>

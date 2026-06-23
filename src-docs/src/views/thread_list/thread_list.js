@@ -40,6 +40,4 @@ const items = [
   },
 ];
 
-export default () => (
-  <OuiThreadList items={items} bordered />
-);
+export default () => <OuiThreadList items={items} bordered />;

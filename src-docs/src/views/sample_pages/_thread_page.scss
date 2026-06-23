@@ -37,6 +37,8 @@
 .threadPage__feed {
   flex: 1;
   overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
   padding: 12px 16px 16px;
   display: flex;
   flex-direction: column;
@@ -49,6 +51,12 @@
 
   &::-webkit-scrollbar {
     display: none;
+  }
+
+  // Bottom fade gradient when content overflows
+  &--hasOverflow {
+    -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 48px), transparent 100%);
+    mask-image: linear-gradient(to bottom, black calc(100% - 48px), transparent 100%);
   }
 }
 
@@ -65,6 +73,7 @@
 .threadPage__emptyMascot {
   transform-origin: center center;
   cursor: pointer;
+  transition: transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 // Pop-in on load, then squish on click via JS classes
@@ -75,12 +84,12 @@
 .threadPage__emptyMascot--ready {
   animation: none;
   opacity: 1;
-  transition: transform 650ms cubic-bezier(0.2, 1.5, 0.3, 1);
+  transition: transform 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .threadPage__emptyMascot--squish {
   transform: scale(0.72) !important;
-  transition: transform 80ms ease-in !important;
+  transition: transform 120ms cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 @keyframes threadMascotPopIn {
@@ -116,15 +125,24 @@
   color: $ouiColorMediumShade;
   background: none;
   border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  padding: 6px $ouiSize;
+  border-radius: 999px;
+  padding: 8px 18px;
   cursor: pointer;
-  transition: background-color $ouiAnimSpeedFast ease-in-out,
-              border-color $ouiAnimSpeedFast ease-in-out;
+  transition: transform 180ms cubic-bezier(.2,.7,.2,1),
+              background-color 180ms ease,
+              border-color 180ms ease,
+              box-shadow 180ms ease;
 
   &:hover {
     background-color: $ouiFocusBackgroundColor;
-    border-color: $ouiColorMediumShade;
+    border-color: $ouiColorPrimary;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba($ouiColorPrimary, 0.12);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
   }
 }
 
@@ -138,7 +156,8 @@
   }
 
   &--assistant {
-    justify-content: flex-start;
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 
@@ -582,12 +601,20 @@
   color: $ouiColorPrimary;
   border: 1px solid $ouiColorLightShade;
   border-radius: 9999px;
+  transition: transform 180ms cubic-bezier(.2,.7,.2,1), border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
 
   &:hover,
   &:focus {
     color: $ouiColorPrimary;
     border-color: $ouiColorPrimary;
     background-color: rgba($ouiColorPrimary, 0.06);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba($ouiColorPrimary, 0.12);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
   }
 }
 
@@ -613,6 +640,7 @@
   flex: 1;
   min-width: 0;
   overflow: hidden;
+  position: relative;
   transition: opacity 200ms ease-in-out;
 
   .threadPage__body:has(.threadPage__canvasFlyout--expanding) & {
@@ -908,6 +936,18 @@ textarea.threadPage__textarea {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  animation: canvasTabFadeIn 300ms ease-out both;
+}
+
+@keyframes canvasTabFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .threadPage__canvasPageHeader {
@@ -1004,4 +1044,55 @@ textarea.threadPage__textarea {
 .mockCanvasPage--fullBody .ouiPanel,
 .mockCanvasPage .ouiPanel {
   border: 1px solid $ouiBorderColor !important;
+}
+
+// ─── Typing indicator ────────────────────────────────────────
+
+// Response mascot — below the text on the left when done
+.threadPage__responseMascot {
+  margin-top: 4px;
+  animation: threadMascotPopIn 400ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+
+  &--pulsing {
+    animation: threadMascotPopIn 400ms cubic-bezier(0.34, 1.56, 0.64, 1) both,
+               threadMascotPulse 1s ease-in-out 400ms infinite;
+  }
+}
+
+@keyframes threadMascotPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+}
+
+// Streaming row — Olly on left, bubble on right
+.threadPage__assistantStreamRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+
+  .threadPage__responseMascot {
+    flex-shrink: 0;
+    align-self: flex-start;
+    margin-top: 4px;
+  }
+}
+
+@keyframes threadMascotPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// Assistant row — mascot on left, bubble on right
+.threadPage__assistantRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
 }

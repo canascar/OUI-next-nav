@@ -57,19 +57,32 @@
   align-items: center;
   gap: $ouiSizeS;
 
-  // Hide scrollbar but keep scroll functionality
-  scrollbar-width: thin;
+  // Hide scrollbar completely
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 
   &::-webkit-scrollbar {
-    height: 2px;
+    display: none;
   }
 
-  &::-webkit-scrollbar-thumb {
-    background-color: $ouiBorderColor;
-    border-radius: 2px;
+  // Fade right edge only (scrolled to start)
+  &--fade-right {
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 32px), transparent);
+    mask-image: linear-gradient(to right, black calc(100% - 32px), transparent);
+  }
+
+  // Fade left edge only (scrolled to end)
+  &--fade-left {
+    -webkit-mask-image: linear-gradient(to right, transparent, black 32px);
+    mask-image: linear-gradient(to right, transparent, black 32px);
+  }
+
+  // Fade both edges (scrolled in the middle)
+  &--fade-both {
+    -webkit-mask-image: linear-gradient(to right, transparent, black 32px, black calc(100% - 32px), transparent);
+    mask-image: linear-gradient(to right, transparent, black 32px, black calc(100% - 32px), transparent);
   }
 }
-
 // Separator between tabs
 .pagePanel__tabSeparator {
   width: 1px;
@@ -168,6 +181,7 @@
 .pagePanel__tabListPopover {
   display: flex;
   flex-direction: column;
+  gap: 1px;
   min-width: 180px;
 }
 
@@ -182,14 +196,28 @@
   color: $ouiTextColor;
   cursor: pointer;
   border-radius: $ouiBorderRadius;
+  transition: background-color 120ms ease;
 
   &:hover {
-    background-color: $ouiColorLightestShade;
+    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.10), rgba($ouiColorPrimary, 0.18));
   }
 
   &--active {
     font-weight: 600;
-    background-color: rgba($ouiColorPrimary, 0.05);
+    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.14), rgba($ouiColorPrimary, 0.24));
+  }
+
+  &--active:hover {
+    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.18), rgba($ouiColorPrimary, 0.30));
+  }
+
+  &--new {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: $ouiColorPrimary;
+    margin-top: 4px;
+    padding-top: $ouiSizeS;
   }
 }
 
@@ -202,6 +230,19 @@
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  padding-bottom: 8px;
+  animation: pagePanelFadeIn 400ms ease-out both;
+}
+
+@keyframes pagePanelFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 // Empty state (no tabs open or page not found)
@@ -226,6 +267,7 @@
   min-height: 0;
   position: relative;
   background: transparent;
+  animation: pagePanelFadeIn 400ms ease-out both;
 
   > * {
     position: relative;

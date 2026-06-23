@@ -18,59 +18,157 @@ export const MiniChart = ({ type, color, width = '100%', height = 60 }) => {
   const charts = {
     line: (
       <svg width={width} height={height} viewBox="0 0 200 60" fill="none">
-        <path d="M0 45 Q25 42 50 38 T100 25 T150 30 T200 15" stroke={color} strokeWidth="2" fill="none"/>
-        <path d="M0 45 Q25 42 50 38 T100 25 T150 30 T200 15 V60 H0 Z" fill={color} fillOpacity="0.1"/>
+        <path
+          d="M0 45 Q25 42 50 38 T100 25 T150 30 T200 15"
+          stroke={color}
+          strokeWidth="2"
+          fill="none"
+        />
+        <path
+          d="M0 45 Q25 42 50 38 T100 25 T150 30 T200 15 V60 H0 Z"
+          fill={color}
+          fillOpacity="0.1"
+        />
       </svg>
     ),
     bar: (
       <svg width={width} height={height} viewBox="0 0 200 60" fill="none">
-        {[15,25,40,35,50,30,45,20,38,42].map((h,i) => (
-          <rect key={i} x={i*20+2} y={60-h} width="16" height={h} fill={color} fillOpacity="0.7" rx="2"/>
+        {[15, 25, 40, 35, 50, 30, 45, 20, 38, 42].map((h, i) => (
+          <rect
+            key={i}
+            x={i * 20 + 2}
+            y={60 - h}
+            width="16"
+            height={h}
+            fill={color}
+            fillOpacity="0.7"
+            rx="2"
+          />
         ))}
       </svg>
     ),
     area: (
       <svg width={width} height={height} viewBox="0 0 200 60" fill="none">
-        <path d="M0 50 Q30 35 60 40 T120 20 T180 30 L200 25 V60 H0 Z" fill={color} fillOpacity="0.2"/>
-        <path d="M0 50 Q30 35 60 40 T120 20 T180 30 L200 25" stroke={color} strokeWidth="2" fill="none"/>
+        <path
+          d="M0 50 Q30 35 60 40 T120 20 T180 30 L200 25 V60 H0 Z"
+          fill={color}
+          fillOpacity="0.2"
+        />
+        <path
+          d="M0 50 Q30 35 60 40 T120 20 T180 30 L200 25"
+          stroke={color}
+          strokeWidth="2"
+          fill="none"
+        />
       </svg>
     ),
     gauge: (
       <svg width={width} height={height} viewBox="0 0 200 60" fill="none">
-        <rect x="10" y="25" width="180" height="10" rx="5" fill={color} fillOpacity="0.15"/>
-        <rect x="10" y="25" width="165" height="10" rx="5" fill={color} fillOpacity="0.7"/>
-        <text x="100" y="55" textAnchor="middle" fontSize="11" fill={color} fontWeight="600">92%</text>
+        <rect
+          x="10"
+          y="25"
+          width="180"
+          height="10"
+          rx="5"
+          fill={color}
+          fillOpacity="0.15"
+        />
+        <rect
+          x="10"
+          y="25"
+          width="165"
+          height="10"
+          rx="5"
+          fill={color}
+          fillOpacity="0.7"
+        />
+        <text
+          x="100"
+          y="55"
+          textAnchor="middle"
+          fontSize="11"
+          fill={color}
+          fontWeight="600">
+          92%
+        </text>
       </svg>
     ),
     pie: (
       <svg width={width} height={height} viewBox="0 0 60 60" fill="none">
-        <circle cx="30" cy="30" r="25" fill={color} fillOpacity="0.15"/>
-        <path d="M30 5 A25 25 0 0 1 55 30 L30 30 Z" fill={color} fillOpacity="0.7"/>
-        <path d="M55 30 A25 25 0 0 1 30 55 L30 30 Z" fill={color} fillOpacity="0.4"/>
+        <circle cx="30" cy="30" r="25" fill={color} fillOpacity="0.15" />
+        <path
+          d="M30 5 A25 25 0 0 1 55 30 L30 30 Z"
+          fill={color}
+          fillOpacity="0.7"
+        />
+        <path
+          d="M55 30 A25 25 0 0 1 30 55 L30 30 Z"
+          fill={color}
+          fillOpacity="0.4"
+        />
       </svg>
     ),
     table: (
       <svg width={width} height={height} viewBox="0 0 200 60" fill="none">
-        {[0,1,2,3].map(i => (
+        {[0, 1, 2, 3].map((i) => (
           <g key={i}>
-            <rect x="5" y={i*15+2} width="190" height="12" rx="2" fill={color} fillOpacity={i===0?0.15:0.06}/>
-            <line x1="70" y1={i*15+2} x2="70" y2={i*15+14} stroke={color} strokeOpacity="0.2"/>
-            <line x1="140" y1={i*15+2} x2="140" y2={i*15+14} stroke={color} strokeOpacity="0.2"/>
+            <rect
+              x="5"
+              y={i * 15 + 2}
+              width="190"
+              height="12"
+              rx="2"
+              fill={color}
+              fillOpacity={i === 0 ? 0.15 : 0.06}
+            />
+            <line
+              x1="70"
+              y1={i * 15 + 2}
+              x2="70"
+              y2={i * 15 + 14}
+              stroke={color}
+              strokeOpacity="0.2"
+            />
+            <line
+              x1="140"
+              y1={i * 15 + 2}
+              x2="140"
+              y2={i * 15 + 14}
+              stroke={color}
+              strokeOpacity="0.2"
+            />
           </g>
         ))}
       </svg>
     ),
     heatmap: (
       <svg width={width} height={height} viewBox="0 0 200 60" fill="none">
-        {Array.from({length: 40}).map((_,i) => (
-          <rect key={i} x={(i%10)*20+2} y={Math.floor(i/10)*15+2} width="16" height="12" rx="2" fill={color} fillOpacity={Math.random()*0.7+0.1}/>
+        {Array.from({ length: 40 }).map((_, i) => (
+          <rect
+            key={i}
+            x={(i % 10) * 20 + 2}
+            y={Math.floor(i / 10) * 15 + 2}
+            width="16"
+            height="12"
+            rx="2"
+            fill={color}
+            fillOpacity={Math.random() * 0.7 + 0.1}
+          />
         ))}
       </svg>
     ),
     histogram: (
       <svg width={width} height={height} viewBox="0 0 200 60" fill="none">
-        {[8,15,28,45,38,25,18,10,5,3].map((h,i) => (
-          <rect key={i} x={i*20} y={60-h} width="19" height={h} fill={color} fillOpacity="0.6"/>
+        {[8, 15, 28, 45, 38, 25, 18, 10, 5, 3].map((h, i) => (
+          <rect
+            key={i}
+            x={i * 20}
+            y={60 - h}
+            width="19"
+            height={h}
+            fill={color}
+            fillOpacity="0.6"
+          />
         ))}
       </svg>
     ),
@@ -81,7 +179,7 @@ export const MiniChart = ({ type, color, width = '100%', height = 60 }) => {
 /**
  * TempVisualizationCard - A temporary visualization card component
  * with frosted glass effect background
- * 
+ *
  * @param {Object} props
  * @param {string} props.title - Card title
  * @param {string} props.description - Card description
@@ -91,10 +189,10 @@ export const MiniChart = ({ type, color, width = '100%', height = 60 }) => {
  * @param {number} props.index - Animation delay index
  * @param {Object} props.style - Additional styles
  */
-export const TempVisualizationCard = ({ 
-  title, 
-  description, 
-  type = 'line', 
+export const TempVisualizationCard = ({
+  title,
+  description,
+  type = 'line',
   color = '#7dd3fc',
   onClick,
   index = 0,
@@ -108,8 +206,8 @@ export const TempVisualizationCard = ({
 
   // Base card styles - frosted glass with 70% background blur
   const baseStyle = {
-    backgroundColor: isDark 
-      ? 'rgba(14, 21, 37, 0.3)'  // 30% opacity to let blur show through
+    backgroundColor: isDark
+      ? 'rgba(14, 21, 37, 0.3)' // 30% opacity to let blur show through
       : 'rgba(255, 255, 255, 0.3)', // 30% opacity to let blur show through
     backdropFilter: 'blur(20px) saturate(180%)',
     WebkitBackdropFilter: 'blur(20px) saturate(180%)',
@@ -121,26 +219,33 @@ export const TempVisualizationCard = ({
     cursor: onClick ? 'pointer' : 'default',
     marginBottom: 8,
     // Default transition for hover
-    transition: 'border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease',
+    transition:
+      'border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease',
     transform: 'scale(1)',
   };
 
   // Hover styles
-  const hoverStyle = isHovered && !isActive ? {
-    borderColor: isDark 
-      ? 'rgba(122, 159, 212, 0.4)' 
-      : 'rgba(65, 104, 184, 0.4)',
-    boxShadow: isDark
-      ? '0 4px 20px rgba(0, 0, 0, 0.3)'
-      : '0 4px 20px rgba(46, 74, 143, 0.15)',
-    transform: 'scale(1.03)',
-  } : {};
+  const hoverStyle =
+    isHovered && !isActive
+      ? {
+          borderColor: isDark
+            ? 'rgba(122, 159, 212, 0.4)'
+            : 'rgba(65, 104, 184, 0.4)',
+          boxShadow: isDark
+            ? '0 4px 20px rgba(0, 0, 0, 0.3)'
+            : '0 4px 20px rgba(46, 74, 143, 0.15)',
+          transform: 'scale(1.03)',
+        }
+      : {};
 
   // Active styles with bouncy transition
-  const activeStyle = isActive ? {
-    transform: 'scale(0.97)',
-    transition: 'border-color 150ms ease, box-shadow 150ms ease, transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1)',
-  } : {};
+  const activeStyle = isActive
+    ? {
+        transform: 'scale(0.97)',
+        transition:
+          'border-color 150ms ease, box-shadow 150ms ease, transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+      }
+    : {};
 
   const cardStyle = {
     ...baseStyle,
@@ -154,13 +259,17 @@ export const TempVisualizationCard = ({
       className="tempVisualizationCard"
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => { setIsHovered(false); setIsActive(false); }}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        setIsActive(false);
+      }}
       onMouseDown={() => setIsActive(true)}
       onMouseUp={() => setIsActive(false)}
-      style={cardStyle}
-    >
+      style={cardStyle}>
       {title && (
-        <OuiText size="xs"><strong>{title}</strong></OuiText>
+        <OuiText size="xs">
+          <strong>{title}</strong>
+        </OuiText>
       )}
       {(type || children) && (
         <div style={{ margin: '8px 0' }}>
@@ -168,7 +277,9 @@ export const TempVisualizationCard = ({
         </div>
       )}
       {description && (
-        <OuiText size="xs" color="subdued">{description}</OuiText>
+        <OuiText size="xs" color="subdued">
+          {description}
+        </OuiText>
       )}
     </div>
   );

@@ -26,8 +26,8 @@ export const ThreadInputExample = {
       title: 'Thread input',
       text: (
         <p>
-          <strong>OuiThreadInput</strong> is a chat-style input component with
-          a multi-line textarea and action buttons. It supports keyboard
+          <strong>OuiThreadInput</strong> is a chat-style input component with a
+          multi-line textarea and action buttons. It supports keyboard
           submission (Enter to send, Shift+Enter for new line), configurable
           placeholder text, and left/right action slots for buttons like
           attachments and send.

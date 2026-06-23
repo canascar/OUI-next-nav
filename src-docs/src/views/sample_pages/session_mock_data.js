@@ -189,9 +189,10 @@ export const LATENCY_SPIKE_SESSION = {
   threadKey: 'latency-spike',
   pendingThread: null,
   title: 'Latency Spike Investigation',
-  summary: 'Payment-service P99 crossed 2,000ms. Connection pool exhaustion identified on 3 of 4 pods with no recent deployments.',
+  summary:
+    'Payment-service P99 crossed 2,000ms. Connection pool exhaustion identified on 3 of 4 pods with no recent deployments.',
   threadPanelState: 'side-by-side',
-  threadPanelWidth: 40,
+  threadPanelWidth: 30,
   tabs: [
     { id: 'tab-alerts-1', pageKey: 'alerts', title: 'Alert: P95 Latency > 2s' },
     {
@@ -259,15 +260,43 @@ export const ERROR_RATE_SPIKE_SESSION = {
   threadKey: 'error-rate-spike',
   pendingThread: null,
   title: 'Error Rate Spike — Checkout Service',
-  summary: 'Checkout error rate jumped to 12.4%. Auth-service deployment regression identified — OIDC token validation timing out.',
+  summary:
+    'Checkout error rate jumped to 12.4%. Auth-service deployment regression identified — OIDC token validation timing out.',
   threadPanelState: 'side-by-side',
-  threadPanelWidth: 40,
+  threadPanelWidth: 30,
   tabs: [
-    { id: 'tab-alert-err-1', pageKey: 'alerts', title: 'Alert: Checkout error rate > 10%' },
-    { id: 'tab-dash-err-1', pageKey: 'dashboards', title: 'Checkout service health dashboard' },
+    {
+      id: 'tab-alert-err-1',
+      pageKey: 'alerts',
+      title: 'Alert: Checkout error rate > 10%',
+    },
+    {
+      id: 'tab-dash-err-1',
+      pageKey: 'dashboards',
+      title: 'Checkout service health dashboard',
+    },
   ],
   activeTabId: 'tab-alert-err-1',
   createdAt: Date.now() - 7200000, // 2 hours ago
+  hidden: true,
+};
+
+/**
+ * DNS Resolution Timeout — Warning-level session.
+ * Flagged 3 hours ago, monitoring for recurrence.
+ */
+export const DNS_TIMEOUT_SESSION = {
+  id: 'dns-timeout-session',
+  threadKey: 'connection-timeout',
+  pendingThread: null,
+  title: 'DNS Resolution Timeout',
+  summary:
+    'DNS resolution timeout flagged 3 hours ago. Intermittent failures on external lookups — monitoring for recurrence.',
+  threadPanelState: 'side-by-side',
+  threadPanelWidth: 30,
+  tabs: [{ id: 'tab-logs-dns-1', pageKey: 'logs', title: 'DNS timeout logs' }],
+  activeTabId: 'tab-logs-dns-1',
+  createdAt: Date.now() - 10800000, // 3 hours ago
   hidden: true,
 };
 
@@ -286,7 +315,7 @@ export const PAGE_FIRST_SESSION = {
   pendingThread: null,
   title: 'Log Analysis',
   threadPanelState: 'minimized',
-  threadPanelWidth: 40,
+  threadPanelWidth: 50,
   tabs: [{ id: 'tab-logs-1', pageKey: 'logs', title: 'Logs' }],
   activeTabId: 'tab-logs-1',
   createdAt: Date.now() - 1800000, // 30 minutes ago

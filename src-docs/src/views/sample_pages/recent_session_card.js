@@ -23,7 +23,13 @@ import { OuiIcon } from '../../../../src/components';
  * @param {number} [props.tabCount=0] - Number of open tabs in the session
  * @param {() => void} props.onClick - Callback when the card is clicked
  */
-export const RecentSessionCard = ({ title, time, summary, tabCount = 0, onClick }) => {
+export const RecentSessionCard = ({
+  title,
+  time,
+  summary,
+  tabCount = 0,
+  onClick,
+}) => {
   return (
     <div className="emptySessionPage__listItem">
       <button
@@ -37,9 +43,13 @@ export const RecentSessionCard = ({ title, time, summary, tabCount = 0, onClick 
             <span className="emptySessionPage__activityCardPills">
               <span className="emptySessionPage__activityPill">
                 <OuiIcon type="generate" size="m" />
-                <span className="emptySessionPage__activityPillText">{summary}</span>
+                <span className="emptySessionPage__activityPillText">
+                  {summary}
+                </span>
                 <span className="emptySessionPage__activityPillMeta">
-                  {tabCount > 0 ? `${tabCount} ${tabCount === 1 ? 'tab' : 'tabs'}` : 'No tabs'}
+                  {tabCount > 0
+                    ? `${tabCount} ${tabCount === 1 ? 'tab' : 'tabs'}`
+                    : 'No tabs'}
                 </span>
               </span>
             </span>

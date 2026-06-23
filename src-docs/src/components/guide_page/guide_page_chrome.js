@@ -204,7 +204,7 @@ export class GuidePageChrome extends Component {
       }
 
       // Check if any item in this section is currently selected
-      const hasSelectedItem = items.some(item => item.isSelected);
+      const hasSelectedItem = items.some((item) => item.isSelected);
 
       sideNavSections.push({
         name: section.name,

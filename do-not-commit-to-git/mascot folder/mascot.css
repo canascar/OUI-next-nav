@@ -1,0 +1,40 @@
+/* mascot.css — minimal styles for the Mascot component.
+   Required classes: .mascot-wrap, .mascot-shadow, .mascot-svg, .mascot-bob
+   Required @keyframes: mascot-bob, eye-pop */
+
+.mascot-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mascot-svg {
+  display: block;
+  filter: drop-shadow(0 18px 28px rgba(20, 58, 90, 0.16));
+  transition: filter 220ms ease;
+}
+
+.mascot-shadow {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0) 70%);
+  filter: blur(2px);
+  z-index: 0;
+}
+
+.mascot-bob {
+  animation: mascot-bob 4.2s ease-in-out infinite;
+}
+
+@keyframes mascot-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+@keyframes eye-pop {
+  0%   { transform: scaleY(0.2); transform-origin: center; opacity: 0.4; }
+  100% { transform: scaleY(1); opacity: 1; }
+}

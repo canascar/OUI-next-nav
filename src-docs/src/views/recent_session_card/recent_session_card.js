@@ -14,7 +14,13 @@ import { RecentSessionCard } from '../sample_pages/recent_session_card';
 
 export default () => {
   return (
-    <div style={{ maxWidth: 600, display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <div
+      style={{
+        maxWidth: 600,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 12,
+      }}>
       <RecentSessionCard
         title="Latency Spike Investigation"
         time="15 min ago"

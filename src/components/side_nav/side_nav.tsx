@@ -149,7 +149,8 @@ export class OuiSideNav<T> extends Component<OuiSideNavProps<T>> {
       } = item;
 
       // Root items are always open unless rootItemsCollapsible is true.
-      const isOpen = (depth === 0 && !rootItemsCollapsible) ? true : this.isItemOpen(item);
+      const isOpen =
+        depth === 0 && !rootItemsCollapsible ? true : this.isItemOpen(item);
 
       let renderedItems;
 
@@ -158,7 +159,11 @@ export class OuiSideNav<T> extends Component<OuiSideNavProps<T>> {
       }
 
       // Act as an accordion only if item is not linked but has children (and not the root, unless collapsible)
-      const childrenOnly = (depth > 0 || rootItemsCollapsible) && !onClick && !href && !!childItems;
+      const childrenOnly =
+        (depth > 0 || rootItemsCollapsible) &&
+        !onClick &&
+        !href &&
+        !!childItems;
 
       return (
         <OuiSideNavItem
