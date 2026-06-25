@@ -498,7 +498,7 @@ const DualPurposeInput = ({
                 <OuiButtonIcon
                   iconType="plus"
                   aria-label="Add attachment"
-                  size="s"
+                  size="xs"
                   color="text"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => setIsAttachMenuOpen((open) => !open)}
@@ -554,18 +554,18 @@ const DualPurposeInput = ({
               />
             </OuiPopover>
           </OuiToolTip>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <OuiToolTip content="Dictate" position="top">
               <OuiButtonIcon
                 aria-label="Dictate"
-                size="s"
+                size="xs"
                 color="text"
                 display="empty"
                 iconType={() => (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
+                    width="14"
+                    height="14"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -584,7 +584,7 @@ const DualPurposeInput = ({
                 iconType="sortUp"
                 aria-label="Send"
                 display="fill"
-                size="s"
+                size="xs"
                 isDisabled={!inputValue.trim()}
                 onClick={() => {
                   if (inputValue.trim()) {
