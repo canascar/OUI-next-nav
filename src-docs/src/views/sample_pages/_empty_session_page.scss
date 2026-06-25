@@ -2583,12 +2583,25 @@ textarea.emptySessionPage__textarea {
   display: flex;
   align-items: center;
   gap: 10px;
+  padding: 4px 0;
+  border-radius: 4px;
+  transition: background-color 150ms ease;
+
+  &:hover {
+    background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.05));
+
+    .widgetCard__barLabel {
+      text-decoration: underline;
+      color: $ouiColorPrimary;
+    }
+  }
 }
 
 .widgetCard__barLabel {
   width: 80px;
   font-size: 11px;
   color: lightOrDarkTheme(#3C3648, #C4CBD8);
+  transition: color 150ms ease;
 }
 
 .widgetCard__barTrack {

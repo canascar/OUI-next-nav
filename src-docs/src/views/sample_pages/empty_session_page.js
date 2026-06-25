@@ -1698,14 +1698,7 @@ export const EmptySessionPage = ({
                             );
                           case 'top-services':
                             return (
-                              <OuiInsightCard
-                                onClick={() =>
-                                  !isEditMode &&
-                                  onOpenPageInNewSession(
-                                    'app-perf-services',
-                                    'Application Services'
-                                  )
-                                }>
+                              <OuiInsightCard>
 
                                 <WidgetHeader title="Top services by fault rate" />
                                 <div className="widgetCard__tableHeader">
@@ -1713,20 +1706,25 @@ export const EmptySessionPage = ({
                                   <span>FAULT RATE</span>
                                 </div>
                                 <div className="widgetCard__rows">
-                                  <div className="widgetCard__barRow">
+                                  <div className="widgetCard__barRow" style={{ cursor: 'pointer' }} onClick={() => !isEditMode && onSelectSession('error-rate-spike-session')}>
                                     <span className="widgetCard__barLabel">checkout</span>
                                     <div className="widgetCard__barTrack"><div className="widgetCard__barFill" style={{ width: '67%' }} /></div>
                                     <span className="widgetCard__barValue">{dataVariant % 2 === 0 ? '66.67%' : '58.23%'}</span>
                                   </div>
-                                  <div className="widgetCard__barRow">
+                                  <div className="widgetCard__barRow" style={{ cursor: 'pointer' }} onClick={() => !isEditMode && onOpenPageInNewSession('app-perf-services', 'Frontend service')}>
                                     <span className="widgetCard__barLabel">frontend</span>
                                     <div className="widgetCard__barTrack"><div className="widgetCard__barFill widgetCard__barFill--secondary" style={{ width: dataVariant % 2 === 0 ? '14.5%' : '22%' }} /></div>
                                     <span className="widgetCard__barValue">{dataVariant % 2 === 0 ? '14.49%' : '21.88%'}</span>
                                   </div>
-                                  <div className="widgetCard__barRow">
+                                  <div className="widgetCard__barRow" style={{ cursor: 'pointer' }} onClick={() => !isEditMode && onOpenPageInNewSession('app-perf-services', 'Frontend-proxy service')}>
                                     <span className="widgetCard__barLabel">frontend-proxy</span>
                                     <div className="widgetCard__barTrack"><div className="widgetCard__barFill widgetCard__barFill--secondary" style={{ width: dataVariant % 2 === 0 ? '14.3%' : '11%' }} /></div>
                                     <span className="widgetCard__barValue">{dataVariant % 2 === 0 ? '14.29%' : '10.94%'}</span>
+                                  </div>
+                                  <div className="widgetCard__barRow" style={{ cursor: 'pointer' }} onClick={() => !isEditMode && onSelectSession('latency-spike-session')}>
+                                    <span className="widgetCard__barLabel">payment</span>
+                                    <div className="widgetCard__barTrack"><div className="widgetCard__barFill widgetCard__barFill--secondary" style={{ width: dataVariant % 2 === 0 ? '8%' : '6%' }} /></div>
+                                    <span className="widgetCard__barValue">{dataVariant % 2 === 0 ? '7.84%' : '5.91%'}</span>
                                   </div>
                                 </div>
                               </OuiInsightCard>
@@ -1842,7 +1840,7 @@ export const EmptySessionPage = ({
                                   <polyline
                                     fill="none"
                                     stroke="#34d399"
-                                    strokeWidth="2.5"
+                                    strokeWidth="3.2"
                                     strokeLinecap="round"
                                     points="40,38 75,34 110,30 145,32 175,26 195,24 210,26"
                                   />
