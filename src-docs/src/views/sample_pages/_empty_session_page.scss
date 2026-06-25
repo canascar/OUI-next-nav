@@ -231,7 +231,7 @@
 // News-style briefing items
 .emptySessionPage__newsItem {
   display: flex;
-  align-items: flex-start;
+  align-items: baseline;
   gap: 20px;
   padding: 17px 0;
   border-top: 1px solid lightOrDarkTheme(#D3D8E7, rgba(255, 255, 255, 0.08));
@@ -246,7 +246,6 @@
   letter-spacing: 0.07em;
   text-transform: uppercase;
   width: 58px;
-  padding-top: 4px;
 
   &--critical {
     color: $ouiColorDanger;
