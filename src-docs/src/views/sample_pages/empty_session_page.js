@@ -1317,6 +1317,49 @@ export const EmptySessionPage = ({
               </div>
 
               <div className="emptySessionPage__briefingContent">
+                {workflowsExpanded ? (
+                  <div className="emptySessionPage__pageBrowser">
+                    <div className="emptySessionPage__pageBrowserHeader">
+                      <div className="emptySessionPage__pageBrowserSearch">
+                        <OuiIcon type="search" size="s" />
+                        <input
+                          type="text"
+                          placeholder="Search pages..."
+                          value={workflowSearch}
+                          onChange={(e) => setWorkflowSearch(e.target.value)}
+                          className="emptySessionPage__pageBrowserInput"
+                          autoFocus
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        className="emptySessionPage__pageBrowserClose"
+                        onClick={() => setWorkflowsExpanded(false)}>
+                        <OuiIcon type="cross" size="m" />
+                      </button>
+                    </div>
+                    <div className="emptySessionPage__pageBrowserGrid">
+                      {[...WORKFLOW_ITEMS_PRIMARY, ...WORKFLOW_ITEMS_OVERFLOW]
+                        .filter((item) =>
+                          !workflowSearch ||
+                          item.label.toLowerCase().includes(workflowSearch.toLowerCase())
+                        )
+                        .map((item, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            className="emptySessionPage__pageBrowserItem"
+                            onClick={() => {
+                              onOpenPageInNewSession(item.pageKey, item.label);
+                              setWorkflowsExpanded(false);
+                            }}>
+                            <OuiIcon type={item.icon} size="l" />
+                            <span>{item.label}</span>
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                ) : (
                 <div className="emptySessionPage__briefingPanel">
                   <div
                     className={`emptySessionPage__widgetGrid${
@@ -1923,51 +1966,6 @@ export const EmptySessionPage = ({
                     })}
                   </div>
 
-                  {/* Open a page — expanded browser */}
-                  {workflowsExpanded && (
-                    <div className="emptySessionPage__pageBrowser">
-                      <div className="emptySessionPage__pageBrowserHeader">
-                        <div className="emptySessionPage__pageBrowserSearch">
-                          <OuiIcon type="search" size="s" />
-                          <input
-                            type="text"
-                            placeholder="Search pages..."
-                            value={workflowSearch}
-                            onChange={(e) => setWorkflowSearch(e.target.value)}
-                            className="emptySessionPage__pageBrowserInput"
-                            autoFocus
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          className="emptySessionPage__pageBrowserClose"
-                          onClick={() => setWorkflowsExpanded(false)}>
-                          <OuiIcon type="cross" size="m" />
-                        </button>
-                      </div>
-                      <div className="emptySessionPage__pageBrowserGrid">
-                        {[...WORKFLOW_ITEMS_PRIMARY, ...WORKFLOW_ITEMS_OVERFLOW]
-                          .filter((item) =>
-                            !workflowSearch ||
-                            item.label.toLowerCase().includes(workflowSearch.toLowerCase())
-                          )
-                          .map((item, i) => (
-                            <button
-                              key={i}
-                              type="button"
-                              className="emptySessionPage__pageBrowserItem"
-                              onClick={() => {
-                                onOpenPageInNewSession(item.pageKey, item.label);
-                                setWorkflowsExpanded(false);
-                              }}>
-                              <OuiIcon type={item.icon} size="l" />
-                              <span>{item.label}</span>
-                            </button>
-                          ))}
-                      </div>
-                    </div>
-                  )}
-
                   {/* Widget Gallery — visible in edit mode */}
                   {isEditMode && (
                     <div className="emptySessionPage__widgetGallery">
@@ -2116,6 +2114,7 @@ export const EmptySessionPage = ({
                     </div>
                   )}
                 </div>
+                )}
               </div>
             </div>
           </div>
