@@ -54,7 +54,7 @@ const ScanShimmerOverlay = () => {
       cv.height = Math.round(h * dpr);
       const ctx = cv.getContext('2d');
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const sp = 12;
+      const sp = 9;
       const cols = Math.max(1, Math.round((w - sp) / sp));
       const rows = Math.max(1, Math.round((h - sp) / sp));
       const ox = (w - (cols - 1) * sp) / 2, oy = (h - (rows - 1) * sp) / 2;
@@ -67,15 +67,15 @@ const ScanShimmerOverlay = () => {
         if (!startRef.current) startRef.current = now;
         const t = (now - startRef.current) / 1000;
         ctx.clearRect(0, 0, w, h);
-        const p = (t * 0.6) % 1;
+        const p = (t * 0.5) % 1;
         const lx = p * w;
         for (const d of dots) {
           const dx = (d.x - lx) / (sp * 2.2);
           const b = 0.03 + 0.97 * Math.exp(-dx * dx);
-          const a = (0.04 + 0.40 * b).toFixed(3);
+          const a = (0.06 + 0.50 * b).toFixed(3);
           const r = Math.round(96 + 44 * b), g = Math.round(60 + 62 * b), bl = Math.round(196 + 40 * b);
           ctx.beginPath();
-          ctx.arc(d.x, d.y, 0.5 + b * 1.2, 0, 6.2832);
+          ctx.arc(d.x, d.y, 0.6 + b * 1.4, 0, 6.2832);
           ctx.fillStyle = `rgba(${r},${g},${bl},${a})`;
           ctx.fill();
         }
@@ -1455,7 +1455,7 @@ export const EmptySessionPage = ({
                         setTimeout(() => {
                           setIsRefreshing(false);
                           setDataVariant((v) => v + 1);
-                        }, 2000);
+                        }, 3000);
                       }}
                     />
                   </OuiToolTip>
@@ -2132,10 +2132,13 @@ export const EmptySessionPage = ({
                               </div>
                             </div>
                           )}
-                          {isRefreshing && widgetId !== 'workflows' && (
-                            <ScanShimmerOverlay />
+                          {isRefreshing && widgetId !== 'workflows' ? (
+                            <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: 120, borderRadius: 'inherit', overflow: 'hidden' }}>
+                              <ScanShimmerOverlay />
+                            </div>
+                          ) : (
+                            renderWidget()
                           )}
-                          {renderWidget()}
                         </div>
                       );
                     })}
