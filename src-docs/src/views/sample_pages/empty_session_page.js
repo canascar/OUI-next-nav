@@ -67,16 +67,16 @@ const ScanShimmerOverlay = () => {
         if (!startRef.current) startRef.current = now;
         const t = (now - startRef.current) / 1000;
         ctx.clearRect(0, 0, w, h);
-        const p = (t * 0.5) % 1;
+        const p = (t * 0.33) % 1;
         const lx = p * w;
         for (const d of dots) {
           const dx = (d.x - lx) / (sp * 2.2);
           const b = 0.03 + 0.97 * Math.exp(-dx * dx);
-          const a = (0.06 + 0.50 * b).toFixed(3);
-          const r = Math.round(96 + 44 * b), g = Math.round(60 + 62 * b), bl = Math.round(196 + 40 * b);
+          const a = (0.04 + 0.35 * b).toFixed(3);
+          const gray = Math.round(140 + 60 * b);
           ctx.beginPath();
           ctx.arc(d.x, d.y, 0.6 + b * 1.4, 0, 6.2832);
-          ctx.fillStyle = `rgba(${r},${g},${bl},${a})`;
+          ctx.fillStyle = `rgba(${gray},${gray},${Math.round(gray + 10)},${a})`;
           ctx.fill();
         }
         rafRef.current = requestAnimationFrame(tick);
