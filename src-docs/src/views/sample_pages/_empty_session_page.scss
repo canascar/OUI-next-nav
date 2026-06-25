@@ -464,18 +464,29 @@
 }
 
 .emptySessionPage__overviewTitle {
-  font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
-  font-size: 10.5px;
-  font-weight: $ouiFontWeightMedium;
-  text-transform: uppercase;
-  letter-spacing: 1.4px;
-  color: var(--nb-accent, $ouiColorPrimary);
+  font-size: 23px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: $ouiTitleColor;
 }
 
 .emptySessionPage__tabRowActions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
+
+  .ouiButtonIcon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid lightOrDarkTheme(#D3D8E7, rgba(255, 255, 255, 0.08));
+    background: transparent;
+
+    &:hover {
+      color: $ouiColorPrimary;
+      border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.3), rgba($ouiColorPrimary, 0.3));
+    }
+  }
 }
 
 .emptySessionPage__briefing {
