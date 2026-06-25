@@ -9,5 +9,93 @@
  * GitHub history for details.
  */
 
-// This file contains no overwrites because OUI by default is light.
-// The file exists in case you ever need to write logic to flip imports in a build process.
+@import 'global_styling/functions/index';
+
+// Notebook theme — Light mode
+
+// These colors stay the same no matter the theme
+$ouiColorGhost: #FFFFFF;
+$ouiColorInk: #1C1A22;
+
+// Core — Notebook accent (Iris/Violet)
+$ouiColorPrimary: #6E56CF;
+$ouiColorSecondary: #9D7BFF;
+$ouiColorAccent: #6E56CF;
+
+// Status
+$ouiColorSuccess: #3E9B6B;
+$ouiColorWarning: #9A6A1C;
+$ouiColorDanger: #C2455F;
+
+// Grays — Notebook palette
+$ouiColorEmptyShade: #FFFFFF;
+$ouiColorLightestShade: #FBFBF9;
+$ouiColorLightShade: #EAE8E2;
+$ouiColorMediumShade: #9B95A8;
+$ouiColorDarkShade: #615D6B;
+$ouiColorDarkestShade: #1C1A22;
+$ouiColorFullShade: #1C1A22;
+
+// Backgrounds
+$ouiPageBackgroundColor: #FBFBF9;
+$ouiColorHighlight: #F1EEFB;
+
+// Variations from core
+$ouiTextColor: #1C1A22;
+$ouiTitleColor: $ouiTextColor;
+$ouiTextSubduedColor: #615D6B;
+$ouiColorDisabled: #9B95A8;
+
+// Contrasty text variants
+$ouiColorPrimaryText: #6E56CF;
+$ouiColorSecondaryText: #9D7BFF;
+$ouiColorAccentText: #6E56CF;
+$ouiColorWarningText: #9A6A1C;
+$ouiColorDangerText: #C2455F;
+$ouiColorDisabledText: #9B95A8;
+$ouiColorSuccessText: #3E9B6B;
+$ouiLinkColor: $ouiColorPrimaryText;
+
+// Charts
+$ouiColorChartLines: #EAE8E2;
+$ouiColorChartBand: #F5F4F0;
+
+// Shadows
+$ouiShadowColor: rgba(28, 26, 34, 0.12);
+$ouiShadowColorLarge: rgba(28, 26, 34, 0.12);
+
+/* OUI -> EUI Aliases */
+$euiColorGhost: $ouiColorGhost;
+$euiColorInk: $ouiColorInk;
+$euiColorPrimary: $ouiColorPrimary;
+$euiColorSecondary: $ouiColorSecondary;
+$euiColorAccent: $ouiColorAccent;
+$euiColorSuccess: $ouiColorSuccess;
+$euiColorWarning: $ouiColorWarning;
+$euiColorDanger: $ouiColorDanger;
+$euiColorEmptyShade: $ouiColorEmptyShade;
+$euiColorLightestShade: $ouiColorLightestShade;
+$euiColorLightShade: $ouiColorLightShade;
+$euiColorMediumShade: $ouiColorMediumShade;
+$euiColorDarkShade: $ouiColorDarkShade;
+$euiColorDarkestShade: $ouiColorDarkestShade;
+$euiColorFullShade: $ouiColorFullShade;
+$euiPageBackgroundColor: $ouiPageBackgroundColor;
+$euiColorHighlight: $ouiColorHighlight;
+$euiTextColor: $ouiTextColor;
+$euiTitleColor: $ouiTitleColor;
+$euiTextSubduedColor: $ouiTextSubduedColor;
+$euiColorDisabled: $ouiColorDisabled;
+$euiColorPrimaryText: $ouiColorPrimaryText;
+$euiColorSecondaryText: $ouiColorSecondaryText;
+$euiColorAccentText: $ouiColorAccentText;
+$euiColorWarningText: $ouiColorWarningText;
+$euiColorDangerText: $ouiColorDangerText;
+$euiColorDisabledText: $ouiColorDisabledText;
+$euiColorSuccessText: $ouiColorSuccessText;
+$euiLinkColor: $ouiLinkColor;
+$euiColorChartLines: $ouiColorChartLines;
+$euiColorChartBand: $ouiColorChartBand;
+$euiShadowColor: $ouiShadowColor;
+$euiShadowColorLarge: $ouiShadowColorLarge;
+/* End of Aliases */

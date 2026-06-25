@@ -6,4 +6,48 @@
 :root {
   --oui-font-family: #{$ouiFontFamily};
   --oui-code-font-family: #{$ouiCodeFontFamily};
+
+  // Notebook semantic tokens — Light
+  --nb-accent: #6E56CF;
+  --nb-accent-soft: #F1EEFB;
+  --nb-accent-2: #9D7BFF;
+  --nb-ink: #1C1A22;
+  --nb-sub: #615D6B;
+  --nb-dim: #9B95A8;
+  --nb-canvas: #FBFBF9;
+  --nb-cell: #FFFFFF;
+  --nb-hairline: #EAE8E2;
+  --nb-divider: #F2F0EA;
+  --nb-hover: #F5F4F0;
+  --nb-hover-border: #D8D3E8;
+  --nb-success: #3E9B6B;
+  --nb-danger: #C2455F;
+  --nb-danger-soft: rgba(224, 69, 123, 0.10);
+  --nb-warn: #9A6A1C;
+  --nb-warn-soft: rgba(180, 121, 31, 0.12);
+  --nb-cell-shadow: 0 6px 20px -8px rgba(28, 26, 34, 0.12);
+  --nb-scrollbar-thumb: #D8D4CC;
+}
+
+[class*="dark"],
+.ouiBody--dark {
+  --nb-accent: #9D8BFF;
+  --nb-accent-soft: rgba(157, 139, 255, 0.16);
+  --nb-accent-2: #7C5CFF;
+  --nb-ink: #ECEAF2;
+  --nb-sub: #A39FB0;
+  --nb-dim: #6E6A7C;
+  --nb-canvas: #141318;
+  --nb-cell: #1E1C26;
+  --nb-hairline: rgba(255, 255, 255, 0.09);
+  --nb-divider: rgba(255, 255, 255, 0.07);
+  --nb-hover: rgba(255, 255, 255, 0.05);
+  --nb-hover-border: rgba(157, 139, 255, 0.45);
+  --nb-success: #52C08A;
+  --nb-danger: #F06A8A;
+  --nb-danger-soft: rgba(240, 106, 138, 0.16);
+  --nb-warn: #D4A24A;
+  --nb-warn-soft: rgba(212, 162, 74, 0.18);
+  --nb-cell-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.55);
+  --nb-scrollbar-thumb: #3A3845;
 }

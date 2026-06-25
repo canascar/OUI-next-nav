@@ -22,8 +22,11 @@
   text-align: left; /* 1 */
   display: block;
   width: 100%;
-  padding: calc($ouiSizeXS / 2) 0;
+  padding: 6px 10px;
   color: inherit; /* 2 */
+  border-radius: 9px;
+  font-weight: $ouiFontWeightMedium;
+  transition: background-color $ouiAnimSpeedFast ease-in-out;
 
   &.ouiSideNavItemButton--isClickable:not(:disabled) {
     &:hover {
@@ -32,20 +35,14 @@
 
     &:hover,
     &:focus {
-      .ouiSideNavItemButton__label {
-        // A lingering focus will stay underlined even if it doesn't get the `isSelected` prop
-        text-decoration: underline; /* 4 */
-      }
+      background-color: var(--nb-hover, transparentize($ouiColorLightShade, .5));
     }
   }
 
   &.ouiSideNavItemButton-isSelected {
-    color: $ouiSideNavSelectedTextcolor;
-    font-weight: $ouiFontWeightBold;
-
-    .ouiSideNavItemButton__label {
-      text-decoration: underline; /* 4 */
-    }
+    color: var(--nb-accent, $ouiSideNavSelectedTextcolor);
+    font-weight: $ouiFontWeightSemiBold;
+    background-color: var(--nb-accent-soft, transparentize($ouiColorPrimary, .9));
   }
 
   &:disabled {

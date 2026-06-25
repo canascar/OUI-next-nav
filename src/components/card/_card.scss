@@ -56,19 +56,16 @@
   &.ouiCard--isClickable {
     display: flex; // Override panel
     width: 100%;
+    transition: border-color $ouiAnimSpeedFast $ouiAnimSlightResistance;
 
     &:not(.ouiCard-isDisabled) {
-      // Progressive Enhancement Only
-      // The title will still underline to simulate focus in IE
       &:focus-within {
-        @include ouiSlightShadowHover;
         @include ouiFocusRing('large');
       }
 
       &:focus,
       &:hover {
-        background-color: transparentize($ouiColorLightShade, .85);
-        border-radius: $ouiBorderRadius;
+        border-color: var(--nb-hover-border, $ouiColorPrimary);
 
         .ouiCard__title,
         .ouiCard__titleAnchor,

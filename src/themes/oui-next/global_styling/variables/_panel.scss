@@ -10,9 +10,9 @@
  */
 
 $ouiPanelPaddingModifiers: (
-  'paddingSmall':  $ouiSizeS,
-  'paddingMedium': $ouiSize,
-  'paddingLarge':  $ouiSizeL
+  'paddingSmall':  14px,
+  'paddingMedium': 16px,
+  'paddingLarge':  18px
 ) !default;
 
 $ouiPanelBorderRadiusModifiers: (

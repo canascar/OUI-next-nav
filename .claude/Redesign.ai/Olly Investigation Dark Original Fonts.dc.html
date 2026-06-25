@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
+<style>
+  @font-face { font-family:'Amazon Ember Display'; src:url('assets/fonts/AmazonEmberDisplay_Lt.ttf') format('truetype'); font-weight:300; font-style:normal; font-display:swap; }
+  @font-face { font-family:'Amazon Ember Display'; src:url('assets/fonts/AmazonEmberDisplay_Rg.ttf') format('truetype'); font-weight:400; font-style:normal; font-display:swap; }
+  @font-face { font-family:'Amazon Ember Display'; src:url('assets/fonts/AmazonEmberDisplay_RgIt.ttf') format('truetype'); font-weight:400; font-style:italic; font-display:swap; }
+  @font-face { font-family:'Amazon Ember Display'; src:url('assets/fonts/AmazonEmberDisplay_Md.ttf') format('truetype'); font-weight:500; font-style:normal; font-display:swap; }
+  @font-face { font-family:'Amazon Ember Display'; src:url('assets/fonts/AmazonEmberDisplay_Bd.ttf') format('truetype'); font-weight:600 700; font-style:normal; font-display:swap; }
+  @font-face { font-family:'Amazon Ember Display'; src:url('assets/fonts/AmazonEmberDisplay_He.ttf') format('truetype'); font-weight:800; font-style:normal; font-display:swap; }
+  @font-face { font-family:'Amazon Ember Mono'; src:url('assets/fonts/AmazonEmberMono_Rg.ttf') format('truetype'); font-weight:400 500; font-style:normal; font-display:swap; }
+  @font-face { font-family:'Amazon Ember Mono'; src:url('assets/fonts/AmazonEmberMono_Bd.ttf') format('truetype'); font-weight:600 700; font-style:normal; font-display:swap; }
+  * { box-sizing: border-box; }
+  body { margin: 0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+  ::selection { background: #3A2E63; }
+</style>
+</helmet>
+<div style="width:1585px; height:912px; display:flex; background-color:#0E141E; background-image:radial-gradient(135% 35% at 50% -16%, rgba(14,20,30,0) 26%, rgba(14,20,30,0.50) 66%, rgba(14,20,30,0.98) 96%), linear-gradient(to right, rgba(150,170,225,0.18) 1px, transparent 1px), linear-gradient(to bottom, rgba(150,170,225,0.18) 1px, transparent 1px); background-size:100% 100%, 19px 19px, 19px 19px; background-position:0 0, 0 0, 0 0; background-repeat:no-repeat, repeat, repeat; color:#EAEEF6; font-family:'Hanken Grotesk',sans-serif; position:relative; overflow:hidden;">
+
+  <!-- ICON RAIL -->
+  <aside style="width:64px; flex-shrink:0; display:flex; flex-direction:column; align-items:center; padding:20px 0 18px; background:#0E141E; position:relative; z-index:2;">
+    <img src="assets/olly-logo-dark.png" alt="Olly" style="display:block; width:34px; height:auto; margin-bottom:24px;" />
+    <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+      <div style="width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; color:#8B94A4;" style-hover="background:#161D29; color:#9A7CF5;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></div>
+      <div style="width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; color:#8B94A4;" style-hover="background:#161D29; color:#9A7CF5;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 9.5 9.5 0 0 1-4-.9L3 20l1.4-4.5A8.38 8.38 0 0 1 3.5 11 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5z"/></svg></div>
+      <div style="width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; color:#8B94A4;" style-hover="background:#161D29; color:#9A7CF5;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h6a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+    </div>
+    <div style="flex:1;"></div>
+    <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+      <div style="width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; color:#8B94A4;" style-hover="background:#161D29; color:#9A7CF5;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></div>
+      <div style="width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; color:#8B94A4;" style-hover="background:#161D29; color:#9A7CF5;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7l4 4-4 4M12 17h7"/></svg></div>
+      <div style="width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; color:#8B94A4;" style-hover="background:#161D29; color:#9A7CF5;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2-1.2l-.3-2.5h-4l-.3 2.5a7 7 0 0 0-2 1.2l-2.3-1-2 3.4 2 1.5A7 7 0 0 0 5 12a7 7 0 0 0 .1 1.2l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 2 1.2l.3 2.5h4l.3-2.5a7 7 0 0 0 2-1.2l2.3 1 2-3.4-2-1.5A7 7 0 0 0 19 12z"/></svg></div>
+      <div style="width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,#F0A6C8,#C98BE6); display:flex; align-items:center; justify-content:center; color:#fff; font-size:13px; font-weight:600; margin-top:6px;">J</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div style="flex:1; display:flex; padding:14px 14px 14px 0; gap:14px; position:relative; z-index:1; min-width:0;">
+
+    <!-- LEFT: chat panel -->
+    <section style="width:470px; flex-shrink:0; background:rgba(24,31,44,0.88); -webkit-backdrop-filter:blur(7px); backdrop-filter:blur(7px); border:1px solid rgba(255,255,255,0.10); border-radius:18px; box-shadow:0 12px 26px -16px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06); display:flex; flex-direction:column; overflow:hidden;">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid rgba(255,255,255,0.06);">
+        <div style="display:flex; align-items:center; gap:9px;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#9A7CF5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 9.5 9.5 0 0 1-4-.9L3 20l1.4-4.5A8.38 8.38 0 0 1 3.5 11 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5z"/></svg><span style="font-size:14px; font-weight:600; color:#EAEEF6;">Latency Spike Investigation</span></div>
+        <div style="display:flex; align-items:center; gap:14px; color:#7D8696;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7M16 6l-4-4-4 4M12 2v13"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="9" y1="4" x2="9" y2="20"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/></svg>
+        </div>
+      </div>
+
+      <div style="flex:1; overflow:hidden; padding:14px 20px 0;">
+        <p style="margin:0 0 4px; font-size:14px; line-height:1.55; color:#C4CBD8;">• Enable circuit breaker on the payment→inventory call path.</p>
+        <p style="margin:14px 0 12px; font-size:14px; line-height:1.55; color:#C4CBD8;">I have prepared a script to apply the connection pool fix:</p>
+
+        <div style="background:#12161F; border:1px solid rgba(255,255,255,0.08); border-radius:13px; overflow:hidden;">
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; border-bottom:1px solid rgba(255,255,255,0.08);">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; color:#EAEEF6;">apply-fix.sh</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7D8696" stroke-width="1.8"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10" stroke-linecap="round"/></svg>
+          </div>
+          <div style="padding:12px 14px; font-family:'JetBrains Mono',monospace; font-size:11.5px; line-height:1.7; color:#C4CBD8; overflow-x:auto; white-space:pre;"><span style="color:#7D8696;">#!/bin/bash</span>
+<span style="color:#6E7686; font-style:italic;"># Patch payment-service connection pool and restart</span>
+
+kubectl patch configmap <span style="color:#9A7CF5;">payment-service-config</span> \
+  -n production \
+  --type merge \
+  -p <span style="color:#3DD68C;">'{"data":</span>
+<span style="color:#3DD68C;">{"POOL_MAX_CONNECTIONS":"150","POOL_ACQUIRE_TIMEOUT":"5s"}}'</span>
+
+kubectl rollout restart deployment/payment-service -n production
+kubectl rollout status deployment/payment-service -n production --timeout=120s
+
+<span style="color:#9A7CF5;">echo</span> <span style="color:#E8A24A;">"Done. Monitoring P99 latency for recovery…"</span></div>
+        </div>
+        <div style="display:flex; gap:14px; margin:12px 0 0; color:#5F6776;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v11M2 14v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-1.6l1.3-7A2 2 0 0 0 17.3 10H13l.8-4a1.8 1.8 0 0 0-3.4-1L7 10z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="transform:scaleY(-1);"><path d="M7 10v11M2 14v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-1.6l1.3-7A2 2 0 0 0 17.3 10H13l.8-4a1.8 1.8 0 0 0-3.4-1L7 10z"/></svg>
+        </div>
+
+        <div style="font-size:14px; font-weight:700; color:#EAEEF6; margin:22px 0 10px;">Summary</div>
+        <p style="margin:0; font-size:14px; line-height:1.62; color:#B6BECD;">Payment-service P99 latency breached 2,000ms due to connection pool exhaustion on 3 of 4 pods. The outbound pool hit 98% utilization, causing requests to queue rather than fail fast. No recent deployments contributed. Root cause: pool max of 50 connections was insufficient under current load. Fix applied: pool max increased to 150 with a 5s acquire timeout, and pods restarted. Latency is expected to recover within 2–3 minutes.</p>
+        <div style="display:flex; gap:14px; margin:12px 0 0; color:#5F6776;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v11M2 14v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-1.6l1.3-7A2 2 0 0 0 17.3 10H13l.8-4a1.8 1.8 0 0 0-3.4-1L7 10z"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="transform:scaleY(-1);"><path d="M7 10v11M2 14v5a2 2 0 0 0 2 2h12a2 2 0 0 0 2-1.6l1.3-7A2 2 0 0 0 17.3 10H13l.8-4a1.8 1.8 0 0 0-3.4-1L7 10z"/></svg>
+        </div>
+        <svg width="30" height="30" viewBox="0 0 80 80" fill="none" style="flex-shrink:0; margin:16px 0 0; display:block; filter:drop-shadow(0 4px 7px rgba(20,58,90,0.22));"><defs><linearGradient id="ollyG2" x1="40" y1="80" x2="40" y2="0" gradientUnits="userSpaceOnUse"><stop stop-color="#153A5A"/><stop offset="1" stop-color="#14558E"/></linearGradient><radialGradient id="ollyG2hl" cx="0.3" cy="0.25" r="0.6"><stop offset="0" stop-color="rgba(255,255,255,0.18)"/><stop offset="1" stop-color="rgba(255,255,255,0)"/></radialGradient></defs><circle cx="40" cy="40" r="39.5" fill="url(#ollyG2)"/><ellipse cx="28" cy="22" rx="22" ry="14" fill="url(#ollyG2hl)"/><g transform="translate(48,31) scale(1.66) translate(-48,-31)"><path fill="#fff" d="M 34.683 36.338 C 35.807 36.175 37.166 35.792 38.484 34.55 C 41.213 31.978 41.23 27.557 38.948 25.291 C 38.054 24.404 36.446 24.068 35.112 25.325 C 34.532 25.871 34.42 26.47 34.547 27.187 C 34.667 27.87 34.994 28.604 35.365 29.436 C 35.813 30.44 36.34 31.599 36.409 32.77 C 36.491 34.173 36.241 35.386 34.683 36.338 Z"/><path fill="#fff" d="M 52.683 36.338 C 53.807 36.175 55.166 35.792 56.484 34.55 C 59.213 31.978 59.23 27.557 56.948 25.291 C 56.054 24.404 54.446 24.068 53.112 25.325 C 52.532 25.871 52.42 26.47 52.547 27.187 C 52.667 27.87 52.994 28.604 53.365 29.436 C 53.813 30.44 54.34 31.599 54.409 32.77 C 54.491 34.173 54.241 35.386 52.683 36.338 Z"/></g></svg>
+      </div>
+
+      <div style="padding:0 20px 18px;">
+        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 14px; border:1px solid rgba(154,124,245,0.30); border-radius:11px; background:#1B2230; cursor:pointer;" style-hover="background:#F4EFFD;"><span style="font-size:13px; color:#A88BF5; font-weight:500;">Show me the recent logs for the payment service</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8262D8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 10l-5 5 5 5M4 15h11a5 5 0 0 0 5-5V4"/></svg></div>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 14px; border:1px solid rgba(154,124,245,0.30); border-radius:11px; background:#1B2230; cursor:pointer;" style-hover="background:#F4EFFD;"><span style="font-size:13px; color:#A88BF5; font-weight:500;">Analyze the trace spans for the payment service</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8262D8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 10l-5 5 5 5M4 15h11a5 5 0 0 0 5-5V4"/></svg></div>
+        </div>
+        <div style="border:1.5px solid #9A7CF5; border-radius:15px; box-shadow:0 8px 24px rgba(0,0,0,0.5); padding:14px 16px 11px;">
+          <div style="font-size:14px; color:#7D8696;">Ask anything. Type / for actions.</div>
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-top:16px;">
+            <div style="width:28px; height:28px; border-radius:8px; border:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center; color:#8B94A4;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 6v12M6 12h12"/></svg></div>
+            <div style="display:flex; align-items:center; gap:11px;">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#8B94A4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+              <div style="width:30px; height:30px; border-radius:50%; background:rgba(139,108,240,0.28); display:flex; align-items:center; justify-content:center;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9A7CF5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: alert detail -->
+    <section style="flex:1; background:rgba(24,31,44,0.88); -webkit-backdrop-filter:blur(7px); backdrop-filter:blur(7px); border:1px solid rgba(255,255,255,0.10); border-radius:18px; box-shadow:0 12px 26px -16px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.06); display:flex; flex-direction:column; overflow:hidden; min-width:0;">
+      <!-- tab bar -->
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; border-bottom:1px solid rgba(255,255,255,0.06);">
+        <div style="display:flex; align-items:center; gap:4px;">
+          <div style="display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:10px; background:rgba(154,124,245,0.16); border:1px solid rgba(154,124,245,0.30);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9A7CF5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a1.5 1.5 0 0 0 1.3 2.3h17.8a1.5 1.5 0 0 0 1.3-2.3L13.7 3.9a1.5 1.5 0 0 0-2.6 0z"/><path d="M12 9v4M12 17h.01"/></svg><span style="font-size:13px; font-weight:600; color:#EAEEF6;">Alert: P95 Latency &gt; 2s</span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7D8696" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></div>
+          <div style="display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:10px; color:#8B94A4;" style-hover="background:#12161F;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7D8696" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2" stroke-linecap="round"/></svg><span style="font-size:13px; font-weight:500;">Inventory service depe…</span></div>
+          <div style="display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:10px; color:#8B94A4;" style-hover="background:#12161F;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7D8696" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18" stroke-linecap="round"/></svg><span style="font-size:13px; font-weight:500;">Payment service conne…</span></div>
+          <div style="width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#7D8696;" style-hover="background:#12161F;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 6v12M6 12h12"/></svg></div>
+        </div>
+        <div style="width:34px; height:34px; border-radius:9px; border:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center; color:#8B94A4;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></div>
+      </div>
+
+      <div style="flex:1; overflow:hidden; padding:22px 28px 0;">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
+          <h2 style="font-family:'Hanken Grotesk',sans-serif; font-weight:600; font-size:24px; letter-spacing:-0.02em; color:#EAEEF6; margin:0;">Alert: P95 Latency &gt; 2s</h2>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7D8696" stroke-width="1.8" stroke-linecap="round"><path d="M4 8h11M19 8h1M4 16h5M13 16h7"/><circle cx="16" cy="8" r="2.2" fill="#161D29"/><circle cx="10" cy="16" r="2.2" fill="#161D29"/></svg>
+        </div>
+
+        <!-- metric cards -->
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px;">
+          <div style="border:1px solid rgba(255,255,255,0.12); border-radius:13px; padding:14px 16px; background:rgba(24,31,44,0.88); box-shadow:inset 0 1px 1px rgba(255,255,255,0.08);"><div style="font-size:21px; font-weight:700; color:#FF6B61; letter-spacing:-0.01em;">2,340ms</div><div style="font-size:12px; color:#7D8696; margin-top:3px;">P99 latency</div></div>
+          <div style="border:1px solid rgba(255,255,255,0.12); border-radius:13px; padding:14px 16px; background:rgba(24,31,44,0.88); box-shadow:inset 0 1px 1px rgba(255,255,255,0.08);"><div style="font-size:21px; font-weight:700; color:#EAEEF6; letter-spacing:-0.01em;">&gt; 2,000ms</div><div style="font-size:12px; color:#7D8696; margin-top:3px;">for 15 min</div></div>
+          <div style="border:1px solid rgba(255,255,255,0.12); border-radius:13px; padding:14px 16px; background:rgba(24,31,44,0.88); box-shadow:inset 0 1px 1px rgba(255,255,255,0.08);"><div style="font-size:21px; font-weight:700; color:#EAEEF6; letter-spacing:-0.01em;">3 of 4 pods</div><div style="font-size:12px; color:#7D8696; margin-top:3px;">breaching</div></div>
+          <div style="border:1px solid rgba(255,255,255,0.12); border-radius:13px; padding:14px 16px; background:rgba(24,31,44,0.88); box-shadow:inset 0 1px 1px rgba(255,255,255,0.08);"><div style="font-size:21px; font-weight:700; color:#EAEEF6; letter-spacing:-0.01em;">—</div><div style="font-size:12px; color:#7D8696; margin-top:3px;">notification target</div></div>
+        </div>
+
+        <!-- chart -->
+        <div style="border:1px solid rgba(255,255,255,0.12); border-radius:14px; padding:16px 18px; background:rgba(24,31,44,0.88); box-shadow:inset 0 1px 1px rgba(255,255,255,0.08); margin-bottom:16px;">
+          <div style="display:flex; align-items:baseline; justify-content:space-between; margin-bottom:14px;">
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:8.5px; letter-spacing:0.14em; color:#9A7CF5; text-transform:uppercase; font-weight:600; margin-bottom:3px;">P99 LATENCY · 6H</div>
+              <div style="font-size:13px; font-weight:600; color:#EAEEF6;">Metric: payment-service P99 latency</div>
+            </div>
+            <span style="display:inline-flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:9.5px; font-weight:600; letter-spacing:0.06em; color:#FF6B61;"><span style="width:14px; border-top:1.5px dashed #FF6B61;"></span>THRESHOLD 2,000MS</span>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <div style="display:flex; flex-direction:column; justify-content:space-between; height:150px; font-family:'JetBrains Mono',monospace; font-size:9.5px; color:#5F6776; text-align:right; padding-bottom:20px;"><span>2200ms</span><span>1800ms</span><span>1400ms</span><span>1000ms</span><span>600ms</span><span>200ms</span></div>
+            <div style="flex:1;">
+              <svg width="100%" height="150" viewBox="0 0 880 150" preserveAspectRatio="none" style="display:block;">
+                <line x1="0" y1="8" x2="880" y2="8" stroke="rgba(150,135,240,0.10)" stroke-width="1"/>
+                <line x1="0" y1="34" x2="880" y2="34" stroke="rgba(150,135,240,0.10)" stroke-width="1"/>
+                <line x1="0" y1="60" x2="880" y2="60" stroke="rgba(150,135,240,0.10)" stroke-width="1"/>
+                <line x1="0" y1="86" x2="880" y2="86" stroke="rgba(150,135,240,0.10)" stroke-width="1"/>
+                <line x1="0" y1="112" x2="880" y2="112" stroke="rgba(150,135,240,0.10)" stroke-width="1"/>
+                <line x1="147" y1="0" x2="147" y2="120" stroke="rgba(108,75,216,0.055)" stroke-width="1"/>
+                <line x1="293" y1="0" x2="293" y2="120" stroke="rgba(108,75,216,0.055)" stroke-width="1"/>
+                <line x1="440" y1="0" x2="440" y2="120" stroke="rgba(108,75,216,0.055)" stroke-width="1"/>
+                <line x1="587" y1="0" x2="587" y2="120" stroke="rgba(108,75,216,0.055)" stroke-width="1"/>
+                <line x1="733" y1="0" x2="733" y2="120" stroke="rgba(108,75,216,0.055)" stroke-width="1"/>
+                <rect x="0" y="8" width="880" height="22" fill="#FF6B61" opacity="0.05"/>
+                <line x1="0" y1="30" x2="880" y2="30" stroke="#E0615A" stroke-width="1.5" stroke-dasharray="6 5"/>
+                <polyline points="0,112 145,112 290,112 435,108 580,86 725,30 880,8" fill="none" stroke="#34C99E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="0" cy="112" r="3.5" fill="#fff" stroke="#34C99E" stroke-width="2"/><circle cx="145" cy="112" r="3.5" fill="#fff" stroke="#34C99E" stroke-width="2"/><circle cx="290" cy="112" r="3.5" fill="#fff" stroke="#34C99E" stroke-width="2"/><circle cx="435" cy="108" r="3.5" fill="#fff" stroke="#34C99E" stroke-width="2"/><circle cx="580" cy="86" r="3.5" fill="#fff" stroke="#34C99E" stroke-width="2"/><circle cx="725" cy="30" r="3.5" fill="#fff" stroke="#34C99E" stroke-width="2"/><circle cx="880" cy="8" r="3.5" fill="#fff" stroke="#34C99E" stroke-width="2"/>
+              </svg>
+              <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:9.5px; color:#5F6776; margin-top:6px;"><span>0</span><span>0.5</span><span>1</span><span>1.5</span><span>2</span><span>2.5</span><span>3</span><span>3.5</span><span>4</span><span>4.5</span><span>5</span><span>5.5</span><span>6</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- alarm banner -->
+        <div style="display:flex; align-items:center; gap:11px; padding:13px 16px; background:rgba(224,163,58,0.12); border:1px solid rgba(224,163,58,0.30); border-radius:12px; margin-bottom:22px;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#E0A33A" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a1.5 1.5 0 0 0 1.3 2.3h17.8a1.5 1.5 0 0 0 1.3-2.3L13.7 3.9a1.5 1.5 0 0 0-2.6 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+          <span style="font-size:13.5px; color:#E0A33A;">Alarm triggered at May 13, 02:32 PM UTC — payment-service P99 crossed 2,000ms threshold</span>
+        </div>
+
+        <div style="font-size:14px; font-weight:700; color:#EAEEF6; margin-bottom:7px;">Summary</div>
+        <p style="margin:0 0 22px; font-size:14px; line-height:1.55; color:#B6BECD;">payment-service P99 latency on production cluster</p>
+
+        <div style="font-size:14px; font-weight:700; color:#EAEEF6; margin-bottom:12px;">Recommendation</div>
+        <ul style="margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:11px;">
+          <li style="display:flex; gap:11px; font-size:14px; line-height:1.5; color:#B6BECD;"><span style="width:5px; height:5px; border-radius:50%; background:#9A7CF5; margin-top:8px; flex-shrink:0;"></span>Check recent deployments to the affected service for regressions.</li>
+          <li style="display:flex; gap:11px; font-size:14px; line-height:1.5; color:#B6BECD;"><span style="width:5px; height:5px; border-radius:50%; background:#9A7CF5; margin-top:8px; flex-shrink:0;"></span>Review upstream dependency health and connection pool metrics.</li>
+          <li style="display:flex; gap:11px; font-size:14px; line-height:1.5; color:#B6BECD;"><span style="width:5px; height:5px; border-radius:50%; background:#9A7CF5; margin-top:8px; flex-shrink:0;"></span>Inspect application logs for error patterns correlated with the latency increase.</li>
+          <li style="display:flex; gap:11px; font-size:14px; line-height:1.5; color:#B6BECD;"><span style="width:5px; height:5px; border-radius:50%; background:#9A7CF5; margin-top:8px; flex-shrink:0;"></span>Consider scaling the service if the issue is load-related.</li>
+          <li style="display:flex; gap:11px; font-size:14px; line-height:1.5; color:#B6BECD;"><span style="width:5px; height:5px; border-radius:50%; background:#9A7CF5; margin-top:8px; flex-shrink:0;"></span>If this is a known issue, acknowledge the alert and update the runbook.</li>
+        </ul>
+      </div>
+    </section>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1585,&quot;height&quot;:912}}"></script>
+</body>
+</html>

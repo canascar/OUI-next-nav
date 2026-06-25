@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
+<style>
+  @font-face { font-family:'Amazon Ember Display'; src:url('assets/fonts/AmazonEmberDisplay_Lt.ttf') format('truetype'); font-weight:300; font-style:normal; font-display:swap; }
+  @font-face { font-family:'Amazon Ember Display'; src:url('assets/fonts/AmazonEmberDisplay_Rg.ttf') format('truetype'); font-weight:400; font-style:normal; font-display:swap; }
+  @font-face { font-family:'Amazon Ember Display'; src:url('assets/fonts/AmazonEmberDisplay_RgIt.ttf') format('truetype'); font-weight:400; font-style:italic; font-display:swap; }
+  @font-face { font-family:'Amazon Ember Display'; src:url('assets/fonts/AmazonEmberDisplay_Md.ttf') format('truetype'); font-weight:500; font-style:normal; font-display:swap; }
+  @font-face { font-family:'Amazon Ember Display'; src:url('assets/fonts/AmazonEmberDisplay_Bd.ttf') format('truetype'); font-weight:600 700; font-style:normal; font-display:swap; }
+  @font-face { font-family:'Amazon Ember Display'; src:url('assets/fonts/AmazonEmberDisplay_He.ttf') format('truetype'); font-weight:800; font-style:normal; font-display:swap; }
+  @font-face { font-family:'Amazon Ember Mono'; src:url('assets/fonts/AmazonEmberMono_Rg.ttf') format('truetype'); font-weight:400 500; font-style:normal; font-display:swap; }
+  @font-face { font-family:'Amazon Ember Mono'; src:url('assets/fonts/AmazonEmberMono_Bd.ttf') format('truetype'); font-weight:600 700; font-style:normal; font-display:swap; }
+  * { box-sizing: border-box; }
+  body { margin: 0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+  ::selection { background: #DCCFF6; }
+  details.sys > summary { list-style:none; }
+  details.sys > summary::-webkit-details-marker { display:none; }
+  details.sys > summary .chev { transition: transform 0.22s ease; }
+  details.sys[open] > summary .chev { transform: rotate(180deg); }
+  details.sys .sys-body { overflow:hidden; }
+</style>
+</helmet>
+<div style="width:1585px; height:912px; display:flex; background-color:#EBEEF7; background-image:radial-gradient(135% 35% at 50% -16%, rgba(235,238,247,0) 26%, rgba(235,238,247,0.50) 66%, rgba(235,238,247,0.98) 96%), linear-gradient(to right, rgba(72,52,120,0.16) 1px, transparent 1px), linear-gradient(to bottom, rgba(72,52,120,0.16) 1px, transparent 1px); background-size:100% 100%, 19px 19px, 19px 19px; background-position:0 0, 0 0, 0 0; background-repeat:no-repeat, repeat, repeat; color:#221C2E; font-family:'Hanken Grotesk',sans-serif; position:relative; overflow:hidden;">
+
+  <!-- ICON RAIL -->
+  <aside style="width:64px; flex-shrink:0; display:flex; flex-direction:column; align-items:center; padding:20px 0 18px; border-right:1px solid #D3D8E7; background:#EBEEF7; position:relative; z-index:2;">
+    <img src="assets/olly-logo.png" alt="Olly" style="display:block; width:34px; height:auto; margin-bottom:24px;" />
+    <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+      <div style="width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; background:rgba(108,75,216,0.13); color:#6C4BD8;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></div>
+      <div style="width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; color:#5B5566;" style-hover="background:#FFFFFF; color:#6C4BD8;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 9.5 9.5 0 0 1-4-.9L3 20l1.4-4.5A8.38 8.38 0 0 1 3.5 11 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5z"/></svg></div>
+      <div style="width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; color:#5B5566;" style-hover="background:#FFFFFF; color:#6C4BD8;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h6a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div>
+    </div>
+    <div style="flex:1;"></div>
+    <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+      <div style="width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; color:#7B7484;" style-hover="background:#FFFFFF; color:#6C4BD8;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg></div>
+      <div style="width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; color:#7B7484;" style-hover="background:#FFFFFF; color:#6C4BD8;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7l4 4-4 4M12 17h7"/></svg></div>
+      <div style="width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; color:#7B7484;" style-hover="background:#FFFFFF; color:#6C4BD8;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.5-2-3.4-2.3 1a7 7 0 0 0-2-1.2l-.3-2.5h-4l-.3 2.5a7 7 0 0 0-2 1.2l-2.3-1-2 3.4 2 1.5A7 7 0 0 0 5 12a7 7 0 0 0 .1 1.2l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 2 1.2l.3 2.5h4l.3-2.5a7 7 0 0 0 2-1.2l2.3 1 2-3.4-2-1.5A7 7 0 0 0 19 12z"/></svg></div>
+      <div style="width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,#F0A6C8,#C98BE6); display:flex; align-items:center; justify-content:center; color:#fff; font-size:13px; font-weight:600; margin-top:6px;">J</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div style="flex:1; display:flex; position:relative; z-index:1; min-width:0;">
+
+    <!-- LEFT: greeting -->
+    <section style="width:806px; flex-shrink:0; padding:0 88px 0 128px; display:flex; flex-direction:column; justify-content:center;">
+      <div style="max-width:600px;">
+        <div style="display:flex; align-items:center; gap:11px; margin-bottom:24px;">
+          <svg width="30" height="30" viewBox="0 0 80 80" fill="none" style="flex-shrink:0; filter:drop-shadow(0 4px 7px rgba(20,58,90,0.22));"><defs><linearGradient id="ollyG1" x1="40" y1="80" x2="40" y2="0" gradientUnits="userSpaceOnUse"><stop stop-color="#153A5A"/><stop offset="1" stop-color="#14558E"/></linearGradient><radialGradient id="ollyG1hl" cx="0.3" cy="0.25" r="0.6"><stop offset="0" stop-color="rgba(255,255,255,0.18)"/><stop offset="1" stop-color="rgba(255,255,255,0)"/></radialGradient></defs><circle cx="40" cy="40" r="39.5" fill="url(#ollyG1)"/><ellipse cx="28" cy="22" rx="22" ry="14" fill="url(#ollyG1hl)"/><g transform="translate(48,31) scale(1.66) translate(-48,-31)"><path fill="#fff" d="M 34.683 36.338 C 35.807 36.175 37.166 35.792 38.484 34.55 C 41.213 31.978 41.23 27.557 38.948 25.291 C 38.054 24.404 36.446 24.068 35.112 25.325 C 34.532 25.871 34.42 26.47 34.547 27.187 C 34.667 27.87 34.994 28.604 35.365 29.436 C 35.813 30.44 36.34 31.599 36.409 32.77 C 36.491 34.173 36.241 35.386 34.683 36.338 Z"/><path fill="#fff" d="M 52.683 36.338 C 53.807 36.175 55.166 35.792 56.484 34.55 C 59.213 31.978 59.23 27.557 56.948 25.291 C 56.054 24.404 54.446 24.068 53.112 25.325 C 52.532 25.871 52.42 26.47 52.547 27.187 C 52.667 27.87 52.994 28.604 53.365 29.436 C 53.813 30.44 54.34 31.599 54.409 32.77 C 54.491 34.173 54.241 35.386 52.683 36.338 Z"/></g></svg>
+          <span style="font-size:14px; color:#6E6678;">Olly is online</span>
+        </div>
+
+        <h1 style="font-family:'Hanken Grotesk',sans-serif; font-weight:600; font-size:44px; line-height:1.06; letter-spacing:-0.032em; color:#221C2E; margin:0 0 20px;">Ready when you are, John</h1>
+
+        <p style="font-size:16px; line-height:1.5; color:#6E6678; margin:0 0 30px;"><span style="color:#221C2E; font-weight:600;">41 of 42</span> services healthy across 3 clouds. One critical, isolated.</p>
+
+        <div>
+          <div style="display:flex; gap:20px; padding:17px 0; border-top:1px solid #D3D8E7;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:#CE4239; padding-top:3px; flex-shrink:0; width:58px;">Critical</span>
+            <p style="margin:0; font-size:15px; line-height:1.5; color:#4A4456;"><a href="#" style="color:#6A42C7; text-decoration:underline; text-decoration-color:#CABBEF; text-underline-offset:3px; font-weight:600;">Payment service P99 breached 2,000ms</a> — connection pool exhaustion on 3 of 4 pods. Root cause identified.</p>
+          </div>
+          <div style="display:flex; gap:20px; padding:17px 0; border-top:1px solid #D3D8E7;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:#C07C2C; padding-top:3px; flex-shrink:0; width:58px;">Warning</span>
+            <p style="margin:0; font-size:15px; line-height:1.5; color:#4A4456;"><a href="#" style="color:#6A42C7; text-decoration:underline; text-decoration-color:#CABBEF; text-underline-offset:3px; font-weight:600;">Checkout error-rate spike</a> tied to auth-service regression. Elevated but not yet customer-impacting.</p>
+          </div>
+          <div style="display:flex; gap:20px; padding:17px 0; border-top:1px solid #D3D8E7;">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:0.07em; text-transform:uppercase; color:#C07C2C; padding-top:3px; flex-shrink:0; width:58px;">Warning</span>
+            <p style="margin:0; font-size:15px; line-height:1.5; color:#4A4456;"><a href="#" style="color:#6A42C7; text-decoration:underline; text-decoration-color:#CABBEF; text-underline-offset:3px; font-weight:600;">DNS resolution timeout</a> flagged 3 hours ago — not yet resolved. Monitoring for recurrence.</p>
+          </div>
+        </div>
+
+        <div style="margin-top:28px; background:#FFFFFF; border:1.5px solid #6C4BD8; border-radius:18px; box-shadow:0 6px 22px rgba(108,75,216,0.12); padding:18px 18px 13px;">
+          <div style="font-size:15px; color:#9A93A6; padding:2px 2px 0;">Ask AI anything, or type to search a page</div>
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-top:20px;">
+            <div style="width:30px; height:30px; border-radius:9px; border:1px solid #D3D8E7; display:flex; align-items:center; justify-content:center; color:#6E6678;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 6v12M6 12h12"/></svg></div>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#6E6678" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+              <div style="width:32px; height:32px; border-radius:50%; background:#DDD2F6; display:flex; align-items:center; justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6C4BD8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: dashboard -->
+    <section style="flex:1; border-left:1px solid rgba(150,160,196,0.22); background:rgba(236,238,248,0.50); padding:54px 70px 0 58px; overflow:hidden; min-width:0;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:26px;">
+        <h2 style="font-family:'Hanken Grotesk',sans-serif; font-weight:600; font-size:23px; letter-spacing:-0.02em; color:#221C2E; margin:0;">Overview</h2>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div title="Open a page" style="width:36px; height:36px; border-radius:10px; border:1px solid #D3D8E7; background:transparent; display:flex; align-items:center; justify-content:center; color:#6E6678;" style-hover="color:#6C4BD8;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="3" width="7" height="10" rx="1.4"/><rect x="3" y="16" width="7" height="5" rx="1.4"/><rect x="14" y="3" width="7" height="5" rx="1.4"/><rect x="14" y="11" width="7" height="10" rx="1.4"/></svg></div>
+          <div title="Customize" style="width:36px; height:36px; border-radius:10px; border:1px solid #D3D8E7; background:transparent; display:flex; align-items:center; justify-content:center; color:#6E6678;" style-hover="color:#6C4BD8;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 8h11M19 8h1M4 16h5M13 16h7"/><circle cx="16" cy="8" r="2.2" fill="#ECEEF8"/><circle cx="10" cy="16" r="2.2" fill="#ECEEF8"/></svg></div>
+        </div>
+      </div>
+
+      <details class="sys" open="open" style="margin-bottom:20px; border-bottom:1px solid #E5E8F1; padding-bottom:8px;">
+        <summary style="display:flex; align-items:center; justify-content:space-between; padding:6px 2px 14px; cursor:pointer;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6E6678" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            <span style="font-size:15px; font-weight:600; color:#221C2E;">System health</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; color:#9A93A6; text-transform:uppercase;">3 clouds · 3 regions · 60m</span>
+          </div>
+          <span style="display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:#1F9D6B;"><span style="width:8px; height:8px; border-radius:50%; background:#1F9D6B; box-shadow:0 0 0 3px rgba(31,157,107,0.16);"></span>All systems operational</span>
+        </summary>
+        <div class="sys-body" style="display:flex; align-items:stretch; gap:0; padding:6px 2px 6px;">
+          <div style="flex:1; padding-right:22px; display:flex; align-items:center; gap:14px;"><div style="position:relative; width:54px; height:54px; flex-shrink:0;">
+              <svg width="54" height="54" viewBox="0 0 54 54"><circle cx="27" cy="27" r="22" fill="none" stroke="#E7E2EE" stroke-width="6"/><circle cx="27" cy="27" r="22" fill="none" stroke="#1F9D6B" stroke-width="6" stroke-linecap="round" stroke-dasharray="138.2" stroke-dashoffset="3.3" transform="rotate(-90 27 27)"/></svg>
+              <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; color:#221C2E;">97.6</div>
+            </div>
+            <div><div style="font-size:13px; color:#6E6678;">Fleet health</div><div style="font-size:15px; font-weight:600; color:#1F9D6B;">Operational</div></div>
+          </div>
+          <div style="width:1px; background:#E5E8F1;"></div>
+          <div style="flex:1; padding:0 22px; display:flex; flex-direction:column; justify-content:center;"><div style="font-family:'JetBrains Mono',monospace; font-size:23px; font-weight:600; letter-spacing:-0.01em; color:#221C2E;">42</div><div style="font-size:12.5px; color:#6E6678; margin-top:3px;">Services running</div></div>
+          <div style="width:1px; background:#E5E8F1;"></div>
+          <div style="flex:1; padding:0 22px; display:flex; flex-direction:column; justify-content:center;"><div style="font-family:'JetBrains Mono',monospace; font-size:23px; font-weight:600; color:#CE4239;">1</div><div style="font-size:12.5px; color:#6E6678; margin-top:3px;">Critical</div></div>
+          <div style="width:1px; background:#E5E8F1;"></div>
+          <div style="flex:1; padding:0 22px; display:flex; flex-direction:column; justify-content:center;"><div style="font-family:'JetBrains Mono',monospace; font-size:23px; font-weight:600; color:#C07C2C;">2%</div><div style="font-size:12.5px; color:#6E6678; margin-top:3px;">Error rate</div></div>
+          <div style="width:1px; background:#E5E8F1;"></div>
+          <div style="flex:1; padding:0 22px; display:flex; flex-direction:column; justify-content:center;"><div style="font-family:'JetBrains Mono',monospace; font-size:23px; font-weight:600; color:#221C2E;">9.6<span style="font-size:15px; color:#B7B0BF;">k</span></div><div style="font-size:12.5px; color:#6E6678; margin-top:3px;">Req / min</div></div>
+          <div style="width:1px; background:#E5E8F1;"></div>
+          <div style="flex:1; padding-left:22px; display:flex; flex-direction:column; justify-content:center;"><div style="font-family:'JetBrains Mono',monospace; font-size:23px; font-weight:600; color:#221C2E;">480<span style="font-size:15px; color:#B7B0BF;">ms</span></div><div style="font-size:12.5px; color:#6E6678; margin-top:3px;">P99 latency</div></div>
+        </div>
+      </details>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+
+        <!-- Top services by fault rate -->
+        <div style="background:rgba(255,255,255,0.85); -webkit-backdrop-filter:blur(7px); backdrop-filter:blur(7px); border:1px solid rgba(255,255,255,0.9); border-radius:18px; padding:18px 20px; box-shadow:0 12px 26px -16px rgba(60,42,104,0.28), inset 0 1px 0 rgba(255,255,255,0.85);">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:8.5px; letter-spacing:0.14em; color:#6C4BD8; text-transform:uppercase; font-weight:600; margin-bottom:5px;">FAULTS · 60M</div>
+          <div style="font-size:15px; font-weight:600; color:#221C2E; margin-bottom:16px;">Top services by fault rate</div>
+          <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.07em; color:#A39BAC; margin-bottom:12px;"><span>SERVICE</span><span>FAULT RATE</span></div>
+          <div style="display:flex; flex-direction:column; gap:13px;">
+            <div style="display:flex; align-items:center; gap:14px;"><span style="width:108px; font-size:14px; color:#3C3648;">checkout</span><div style="flex:1; height:7px; border-radius:4px; background:#EFEAFB;"><div style="width:67%; height:100%; border-radius:4px; background:#6C4BD8;"></div></div><span style="width:58px; text-align:right; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:500; color:#221C2E;">66.67%</span></div>
+            <div style="display:flex; align-items:center; gap:14px;"><span style="width:108px; font-size:14px; color:#3C3648;">frontend</span><div style="flex:1; height:7px; border-radius:4px; background:#EFEAFB;"><div style="width:14.5%; height:100%; border-radius:4px; background:#9B82E6;"></div></div><span style="width:58px; text-align:right; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:500; color:#221C2E;">14.49%</span></div>
+            <div style="display:flex; align-items:center; gap:14px;"><span style="width:108px; font-size:14px; color:#3C3648;">frontend-proxy</span><div style="flex:1; height:7px; border-radius:4px; background:#EFEAFB;"><div style="width:14.3%; height:100%; border-radius:4px; background:#9B82E6;"></div></div><span style="width:58px; text-align:right; font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:500; color:#221C2E;">14.29%</span></div>
+          </div>
+        </div>
+
+        <!-- Connection timeout errors -->
+        <div style="background:rgba(255,255,255,0.85); -webkit-backdrop-filter:blur(7px); backdrop-filter:blur(7px); border:1px solid rgba(255,255,255,0.9); border-radius:18px; padding:18px 20px; box-shadow:0 12px 26px -16px rgba(60,42,104,0.28), inset 0 1px 0 rgba(255,255,255,0.85); overflow:hidden;">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:8.5px; letter-spacing:0.14em; color:#6C4BD8; text-transform:uppercase; font-weight:600; margin-bottom:5px;">ERRORS · 60M</div>
+          <div style="font-size:15px; font-weight:600; color:#221C2E; margin-bottom:14px;">Connection timeout errors</div>
+          <div style="display:flex; align-items:baseline; gap:10px;">
+            <span style="font-size:38px; font-weight:700; letter-spacing:-0.02em; color:#221C2E; line-height:1;">847</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600; color:#DD8A3A;">↑ 312%</span>
+          </div>
+          <div style="position:relative; margin-top:8px;">
+            <div style="position:absolute; inset:0; pointer-events:none; background-image:linear-gradient(to right, rgba(108,75,216,0.07) 1px, transparent 1px), linear-gradient(to bottom, rgba(108,75,216,0.07) 1px, transparent 1px); background-size:20px 17px;"></div>
+            <svg width="100%" height="68" viewBox="0 0 280 68" preserveAspectRatio="none" style="display:block; position:relative;">
+              <defs><linearGradient id="og1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#DD8A3A" stop-opacity="0.18"/><stop offset="1" stop-color="#DD8A3A" stop-opacity="0"/></linearGradient></defs>
+              <line x1="0" y1="8" x2="280" y2="8" stroke="#DD8A3A" stroke-width="0.8" stroke-dasharray="3 3" opacity="0.45"/>
+              <path d="M0,56 C50,55 90,53 130,47 C170,41 210,26 280,8 L280,68 L0,68 Z" fill="url(#og1)"/>
+              <path d="M0,56 C50,55 90,53 130,47 C170,41 210,26 280,8" fill="none" stroke="#DD8A3A" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Recent alerts -->
+        <div style="background:rgba(255,255,255,0.85); -webkit-backdrop-filter:blur(7px); backdrop-filter:blur(7px); border:1px solid rgba(255,255,255,0.9); border-radius:18px; padding:18px 20px; box-shadow:0 12px 26px -16px rgba(60,42,104,0.28), inset 0 1px 0 rgba(255,255,255,0.85);">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:8.5px; letter-spacing:0.14em; color:#6C4BD8; text-transform:uppercase; font-weight:600; margin-bottom:5px;">ALERTS · LIVE</div>
+          <div style="font-size:15px; font-weight:600; color:#221C2E; margin-bottom:16px;">Recent alerts</div>
+          <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.07em; color:#A39BAC; margin-bottom:13px;"><span>ALERT</span><span>STATUS</span></div>
+          <div style="display:flex; flex-direction:column; gap:13px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-size:14px; color:#3C3648;">P99 latency breach</span><span style="display:inline-flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:0.04em; color:#CE4239;"><span style="width:6px; height:6px; background:#CE4239;"></span>CRITICAL</span></div>
+            <div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-size:14px; color:#3C3648;">Disk usage warning</span><span style="display:inline-flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:0.04em; color:#C07C2C;"><span style="width:6px; height:6px; background:#C07C2C;"></span>WARNING</span></div>
+            <div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-size:14px; color:#3C3648;">Error rate spike</span><span style="display:inline-flex; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; letter-spacing:0.04em; color:#CE4239;"><span style="width:6px; height:6px; background:#CE4239;"></span>CRITICAL</span></div>
+          </div>
+        </div>
+
+        <!-- Deployment timeline -->
+        <div style="background:rgba(255,255,255,0.85); -webkit-backdrop-filter:blur(7px); backdrop-filter:blur(7px); border:1px solid rgba(255,255,255,0.9); border-radius:18px; padding:18px 20px; box-shadow:0 12px 26px -16px rgba(60,42,104,0.28), inset 0 1px 0 rgba(255,255,255,0.85);">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:8.5px; letter-spacing:0.14em; color:#6C4BD8; text-transform:uppercase; font-weight:600; margin-bottom:5px;">DEPLOYS · 24H</div>
+          <div style="display:flex; align-items:baseline; justify-content:space-between; margin-bottom:12px;">
+            <div style="font-size:15px; font-weight:600; color:#221C2E;">Deployment timeline</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:9.5px; color:#A39BAC; letter-spacing:0.08em; white-space:nowrap;">&#931; 55</div>
+          </div>
+          <div style="position:relative; background:rgba(255,255,255,0.32); padding:12px 14px 0;">
+            <div style="position:absolute; inset:0; pointer-events:none; background-image:linear-gradient(to right, rgba(108,75,216,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(108,75,216,0.06) 1px, transparent 1px); background-size:18px 16px;"></div>
+            <div style="position:relative; height:92px; display:flex; align-items:flex-end; gap:16px;">
+              <div style="position:absolute; left:0; right:0; bottom:53px; border-top:1px dashed rgba(72,52,120,0.32);"></div>
+              <div style="position:absolute; left:0; bottom:55px; font-family:'JetBrains Mono',monospace; font-size:8px; letter-spacing:0.1em; color:#9B82E6;">AVG 11</div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:5px;"><span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; font-weight:600; color:#1F9D6B;">8</span><div style="width:58%; height:38px; background:#2BA98A; border-radius:1px;"></div></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:5px;"><span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; font-weight:600; color:#1F9D6B;">12</span><div style="width:58%; height:58px; background:#2BA98A; border-radius:1px;"></div></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:5px;"><span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; font-weight:600; color:#1F9D6B;">15</span><div style="width:58%; height:72px; background:#2BA98A; border-radius:1px;"></div></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:5px;"><span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; font-weight:600; color:#1F9D6B;">11</span><div style="width:58%; height:53px; background:#2BA98A; border-radius:1px;"></div></div>
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:5px;"><span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; font-weight:600; color:#1F9D6B;">9</span><div style="width:58%; height:43px; background:#2BA98A; border-radius:1px;"></div></div>
+            </div>
+            <div style="height:1px; background:rgba(72,52,120,0.32);"></div>
+            <div style="display:flex; gap:16px; padding:6px 0 12px;">
+              <div style="flex:1; text-align:center; font-family:'JetBrains Mono',monospace; font-size:10px; color:#A39BAC;">1-3</div>
+              <div style="flex:1; text-align:center; font-family:'JetBrains Mono',monospace; font-size:10px; color:#A39BAC;">5-7</div>
+              <div style="flex:1; text-align:center; font-family:'JetBrains Mono',monospace; font-size:10px; color:#A39BAC;">9-11</div>
+              <div style="flex:1; text-align:center; font-family:'JetBrains Mono',monospace; font-size:10px; color:#A39BAC;">13-15</div>
+              <div style="flex:1; text-align:center; font-family:'JetBrains Mono',monospace; font-size:10px; color:#A39BAC;">17-23</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resource utilization -->
+        <div style="background:rgba(255,255,255,0.85); -webkit-backdrop-filter:blur(7px); backdrop-filter:blur(7px); border:1px solid rgba(255,255,255,0.9); border-radius:18px; padding:18px 20px; box-shadow:0 12px 26px -16px rgba(60,42,104,0.28), inset 0 1px 0 rgba(255,255,255,0.85);">
+          <div style="font-family:'JetBrains Mono',monospace; font-size:8.5px; letter-spacing:0.14em; color:#6C4BD8; text-transform:uppercase; font-weight:600; margin-bottom:5px;">UTILIZATION · 60M</div>
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+            <span style="font-size:15px; font-weight:600; color:#221C2E;">Resource utilization</span>
+            <span style="font-size:22px; font-weight:700; color:#1F9D6B; letter-spacing:-0.01em;">56%</span>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <div style="display:flex; flex-direction:column; justify-content:space-between; height:96px; font-family:'JetBrains Mono',monospace; font-size:9px; color:#B7B0BF; text-align:right; padding-bottom:14px;"><span>100</span><span>75</span><span>50</span><span>25</span><span>0</span></div>
+            <div style="flex:1;">
+              <svg width="100%" height="96" viewBox="0 0 260 96" preserveAspectRatio="none" style="display:block;">
+                <line x1="0" y1="6" x2="260" y2="6" stroke="rgba(108,75,216,0.08)" stroke-width="1"/>
+                <line x1="0" y1="26" x2="260" y2="26" stroke="rgba(108,75,216,0.08)" stroke-width="1"/>
+                <line x1="0" y1="46" x2="260" y2="46" stroke="rgba(108,75,216,0.08)" stroke-width="1"/>
+                <line x1="0" y1="66" x2="260" y2="66" stroke="rgba(108,75,216,0.08)" stroke-width="1"/>
+                <line x1="52" y1="0" x2="52" y2="82" stroke="rgba(108,75,216,0.06)" stroke-width="1"/>
+                <line x1="104" y1="0" x2="104" y2="82" stroke="rgba(108,75,216,0.06)" stroke-width="1"/>
+                <line x1="156" y1="0" x2="156" y2="82" stroke="rgba(108,75,216,0.06)" stroke-width="1"/>
+                <line x1="208" y1="0" x2="208" y2="82" stroke="rgba(108,75,216,0.06)" stroke-width="1"/>
+                <line x1="0" y1="82" x2="260" y2="82" stroke="rgba(72,52,120,0.28)" stroke-width="1" stroke-dasharray="3 3"/>
+                <polyline points="6,52 58,50 110,53 162,45 214,47 256,42" fill="none" stroke="#1F9D6B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="6" cy="52" r="3" fill="#1F9D6B"/><circle cx="58" cy="50" r="3" fill="#1F9D6B"/><circle cx="110" cy="53" r="3" fill="#1F9D6B"/><circle cx="162" cy="45" r="3" fill="#1F9D6B"/><circle cx="214" cy="47" r="3" fill="#1F9D6B"/><circle cx="256" cy="42" r="3" fill="#1F9D6B"/>
+              </svg>
+              <div style="display:flex; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:9px; color:#B7B0BF; margin-top:5px;"><span>0m</span><span>15m</span><span>30m</span><span>45m</span><span>60m</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Saved queries -->
+        <div style="background:rgba(255,255,255,0.85); -webkit-backdrop-filter:blur(7px); backdrop-filter:blur(7px); border:1px solid rgba(255,255,255,0.9); border-radius:18px; padding:18px 20px; box-shadow:0 12px 26px -16px rgba(60,42,104,0.28), inset 0 1px 0 rgba(255,255,255,0.85);">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+            <div style="display:flex; align-items:center; gap:9px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6C4BD8" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><span style="font-size:15px; font-weight:600; color:#221C2E;">Saved queries</span></div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B7B0BF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+          </div>
+          <div style="display:flex; flex-direction:column;">
+            <div style="padding:11px 0; border-top:1px solid #E8EBF5;"><div style="font-size:14px; font-weight:500; color:#221C2E;">5xx by service</div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#A39BAC; margin-top:3px;">last 1h</div></div>
+            <div style="padding:11px 0; border-top:1px solid #E8EBF5;"><div style="font-size:14px; font-weight:500; color:#221C2E;">Slow traces &gt; 2s</div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#A39BAC; margin-top:3px;">all services</div></div>
+          </div>
+        </div>
+
+        <!-- Dashboards (full width) -->
+        <div style="grid-column:1 / -1; background:rgba(255,255,255,0.85); -webkit-backdrop-filter:blur(7px); backdrop-filter:blur(7px); border:1px solid rgba(255,255,255,0.9); border-radius:18px; padding:18px 22px; box-shadow:0 12px 26px -16px rgba(60,42,104,0.28), inset 0 1px 0 rgba(255,255,255,0.85);">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+            <div style="display:flex; align-items:center; gap:9px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6C4BD8" stroke-width="1.9"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg><span style="font-size:15px; font-weight:600; color:#221C2E;">Dashboards</span></div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B7B0BF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 0 13px; border-top:1px solid #E8EBF5; margin-top:8px;">
+            <div><div style="font-size:14px; font-weight:500; color:#221C2E;">Service overview</div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#A39BAC; margin-top:3px;">12 panels · opened 2h ago</div></div>
+            <svg width="150" height="30" viewBox="0 0 150 30" fill="none"><polyline points="0,18 20,14 40,20 60,12 80,17 100,11 120,16 150,10" stroke="#1F9D6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 0 4px; border-top:1px solid #E8EBF5;">
+            <div><div style="font-size:14px; font-weight:500; color:#221C2E;">p99 latency</div><div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#A39BAC; margin-top:3px;">8 panels · opened today</div></div>
+            <svg width="150" height="30" viewBox="0 0 150 30" fill="none"><polyline points="0,22 30,21 60,19 90,15 120,9 150,5" stroke="#DD8A3A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1585,&quot;height&quot;:912}}"></script>
+</body>
+</html>

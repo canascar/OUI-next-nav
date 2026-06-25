@@ -13,21 +13,20 @@
  * 1. Accounts for the border
  */
 .ouiBadge {
-  font-size: $ouiFontSizeXS;
+  font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
+  font-size: 9.5px;
   font-weight: $ouiFontWeightMedium;
   line-height: $ouiSize + 2px; /* 1 */
-  padding: 0 $ouiSizeS;
+  padding: 3px 9px;
   display: inline-block;
   text-decoration: none;
-  border-radius: calc($ouiBorderRadius / 2);
+  border-radius: 6px;
   border: solid 1px transparent;
   background-color: transparent;
   white-space: nowrap;
   vertical-align: middle;
   cursor: default;
   max-width: 100%;
-  // The badge will only ever be as wide as its content
-  // So, make the text left aligned to ensure all badges line up the same
   text-align: left;
 
   &.ouiBadge-isDisabled {

@@ -10,12 +10,15 @@
  */
 
 .ouiFilterButton {
-  background-color: $ouiFormBackgroundColor;
+  background-color: var(--nb-cell, $ouiFormBackgroundColor);
   height: $ouiFormControlHeight;
   width: auto;
-  border: 1px solid $ouiFormBorderColor;
+  border: 1px solid var(--nb-hairline, $ouiFormBorderColor);
   border-right: none;
-  font-size: $ouiFontSizeS;
+  font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
+  font-size: 9.5px;
+  font-weight: $ouiFontWeightMedium;
+  border-radius: 6px;
 
   &:disabled {
     color: $ouiButtonColorDisabledText;
