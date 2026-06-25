@@ -1393,7 +1393,6 @@ export const EmptySessionPage = ({
                           case 'top-services':
                             return (
                               <OuiInsightCard
-                                title="Top services by fault rate"
                                 onClick={() =>
                                   !isEditMode &&
                                   onOpenPageInNewSession(
@@ -1401,93 +1400,27 @@ export const EmptySessionPage = ({
                                     'Application Services'
                                   )
                                 }>
-                                <div
-                                  style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: 6,
-                                  }}>
-                                  <div
-                                    style={{
-                                      display: 'flex',
-                                      justifyContent: 'space-between',
-                                      fontSize: 11,
-                                      fontWeight: 600,
-                                      opacity: 0.65,
-                                      textTransform: 'uppercase',
-                                      letterSpacing: 0.5,
-                                    }}>
-                                    <span>Service</span>
-                                    <span>Fault rate</span>
+                                <div className="widgetCard__badge">FAULTS · 60M</div>
+                                <div className="widgetCard__title">Top services by fault rate</div>
+                                <div className="widgetCard__tableHeader">
+                                  <span>SERVICE</span>
+                                  <span>FAULT RATE</span>
+                                </div>
+                                <div className="widgetCard__rows">
+                                  <div className="widgetCard__barRow">
+                                    <span className="widgetCard__barLabel">checkout</span>
+                                    <div className="widgetCard__barTrack"><div className="widgetCard__barFill" style={{ width: '67%' }} /></div>
+                                    <span className="widgetCard__barValue">66.67%</span>
                                   </div>
-                                  <div
-                                    style={{
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      gap: 8,
-                                      fontSize: 13,
-                                    }}>
-                                    <span style={{ flex: '0 0 100px' }}>
-                                      checkout
-                                    </span>
-                                    <span
-                                      style={{
-                                        flex: 1,
-                                        height: 8,
-                                        borderRadius: 4,
-                                        background:
-                                          'linear-gradient(90deg, #a5b4fc 66.67%, transparent 66.67%)',
-                                      }}
-                                    />
-                                    <span style={{ fontWeight: 600 }}>
-                                      66.67%
-                                    </span>
+                                  <div className="widgetCard__barRow">
+                                    <span className="widgetCard__barLabel">frontend</span>
+                                    <div className="widgetCard__barTrack"><div className="widgetCard__barFill widgetCard__barFill--secondary" style={{ width: '14.5%' }} /></div>
+                                    <span className="widgetCard__barValue">14.49%</span>
                                   </div>
-                                  <div
-                                    style={{
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      gap: 8,
-                                      fontSize: 13,
-                                    }}>
-                                    <span style={{ flex: '0 0 100px' }}>
-                                      frontend
-                                    </span>
-                                    <span
-                                      style={{
-                                        flex: 1,
-                                        height: 8,
-                                        borderRadius: 4,
-                                        background:
-                                          'linear-gradient(90deg, #a5b4fc 14.49%, transparent 14.49%)',
-                                      }}
-                                    />
-                                    <span style={{ fontWeight: 600 }}>
-                                      14.49%
-                                    </span>
-                                  </div>
-                                  <div
-                                    style={{
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      gap: 8,
-                                      fontSize: 13,
-                                    }}>
-                                    <span style={{ flex: '0 0 100px' }}>
-                                      frontend-proxy
-                                    </span>
-                                    <span
-                                      style={{
-                                        flex: 1,
-                                        height: 8,
-                                        borderRadius: 4,
-                                        background:
-                                          'linear-gradient(90deg, #a5b4fc 14.29%, transparent 14.29%)',
-                                      }}
-                                    />
-                                    <span style={{ fontWeight: 600 }}>
-                                      14.29%
-                                    </span>
+                                  <div className="widgetCard__barRow">
+                                    <span className="widgetCard__barLabel">frontend-proxy</span>
+                                    <div className="widgetCard__barTrack"><div className="widgetCard__barFill widgetCard__barFill--secondary" style={{ width: '14.3%' }} /></div>
+                                    <span className="widgetCard__barValue">14.29%</span>
                                   </div>
                                 </div>
                               </OuiInsightCard>
@@ -1495,143 +1428,49 @@ export const EmptySessionPage = ({
                           case 'connection-timeout':
                             return (
                               <OuiInsightCard
-                                title="Connection timeout errors"
                                 onClick={() =>
                                   !isEditMode &&
                                   onOpenPageInNewSession('logs', 'Logs')
                                 }>
-                                <div
-                                  style={{
-                                    display: 'flex',
-                                    alignItems: 'baseline',
-                                    gap: 8,
-                                    marginBottom: 8,
-                                  }}>
-                                  <span
-                                    style={{
-                                      color: '#d97706',
-                                      fontWeight: 700,
-                                      fontSize: 28,
-                                      lineHeight: 1,
-                                    }}>
-                                    847
-                                  </span>
-                                  <span
-                                    style={{
-                                      fontSize: 13,
-                                      color: '#d97706',
-                                      fontWeight: 600,
-                                    }}>
-                                    ↑ 312%
-                                  </span>
+                                <div className="widgetCard__badge">ERRORS · 60M</div>
+                                <div className="widgetCard__title">Connection timeout errors</div>
+                                <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+                                  <span className="widgetCard__bigNumber">847</span>
+                                  <span className="widgetCard__trend widgetCard__trend--warning">↑ 312%</span>
                                 </div>
-                                <svg
-                                  viewBox="0 0 200 50"
-                                  style={{ width: '100%', height: 50 }}>
-                                  <defs>
-                                    <linearGradient
-                                      id="connFill"
-                                      x1="0"
-                                      y1="0"
-                                      x2="0"
-                                      y2="1">
-                                      <stop
-                                        offset="0%"
-                                        stopColor="#d97706"
-                                        stopOpacity="0.15"
-                                      />
-                                      <stop
-                                        offset="100%"
-                                        stopColor="#d97706"
-                                        stopOpacity="0.01"
-                                      />
-                                    </linearGradient>
-                                  </defs>
-                                  <path
-                                    d="M0,48 C40,48 80,46 120,42 S170,20 200,10 V50 H0 Z"
-                                    fill="url(#connFill)"
-                                  />
-                                  <path
-                                    d="M0,48 C40,48 80,46 120,42 S170,20 200,10"
-                                    fill="none"
-                                    stroke="#d97706"
-                                    strokeWidth="2.5"
-                                    strokeLinecap="round"
-                                  />
+                                <svg viewBox="0 0 280 68" preserveAspectRatio="none" style={{ width: '100%', height: 68, display: 'block', marginTop: 8 }}>
+                                  <defs><linearGradient id="connFill2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#DD8A3A" stopOpacity="0.18" /><stop offset="1" stopColor="#DD8A3A" stopOpacity="0" /></linearGradient></defs>
+                                  <line x1="0" y1="8" x2="280" y2="8" stroke="#DD8A3A" strokeWidth="0.8" strokeDasharray="3 3" opacity="0.45" />
+                                  <path d="M0,56 C50,55 90,53 130,47 C170,41 210,26 280,8 L280,68 L0,68 Z" fill="url(#connFill2)" />
+                                  <path d="M0,56 C50,55 90,53 130,47 C170,41 210,26 280,8" fill="none" stroke="#DD8A3A" strokeWidth="2.5" strokeLinecap="round" />
                                 </svg>
                               </OuiInsightCard>
                             );
                           case 'recent-alerts':
                             return (
                               <OuiInsightCard
-                                title="Recent alerts"
                                 onClick={() =>
                                   !isEditMode &&
                                   onOpenPageInNewSession('alerts', 'Alerts')
                                 }>
-                                <div
-                                  style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: 6,
-                                  }}>
-                                  <div
-                                    style={{
-                                      display: 'flex',
-                                      justifyContent: 'space-between',
-                                      fontSize: 11,
-                                      fontWeight: 600,
-                                      opacity: 0.65,
-                                      textTransform: 'uppercase',
-                                      letterSpacing: 0.5,
-                                    }}>
-                                    <span>Alert</span>
-                                    <span>Status</span>
+                                <div className="widgetCard__badge">ALERTS · LIVE</div>
+                                <div className="widgetCard__title">Recent alerts</div>
+                                <div className="widgetCard__tableHeader">
+                                  <span>ALERT</span>
+                                  <span>STATUS</span>
+                                </div>
+                                <div className="widgetCard__rows">
+                                  <div className="widgetCard__statusRow">
+                                    <span className="widgetCard__statusLabel">P99 latency breach</span>
+                                    <span className="widgetCard__statusBadge widgetCard__statusBadge--critical"><span className="widgetCard__statusDot" />CRITICAL</span>
                                   </div>
-                                  <div
-                                    style={{
-                                      display: 'flex',
-                                      justifyContent: 'space-between',
-                                      fontSize: 13,
-                                    }}>
-                                    <span>P99 latency breach</span>
-                                    <span
-                                      style={{
-                                        color: '#f87171',
-                                        fontWeight: 600,
-                                      }}>
-                                      Critical
-                                    </span>
+                                  <div className="widgetCard__statusRow">
+                                    <span className="widgetCard__statusLabel">Disk usage warning</span>
+                                    <span className="widgetCard__statusBadge widgetCard__statusBadge--warning"><span className="widgetCard__statusDot" />WARNING</span>
                                   </div>
-                                  <div
-                                    style={{
-                                      display: 'flex',
-                                      justifyContent: 'space-between',
-                                      fontSize: 13,
-                                    }}>
-                                    <span>Disk usage warning</span>
-                                    <span
-                                      style={{
-                                        color: '#fbbf24',
-                                        fontWeight: 600,
-                                      }}>
-                                      Warning
-                                    </span>
-                                  </div>
-                                  <div
-                                    style={{
-                                      display: 'flex',
-                                      justifyContent: 'space-between',
-                                      fontSize: 13,
-                                    }}>
-                                    <span>Error rate spike</span>
-                                    <span
-                                      style={{
-                                        color: '#f87171',
-                                        fontWeight: 600,
-                                      }}>
-                                      Critical
-                                    </span>
+                                  <div className="widgetCard__statusRow">
+                                    <span className="widgetCard__statusLabel">Error rate spike</span>
+                                    <span className="widgetCard__statusBadge widgetCard__statusBadge--critical"><span className="widgetCard__statusDot" />CRITICAL</span>
                                   </div>
                                 </div>
                               </OuiInsightCard>
@@ -1639,123 +1478,42 @@ export const EmptySessionPage = ({
                           case 'deployment-timeline':
                             return (
                               <OuiInsightCard
-                                title="Deployment timeline"
                                 onClick={() =>
                                   !isEditMode &&
-                                  onOpenPageInNewSession(
-                                    'dashboards',
-                                    'Dashboards'
-                                  )
+                                  onOpenPageInNewSession('dashboards', 'Dashboards')
                                 }>
-                                <svg
-                                  viewBox="0 0 200 100"
-                                  style={{ width: '100%', height: 100 }}>
-                                  <rect
-                                    x="12"
-                                    y="55"
-                                    width="28"
-                                    height="35"
-                                    rx="4"
-                                    fill="#34d399"
-                                  />
-                                  <rect
-                                    x="50"
-                                    y="30"
-                                    width="28"
-                                    height="60"
-                                    rx="4"
-                                    fill="#34d399"
-                                  />
-                                  <rect
-                                    x="88"
-                                    y="12"
-                                    width="28"
-                                    height="78"
-                                    rx="4"
-                                    fill="#34d399"
-                                  />
-                                  <rect
-                                    x="126"
-                                    y="38"
-                                    width="28"
-                                    height="52"
-                                    rx="4"
-                                    fill="#34d399"
-                                  />
-                                  <rect
-                                    x="164"
-                                    y="48"
-                                    width="28"
-                                    height="42"
-                                    rx="4"
-                                    fill="#34d399"
-                                  />
-                                  <text
-                                    x="26"
-                                    y="98"
-                                    fontSize="8"
-                                    fill="currentColor"
-                                    opacity="0.65"
-                                    textAnchor="middle">
-                                    1–3
-                                  </text>
-                                  <text
-                                    x="64"
-                                    y="98"
-                                    fontSize="8"
-                                    fill="currentColor"
-                                    opacity="0.65"
-                                    textAnchor="middle">
-                                    5–7
-                                  </text>
-                                  <text
-                                    x="102"
-                                    y="98"
-                                    fontSize="8"
-                                    fill="currentColor"
-                                    opacity="0.65"
-                                    textAnchor="middle">
-                                    9–11
-                                  </text>
-                                  <text
-                                    x="140"
-                                    y="98"
-                                    fontSize="8"
-                                    fill="currentColor"
-                                    opacity="0.65"
-                                    textAnchor="middle">
-                                    13–15
-                                  </text>
-                                  <text
-                                    x="178"
-                                    y="98"
-                                    fontSize="8"
-                                    fill="currentColor"
-                                    opacity="0.65"
-                                    textAnchor="middle">
-                                    17–23
-                                  </text>
-                                </svg>
+                                <div className="widgetCard__badge">DEPLOYS · 24H</div>
+                                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
+                                  <div className="widgetCard__title" style={{ marginBottom: 0 }}>Deployment timeline</div>
+                                  <span className="widgetCard__mono" style={{ fontSize: 9.5, letterSpacing: '0.08em' }}>Σ 55</span>
+                                </div>
+                                <div style={{ position: 'relative', height: 92, display: 'flex', alignItems: 'flex-end', gap: 16 }}>
+                                  {[{v:8,h:38},{v:12,h:58},{v:15,h:72},{v:11,h:53},{v:9,h:43}].map((d, i) => (
+                                    <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', gap: 5 }}>
+                                      <span className="widgetCard__mono" style={{ fontSize: 9.5, fontWeight: 600, color: '#1F9D6B' }}>{d.v}</span>
+                                      <div style={{ width: '58%', height: d.h, background: '#2BA98A', borderRadius: 1 }} />
+                                    </div>
+                                  ))}
+                                </div>
+                                <div style={{ display: 'flex', gap: 16, marginTop: 6 }}>
+                                  {['1-3','5-7','9-11','13-15','17-23'].map((l, i) => (
+                                    <div key={i} className="widgetCard__mono" style={{ flex: 1, textAlign: 'center', fontSize: 10 }}>{l}</div>
+                                  ))}
+                                </div>
                               </OuiInsightCard>
                             );
                           case 'resource-utilization':
                             return (
                               <OuiInsightCard
-                                title="Resource utilization"
                                 onClick={() =>
                                   !isEditMode &&
                                   onOpenPageInNewSession('metrics', 'Metrics')
-                                }
-                                titleExtra={
-                                  <span
-                                    style={{
-                                      color: '#34d399',
-                                      fontWeight: 700,
-                                      fontSize: 18,
-                                    }}>
-                                    56%
-                                  </span>
                                 }>
+                                <div className="widgetCard__badge">UTILIZATION · 60M</div>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                                  <span className="widgetCard__title" style={{ marginBottom: 0 }}>Resource utilization</span>
+                                  <span style={{ fontSize: 22, fontWeight: 700, color: '#1F9D6B', letterSpacing: '-0.01em' }}>56%</span>
+                                </div>
                                 <svg
                                   viewBox="0 0 220 100"
                                   style={{ width: '100%', height: 100 }}>

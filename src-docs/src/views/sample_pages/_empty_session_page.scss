@@ -2455,6 +2455,136 @@ textarea.emptySessionPage__textarea {
   }
 }
 
+// ─── Widget Card internals (design-matched typography) ──────
+.widgetCard__badge {
+  font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  color: $ouiColorPrimary;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.widgetCard__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: $ouiTitleColor;
+  margin-bottom: 16px;
+}
+
+.widgetCard__mono {
+  font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
+  color: lightOrDarkTheme(#A39BAC, #6E7686);
+}
+
+.widgetCard__tableHeader {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
+  font-size: 10px;
+  letter-spacing: 0.07em;
+  color: lightOrDarkTheme(#A39BAC, #6E7686);
+  margin-bottom: 12px;
+}
+
+.widgetCard__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.widgetCard__barRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.widgetCard__barLabel {
+  width: 108px;
+  font-size: 14px;
+  color: lightOrDarkTheme(#3C3648, #C4CBD8);
+}
+
+.widgetCard__barTrack {
+  flex: 1;
+  height: 7px;
+  border-radius: 4px;
+  background: lightOrDarkTheme(#EFEAFB, rgba(255, 255, 255, 0.09));
+}
+
+.widgetCard__barFill {
+  height: 100%;
+  border-radius: 4px;
+  background: $ouiColorPrimary;
+
+  &--secondary {
+    background: lightOrDarkTheme(#9B82E6, #8262D8);
+  }
+}
+
+.widgetCard__barValue {
+  width: 58px;
+  text-align: right;
+  font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
+  font-size: 13px;
+  font-weight: 500;
+  color: $ouiTitleColor;
+}
+
+.widgetCard__bigNumber {
+  font-size: 38px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: $ouiTitleColor;
+  line-height: 1;
+}
+
+.widgetCard__trend {
+  font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
+  font-size: 13px;
+  font-weight: 600;
+
+  &--warning {
+    color: #DD8A3A;
+  }
+}
+
+.widgetCard__statusRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.widgetCard__statusLabel {
+  font-size: 14px;
+  color: lightOrDarkTheme(#3C3648, #C4CBD8);
+}
+
+.widgetCard__statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+
+  &--critical {
+    color: lightOrDarkTheme(#CE4239, #FF6B61);
+  }
+
+  &--warning {
+    color: lightOrDarkTheme(#C07C2C, #E0A33A);
+  }
+}
+
+.widgetCard__statusDot {
+  width: 6px;
+  height: 6px;
+  background: currentColor;
+}
+
 // ─── Workflows Widget (App Library style) ───────────────────
 .emptySessionPage__workflowsWidget {
   @include ouiGlassPanel;
