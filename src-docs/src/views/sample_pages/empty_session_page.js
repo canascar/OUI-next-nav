@@ -113,7 +113,7 @@ const SurroundShimmer = ({ children }) => {
   }, []);
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative', padding: '24px 28px', margin: '-24px -28px' }}>
       <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }} />
       <div data-surround-box="1" style={{ position: 'relative', zIndex: 1 }}>
         {children}
