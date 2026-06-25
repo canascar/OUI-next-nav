@@ -233,17 +233,17 @@
   display: flex;
   align-items: baseline;
   gap: 16px;
-  padding: 12px 12px;
-  margin: 0 -12px;
-  border-top: 1px solid lightOrDarkTheme(#D3D8E7, rgba(255, 255, 255, 0.08));
+  padding: 14px 16px;
+  margin: 0 -16px;
+  border-top: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.04));
   border-radius: 10px;
   cursor: pointer;
   transition: transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 200ms ease, box-shadow 200ms ease, filter 600ms cubic-bezier(0.4, 0, 0.2, 1), opacity 600ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
     transform: scale(1.02);
-    background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.04));
-    box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
+    background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.015), rgba(255, 255, 255, 0.02));
+    box-shadow: 0 2px 8px lightOrDarkTheme(rgba(0, 0, 0, 0.03), rgba(0, 0, 0, 0.15));
     border-color: transparent;
   }
 
