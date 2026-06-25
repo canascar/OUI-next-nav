@@ -4,8 +4,8 @@
  */
 
 // Glass Theme Fonts
-// Plus Jakarta Sans (body/display), Space Grotesk (numerics/timestamps/code)
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap');
+// Source Sans 3 (body), Plus Jakarta Sans (titles), Source Code Pro (code/mono)
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=Source+Sans+3:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600&display=swap');
 
 :root {
   --oui-font-family: #{$ouiFontFamily};

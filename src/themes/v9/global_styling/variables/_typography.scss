@@ -40,10 +40,10 @@
 
 // sass-lint:disable quotes
 // Glass Theme Typography
-// Body/Titles: Plus Jakarta Sans | Numerics/Timestamps: Space Grotesk
-$ouiFontFamily: #{"'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"} !default;
+// Body: Source Sans 3 | Titles: Plus Jakarta Sans | Code: Source Code Pro
+$ouiFontFamily: #{"'Source Sans 3', system-ui, -apple-system, sans-serif"} !default;
 $ouiFontFamilyDisplay: #{"'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"} !default;
-$ouiCodeFontFamily: #{"'Space Grotesk', ui-monospace, 'SF Mono', monospace"} !default;
+$ouiCodeFontFamily: #{"'Source Code Pro', ui-monospace, 'SF Mono', monospace"} !default;
 // sass-lint:enable quotes
 
 // Careful using ligatures. Code editors like ACE will often error because of width calculations
