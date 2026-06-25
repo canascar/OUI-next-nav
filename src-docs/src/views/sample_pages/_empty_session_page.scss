@@ -564,7 +564,7 @@
   min-width: 0;
   overflow-y: auto;
   padding: 32px 24px 0 24px;
-  border-left: 1px solid lightOrDarkTheme(rgba(150, 160, 196, 0.22), rgba(255, 255, 255, 0.08));
+  border-left: none;
   background-color: lightOrDarkTheme(rgba(236, 238, 248, 0.50), rgba(13, 19, 30, 0.50));
   -ms-overflow-style: none;
   scrollbar-width: none;
