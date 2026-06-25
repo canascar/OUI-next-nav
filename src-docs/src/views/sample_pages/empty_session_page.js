@@ -38,6 +38,90 @@ import { OuiAgenticSpinner } from '../../../../src/components/headless/agentic_s
 import { Mascot } from '../../../../olly-mascot/Mascot';
 import { ThemeContext } from '../../components/with_theme';
 
+const SurroundShimmer = ({ children }) => {
+  const canvasRef = useRef(null);
+  const rafRef = useRef(null);
+  const startRef = useRef(0);
+  const fieldRef = useRef(null);
+
+  useEffect(() => {
+    const cv = canvasRef.current;
+    if (!cv) return;
+    const build = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = cv.clientWidth, h = cv.clientHeight;
+      if (!w || !h) return null;
+      cv.width = Math.round(w * dpr);
+      cv.height = Math.round(h * dpr);
+      const ctx = cv.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const sp = 13;
+      const cols = Math.max(1, Math.round((w - sp) / sp));
+      const rows = Math.max(1, Math.round((h - sp) / sp));
+      const ox = (w - (cols - 1) * sp) / 2, oy = (h - (rows - 1) * sp) / 2;
+      const dots = [];
+      for (let j = 0; j < rows; j++)
+        for (let i = 0; i < cols; i++)
+          dots.push({ x: ox + i * sp, y: oy + j * sp, gx: i, gy: j, r: Math.random() });
+      const field = { ctx, w, h, sp, dots, cx: w / 2, cy: h / 2 };
+      const box = cv.parentElement && cv.parentElement.querySelector('[data-surround-box]');
+      if (box) {
+        const cr = cv.getBoundingClientRect(), br = box.getBoundingClientRect();
+        field.hole = { x0: br.left - cr.left, y0: br.top - cr.top, x1: br.right - cr.left, y1: br.bottom - cr.top };
+      }
+      return field;
+    };
+    const draw = (f, t) => {
+      const { ctx, w, h, sp, dots } = f;
+      ctx.clearRect(0, 0, w, h);
+      for (const d of dots) {
+        let b = 0;
+        const hl = f.hole;
+        if (!hl) continue;
+        if (d.x > hl.x0 && d.x < hl.x1 && d.y > hl.y0 && d.y < hl.y1) continue;
+        const sdx = Math.max(hl.x0 - d.x, d.x - hl.x1, 0);
+        const sdy = Math.max(hl.y0 - d.y, d.y - hl.y1, 0);
+        const sdist = Math.hypot(sdx, sdy);
+        const bcx = (hl.x0 + hl.x1) / 2, bcy = (hl.y0 + hl.y1) / 2;
+        const sa = (Math.atan2(d.y - bcy, d.x - bcx) / 6.2832) + 0.5;
+        const sph = (t * 0.13) % 1;
+        const sdm = Math.min(Math.abs(sa - sph), 1 - Math.abs(sa - sph));
+        const sph2 = (sph + 0.5) % 1;
+        const sd2m = Math.min(Math.abs(sa - sph2), 1 - Math.abs(sa - sph2));
+        const near = Math.exp(-Math.pow(sdist / (sp * 2.6), 2));
+        const sg = Math.exp(-Math.pow(sdm * 6, 2)) + 0.4 * Math.exp(-Math.pow(sd2m * 6, 2));
+        b = 0.05 * Math.exp(-Math.pow(sdist / (sp * 4.5), 2)) + 0.5 * sg * near;
+        if (b < 0.01) continue;
+        b = Math.max(0, Math.min(1, b));
+        const a = (0.02 + 0.30 * b).toFixed(3);
+        const r = Math.round(96 + 44 * b), g = Math.round(60 + 62 * b), bl = Math.round(196 + 40 * b);
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, 0.6 + b * 1.7, 0, 6.2832);
+        ctx.fillStyle = `rgba(${r},${g},${bl},${a})`;
+        ctx.fill();
+      }
+    };
+    fieldRef.current = build();
+    const tick = (now) => {
+      if (!startRef.current) startRef.current = now;
+      const t = (now - startRef.current) / 1000;
+      if (fieldRef.current) draw(fieldRef.current, t);
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, []);
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }} />
+      <div data-surround-box="1" style={{ position: 'relative', zIndex: 1 }}>
+        {children}
+      </div>
+    </div>
+  );
+};
+
 /**
  * Quick access shortcut definitions.
  * Maps to existing OUI icon assets.
@@ -477,6 +561,7 @@ const DualPurposeInput = ({
       }`}
       onMouseEnter={onHoverStart}
       onMouseLeave={onHoverEnd}>
+      <SurroundShimmer>
       <div className="emptySessionPage__inputField">
         <OuiCompressedTextArea
           placeholder="Ask AI anything, or type to search a page"
@@ -606,6 +691,7 @@ const DualPurposeInput = ({
           </div>
         </div>
       </div>
+      </SurroundShimmer>
     </div>
   );
 };
