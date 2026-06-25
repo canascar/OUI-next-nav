@@ -100,29 +100,31 @@
   flex-direction: row;
   align-items: center;
   gap: $ouiSizeS;
-  padding: $ouiSizeS $ouiSizeS;
+  padding: $ouiSizeS 12px;
   cursor: pointer;
   white-space: nowrap;
-  border-radius: 4px;
-  height: 32px;
-  transition: background-color 150ms ease-in-out;
+  border-radius: 10px;
+  height: 34px;
+  border: 1px solid transparent;
+  transition: background-color 150ms ease-in-out, border-color 150ms ease-in-out;
   flex-shrink: 0;
   outline: none;
 
   &:hover {
-    background-color: $ouiColorLightestShade;
+    background-color: lightOrDarkTheme(#FBF9F5, #12161F);
   }
 
   &:focus {
-    background-color: $ouiColorLightestShade;
+    background-color: lightOrDarkTheme(#FBF9F5, #12161F);
   }
 
-  // Active tab — light background
+  // Active tab — pill with accent background and border
   &--active {
-    background-color: $ouiColorLightestShade;
+    background-color: lightOrDarkTheme(#F1ECFB, rgba(154, 124, 245, 0.16));
+    border-color: lightOrDarkTheme(#E6E0F2, rgba(154, 124, 245, 0.30));
 
     &:hover {
-      background-color: darken($ouiColorLightestShade, 2%);
+      background-color: lightOrDarkTheme(#EBE4F8, rgba(154, 124, 245, 0.22));
     }
   }
 }
