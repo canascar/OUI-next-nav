@@ -21,6 +21,7 @@
   overflow-y: auto;
   position: relative;
   @include brandGradient;
+  @include brandGradientBlur;
   animation: screenFadeIn 500ms ease-out both;
 
   // Top fade handled by JS scroll handler (per-item opacity)

@@ -18,8 +18,8 @@
   background-color: var(--nb-canvas, $ouiPageBackgroundColor);
   background-image:
     radial-gradient(135% 35% at 50% -16%, transparent 26%, color-mix(in srgb, var(--nb-canvas, #{$ouiPageBackgroundColor}) 50%, transparent) 66%, var(--nb-canvas, #{$ouiPageBackgroundColor}) 96%),
-    linear-gradient(to right, color-mix(in srgb, var(--nb-accent, #{$ouiColorPrimary}) 38%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in srgb, var(--nb-accent, #{$ouiColorPrimary}) 38%, transparent) 1px, transparent 1px);
+    linear-gradient(to right, color-mix(in srgb, var(--nb-accent, #{$ouiColorPrimary}) 22%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--nb-accent, #{$ouiColorPrimary}) 22%, transparent) 1px, transparent 1px);
   background-size: 100% 100%, 19px 19px, 19px 19px;
   background-position: 0 0, 0 0, 0 0;
   background-repeat: no-repeat, repeat, repeat;
