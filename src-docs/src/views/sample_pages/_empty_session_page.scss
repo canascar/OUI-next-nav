@@ -464,7 +464,7 @@
 }
 
 .emptySessionPage__overviewTitle {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: -0.02em;
   color: $ouiTitleColor;
@@ -2085,7 +2085,7 @@ textarea.emptySessionPage__textarea {
 
 .emptySessionPage__widgetListTitle {
   font-weight: $ouiFontWeightSemiBold;
-  font-size: 13px;
+  font-size: 12px;
   flex: 1;
 }
 
@@ -2523,10 +2523,10 @@ textarea.emptySessionPage__textarea {
 }
 
 .widgetCard__title {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: $ouiTitleColor;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .widgetCard__mono {
@@ -2557,8 +2557,8 @@ textarea.emptySessionPage__textarea {
 }
 
 .widgetCard__barLabel {
-  width: 90px;
-  font-size: 12px;
+  width: 80px;
+  font-size: 11px;
   color: lightOrDarkTheme(#3C3648, #C4CBD8);
 }
 
@@ -2580,16 +2580,16 @@ textarea.emptySessionPage__textarea {
 }
 
 .widgetCard__barValue {
-  width: 48px;
+  width: 44px;
   text-align: right;
   font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
   color: $ouiTitleColor;
 }
 
 .widgetCard__bigNumber {
-  font-size: 30px;
+  font-size: 24px;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: $ouiTitleColor;
@@ -2598,7 +2598,7 @@ textarea.emptySessionPage__textarea {
 
 .widgetCard__trend {
   font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
 
   &--warning {
@@ -2613,16 +2613,16 @@ textarea.emptySessionPage__textarea {
 }
 
 .widgetCard__statusLabel {
-  font-size: 12px;
+  font-size: 11px;
   color: lightOrDarkTheme(#3C3648, #C4CBD8);
 }
 
 .widgetCard__statusBadge {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.04em;
 
