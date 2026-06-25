@@ -47,6 +47,16 @@ const SurroundShimmer = ({ children }) => {
   useEffect(() => {
     const cv = canvasRef.current;
     if (!cv) return;
+    let timeout = setTimeout(() => {
+      fieldRef.current = build();
+      const tick = (now) => {
+        if (!startRef.current) startRef.current = now;
+        const t = (now - startRef.current) / 1000;
+        if (fieldRef.current) draw(fieldRef.current, t);
+        rafRef.current = requestAnimationFrame(tick);
+      };
+      rafRef.current = requestAnimationFrame(tick);
+    }, 100);
     const build = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const w = cv.clientWidth, h = cv.clientHeight;
@@ -101,19 +111,11 @@ const SurroundShimmer = ({ children }) => {
         ctx.fill();
       }
     };
-    fieldRef.current = build();
-    const tick = (now) => {
-      if (!startRef.current) startRef.current = now;
-      const t = (now - startRef.current) / 1000;
-      if (fieldRef.current) draw(fieldRef.current, t);
-      rafRef.current = requestAnimationFrame(tick);
-    };
-    rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
+    return () => { clearTimeout(timeout); cancelAnimationFrame(rafRef.current); };
   }, []);
 
   return (
-    <div style={{ position: 'relative', padding: '14px 16px', margin: '-14px -16px' }}>
+    <div style={{ position: 'relative', padding: '36px 42px', margin: '-36px -42px' }}>
       <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0, maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)', WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)' }} />
       <div data-surround-box="1" style={{ position: 'relative', zIndex: 1 }}>
         {children}
