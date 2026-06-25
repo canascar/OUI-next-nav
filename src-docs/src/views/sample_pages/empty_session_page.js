@@ -94,7 +94,7 @@ const SurroundShimmer = ({ children }) => {
         const sdist = Math.hypot(sdx, sdy);
         const bcx = (hl.x0 + hl.x1) / 2, bcy = (hl.y0 + hl.y1) / 2;
         const sa = (Math.atan2(d.y - bcy, d.x - bcx) / 6.2832) + 0.5;
-        const sph = (t * 0.13) % 1;
+        const sph = (t * 0.07) % 1;
         const sdm = Math.min(Math.abs(sa - sph), 1 - Math.abs(sa - sph));
         const sph2 = (sph + 0.5) % 1;
         const sd2m = Math.min(Math.abs(sa - sph2), 1 - Math.abs(sa - sph2));
