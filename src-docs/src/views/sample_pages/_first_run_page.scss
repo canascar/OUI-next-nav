@@ -1,0 +1,58 @@
+/*!
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+// ─────────────────────────────────────────────────────────────
+// First Run Experience — Discovery Grid
+// (Layout and input reuse emptySessionPage__* classes)
+// ─────────────────────────────────────────────────────────────
+
+.firstRunPage__discoveryGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 8px 0 4px;
+}
+
+.firstRunPage__discoveryCard {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: $ouiBorderRadius;
+  border: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.06));
+  background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.01), rgba(255, 255, 255, 0.02));
+  overflow: hidden;
+  transition: border-color 400ms ease, background-color 400ms ease, box-shadow 400ms ease;
+
+  &--revealed {
+    border-color: lightOrDarkTheme(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.10));
+    background-color: lightOrDarkTheme(#fff, rgba(255, 255, 255, 0.04));
+    box-shadow: 0 1px 4px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
+  }
+}
+
+.firstRunPage__discoveryCardText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: $ouiFontSizeS;
+
+  strong {
+    color: $ouiTitleColor;
+    font-weight: $ouiFontWeightSemiBold;
+  }
+}
+
+.firstRunPage__discoveryCardCount {
+  font-size: $ouiFontSizeXS;
+  color: $ouiColorMediumShade;
+}

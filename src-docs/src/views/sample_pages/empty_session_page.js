@@ -296,7 +296,7 @@ const SESSION_PREVIEWS = {
       { label: 'P99', value: '2,340ms', color: 'danger' },
       { label: 'Errors', value: '0.2%', color: 'success' },
       { label: 'Throughput', value: '1,240/s', color: 'default' },
-      { label: 'Pool Util', value: '98%', color: 'danger' },
+      { label: 'Pool Util', value: '31%', color: 'success' },
     ],
     finding:
       'Connection pool at 98% — requests queuing rather than failing fast. 847 connection-acquire-timeout entries in the last 30 min.',
@@ -1365,36 +1365,35 @@ export const EmptySessionPage = ({
           <div className="emptySessionPage__leftCol">
             {/* Mascot + status — above title */}
             <div className="emptySessionPage__headerRow">
-              <div
-                className="emptySessionPage__avatarWrap"
-                onMouseEnter={() => {
-                  if (!mascotExpression) setMascotExpression('happy');
-                }}
-                onMouseDown={(e) => {
-                  e.currentTarget.style.transform = 'scale(0.85)';
-                  setMascotExpression('heart');
-                }}
-                onMouseUp={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  setMascotExpression('happy');
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  setMascotExpression(undefined);
-                }}>
-                <Mascot
-                  size={24}
-                  expression={mascotExpression}
-                  idle={!mascotExpression}
-                  bob
-                  follow
-                  color={mascotColor}
-                  eyeColor={mascotEyeColor}
-                />
-              </div>
-              <span className="emptySessionPage__onlineStatus">
-                Olly is online
-              </span>
+              <OuiToolTip content="Hi, I'm Olly — your OpenSearch agent assistant" position="right">
+                <div
+                  className="emptySessionPage__avatarWrap"
+                  onMouseEnter={() => {
+                    if (!mascotExpression) setMascotExpression('happy');
+                  }}
+                  onMouseDown={(e) => {
+                    e.currentTarget.style.transform = 'scale(0.85)';
+                    setMascotExpression('heart');
+                  }}
+                  onMouseUp={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                    setMascotExpression('happy');
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                    setMascotExpression(undefined);
+                  }}>
+                  <Mascot
+                    size={24}
+                    expression={mascotExpression}
+                    idle={!mascotExpression}
+                    bob
+                    follow
+                    color={mascotColor}
+                    eyeColor={mascotEyeColor}
+                  />
+                </div>
+              </OuiToolTip>
             </div>
             <OuiTitle size="m">
               <h1>{greeting}</h1>

@@ -118,13 +118,13 @@
     background-color: lightOrDarkTheme(#FBF9F5, #12161F);
   }
 
-  // Active tab — pill with accent background and border
+  // Active tab
   &--active {
-    background-color: lightOrDarkTheme(#F1ECFB, rgba(154, 124, 245, 0.16));
-    border-color: lightOrDarkTheme(#E6E0F2, rgba(154, 124, 245, 0.30));
+    background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.06));
+    border-color: lightOrDarkTheme(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.10));
 
     &:hover {
-      background-color: lightOrDarkTheme(#EBE4F8, rgba(154, 124, 245, 0.22));
+      background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.08));
     }
   }
 }

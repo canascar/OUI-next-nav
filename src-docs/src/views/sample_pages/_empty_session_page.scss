@@ -73,29 +73,6 @@
 }
 
 // Online status label
-.emptySessionPage__onlineStatus {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: $ouiFontSizeXS;
-  font-weight: $ouiFontWeightMedium;
-  color: $ouiColorMediumShade;
-}
-
-.emptySessionPage__onlineDot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background-color: $ouiColorSuccess;
-  flex-shrink: 0;
-  animation: onlineDotPing 2s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-
-@keyframes onlineDotPing {
-  0% { box-shadow: 0 0 0 0 rgba($ouiColorSuccess, 0.5); }
-  70% { box-shadow: 0 0 0 6px rgba($ouiColorSuccess, 0); }
-  100% { box-shadow: 0 0 0 0 rgba($ouiColorSuccess, 0); }
-}
 
 
 .emptySessionPage__headerText {
@@ -276,7 +253,7 @@
 }
 
 .emptySessionPage__newsBody {
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.5;
   color: lightOrDarkTheme(#4A4456, #B6BECD);
 }
@@ -284,9 +261,9 @@
 .emptySessionPage__newsSummary {
   padding-bottom: 8px;
   margin-bottom: 4px;
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.5;
-  color: $ouiTextSubduedColor;
+  color: $ouiTextColor;
 }
 
 // Briefing loading spinner
@@ -479,6 +456,7 @@
 }
 
 .emptySessionPage__overviewTitle {
+  font-family: var(--oui-font-family-display, inherit);
   font-size: 16px;
   font-weight: 600;
   letter-spacing: -0.02em;

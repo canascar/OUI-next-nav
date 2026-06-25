@@ -151,6 +151,15 @@ export const GuidePageHeader: React.FunctionComponent<{}> = () => {
               }}>
               Day N experience
             </OuiContextMenuItem>,
+            <OuiContextMenuItem
+              key="first-run"
+              icon="empty"
+              onClick={() => {
+                setSamplePagesPopoverOpen(false);
+                window.location.hash = '/first-run';
+              }}>
+              First Run experience
+            </OuiContextMenuItem>,
           ]}
         />
       </OuiPopover>

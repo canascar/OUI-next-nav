@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Chart,
   Settings,
@@ -27,7 +27,6 @@ import {
   OuiFlexGroup,
   OuiFlexItem,
   OuiHealth,
-  OuiHorizontalRule,
   OuiIcon,
   OuiLink,
   OuiPanel,
@@ -37,6 +36,103 @@ import {
   OuiTitle,
 } from '../../../../src/components';
 import { LogsPageBody, LogsPage } from './logs_page';
+
+// Dot-matrix scan shimmer (same as home page widgets)
+const ScanShimmerOverlay = () => {
+  const canvasRef = useRef(null);
+  const rafRef = useRef(null);
+  const startRef = useRef(0);
+
+  useEffect(() => {
+    const cv = canvasRef.current;
+    if (!cv) return;
+    const init = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = cv.clientWidth,
+        h = cv.clientHeight;
+      if (!w || !h) return;
+      cv.width = Math.round(w * dpr);
+      cv.height = Math.round(h * dpr);
+      const ctx = cv.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const sp = 9;
+      const cols = Math.max(1, Math.round((w - sp) / sp));
+      const rows = Math.max(1, Math.round((h - sp) / sp));
+      const ox = (w - (cols - 1) * sp) / 2,
+        oy = (h - (rows - 1) * sp) / 2;
+      const dots = [];
+      for (let j = 0; j < rows; j++)
+        for (let i = 0; i < cols; i++)
+          dots.push({ x: ox + i * sp, y: oy + j * sp });
+
+      const tick = (now) => {
+        if (!startRef.current) startRef.current = now;
+        const t = (now - startRef.current) / 1000;
+        ctx.clearRect(0, 0, w, h);
+        const p = (t * 0.33) % 1;
+        const lx = p * w;
+        for (const d of dots) {
+          const dx = (d.x - lx) / (sp * 2.2);
+          const b = 0.03 + 0.97 * Math.exp(-dx * dx);
+          const a = (0.04 + 0.35 * b).toFixed(3);
+          const gray = Math.round(140 + 60 * b);
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, 0.6 + b * 1.4, 0, 6.2832);
+          ctx.fillStyle = `rgba(${gray},${gray},${Math.round(gray + 10)},${a})`;
+          ctx.fill();
+        }
+        rafRef.current = requestAnimationFrame(tick);
+      };
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    setTimeout(init, 50);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: 'absolute',
+        inset: 0,
+        width: '100%',
+        height: '100%',
+        zIndex: 10,
+        pointerEvents: 'none',
+        borderRadius: 'inherit',
+      }}
+    />
+  );
+};
+
+// Wrapper that shows shimmer for a random 1–2s before revealing content
+const LoadingPanel = ({ children, delay }) => {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoaded(true), delay);
+    return () => clearTimeout(timer);
+  }, [delay]);
+
+  if (!loaded) {
+    return (
+      <div
+        style={{
+          position: 'relative',
+          overflow: 'hidden',
+          borderRadius: 'inherit',
+        }}>
+        <div style={{ visibility: 'hidden' }}>{children}</div>
+        <div
+          style={{ position: 'absolute', inset: 0, borderRadius: 'inherit' }}>
+          <ScanShimmerOverlay />
+        </div>
+      </div>
+    );
+  }
+
+  return children;
+};
 
 // Two-column key-value row
 const KVRow = ({ label, children }) => (
@@ -49,143 +145,210 @@ const KVRow = ({ label, children }) => (
 );
 
 // Alert detail page mock
-export const AlertPageMock = () => (
-  <div className="mockCanvasPage">
-    <OuiFlexGroup gutterSize="m" responsive={false}>
-      <OuiFlexItem>
-        <OuiPanel paddingSize="m" hasShadow={false} hasBorder>
-          <OuiText size="m" color="danger">
-            <strong>2,340ms</strong>
-          </OuiText>
-          <OuiText size="xs" color="subdued">
-            P99 latency
-          </OuiText>
-        </OuiPanel>
-      </OuiFlexItem>
-      <OuiFlexItem>
-        <OuiPanel paddingSize="m" hasShadow={false} hasBorder>
-          <OuiText size="m">
-            <strong>&gt; 2,000ms</strong>
-          </OuiText>
-          <OuiText size="xs" color="subdued">
-            for 15 min
-          </OuiText>
-        </OuiPanel>
-      </OuiFlexItem>
-      <OuiFlexItem>
-        <OuiPanel paddingSize="m" hasShadow={false} hasBorder>
-          <OuiText size="m">
-            <strong>3 of 4 pods</strong>
-          </OuiText>
-          <OuiText size="xs" color="subdued">
-            breaching
-          </OuiText>
-        </OuiPanel>
-      </OuiFlexItem>
-      <OuiFlexItem>
-        <OuiPanel paddingSize="m" hasShadow={false} hasBorder>
-          <OuiText size="m">
-            <strong>—</strong>
-          </OuiText>
-          <OuiText size="xs" color="subdued">
-            notification target
-          </OuiText>
-        </OuiPanel>
-      </OuiFlexItem>
-    </OuiFlexGroup>
+export const AlertPageMock = () => {
+  const [delays] = useState(() => [
+    1000 + Math.random() * 1000,
+    1000 + Math.random() * 1000,
+    1000 + Math.random() * 1000,
+    1000 + Math.random() * 1000,
+    1200 + Math.random() * 800,
+  ]);
 
-    <OuiSpacer size="m" />
+  return (
+    <div className="mockCanvasPage">
+      <OuiFlexGroup gutterSize="m" responsive={false}>
+        <OuiFlexItem>
+          <OuiPanel
+            paddingSize="m"
+            hasShadow={false}
+            hasBorder
+            style={{ overflow: 'hidden' }}>
+            <LoadingPanel delay={delays[0]}>
+              <OuiText color="danger" style={{ fontSize: 20, lineHeight: 1.3 }}>
+                <strong>2,340ms</strong>
+              </OuiText>
+              <OuiText size="xs" color="subdued">
+                P99 latency
+              </OuiText>
+            </LoadingPanel>
+          </OuiPanel>
+        </OuiFlexItem>
+        <OuiFlexItem>
+          <OuiPanel
+            paddingSize="m"
+            hasShadow={false}
+            hasBorder
+            style={{ overflow: 'hidden' }}>
+            <LoadingPanel delay={delays[1]}>
+              <OuiText style={{ fontSize: 20, lineHeight: 1.3 }}>
+                <strong>&gt; 2,000ms</strong>
+              </OuiText>
+              <OuiText size="xs" color="subdued">
+                for 15 min
+              </OuiText>
+            </LoadingPanel>
+          </OuiPanel>
+        </OuiFlexItem>
+        <OuiFlexItem>
+          <OuiPanel
+            paddingSize="m"
+            hasShadow={false}
+            hasBorder
+            style={{ overflow: 'hidden' }}>
+            <LoadingPanel delay={delays[2]}>
+              <OuiText style={{ fontSize: 20, lineHeight: 1.3 }}>
+                <strong>3 of 4 pods</strong>
+              </OuiText>
+              <OuiText size="xs" color="subdued">
+                breaching
+              </OuiText>
+            </LoadingPanel>
+          </OuiPanel>
+        </OuiFlexItem>
+        <OuiFlexItem>
+          <OuiPanel
+            paddingSize="m"
+            hasShadow={false}
+            hasBorder
+            style={{ overflow: 'hidden' }}>
+            <LoadingPanel delay={delays[3]}>
+              <OuiText style={{ fontSize: 20, lineHeight: 1.3 }}>
+                <strong>—</strong>
+              </OuiText>
+              <OuiText size="xs" color="subdued">
+                notification target
+              </OuiText>
+            </LoadingPanel>
+          </OuiPanel>
+        </OuiFlexItem>
+      </OuiFlexGroup>
 
-    <OuiPanel paddingSize="m" hasShadow={false} hasBorder>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-        <OuiText size="xs" color="subdued">
-          <span style={{ fontFamily: 'var(--oui-code-font-family, monospace)', fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700 }}>P99 Latency · 6h</span>
-        </OuiText>
-        <OuiText size="xs" color="subdued">
-          <span style={{ fontFamily: 'var(--oui-code-font-family, monospace)', fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#CE4239', fontWeight: 700 }}>--- Threshold 2,000ms</span>
-        </OuiText>
-      </div>
-      <OuiText size="s">
-        <strong>Metric: payment-service P99 latency</strong>
-      </OuiText>
-      <OuiSpacer size="s" />
-      <div style={{ height: 160 }}>
-        <Chart>
-          <Settings showLegend={false} />
-          <Axis id="bottom" position="bottom" showGridLines={false} />
-          <Axis
-            id="left"
-            position="left"
-            showGridLines
-            tickFormat={(d) => `${d}ms`}
-          />
-          <LineSeries
-            id="p99"
-            xScaleType={ScaleType.Linear}
-            yScaleType={ScaleType.Linear}
-            xAccessor="x"
-            yAccessors={['y']}
-            data={[
-              { x: 0, y: 120 },
-              { x: 1, y: 135 },
-              { x: 2, y: 180 },
-              { x: 3, y: 420 },
-              { x: 4, y: 1100 },
-              { x: 5, y: 2050 },
-              { x: 6, y: 2340 },
-            ]}
-          />
-          <LineAnnotation
-            id="threshold"
-            domainType={AnnotationDomainType.YDomain}
-            dataValues={[{ dataValue: 2000 }]}
+      <OuiSpacer size="m" />
+
+      <OuiPanel
+        paddingSize="m"
+        hasShadow={false}
+        hasBorder
+        style={{ overflow: 'hidden' }}>
+        <LoadingPanel delay={delays[4]}>
+          <div
             style={{
-              line: { stroke: '#FF6467', strokeWidth: 2, dash: [4, 4] },
-            }}
-          />
-          <RectAnnotation
-            id="breach"
-            dataValues={[{ coordinates: { x0: 4, x1: 6, y0: 2000 } }]}
-            style={{ fill: '#FF6467', opacity: 0.05 }}
-          />
-        </Chart>
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 4,
+            }}>
+            <OuiText size="xs" color="subdued">
+              <span
+                style={{
+                  fontFamily: 'var(--oui-code-font-family, monospace)',
+                  fontSize: 10,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  fontWeight: 700,
+                }}>
+                P99 Latency · 6h
+              </span>
+            </OuiText>
+            <OuiText size="xs" color="subdued">
+              <span
+                style={{
+                  fontFamily: 'var(--oui-code-font-family, monospace)',
+                  fontSize: 10,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  color: '#CE4239',
+                  fontWeight: 700,
+                }}>
+                --- Threshold 2,000ms
+              </span>
+            </OuiText>
+          </div>
+          <OuiText size="s">
+            <strong>Metric: payment-service P99 latency</strong>
+          </OuiText>
+          <OuiSpacer size="s" />
+          <div style={{ height: 160 }}>
+            <Chart>
+              <Settings showLegend={false} />
+              <Axis id="bottom" position="bottom" showGridLines={false} />
+              <Axis
+                id="left"
+                position="left"
+                showGridLines
+                tickFormat={(d) => `${d}ms`}
+              />
+              <LineSeries
+                id="p99"
+                xScaleType={ScaleType.Linear}
+                yScaleType={ScaleType.Linear}
+                xAccessor="x"
+                yAccessors={['y']}
+                data={[
+                  { x: 0, y: 120 },
+                  { x: 1, y: 135 },
+                  { x: 2, y: 180 },
+                  { x: 3, y: 420 },
+                  { x: 4, y: 1100 },
+                  { x: 5, y: 2050 },
+                  { x: 6, y: 2340 },
+                ]}
+              />
+              <LineAnnotation
+                id="threshold"
+                domainType={AnnotationDomainType.YDomain}
+                dataValues={[{ dataValue: 2000 }]}
+                style={{
+                  line: { stroke: '#FF6467', strokeWidth: 2, dash: [4, 4] },
+                }}
+              />
+              <RectAnnotation
+                id="breach"
+                dataValues={[{ coordinates: { x0: 4, x1: 6, y0: 2000 } }]}
+                style={{ fill: '#FF6467', opacity: 0.05 }}
+              />
+            </Chart>
+          </div>
+        </LoadingPanel>
+      </OuiPanel>
+
+      <OuiSpacer size="m" />
+
+      <div className="mockAlertCallout">
+        <OuiIcon type="alert" color="warning" size="m" />
+        <OuiText size="s">
+          Alarm triggered at May 13, 02:32 PM UTC — payment-service P99 crossed
+          2,000ms threshold
+        </OuiText>
       </div>
-    </OuiPanel>
 
-    <OuiSpacer size="m" />
+      <OuiSpacer size="m" />
 
-    <div className="mockAlertCallout">
-      <OuiIcon type="alert" color="warning" size="m" />
       <OuiText size="s">
-        Alarm triggered at May 13, 02:32 PM UTC — payment-service P99 crossed
-        2,000ms threshold
+        <h4>Summary</h4>
+        <p>payment-service P99 latency on production cluster</p>
+        <h4>Recommendation</h4>
+        <ul>
+          <li>
+            Check recent deployments to the affected service for regressions.
+          </li>
+          <li>
+            Review upstream dependency health and connection pool metrics.
+          </li>
+          <li>
+            Inspect application logs for error patterns correlated with the
+            latency increase.
+          </li>
+          <li>Consider scaling the service if the issue is load-related.</li>
+          <li>
+            If this is a known issue, acknowledge the alert and update the
+            runbook.
+          </li>
+        </ul>
       </OuiText>
     </div>
-
-    <OuiSpacer size="m" />
-
-    <OuiText size="s">
-      <h4>Summary</h4>
-      <p>payment-service P99 latency on production cluster</p>
-      <h4>Recommendation</h4>
-      <ul>
-        <li>
-          Check recent deployments to the affected service for regressions.
-        </li>
-        <li>Review upstream dependency health and connection pool metrics.</li>
-        <li>
-          Inspect application logs for error patterns correlated with the
-          latency increase.
-        </li>
-        <li>Consider scaling the service if the issue is load-related.</li>
-        <li>
-          If this is a known issue, acknowledge the alert and update the
-          runbook.
-        </li>
-      </ul>
-    </OuiText>
-  </div>
-);
+  );
+};
 
 // Markdown note page mock — Inventory service dependency analysis
 export const InventoryAnalysisPageMock = () => (
@@ -791,44 +954,47 @@ export const DashboardPageMock = () => (
           <OuiTitle size="xs">
             <h3>Recent events</h3>
           </OuiTitle>
-          <OuiSpacer size="s" />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-              <OuiIcon type="alert" color="danger" size="s" />
-              <div>
-                <OuiText size="xs">
-                  <strong>Pool saturated</strong>
-                </OuiText>
-                <OuiText size="xs" color="subdued">
-                  3 of 4 pods · 15 min ago
-                </OuiText>
-              </div>
-            </div>
-            <OuiHorizontalRule margin="xs" />
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-              <OuiIcon type="alert" color="warning" size="s" />
-              <div>
-                <OuiText size="xs">
-                  <strong>Acquire wait &gt; 1s</strong>
-                </OuiText>
-                <OuiText size="xs" color="subdued">
-                  payment-7f8b9-xk2lp · 20 min ago
-                </OuiText>
-              </div>
-            </div>
-            <OuiHorizontalRule margin="xs" />
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
-              <OuiIcon type="alert" color="warning" size="s" />
-              <div>
-                <OuiText size="xs">
-                  <strong>Pool utilization &gt; 80%</strong>
-                </OuiText>
-                <OuiText size="xs" color="subdued">
-                  All pods · 32 min ago
-                </OuiText>
-              </div>
-            </div>
-          </div>
+          <OuiSpacer size="m" />
+          <OuiBasicTable
+            items={[
+              {
+                severity: 'danger',
+                event: 'Pool saturated',
+                detail: '3 of 4 pods',
+                time: '15 min ago',
+              },
+              {
+                severity: 'warning',
+                event: 'Acquire wait > 1s',
+                detail: 'payment-7f8b9-xk2lp',
+                time: '20 min ago',
+              },
+              {
+                severity: 'warning',
+                event: 'Pool utilization > 80%',
+                detail: 'All pods',
+                time: '32 min ago',
+              },
+            ]}
+            columns={[
+              {
+                field: 'severity',
+                name: '',
+                width: '24px',
+                render: (severity) => (
+                  <OuiIcon type="alert" color={severity} size="s" />
+                ),
+              },
+              {
+                field: 'event',
+                name: 'Event',
+                render: (v) => <strong>{v}</strong>,
+              },
+              { field: 'detail', name: 'Source' },
+              { field: 'time', name: 'When' },
+            ]}
+            compressed
+          />
         </OuiPanel>
       </OuiFlexItem>
     </OuiFlexGroup>
