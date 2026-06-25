@@ -55,7 +55,7 @@ const SurroundShimmer = ({ children }) => {
       cv.height = Math.round(h * dpr);
       const ctx = cv.getContext('2d');
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const sp = 13;
+      const sp = 9;
       const cols = Math.max(1, Math.round((w - sp) / sp));
       const rows = Math.max(1, Math.round((h - sp) / sp));
       const ox = (w - (cols - 1) * sp) / 2, oy = (h - (rows - 1) * sp) / 2;
@@ -96,7 +96,7 @@ const SurroundShimmer = ({ children }) => {
         const a = (0.02 + 0.30 * b).toFixed(3);
         const r = Math.round(96 + 44 * b), g = Math.round(60 + 62 * b), bl = Math.round(196 + 40 * b);
         ctx.beginPath();
-        ctx.arc(d.x, d.y, 0.6 + b * 1.7, 0, 6.2832);
+        ctx.arc(d.x, d.y, 0.4 + b * 1.0, 0, 6.2832);
         ctx.fillStyle = `rgba(${r},${g},${bl},${a})`;
         ctx.fill();
       }
@@ -113,8 +113,8 @@ const SurroundShimmer = ({ children }) => {
   }, []);
 
   return (
-    <div style={{ position: 'relative', padding: '24px 28px', margin: '-24px -28px' }}>
-      <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0 }} />
+    <div style={{ position: 'relative', padding: '14px 16px', margin: '-14px -16px' }}>
+      <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0, maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)', WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)' }} />
       <div data-surround-box="1" style={{ position: 'relative', zIndex: 1 }}>
         {children}
       </div>
