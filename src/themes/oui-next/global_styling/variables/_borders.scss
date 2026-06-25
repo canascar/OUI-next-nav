@@ -12,14 +12,14 @@
 // Borders
 
 $ouiBorderWidthThin: 1px !default;
-$ouiBorderWidthThick: 2px !default;
+$ouiBorderWidthThick: 1px !default;
 
 $ouiBorderColor: $ouiColorLightShade !default;
-$ouiBorderRadius: 4px !default;
-$ouiBorderRadiusSmall: calc($ouiBorderRadius / 2) !default;
-$ouiBorderThick: $ouiBorderWidthThick solid $ouiBorderColor !default;
+$ouiBorderRadius: 8px !default;
+$ouiBorderRadiusSmall: 4px !default;
+$ouiBorderThick: $ouiBorderWidthThin solid $ouiBorderColor !default;
 $ouiBorderThin: $ouiBorderWidthThin solid $ouiBorderColor !default;
-$ouiBorderEditable: $ouiBorderWidthThick dotted $ouiBorderColor !default;
+$ouiBorderEditable: $ouiBorderWidthThin dotted $ouiBorderColor !default;
 
 
 /* OUI -> EUI Aliases */
