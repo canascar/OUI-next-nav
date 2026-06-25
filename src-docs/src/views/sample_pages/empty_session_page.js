@@ -2132,13 +2132,15 @@ export const EmptySessionPage = ({
                               </div>
                             </div>
                           )}
-                          {isRefreshing && widgetId !== 'workflows' ? (
-                            <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: 120, borderRadius: 'inherit', overflow: 'hidden' }}>
-                              <ScanShimmerOverlay />
-                            </div>
-                          ) : (
-                            renderWidget()
-                          )}
+                          <div style={{ position: 'relative', flex: 1 }}>
+                            {isRefreshing && widgetId !== 'workflows' && (
+                              <>
+                                <ScanShimmerOverlay />
+                                <div style={{ position: 'absolute', inset: 0, zIndex: 5, background: 'var(--nb-cell, white)', opacity: 0.85, borderRadius: 'inherit' }} />
+                              </>
+                            )}
+                            {renderWidget()}
+                          </div>
                         </div>
                       );
                     })}
