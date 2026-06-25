@@ -895,43 +895,15 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  border: 1.5px solid lightOrDarkTheme($ouiColorPrimary, #9A7CF5);
+  border: none;
   border-radius: 14px;
   background-color: var(--nb-cell, $ouiFormBackgroundColor);
   box-shadow: lightOrDarkTheme(
-    0 4px 16px rgba(108, 75, 216, 0.10),
-    0 6px 22px rgba(0, 0, 0, 0.4)
+    0 4px 16px rgba(108, 75, 216, 0.08),
+    0 6px 22px rgba(0, 0, 0, 0.3)
   );
   transition: box-shadow 300ms ease;
   overflow: visible;
-
-  // Animated shimmer border — uses an oversized rotating gradient behind a mask
-  &::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: 15px;
-    background: conic-gradient(
-      lightOrDarkTheme(rgba(99, 102, 241, 0.30), rgba(165, 180, 252, 0.35)),
-      lightOrDarkTheme(rgba(16, 185, 129, 0.20), rgba(52, 211, 153, 0.25)),
-      lightOrDarkTheme(rgba(99, 102, 241, 0.06), rgba(165, 180, 252, 0.08)),
-      lightOrDarkTheme(rgba(217, 119, 6, 0.18), rgba(251, 191, 36, 0.20)),
-      lightOrDarkTheme(rgba(99, 102, 241, 0.30), rgba(165, 180, 252, 0.35))
-    );
-    pointer-events: none;
-    z-index: 0;
-    animation: emptySessionInputShimmer 4s linear infinite;
-  }
-
-  // Inner mask to cut out the center, leaving only the border ring
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 14px;
-    background: var(--nb-cell, $ouiFormBackgroundColor);
-    z-index: 0;
-  }
 
   &:focus-within {
     box-shadow: lightOrDarkTheme(
@@ -946,9 +918,32 @@
   }
 }
 
-@keyframes emptySessionInputShimmer {
-  0% { filter: hue-rotate(0deg); }
-  100% { filter: hue-rotate(360deg); }
+// Dash shimmer — SVG border with orbiting dashes
+.emptySessionPage__dashShimmer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: visible;
+
+  rect {
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
+    fill: none;
+    stroke: $ouiColorPrimary;
+    stroke-width: 1.5;
+    stroke-dasharray: 8 14;
+    stroke-linecap: round;
+    opacity: 0.6;
+    animation: dashOrbit 8s linear infinite;
+  }
+}
+
+@keyframes dashOrbit {
+  0% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -200; }
 }
 
 // Textarea overrides — no border on the textarea itself (outer layout handles it)

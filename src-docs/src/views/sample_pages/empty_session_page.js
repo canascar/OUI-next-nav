@@ -478,6 +478,9 @@ const DualPurposeInput = ({
       onMouseEnter={onHoverStart}
       onMouseLeave={onHoverEnd}>
       <div className="emptySessionPage__inputField">
+        <svg className="emptySessionPage__dashShimmer">
+          <rect x="1" y="1" rx="14" ry="14" />
+        </svg>
         <OuiCompressedTextArea
           placeholder="Ask AI anything, or type to search a page"
           value={inputValue}
