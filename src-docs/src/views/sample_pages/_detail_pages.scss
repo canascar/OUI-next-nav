@@ -28,8 +28,9 @@
   height: 100%;
   padding: 0 8px 0 12px;
   border-bottom: 1px solid $ouiBorderColor;
+  font-family: var(--oui-font-family-display, $ouiFontFamily);
   font-size: $ouiFontSizeM;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 19px;
   color: $ouiTitleColor;
   white-space: nowrap;
