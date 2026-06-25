@@ -38,6 +38,71 @@ import { OuiAgenticSpinner } from '../../../../src/components/headless/agentic_s
 import { Mascot } from '../../../../olly-mascot/Mascot';
 import { ThemeContext } from '../../components/with_theme';
 
+const ScanShimmerOverlay = () => {
+  const canvasRef = useRef(null);
+  const rafRef = useRef(null);
+  const startRef = useRef(0);
+
+  useEffect(() => {
+    const cv = canvasRef.current;
+    if (!cv) return;
+    const init = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = cv.clientWidth, h = cv.clientHeight;
+      if (!w || !h) return;
+      cv.width = Math.round(w * dpr);
+      cv.height = Math.round(h * dpr);
+      const ctx = cv.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const sp = 12;
+      const cols = Math.max(1, Math.round((w - sp) / sp));
+      const rows = Math.max(1, Math.round((h - sp) / sp));
+      const ox = (w - (cols - 1) * sp) / 2, oy = (h - (rows - 1) * sp) / 2;
+      const dots = [];
+      for (let j = 0; j < rows; j++)
+        for (let i = 0; i < cols; i++)
+          dots.push({ x: ox + i * sp, y: oy + j * sp, gx: i, gy: j });
+
+      const tick = (now) => {
+        if (!startRef.current) startRef.current = now;
+        const t = (now - startRef.current) / 1000;
+        ctx.clearRect(0, 0, w, h);
+        const p = (t * 0.6) % 1;
+        const lx = p * w;
+        for (const d of dots) {
+          const dx = (d.x - lx) / (sp * 2.2);
+          const b = 0.03 + 0.97 * Math.exp(-dx * dx);
+          const a = (0.04 + 0.40 * b).toFixed(3);
+          const r = Math.round(96 + 44 * b), g = Math.round(60 + 62 * b), bl = Math.round(196 + 40 * b);
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, 0.5 + b * 1.2, 0, 6.2832);
+          ctx.fillStyle = `rgba(${r},${g},${bl},${a})`;
+          ctx.fill();
+        }
+        rafRef.current = requestAnimationFrame(tick);
+      };
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    setTimeout(init, 50);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: 'absolute',
+        inset: 0,
+        width: '100%',
+        height: '100%',
+        zIndex: 10,
+        pointerEvents: 'none',
+        borderRadius: 'inherit',
+      }}
+    />
+  );
+};
+
 const SurroundShimmer = ({ children }) => {
   const canvasRef = useRef(null);
   const rafRef = useRef(null);
@@ -1068,6 +1133,8 @@ export const EmptySessionPage = ({
   const [widgetSizes, setWidgetSizes] = useState({ dashboards: 2 });
   const [workflowsExpanded, setWorkflowsExpanded] = useState(false);
   const [workflowSearch, setWorkflowSearch] = useState('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [dataVariant, setDataVariant] = useState(0);
   const [confirmingRemoval, setConfirmingRemoval] = useState(null);
   const dragWidget = useRef(null);
   const dragOverWidget = useRef(null);
@@ -1375,6 +1442,23 @@ export const EmptySessionPage = ({
               <div className="emptySessionPage__tabRow emptySessionPage__tabRow--sticky">
                 <span className="emptySessionPage__overviewTitle">Overview</span>
                 <div className="emptySessionPage__tabRowActions">
+                  <OuiToolTip content="Refresh" position="left">
+                    <OuiButtonIcon
+                      iconType="refresh"
+                      aria-label="Refresh"
+                      size="s"
+                      color="text"
+                      display="empty"
+                      isDisabled={isRefreshing}
+                      onClick={() => {
+                        setIsRefreshing(true);
+                        setTimeout(() => {
+                          setIsRefreshing(false);
+                          setDataVariant((v) => v + 1);
+                        }, 2000);
+                      }}
+                    />
+                  </OuiToolTip>
                   {isEditMode ? (
                     <OuiSmallButtonEmpty
                       size="xs"
@@ -1527,17 +1611,17 @@ export const EmptySessionPage = ({
                                   <div className="widgetCard__barRow">
                                     <span className="widgetCard__barLabel">checkout</span>
                                     <div className="widgetCard__barTrack"><div className="widgetCard__barFill" style={{ width: '67%' }} /></div>
-                                    <span className="widgetCard__barValue">66.67%</span>
+                                    <span className="widgetCard__barValue">{dataVariant % 2 === 0 ? '66.67%' : '58.23%'}</span>
                                   </div>
                                   <div className="widgetCard__barRow">
                                     <span className="widgetCard__barLabel">frontend</span>
-                                    <div className="widgetCard__barTrack"><div className="widgetCard__barFill widgetCard__barFill--secondary" style={{ width: '14.5%' }} /></div>
-                                    <span className="widgetCard__barValue">14.49%</span>
+                                    <div className="widgetCard__barTrack"><div className="widgetCard__barFill widgetCard__barFill--secondary" style={{ width: dataVariant % 2 === 0 ? '14.5%' : '22%' }} /></div>
+                                    <span className="widgetCard__barValue">{dataVariant % 2 === 0 ? '14.49%' : '21.88%'}</span>
                                   </div>
                                   <div className="widgetCard__barRow">
                                     <span className="widgetCard__barLabel">frontend-proxy</span>
-                                    <div className="widgetCard__barTrack"><div className="widgetCard__barFill widgetCard__barFill--secondary" style={{ width: '14.3%' }} /></div>
-                                    <span className="widgetCard__barValue">14.29%</span>
+                                    <div className="widgetCard__barTrack"><div className="widgetCard__barFill widgetCard__barFill--secondary" style={{ width: dataVariant % 2 === 0 ? '14.3%' : '11%' }} /></div>
+                                    <span className="widgetCard__barValue">{dataVariant % 2 === 0 ? '14.29%' : '10.94%'}</span>
                                   </div>
                                 </div>
                               </OuiInsightCard>
@@ -1552,8 +1636,8 @@ export const EmptySessionPage = ({
 
                                 <div className="widgetCard__title">Connection timeout errors</div>
                                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                                  <span className="widgetCard__bigNumber">847</span>
-                                  <span className="widgetCard__trend widgetCard__trend--warning">↑ 312%</span>
+                                  <span className="widgetCard__bigNumber">{dataVariant % 2 === 0 ? '847' : '923'}</span>
+                                  <span className="widgetCard__trend widgetCard__trend--warning">{dataVariant % 2 === 0 ? '↑ 312%' : '↑ 340%'}</span>
                                 </div>
                                 <svg viewBox="0 0 280 68" preserveAspectRatio="none" style={{ width: '100%', height: 68, display: 'block', marginTop: 8 }}>
                                   <defs><linearGradient id="connFill2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#DD8A3A" stopOpacity="0.18" /><stop offset="1" stopColor="#DD8A3A" stopOpacity="0" /></linearGradient></defs>
@@ -2047,6 +2131,9 @@ export const EmptySessionPage = ({
                                 </OuiSmallButton>
                               </div>
                             </div>
+                          )}
+                          {isRefreshing && widgetId !== 'workflows' && (
+                            <ScanShimmerOverlay />
                           )}
                           {renderWidget()}
                         </div>
