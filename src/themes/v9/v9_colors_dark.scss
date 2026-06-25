@@ -30,10 +30,10 @@ $ouiColorInk: #0a0a0a;
 $glassDarkSurfaceDesat: 26%;  // surfaces, backgrounds, borders
 $glassDarkAccentDesat: 16%;   // accent, links, code shades
 
-// Core — indigo/violet accent palette (lighter for dark bg)
-$ouiColorPrimary: desaturate(#a5b4fc, $glassDarkAccentDesat);       // was #a5b4fc
+// Core — blue-indigo accent palette (lighter for dark bg)
+$ouiColorPrimary: desaturate(#93b4fc, $glassDarkAccentDesat);       // was #a5b4fc → shifted bluer
 $ouiColorSecondary: #34d399;     // Green
-$ouiColorAccent: desaturate(#a5b4fc, $glassDarkAccentDesat);        // was #a5b4fc
+$ouiColorAccent: desaturate(#93b4fc, $glassDarkAccentDesat);        // was #a5b4fc → shifted bluer
 
 // Status
 $ouiColorSuccess: #34d399;       // Green
@@ -79,7 +79,7 @@ $ouiColorWarningText: makeHighContrastColor($ouiColorWarning) !default;
 $ouiColorDangerText: makeHighContrastColor($ouiColorDanger) !default;
 $ouiColorDisabledText: rgba(250, 250, 250, 0.32) !default;
 $ouiColorSuccessText: $ouiColorSecondaryText !default;
-$ouiLinkColor: desaturate(#818cf8, $glassDarkAccentDesat) !default; // was #818cf8 — accent-bright
+$ouiLinkColor: desaturate(#7B9CF8, $glassDarkAccentDesat) !default; // blue-shifted accent-bright
 
 // Charts
 $ouiColorChartLines: $ouiColorLightShade;

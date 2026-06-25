@@ -18,10 +18,10 @@ $ouiColorGhost: #FFFFFF !default;
 $ouiColorInk: #0a0a0a !default;
 
 // Glass Theme — Light
-// Core — indigo/violet accent palette
-$ouiColorPrimary: #6366f1 !default;       // Indigo — primary accent
+// Core — blue-indigo accent palette
+$ouiColorPrimary: #4B6EF5 !default;       // Blue-indigo — primary accent
 $ouiColorSecondary: #10b981 !default;     // Green — success
-$ouiColorAccent: #6366f1 !default;        // Indigo — accent (same as primary)
+$ouiColorAccent: #4B6EF5 !default;        // Blue-indigo — accent (same as primary)
 
 // Status — deliberately desaturated
 $ouiColorSuccess: #10b981 !default;       // Green
@@ -55,7 +55,7 @@ $ouiColorWarningText: makeHighContrastColor($ouiColorWarning) !default;
 $ouiColorDangerText: makeHighContrastColor($ouiColorDanger) !default;
 $ouiColorDisabledText: makeDisabledContrastColor($ouiColorDisabled) !default;
 $ouiColorSuccessText: $ouiColorSecondaryText !default;
-$ouiLinkColor: #4f46e5 !default; // accent-bright
+$ouiLinkColor: #3B5ED6 !default; // blue-indigo accent
 
 // Visualization colors
 
