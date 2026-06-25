@@ -232,8 +232,8 @@
 .emptySessionPage__newsItem {
   display: flex;
   align-items: baseline;
-  gap: 20px;
-  padding: 17px 0;
+  gap: 16px;
+  padding: 12px 0;
   border-top: 1px solid lightOrDarkTheme(#D3D8E7, rgba(255, 255, 255, 0.08));
   transition: filter 600ms cubic-bezier(0.4, 0, 0.2, 1), opacity 600ms cubic-bezier(0.4, 0, 0.2, 1), transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -241,11 +241,11 @@
 .emptySessionPage__newsBadge {
   flex-shrink: 0;
   font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
-  font-size: 11px;
+  font-size: 9px;
   font-weight: $ouiFontWeightSemiBold;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  width: 58px;
+  width: 52px;
 
   &--critical {
     color: $ouiColorDanger;
@@ -261,15 +261,15 @@
 }
 
 .emptySessionPage__newsBody {
-  font-size: 15px;
+  font-size: 12px;
   line-height: 1.5;
   color: lightOrDarkTheme(#4A4456, #B6BECD);
 }
 
 .emptySessionPage__newsSummary {
-  padding-bottom: 12px;
+  padding-bottom: 8px;
   margin-bottom: 4px;
-  font-size: 16px;
+  font-size: 13px;
   line-height: 1.5;
   color: $ouiTextSubduedColor;
 }
@@ -896,19 +896,47 @@
   display: flex;
   flex-direction: column;
   border: 1.5px solid lightOrDarkTheme($ouiColorPrimary, #9A7CF5);
-  border-radius: 18px;
+  border-radius: 14px;
   background-color: var(--nb-cell, $ouiFormBackgroundColor);
   box-shadow: lightOrDarkTheme(
-    0 6px 22px rgba(108, 75, 216, 0.12),
-    0 8px 28px rgba(0, 0, 0, 0.5)
+    0 4px 16px rgba(108, 75, 216, 0.10),
+    0 6px 22px rgba(0, 0, 0, 0.4)
   );
   transition: box-shadow 300ms ease;
   overflow: visible;
 
+  // Animated shimmer border — uses an oversized rotating gradient behind a mask
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 15px;
+    background: conic-gradient(
+      lightOrDarkTheme(rgba(99, 102, 241, 0.30), rgba(165, 180, 252, 0.35)),
+      lightOrDarkTheme(rgba(16, 185, 129, 0.20), rgba(52, 211, 153, 0.25)),
+      lightOrDarkTheme(rgba(99, 102, 241, 0.06), rgba(165, 180, 252, 0.08)),
+      lightOrDarkTheme(rgba(217, 119, 6, 0.18), rgba(251, 191, 36, 0.20)),
+      lightOrDarkTheme(rgba(99, 102, 241, 0.30), rgba(165, 180, 252, 0.35))
+    );
+    pointer-events: none;
+    z-index: 0;
+    animation: emptySessionInputShimmer 4s linear infinite;
+  }
+
+  // Inner mask to cut out the center, leaving only the border ring
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    background: var(--nb-cell, $ouiFormBackgroundColor);
+    z-index: 0;
+  }
+
   &:focus-within {
     box-shadow: lightOrDarkTheme(
-      0 8px 28px rgba(108, 75, 216, 0.16),
-      0 8px 32px rgba(0, 0, 0, 0.6)
+      0 6px 22px rgba(108, 75, 216, 0.14),
+      0 8px 28px rgba(0, 0, 0, 0.5)
     );
   }
 
@@ -918,14 +946,19 @@
   }
 }
 
+@keyframes emptySessionInputShimmer {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
 // Textarea overrides — no border on the textarea itself (outer layout handles it)
 .emptySessionPage__textarea textarea,
 textarea.emptySessionPage__textarea {
-  padding-bottom: 44px;
-  padding-top: 16px;
-  min-height: 100px;
+  padding-bottom: 36px;
+  padding-top: 12px;
+  min-height: 72px;
   margin-bottom: 0;
-  border-radius: 18px !important;
+  border-radius: 14px !important;
   border: none !important;
   background-color: transparent !important;
   background-image: none !important;
@@ -933,6 +966,7 @@ textarea.emptySessionPage__textarea {
   transition: none;
   position: relative;
   z-index: 1;
+  font-size: 13px;
 }
 
 // Remove the ouiFormControlLayout border inside the empty session input
@@ -943,9 +977,6 @@ textarea.emptySessionPage__textarea {
   overflow: visible !important;
 }
 
-.emptySessionPage__inputField::after {
-  display: none;
-}
 
 .emptySessionPage__textarea .ouiFormControlLayout {
   margin-bottom: 0;
