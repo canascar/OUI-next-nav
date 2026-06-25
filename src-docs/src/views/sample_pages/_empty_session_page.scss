@@ -464,7 +464,7 @@
 }
 
 .emptySessionPage__overviewTitle {
-  font-size: 23px;
+  font-size: 18px;
   font-weight: 600;
   letter-spacing: -0.02em;
   color: $ouiTitleColor;
@@ -548,7 +548,7 @@
   flex: 0 0 50%;
   min-width: 0;
   overflow-y: auto;
-  padding: 54px 70px 0 58px;
+  padding: 32px 24px 0 24px;
   border-left: 1px solid lightOrDarkTheme(rgba(150, 160, 196, 0.22), rgba(255, 255, 255, 0.08));
   background-color: lightOrDarkTheme(rgba(236, 238, 248, 0.50), rgba(13, 19, 30, 0.50));
   -ms-overflow-style: none;
@@ -1994,7 +1994,7 @@ textarea.emptySessionPage__textarea {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-auto-rows: 1fr;
-  gap: 12px;
+  gap: 10px;
   padding-top: 0;
 
   .ouiInsightCard,
@@ -2022,15 +2022,15 @@ textarea.emptySessionPage__textarea {
 // List-style widgets (alerts, dashboards, saved queries)
 .emptySessionPage__widgetList {
   @include ouiGlassPanel;
-  padding: 16px 18px;
+  padding: 14px 16px;
   outline: none;
 }
 
 .emptySessionPage__widgetListHeader {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 6px;
+  margin-bottom: 8px;
 }
 
 .emptySessionPage__widgetListIcon {
@@ -2040,7 +2040,7 @@ textarea.emptySessionPage__textarea {
 
 .emptySessionPage__widgetListTitle {
   font-weight: $ouiFontWeightSemiBold;
-  font-size: $ouiFontSizeS;
+  font-size: 13px;
   flex: 1;
 }
 
@@ -2070,9 +2070,9 @@ textarea.emptySessionPage__textarea {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 0;
+  padding: 8px 0;
   border-top: 1px solid $ouiBorderColor;
-  font-size: $ouiFontSizeXS;
+  font-size: 11px;
   line-height: 1.4;
 
   strong {
@@ -2478,10 +2478,10 @@ textarea.emptySessionPage__textarea {
 }
 
 .widgetCard__title {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
   color: $ouiTitleColor;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 
 .widgetCard__mono {
@@ -2493,40 +2493,40 @@ textarea.emptySessionPage__textarea {
   display: flex;
   justify-content: space-between;
   font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
-  font-size: 10px;
+  font-size: 9px;
   letter-spacing: 0.07em;
   color: lightOrDarkTheme(#A39BAC, #6E7686);
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .widgetCard__rows {
   display: flex;
   flex-direction: column;
-  gap: 13px;
+  gap: 9px;
 }
 
 .widgetCard__barRow {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
 }
 
 .widgetCard__barLabel {
-  width: 108px;
-  font-size: 14px;
+  width: 90px;
+  font-size: 12px;
   color: lightOrDarkTheme(#3C3648, #C4CBD8);
 }
 
 .widgetCard__barTrack {
   flex: 1;
-  height: 7px;
-  border-radius: 4px;
+  height: 6px;
+  border-radius: 3px;
   background: lightOrDarkTheme(#EFEAFB, rgba(255, 255, 255, 0.09));
 }
 
 .widgetCard__barFill {
   height: 100%;
-  border-radius: 4px;
+  border-radius: 3px;
   background: $ouiColorPrimary;
 
   &--secondary {
@@ -2535,16 +2535,16 @@ textarea.emptySessionPage__textarea {
 }
 
 .widgetCard__barValue {
-  width: 58px;
+  width: 48px;
   text-align: right;
   font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 500;
   color: $ouiTitleColor;
 }
 
 .widgetCard__bigNumber {
-  font-size: 38px;
+  font-size: 30px;
   font-weight: 700;
   letter-spacing: -0.02em;
   color: $ouiTitleColor;
@@ -2553,7 +2553,7 @@ textarea.emptySessionPage__textarea {
 
 .widgetCard__trend {
   font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
 
   &--warning {
@@ -2568,16 +2568,16 @@ textarea.emptySessionPage__textarea {
 }
 
 .widgetCard__statusLabel {
-  font-size: 14px;
+  font-size: 12px;
   color: lightOrDarkTheme(#3C3648, #C4CBD8);
 }
 
 .widgetCard__statusBadge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.04em;
 
@@ -2591,8 +2591,8 @@ textarea.emptySessionPage__textarea {
 }
 
 .widgetCard__statusDot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   background: currentColor;
 }
 
@@ -2708,10 +2708,10 @@ textarea.emptySessionPage__textarea {
 // ─── Workflows Widget (App Library style) ───────────────────
 .emptySessionPage__workflowsWidget {
   @include ouiGlassPanel;
-  padding: 16px 18px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .emptySessionPage__workflowsHeader {
@@ -2721,7 +2721,7 @@ textarea.emptySessionPage__textarea {
 }
 
 .emptySessionPage__workflowsTitle {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: $ouiFontWeightSemiBold;
   color: $ouiTitleColor;
 }
@@ -2753,13 +2753,13 @@ textarea.emptySessionPage__textarea {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 12px 6px;
-  border-radius: 12px;
+  gap: 4px;
+  padding: 10px 4px;
+  border-radius: 10px;
   border: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.06));
   background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.04));
   cursor: pointer;
-  font-size: $ouiFontSizeXS;
+  font-size: 10px;
   font-weight: $ouiFontWeightMedium;
   color: $ouiTitleColor;
   appearance: none;

@@ -10,7 +10,7 @@
 .ouiInsightCard {
   position: relative;
   @include ouiGlassPanel;
-  padding: 16px 18px;
+  padding: 14px 16px;
   transition:
     border-color 180ms ease,
     background-color 180ms ease;
