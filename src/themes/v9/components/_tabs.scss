@@ -10,14 +10,13 @@
 
 // Tab list — muted track container
 .ouiTabs {
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.04)) !important;
+  background-color: lightOrDarkTheme(#F7F8FA, rgba(30, 32, 38, 0.8)) !important;
   border-radius: $ouiBorderRadius !important;
-  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.06)) !important;
-  backdrop-filter: blur(12px) saturate(140%) !important;
-  -webkit-backdrop-filter: blur(12px) saturate(140%) !important;
   padding: 4px !important;
   gap: 4px;
-  border: 1px solid lightOrDarkTheme(#ececef, #23252b) !important;
+  border: 1px solid lightOrDarkTheme(#E5E7EB, #23252b) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 
   // Remove the bottom border line
   &::before {
@@ -47,18 +46,19 @@
     display: none !important;
   }
 
-  // Selected tab — elevated pill with clear distinction
+  // Selected tab — light blue-tinted pill with blue border
   &.ouiTab-isSelected {
-    background-color: lightOrDarkTheme(#ffffff, rgba(255, 255, 255, 0.12)) !important;
-    color: $ouiTextColor !important;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06) !important;
-    border: 1px solid lightOrDarkTheme(rgba(99, 102, 241, 0.3), rgba(99, 102, 241, 0.4)) !important;
+    background-color: lightOrDarkTheme(#EEF1FC, rgba(75, 110, 245, 0.12)) !important;
+    color: lightOrDarkTheme(#3B5ED6, #B8CCFF) !important;
+    box-shadow: none !important;
+    border: 1px solid lightOrDarkTheme(rgba(75, 110, 245, 0.28), rgba(75, 110, 245, 0.35)) !important;
     font-weight: 600 !important;
   }
 
   // Hover state for unselected tabs
   &:hover:not(.ouiTab-isSelected) {
-    background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.06)) !important;
+    background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.06)) !important;
+    color: inherit !important;
   }
 
   // Focus visible
