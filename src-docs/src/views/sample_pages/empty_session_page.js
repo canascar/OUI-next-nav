@@ -24,25 +24,13 @@ import {
   OuiContextMenu,
   OuiIcon,
   OuiInsightCard,
-  OuiInsightCallout,
   OuiPopover,
   OuiSmallButton,
   OuiSmallButtonEmpty,
-  OuiTab,
-  OuiTabs,
   OuiText,
   OuiTitle,
   OuiToolTip,
 } from '../../../../src/components';
-
-import {
-  Chart,
-  Settings,
-  Axis,
-  BarSeries,
-  LineSeries,
-  ScaleType,
-} from '@elastic/charts';
 
 import { SOURCE_PAGE_MOCK } from './session_models';
 import { OllyAvatar } from './olly_avatar';
@@ -974,6 +962,8 @@ export const EmptySessionPage = ({
   const [scrolledFromTop, setScrolledFromTop] = useState(false);
   const [mascotExpression, setMascotExpression] = useState(undefined);
   const [rightPanelTab, setRightPanelTab] = useState('insights');
+  const [rightPanelWidth, setRightPanelWidth] = useState(50);
+  const resizeRef = useRef(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [gallerySearch, setGallerySearch] = useState('');
   const [widgetOrder, setWidgetOrder] = useState([
@@ -1105,6 +1095,32 @@ export const EmptySessionPage = ({
     );
   }, [searchQuery, allSearchableItems]);
 
+  const handleResizeMouseDown = useCallback((e) => {
+    e.preventDefault();
+    const twoCol = e.target.closest('.emptySessionPage__twoCol');
+    if (!twoCol) return;
+    const startX = e.clientX;
+    const startWidth = rightPanelWidth;
+    const totalWidth = twoCol.getBoundingClientRect().width;
+
+    const onMove = (ev) => {
+      const delta = startX - ev.clientX;
+      const pctDelta = (delta / totalWidth) * 100;
+      const next = Math.min(70, Math.max(25, startWidth + pctDelta));
+      setRightPanelWidth(next);
+    };
+    const onUp = () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  }, [rightPanelWidth]);
+
   return (
     <div className="emptySessionPage">
       <div className="emptySessionPage__panel">
@@ -1116,13 +1132,16 @@ export const EmptySessionPage = ({
             <div className="emptySessionPage__headerRow">
               <div
                 className="emptySessionPage__avatarWrap"
+                onMouseEnter={() => {
+                  if (!mascotExpression) setMascotExpression('happy');
+                }}
                 onMouseDown={(e) => {
                   e.currentTarget.style.transform = 'scale(0.85)';
                   setMascotExpression('heart');
                 }}
                 onMouseUp={(e) => {
                   e.currentTarget.style.transform = 'scale(1)';
-                  setMascotExpression(undefined);
+                  setMascotExpression('happy');
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'scale(1)';
@@ -1132,8 +1151,8 @@ export const EmptySessionPage = ({
                   size={32}
                   expression={mascotExpression}
                   idle={!mascotExpression}
-                  bob={false}
-                  follow={false}
+                  bob
+                  follow
                   color={mascotColor}
                   eyeColor={mascotEyeColor}
                 />
@@ -1230,8 +1249,17 @@ export const EmptySessionPage = ({
             </div>
           </div>
 
+          {/* Resize handle */}
+          <div
+            className="emptySessionPage__resizeHandle"
+            onMouseDown={handleResizeMouseDown}
+            ref={resizeRef}
+          />
+
           {/* Right column — briefing items */}
-          <div className="emptySessionPage__rightCol">
+          <div
+            className="emptySessionPage__rightCol"
+            style={{ flex: `0 0 ${rightPanelWidth}%` }}>
             <div
               className={`emptySessionPage__briefing${
                 hasAnimatedBriefing ? ' emptySessionPage__briefing--noAnim' : ''
@@ -1253,23 +1281,23 @@ export const EmptySessionPage = ({
                 }
               }}>
               <div className="emptySessionPage__tabRow emptySessionPage__tabRow--sticky">
-                <OuiTabs
-                  size="s"
-                  display="condensed"
-                  style={{ maxWidth: 'fit-content' }}>
-                  <OuiTab
-                    isSelected={rightPanelTab === 'insights'}
-                    onClick={() => setRightPanelTab('insights')}>
-                    Overview
-                  </OuiTab>
-                  <OuiTab
-                    isSelected={rightPanelTab === 'open-page'}
-                    onClick={() => setRightPanelTab('open-page')}>
-                    Open a page
-                  </OuiTab>
-                </OuiTabs>
-                {rightPanelTab === 'insights' &&
-                  (isEditMode ? (
+                <span className="emptySessionPage__overviewTitle">Overview</span>
+                <div className="emptySessionPage__tabRowActions">
+                  <OuiToolTip content="Open a page" position="left">
+                    <OuiButtonIcon
+                      iconType="grid"
+                      aria-label="Open a page"
+                      size="s"
+                      color="text"
+                      display="empty"
+                      onClick={() =>
+                        setRightPanelTab(
+                          rightPanelTab === 'open-page' ? 'insights' : 'open-page'
+                        )
+                      }
+                    />
+                  </OuiToolTip>
+                  {isEditMode ? (
                     <OuiSmallButtonEmpty
                       size="xs"
                       color="primary"
@@ -1294,7 +1322,8 @@ export const EmptySessionPage = ({
                         }}
                       />
                     </OuiToolTip>
-                  ))}
+                  )}
+                </div>
               </div>
 
               <div className="emptySessionPage__briefingContent">
