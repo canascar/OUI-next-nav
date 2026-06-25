@@ -178,18 +178,14 @@
 
 // Glassmorphism panel — shared card recipe
 @mixin ouiGlassPanel {
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.85), rgba(24, 31, 44, 0.88));
-  -webkit-backdrop-filter: blur(7px);
-  backdrop-filter: blur(7px);
-  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.10));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.65), rgba(24, 31, 44, 0.70));
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  border: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.07));
   border-radius: 18px;
   box-shadow:
     lightOrDarkTheme(
-      0 12px 26px -16px rgba(60, 42, 104, 0.28),
-      0 12px 26px -16px rgba(0, 0, 0, 0.55)
-    ),
-    lightOrDarkTheme(
-      inset 0 1px 0 rgba(255, 255, 255, 0.85),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06)
+      0 2px 8px rgba(60, 42, 104, 0.06),
+      0 4px 12px rgba(0, 0, 0, 0.25)
     );
 }
