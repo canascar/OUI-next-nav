@@ -54,7 +54,7 @@ const ScanShimmerOverlay = () => {
       cv.height = Math.round(h * dpr);
       const ctx = cv.getContext('2d');
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const sp = 9;
+      const sp = 7;
       const cols = Math.max(1, Math.round((w - sp) / sp));
       const rows = Math.max(1, Math.round((h - sp) / sp));
       const ox = (w - (cols - 1) * sp) / 2, oy = (h - (rows - 1) * sp) / 2;
@@ -1173,7 +1173,7 @@ export const EmptySessionPage = ({
   const [hoveredCard, setHoveredCard] = useState(null);
   const [scrolledFromTop, setScrolledFromTop] = useState(false);
   const [mascotExpression, setMascotExpression] = useState(undefined);
-  const [rightPanelWidth, setRightPanelWidth] = useState(50);
+  const [rightPanelWidth, setRightPanelWidth] = useState(40);
   const resizeRef = useRef(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [gallerySearch, setGallerySearch] = useState('');
@@ -1813,11 +1813,11 @@ export const EmptySessionPage = ({
                                   <text x="22" y="41" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">25</text>
                                   <text x="22" y="65" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">0</text>
                                   <defs>
-                                    <ChartTexture id="resDots" variant="dots" />
+                                    <ChartTexture id="resStripe" variant="stripe" color="#1F9D6B" />
                                   </defs>
                                   <path
                                     d="M40,38 L75,34 L110,30 L145,32 L175,26 L195,24 L210,26 V62 H40 Z"
-                                    fill="url(#resDots)"
+                                    fill="url(#resStripe)"
                                   />
                                   <polyline
                                     fill="none"
@@ -1905,9 +1905,9 @@ export const EmptySessionPage = ({
                                         flexShrink: 0,
                                       }}>
                                       <defs>
-                                        <ChartTexture id="dashDots1" variant="dots" />
+                                        <ChartTexture id="dashStripe3" variant="stripe" color="#1F9D6B" />
                                       </defs>
-                                      <path d="M0,14 L10,10 L20,12 L30,8 L40,10 L50,6 L60,8 V20 H0 Z" fill="url(#dashDots1)" />
+                                      <path d="M0,14 L10,10 L20,12 L30,8 L40,10 L50,6 L60,8 V20 H0 Z" fill="url(#dashStripe3)" />
                                       <polyline
                                         fill="none"
                                         stroke="#34d399"
@@ -2004,9 +2004,9 @@ export const EmptySessionPage = ({
                                         flexShrink: 0,
                                       }}>
                                       <defs>
-                                        <ChartTexture id="dashDots2" variant="dots" />
+                                        <ChartTexture id="dashStripe4" variant="stripe" color="#1F9D6B" />
                                       </defs>
-                                      <path d="M0,12 L10,10 L20,8 L30,10 L40,6 L50,8 L60,6 V20 H0 Z" fill="url(#dashDots2)" />
+                                      <path d="M0,12 L10,10 L20,8 L30,10 L40,6 L50,8 L60,6 V20 H0 Z" fill="url(#dashStripe4)" />
                                       <polyline
                                         fill="none"
                                         stroke="#34d399"

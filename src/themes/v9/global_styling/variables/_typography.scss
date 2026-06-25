@@ -50,15 +50,15 @@ $ouiCodeFontFamily: #{"'Source Code Pro', ui-monospace, 'SF Mono', monospace"} !
 $ouiFontFeatureSettings: 'calt' 1, 'kern' 1, 'liga' 1 !default;
 
 // Font sizes -- scale is loosely based on Major Third (1.250)
-$ouiTextScale:      2, 1.714286, 1.285714, 1.1429, 1, .857143, .75 !default;
+$ouiTextScale:      2.25, 1.75, 1.25, 1.125, 1, .875, .75 !default;
 
-$ouiFontSize:       14px !default; // 5th position in scale
-$ouiFontSizeXS:     $ouiFontSize * nth($ouiTextScale, 6) !default; // 12px
-$ouiFontSizeS:      $ouiFontSize * nth($ouiTextScale, 5) !default; // 14px
-$ouiFontSizeM:      $ouiFontSize * nth($ouiTextScale, 4) !default; // 16px
-$ouiFontSizeL:      $ouiFontSize * nth($ouiTextScale, 3) !default; // 18px
-$ouiFontSizeXL:     $ouiFontSize * nth($ouiTextScale, 2) !default; // 24px
-$ouiFontSizeXXL:    $ouiFontSize * nth($ouiTextScale, 1) !default; // 28px
+$ouiFontSize:       16px !default; // 5th position in scale
+$ouiFontSizeXS:     $ouiFontSize * nth($ouiTextScale, 7) !default; // 12px
+$ouiFontSizeS:      $ouiFontSize * nth($ouiTextScale, 6) !default; // 14px
+$ouiFontSizeM:      $ouiFontSize * nth($ouiTextScale, 4) !default; // 18px
+$ouiFontSizeL:      $ouiFontSize * nth($ouiTextScale, 3) !default; // 20px
+$ouiFontSizeXL:     $ouiFontSize * nth($ouiTextScale, 2) !default; // 28px
+$ouiFontSizeXXL:    $ouiFontSize * nth($ouiTextScale, 1) !default; // 36px
 
 // This value is impacted by font-size
 $ouiLegibilityMaxWidth: 80ch !default;
