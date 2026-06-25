@@ -1400,7 +1400,7 @@ export const EmptySessionPage = ({
                                     'Application Services'
                                   )
                                 }>
-                                <div className="widgetCard__badge">FAULTS · 60M</div>
+
                                 <div className="widgetCard__title">Top services by fault rate</div>
                                 <div className="widgetCard__tableHeader">
                                   <span>SERVICE</span>
@@ -1432,7 +1432,7 @@ export const EmptySessionPage = ({
                                   !isEditMode &&
                                   onOpenPageInNewSession('logs', 'Logs')
                                 }>
-                                <div className="widgetCard__badge">ERRORS · 60M</div>
+
                                 <div className="widgetCard__title">Connection timeout errors</div>
                                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
                                   <span className="widgetCard__bigNumber">847</span>
@@ -1453,7 +1453,7 @@ export const EmptySessionPage = ({
                                   !isEditMode &&
                                   onOpenPageInNewSession('alerts', 'Alerts')
                                 }>
-                                <div className="widgetCard__badge">ALERTS · LIVE</div>
+
                                 <div className="widgetCard__title">Recent alerts</div>
                                 <div className="widgetCard__tableHeader">
                                   <span>ALERT</span>
@@ -1482,7 +1482,7 @@ export const EmptySessionPage = ({
                                   !isEditMode &&
                                   onOpenPageInNewSession('dashboards', 'Dashboards')
                                 }>
-                                <div className="widgetCard__badge">DEPLOYS · 24H</div>
+
                                 <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
                                   <div className="widgetCard__title" style={{ marginBottom: 0 }}>Deployment timeline</div>
                                   <span className="widgetCard__mono" style={{ fontSize: 9.5, letterSpacing: '0.08em' }}>Σ 55</span>
@@ -1509,7 +1509,7 @@ export const EmptySessionPage = ({
                                   !isEditMode &&
                                   onOpenPageInNewSession('metrics', 'Metrics')
                                 }>
-                                <div className="widgetCard__badge">UTILIZATION · 60M</div>
+
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                                   <span className="widgetCard__title" style={{ marginBottom: 0 }}>Resource utilization</span>
                                   <span style={{ fontSize: 22, fontWeight: 700, color: '#1F9D6B', letterSpacing: '-0.01em' }}>56%</span>
