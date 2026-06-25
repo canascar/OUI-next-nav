@@ -103,10 +103,10 @@ const SurroundShimmer = ({ children }) => {
         b = 0.05 * Math.exp(-Math.pow(sdist / (sp * 4.5), 2)) + 0.5 * sg * near;
         if (b < 0.01) continue;
         b = Math.max(0, Math.min(1, b));
-        const a = (0.02 + 0.30 * b).toFixed(3);
+        const a = (0.06 + 0.50 * b).toFixed(3);
         const r = Math.round(96 + 44 * b), g = Math.round(60 + 62 * b), bl = Math.round(196 + 40 * b);
         ctx.beginPath();
-        ctx.arc(d.x, d.y, 0.4 + b * 1.0, 0, 6.2832);
+        ctx.arc(d.x, d.y, 0.6 + b * 1.4, 0, 6.2832);
         ctx.fillStyle = `rgba(${r},${g},${bl},${a})`;
         ctx.fill();
       }

@@ -919,11 +919,11 @@
     inset: -1.5px;
     border-radius: 11px;
     background: conic-gradient(
-      lightOrDarkTheme(rgba(99, 102, 241, 0.18), rgba(165, 180, 252, 0.20)),
-      lightOrDarkTheme(rgba(16, 185, 129, 0.10), rgba(52, 211, 153, 0.12)),
-      lightOrDarkTheme(rgba(99, 102, 241, 0.04), rgba(165, 180, 252, 0.05)),
-      lightOrDarkTheme(rgba(217, 119, 6, 0.08), rgba(251, 191, 36, 0.10)),
-      lightOrDarkTheme(rgba(99, 102, 241, 0.18), rgba(165, 180, 252, 0.20))
+      lightOrDarkTheme(rgba(99, 102, 241, 0.10), rgba(165, 180, 252, 0.12)),
+      lightOrDarkTheme(rgba(16, 185, 129, 0.06), rgba(52, 211, 153, 0.07)),
+      lightOrDarkTheme(rgba(99, 102, 241, 0.02), rgba(165, 180, 252, 0.03)),
+      lightOrDarkTheme(rgba(217, 119, 6, 0.04), rgba(251, 191, 36, 0.05)),
+      lightOrDarkTheme(rgba(99, 102, 241, 0.10), rgba(165, 180, 252, 0.12))
     );
     pointer-events: none;
     z-index: 0;
