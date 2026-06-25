@@ -166,6 +166,12 @@
   max-width: 80%;
   padding: 8px 12px;
   border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+
+  .ouiText {
+    font-size: inherit;
+  }
 
   &--user {
     background-color: rgba($ouiColorDarkShade, 0.06);
@@ -195,6 +201,14 @@
   display: flex;
   gap: 4px;
   margin-top: 4px;
+
+  .ouiButtonIcon {
+    color: lightOrDarkTheme(#CBD5E0, #4A5568);
+
+    &:hover {
+      color: lightOrDarkTheme(#718096, #A0AEC0);
+    }
+  }
 }
 
 // Attachment card
@@ -456,16 +470,65 @@
 // Code block attachment (Tool UI style)
 .threadPage__attachment--codeBlock {
   max-width: 600px;
-  background-color: lightOrDarkTheme(#FBF9F5, #12161F);
-  border: 1px solid lightOrDarkTheme(#ECE6DC, rgba(255, 255, 255, 0.08));
-  border-radius: 13px;
+  background-color: lightOrDarkTheme(#FAFAFA, #12161F);
+  border: 1px solid lightOrDarkTheme(#E0E0E0, rgba(255, 255, 255, 0.08));
+  border-radius: 12px;
   overflow: hidden;
+  position: relative;
+
+  .ouiText {
+    padding: 10px 16px;
+    font-family: var(--oui-code-font-family);
+    font-size: 13px;
+    font-weight: 600;
+    color: lightOrDarkTheme(#1a1a1a, #e0e0e0);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid lightOrDarkTheme(#EBEBEB, rgba(255, 255, 255, 0.06));
+    margin-bottom: 0;
+  }
 
   .ouiCodeBlock {
     margin-top: 0;
     background-color: transparent;
     border: none;
     border-radius: 0;
+    font-size: 12px;
+    line-height: 1.7;
+
+    .ouiCodeBlock__pre {
+      padding: 14px 0 18px;
+    }
+
+    .ouiCodeBlock__code {
+      font-family: var(--oui-code-font-family);
+      font-size: 12px;
+      color: lightOrDarkTheme(#57534E, #A8A29E);
+    }
+
+    // Move copy button to top-right of the card (aligned with title row)
+    .ouiCodeBlock__controls {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      bottom: auto;
+      left: auto;
+      padding: 0;
+      background: none;
+      border: none;
+      box-shadow: none;
+
+      .ouiButtonIcon {
+        color: lightOrDarkTheme(#A3A3A3, #737373);
+        background: none;
+        border: none;
+
+        &:hover {
+          color: lightOrDarkTheme(#525252, #D4D4D4);
+        }
+      }
+    }
   }
 }
 
@@ -600,27 +663,29 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 8px;
+  gap: 6px;
   margin-bottom: 8px;
 }
 
 .threadPage__suggestedPrompt {
-  color: $ouiColorPrimary;
-  border: 1px solid $ouiColorLightShade;
-  border-radius: 9999px;
-  transition: transform 180ms cubic-bezier(.2,.7,.2,1), border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+  color: lightOrDarkTheme(#4A5568, #A0AEC0);
+  border: 1px solid lightOrDarkTheme(#E2E8F0, rgba(255, 255, 255, 0.1));
+  border-radius: 8px;
+  font-size: 12px;
+  padding: 4px 10px;
+  transition: border-color 180ms ease, background-color 180ms ease;
 
   &:hover,
   &:focus {
     color: $ouiColorPrimary;
-    border-color: $ouiColorPrimary;
-    background-color: rgba($ouiColorPrimary, 0.06);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba($ouiColorPrimary, 0.12);
+    border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.4), rgba($ouiColorPrimary, 0.3));
+    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.04), rgba($ouiColorPrimary, 0.08));
+    transform: none;
+    box-shadow: none;
   }
 
   &:active {
-    transform: translateY(0);
+    transform: none;
     box-shadow: none;
   }
 }
@@ -763,20 +828,20 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  border: 1.5px solid lightOrDarkTheme($ouiColorPrimary, #9A7CF5);
+  border: 1px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.3), rgba(#7B9CF5, 0.3));
   border-radius: 10px;
   background-color: var(--nb-cell, $ouiFormBackgroundColor);
   overflow: visible;
   box-shadow: lightOrDarkTheme(
-    0 4px 16px rgba(108, 75, 216, 0.10),
-    0 8px 24px rgba(0, 0, 0, 0.5)
+    0 4px 16px rgba(59, 93, 214, 0.06),
+    0 6px 22px rgba(0, 0, 0, 0.3)
   );
   transition: box-shadow 300ms ease;
 
   &:focus-within {
     box-shadow: lightOrDarkTheme(
-      0 6px 22px rgba(108, 75, 216, 0.14),
-      0 8px 28px rgba(0, 0, 0, 0.6)
+      0 6px 22px rgba(59, 93, 214, 0.14),
+      0 8px 28px rgba(0, 0, 0, 0.5)
     );
   }
 
@@ -803,6 +868,7 @@
 .threadPage__textarea textarea,
 textarea.threadPage__textarea {
   padding-bottom: 36px;
+  padding-top: 12px;
   border-radius: 10px !important;
   border: none !important;
   background-color: transparent !important;
@@ -810,6 +876,7 @@ textarea.threadPage__textarea {
   box-shadow: none !important;
   position: relative;
   z-index: 1;
+  font-size: 13px;
 }
 
 .threadPage__inputWrapper:hover .threadPage__textarea textarea:not(:focus),
@@ -830,6 +897,18 @@ textarea.threadPage__textarea {
 
   > * {
     pointer-events: auto;
+  }
+
+  .ouiButtonIcon--fill {
+    border-radius: 50%;
+    transition: background-color 200ms ease, border-color 200ms ease, opacity 200ms ease;
+
+    &:disabled,
+    &[disabled] {
+      background-color: transparent !important;
+      border: 1.5px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.25), rgba(#7B9CF5, 0.25));
+      opacity: 0.6;
+    }
   }
 }
 
@@ -1014,8 +1093,36 @@ textarea.threadPage__textarea {
 
 // Mock canvas pages
 .mockCanvasPage {
+  font-size: 13px;
+  line-height: 1.5;
+
+  .ouiText {
+    font-size: inherit;
+  }
+
+  .ouiText--s {
+    font-size: 13px;
+  }
+
+  .ouiText--xs {
+    font-size: 12px;
+    color: lightOrDarkTheme(#6B7280, #9CA3AF);
+  }
+
+  .ouiText--m {
+    font-size: 14px;
+
+    strong {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: block;
+      margin-bottom: 2px;
+    }
+  }
+
   h4 {
-    font-size: $ouiFontSizeS;
+    font-size: 14px;
     font-weight: 600;
     margin-top: 12px;
     margin-bottom: 4px;
@@ -1043,10 +1150,18 @@ textarea.threadPage__textarea {
 .mockAlertCallout {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  background-color: rgba($ouiColorWarning, 0.1);
-  border-radius: $ouiBorderRadius;
+  gap: 10px;
+  padding: 12px 16px;
+  background-color: lightOrDarkTheme(#FEF7ED, rgba(217, 119, 6, 0.08));
+  border: 1px solid lightOrDarkTheme(#F5E6D0, rgba(217, 119, 6, 0.15));
+  border-radius: 8px;
+  color: lightOrDarkTheme(#44403C, #E7E5E4);
+  font-size: 13px;
+
+  .ouiIcon {
+    color: lightOrDarkTheme(#E89530, #FBBF24);
+    flex-shrink: 0;
+  }
 }
 
 // Force border on panels in dashboard and canvas
@@ -1054,7 +1169,10 @@ textarea.threadPage__textarea {
 .dashboardPage__content .ouiPanel,
 .mockCanvasPage--fullBody .ouiPanel,
 .mockCanvasPage .ouiPanel {
-  border: 1px solid $ouiBorderColor !important;
+  border: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.08)) !important;
+  box-shadow: none !important;
+  background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.01), rgba(255, 255, 255, 0.02));
+  border-radius: 10px;
 }
 
 // ─── Typing indicator ────────────────────────────────────────
