@@ -57,11 +57,14 @@ const FILTER_CHIPS = [
 /**
  * "Open a page" grid items. Clicking one opens the related page in a new session.
  */
-const OPEN_PAGE_ITEMS = [
+const WORKFLOW_ITEMS_PRIMARY = [
   { label: 'Logs', pageKey: 'logs', icon: 'navDiscover' },
   { label: 'Metrics', pageKey: 'metrics', icon: 'visArea' },
   { label: 'Dashboards', pageKey: 'dashboards', icon: 'navDashboards' },
   { label: 'Alerts', pageKey: 'alerts', icon: 'navAlerting' },
+];
+
+const WORKFLOW_ITEMS_OVERFLOW = [
   { label: 'Application Map', pageKey: 'app-map', icon: 'navServiceMap' },
   {
     label: 'Application Services',
@@ -961,12 +964,12 @@ export const EmptySessionPage = ({
   const [hoveredCard, setHoveredCard] = useState(null);
   const [scrolledFromTop, setScrolledFromTop] = useState(false);
   const [mascotExpression, setMascotExpression] = useState(undefined);
-  const [rightPanelTab, setRightPanelTab] = useState('insights');
   const [rightPanelWidth, setRightPanelWidth] = useState(50);
   const resizeRef = useRef(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [gallerySearch, setGallerySearch] = useState('');
   const [widgetOrder, setWidgetOrder] = useState([
+    'workflows',
     'top-services',
     'connection-timeout',
     'recent-alerts',
@@ -975,7 +978,8 @@ export const EmptySessionPage = ({
     'saved-queries',
     'dashboards',
   ]);
-  const [widgetSizes, setWidgetSizes] = useState({ dashboards: 2 });
+  const [widgetSizes, setWidgetSizes] = useState({ dashboards: 2, workflows: 2 });
+  const [workflowsExpanded, setWorkflowsExpanded] = useState(false);
   const [confirmingRemoval, setConfirmingRemoval] = useState(null);
   const dragWidget = useRef(null);
   const dragOverWidget = useRef(null);
@@ -1283,20 +1287,6 @@ export const EmptySessionPage = ({
               <div className="emptySessionPage__tabRow emptySessionPage__tabRow--sticky">
                 <span className="emptySessionPage__overviewTitle">Overview</span>
                 <div className="emptySessionPage__tabRowActions">
-                  <OuiToolTip content="Open a page" position="left">
-                    <OuiButtonIcon
-                      iconType="grid"
-                      aria-label="Open a page"
-                      size="s"
-                      color="text"
-                      display="empty"
-                      onClick={() =>
-                        setRightPanelTab(
-                          rightPanelTab === 'open-page' ? 'insights' : 'open-page'
-                        )
-                      }
-                    />
-                  </OuiToolTip>
                   {isEditMode ? (
                     <OuiSmallButtonEmpty
                       size="xs"
@@ -1327,34 +1317,7 @@ export const EmptySessionPage = ({
               </div>
 
               <div className="emptySessionPage__briefingContent">
-                <div
-                  className={`emptySessionPage__briefingPanel${
-                    rightPanelTab !== 'open-page'
-                      ? ' emptySessionPage__briefingPanel--hidden'
-                      : ''
-                  }`}>
-                  <div className="emptySessionPage__openPageGrid">
-                    {OPEN_PAGE_ITEMS.map((item, i) => (
-                      <button
-                        key={i}
-                        type="button"
-                        className="emptySessionPage__openPageItem"
-                        onClick={() =>
-                          onOpenPageInNewSession(item.pageKey, item.label)
-                        }>
-                        <OuiIcon type={item.icon} size="m" />
-                        <span>{item.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div
-                  className={`emptySessionPage__briefingPanel${
-                    rightPanelTab !== 'insights'
-                      ? ' emptySessionPage__briefingPanel--hidden'
-                      : ''
-                  }`}>
+                <div className="emptySessionPage__briefingPanel">
                   <div
                     className={`emptySessionPage__widgetGrid${
                       isEditMode ? ' emptySessionPage__widgetGrid--editing' : ''
@@ -1378,6 +1341,59 @@ export const EmptySessionPage = ({
 
                       const renderWidget = () => {
                         switch (widgetId) {
+                          case 'workflows':
+                            return (
+                              <div className="emptySessionPage__workflowsWidget">
+                                <div className="emptySessionPage__workflowsHeader">
+                                  <span className="emptySessionPage__workflowsTitle">
+                                    Workflows
+                                  </span>
+                                  <button
+                                    type="button"
+                                    className="emptySessionPage__workflowsToggle"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setWorkflowsExpanded((v) => !v);
+                                    }}>
+                                    {workflowsExpanded ? 'Show less' : 'View all'}
+                                    <OuiIcon
+                                      type={workflowsExpanded ? 'arrowUp' : 'arrowDown'}
+                                      size="s"
+                                    />
+                                  </button>
+                                </div>
+                                <div className="emptySessionPage__workflowsGrid">
+                                  {WORKFLOW_ITEMS_PRIMARY.map((item, i) => (
+                                    <button
+                                      key={i}
+                                      type="button"
+                                      className="emptySessionPage__workflowItem"
+                                      onClick={() =>
+                                        onOpenPageInNewSession(item.pageKey, item.label)
+                                      }>
+                                      <OuiIcon type={item.icon} size="m" />
+                                      <span>{item.label}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                                {workflowsExpanded && (
+                                  <div className="emptySessionPage__workflowsGrid emptySessionPage__workflowsGrid--overflow">
+                                    {WORKFLOW_ITEMS_OVERFLOW.map((item, i) => (
+                                      <button
+                                        key={i}
+                                        type="button"
+                                        className="emptySessionPage__workflowItem"
+                                        onClick={() =>
+                                          onOpenPageInNewSession(item.pageKey, item.label)
+                                        }>
+                                        <OuiIcon type={item.icon} size="m" />
+                                        <span>{item.label}</span>
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            );
                           case 'top-services':
                             return (
                               <OuiInsightCard

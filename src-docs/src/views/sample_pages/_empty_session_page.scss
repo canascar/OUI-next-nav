@@ -2454,3 +2454,95 @@ textarea.emptySessionPage__textarea {
     border-top: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.05), rgba(255, 255, 255, 0.05));
   }
 }
+
+// ─── Workflows Widget (App Library style) ───────────────────
+.emptySessionPage__workflowsWidget {
+  @include ouiGlassPanel;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.emptySessionPage__workflowsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.emptySessionPage__workflowsTitle {
+  font-size: 15px;
+  font-weight: $ouiFontWeightSemiBold;
+  color: $ouiTitleColor;
+}
+
+.emptySessionPage__workflowsToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: $ouiFontSizeXS;
+  font-weight: $ouiFontWeightMedium;
+  color: $ouiColorPrimary;
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  border-radius: $ouiBorderRadiusSmall;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+
+  &:hover {
+    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.08), rgba($ouiColorPrimary, 0.12));
+  }
+}
+
+.emptySessionPage__workflowsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+
+  &--overflow {
+    animation: workflowsOverflowIn 250ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+}
+
+@keyframes workflowsOverflowIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.emptySessionPage__workflowItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 6px;
+  border-radius: 12px;
+  border: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.06));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.04));
+  cursor: pointer;
+  font-size: $ouiFontSizeXS;
+  font-weight: $ouiFontWeightMedium;
+  color: $ouiTitleColor;
+  appearance: none;
+  transition:
+    transform 200ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    background-color 150ms ease,
+    border-color 150ms ease;
+
+  &:hover {
+    transform: scale(1.04);
+    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.06), rgba($ouiColorPrimary, 0.10));
+    border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.25), rgba($ouiColorPrimary, 0.20));
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
