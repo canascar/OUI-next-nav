@@ -575,26 +575,18 @@
 }
 
 .emptySessionPage__resizeHandle {
-  flex: 0 0 6px;
+  flex: 0 0 1px;
   cursor: col-resize;
   position: relative;
   z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.04));
 
   &::after {
-    content: '';
-    width: 3px;
-    height: 32px;
-    border-radius: 2px;
-    background: lightOrDarkTheme(rgba(0, 0, 0, 0.10), rgba(255, 255, 255, 0.12));
-    transition: background 150ms ease, height 150ms ease;
+    display: none;
   }
 
-  &:hover::after {
-    background: var(--nb-accent, $ouiColorPrimary);
-    height: 48px;
+  &:hover {
+    background: lightOrDarkTheme(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.08));
   }
 }
 
