@@ -1515,11 +1515,13 @@ export const EmptySessionPage = ({
                 }
               }}>
               <div className="emptySessionPage__tabRow emptySessionPage__tabRow--sticky">
-                <span className="emptySessionPage__overviewTitle">Overview</span>
-                <span className="emptySessionPage__overviewStatus">
-                  <span className="emptySessionPage__overviewStatusDot" />
-                  updated 2m ago
-                </span>
+                <div className="emptySessionPage__overviewTitleGroup">
+                  <span className="emptySessionPage__overviewTitle">Overview</span>
+                  <span className="emptySessionPage__overviewStatus">
+                    <span className="emptySessionPage__overviewStatusDot" />
+                    Updated 2m ago
+                  </span>
+                </div>
                 <div className="emptySessionPage__tabRowActions">
                   <OuiToolTip content="Refresh" position="left">
                     <OuiButtonIcon
