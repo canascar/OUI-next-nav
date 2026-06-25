@@ -9,16 +9,9 @@
 
 .ouiInsightCard {
   position: relative;
-  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.07));
-  border-radius: $ouiBorderRadius;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.06));
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-  backdrop-filter: blur(16px) saturate(140%);
-  padding: 12px;
-  box-shadow: 0 1px 3px rgba(15, 15, 15, 0.03);
+  @include ouiGlassPanel;
+  padding: 16px 18px;
   transition:
-    transform 280ms cubic-bezier(0.2, 0.7, 0.2, 1),
-    box-shadow 280ms cubic-bezier(0.2, 0.7, 0.2, 1),
     border-color 180ms ease,
     background-color 180ms ease;
   appearance: none;
@@ -40,26 +33,9 @@
   }
 }
 
-// Glass variant — frosted backdrop
+// Glass variant — alias (base card is now glassmorphism by default)
 .ouiInsightCard--glass {
-  background: rgba(255, 255, 255, 0.55);
-  -webkit-backdrop-filter: blur(22px) saturate(170%);
-  backdrop-filter: blur(22px) saturate(170%);
-  border-color: rgba(255, 255, 255, 0.75);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    0 1px 2px rgba(15, 15, 15, 0.04),
-    0 10px 30px -18px rgba(31, 31, 60, 0.18);
-}
-
-@if (lightness($ouiPageBackgroundColor) < 50) {
-  .ouiInsightCard--glass {
-    background: rgba(255, 255, 255, 0.06);
-    border-color: rgba(255, 255, 255, 0.12);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.10),
-      0 14px 36px -18px rgba(0, 0, 0, 0.5);
-  }
+  // no-op: base already uses the glass treatment
 }
 
 // Add variant — dashed border "open a page" tile

@@ -14,9 +14,10 @@
     @error 'A $selector must be provided to @mixin ouiPanel().';
   } @else {
     #{$selector} {
-      background-color: $ouiColorEmptyShade;
-      border: $ouiBorderThin;
+      background-color: var(--nb-cell, $ouiColorEmptyShade);
+      border: 1px solid var(--nb-hairline, $ouiBorderColor);
       border-radius: $ouiBorderRadius;
+      box-shadow: var(--nb-cell-shadow, none);
       flex-grow: 1;
 
       &#{$selector}--flexGrowZero {
@@ -28,16 +29,14 @@
       }
 
       &#{$selector}--hasShadow {
-        @include ouiBottomShadowSmall;
-        border: $ouiBorderThin;
+        box-shadow: var(--nb-cell-shadow, 0 6px 20px -8px #{$ouiShadowColor});
+        border: 1px solid var(--nb-hairline, $ouiBorderColor);
       }
 
       &#{$selector}--isClickable {
-        // transition the shadow
-        transition: all $ouiAnimSpeedFast $ouiAnimSlightResistance;
+        transition: border-color $ouiAnimSpeedFast $ouiAnimSlightResistance;
 
-        &:enabled { // This is a good selector for buttons since it doesn't exist on divs
-          // in case of button wrapper which inherently is inline-block and no width
+        &:enabled {
           display: block;
           width: 100%;
           text-align: left;
@@ -45,8 +44,7 @@
 
         &:hover,
         &:focus {
-          @include ouiSlightShadowHover;
-          transform: translateY(-2px);
+          border-color: var(--nb-hover-border, $ouiColorPrimary);
           cursor: pointer;
         }
       }
