@@ -38,6 +38,7 @@ import { UtilityClassesExample } from './views/utility_classes/utility_classes_e
 // Component examples
 
 import { AccessibilityExample } from './views/accessibility/accessibility_example';
+import { ShimmerExample } from './views/shimmer/shimmer_example';
 
 import { AccordionExample } from './views/accordion/accordion_example';
 
@@ -537,6 +538,7 @@ const navigation = [
       ResponsiveExample,
       TextDiffExample,
       WindowEventExample,
+      ShimmerExample,
     ].map((example) => createExample(example)),
   },
   {
