@@ -979,6 +979,7 @@ export const EmptySessionPage = ({
   ]);
   const [widgetSizes, setWidgetSizes] = useState({ dashboards: 2 });
   const [workflowsExpanded, setWorkflowsExpanded] = useState(false);
+  const [workflowSearch, setWorkflowSearch] = useState('');
   const [confirmingRemoval, setConfirmingRemoval] = useState(null);
   const dragWidget = useRef(null);
   const dragOverWidget = useRef(null);
@@ -1366,28 +1367,13 @@ export const EmptySessionPage = ({
                                     className="emptySessionPage__workflowItem emptySessionPage__workflowItem--more"
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      setWorkflowsExpanded((v) => !v);
+                                      setWorkflowsExpanded(true);
+                                      setWorkflowSearch('');
                                     }}>
                                     <OuiIcon type="apps" size="m" />
-                                    <span>{workflowsExpanded ? 'Less' : 'More'}</span>
+                                    <span>More</span>
                                   </button>
                                 </div>
-                                {workflowsExpanded && (
-                                  <div className="emptySessionPage__workflowsGrid emptySessionPage__workflowsGrid--overflow">
-                                    {WORKFLOW_ITEMS_OVERFLOW.map((item, i) => (
-                                      <button
-                                        key={i}
-                                        type="button"
-                                        className="emptySessionPage__workflowItem"
-                                        onClick={() =>
-                                          onOpenPageInNewSession(item.pageKey, item.label)
-                                        }>
-                                        <OuiIcon type={item.icon} size="m" />
-                                        <span>{item.label}</span>
-                                      </button>
-                                    ))}
-                                  </div>
-                                )}
                               </div>
                             );
                           case 'top-services':
@@ -1936,6 +1922,51 @@ export const EmptySessionPage = ({
                       );
                     })}
                   </div>
+
+                  {/* Open a page — expanded browser */}
+                  {workflowsExpanded && (
+                    <div className="emptySessionPage__pageBrowser">
+                      <div className="emptySessionPage__pageBrowserHeader">
+                        <div className="emptySessionPage__pageBrowserSearch">
+                          <OuiIcon type="search" size="s" />
+                          <input
+                            type="text"
+                            placeholder="Search pages..."
+                            value={workflowSearch}
+                            onChange={(e) => setWorkflowSearch(e.target.value)}
+                            className="emptySessionPage__pageBrowserInput"
+                            autoFocus
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          className="emptySessionPage__pageBrowserClose"
+                          onClick={() => setWorkflowsExpanded(false)}>
+                          <OuiIcon type="cross" size="m" />
+                        </button>
+                      </div>
+                      <div className="emptySessionPage__pageBrowserGrid">
+                        {[...WORKFLOW_ITEMS_PRIMARY, ...WORKFLOW_ITEMS_OVERFLOW]
+                          .filter((item) =>
+                            !workflowSearch ||
+                            item.label.toLowerCase().includes(workflowSearch.toLowerCase())
+                          )
+                          .map((item, i) => (
+                            <button
+                              key={i}
+                              type="button"
+                              className="emptySessionPage__pageBrowserItem"
+                              onClick={() => {
+                                onOpenPageInNewSession(item.pageKey, item.label);
+                                setWorkflowsExpanded(false);
+                              }}>
+                              <OuiIcon type={item.icon} size="l" />
+                              <span>{item.label}</span>
+                            </button>
+                          ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Widget Gallery — visible in edit mode */}
                   {isEditMode && (
