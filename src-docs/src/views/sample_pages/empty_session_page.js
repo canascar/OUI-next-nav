@@ -61,10 +61,10 @@ const WORKFLOW_ITEMS_PRIMARY = [
   { label: 'Logs', pageKey: 'logs', icon: 'navDiscover' },
   { label: 'Metrics', pageKey: 'metrics', icon: 'visArea' },
   { label: 'Dashboards', pageKey: 'dashboards', icon: 'navDashboards' },
-  { label: 'Alerts', pageKey: 'alerts', icon: 'navAlerting' },
 ];
 
 const WORKFLOW_ITEMS_OVERFLOW = [
+  { label: 'Alerts', pageKey: 'alerts', icon: 'navAlerting' },
   { label: 'Application Map', pageKey: 'app-map', icon: 'navServiceMap' },
   {
     label: 'Application Services',
@@ -1345,21 +1345,8 @@ export const EmptySessionPage = ({
                               <div className="emptySessionPage__workflowsWidget">
                                 <div className="emptySessionPage__workflowsHeader">
                                   <span className="emptySessionPage__workflowsTitle">
-                                    Workflows
+                                    Open a page
                                   </span>
-                                  <button
-                                    type="button"
-                                    className="emptySessionPage__workflowsToggle"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setWorkflowsExpanded((v) => !v);
-                                    }}>
-                                    {workflowsExpanded ? 'Show less' : 'View all'}
-                                    <OuiIcon
-                                      type={workflowsExpanded ? 'arrowUp' : 'arrowDown'}
-                                      size="s"
-                                    />
-                                  </button>
                                 </div>
                                 <div className="emptySessionPage__workflowsGrid">
                                   {WORKFLOW_ITEMS_PRIMARY.map((item, i) => (
@@ -1374,6 +1361,16 @@ export const EmptySessionPage = ({
                                       <span>{item.label}</span>
                                     </button>
                                   ))}
+                                  <button
+                                    type="button"
+                                    className="emptySessionPage__workflowItem emptySessionPage__workflowItem--more"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setWorkflowsExpanded((v) => !v);
+                                    }}>
+                                    <OuiIcon type="apps" size="m" />
+                                    <span>{workflowsExpanded ? 'Less' : 'More'}</span>
+                                  </button>
                                 </div>
                                 {workflowsExpanded && (
                                   <div className="emptySessionPage__workflowsGrid emptySessionPage__workflowsGrid--overflow">
