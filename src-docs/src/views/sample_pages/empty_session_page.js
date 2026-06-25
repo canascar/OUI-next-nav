@@ -1662,17 +1662,37 @@ export const EmptySessionPage = ({
                                       <span>{item.label}</span>
                                     </button>
                                   ))}
-                                  <button
-                                    type="button"
-                                    className="emptySessionPage__workflowItem emptySessionPage__workflowItem--more"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setWorkflowsExpanded(true);
-                                      setWorkflowSearch('');
-                                    }}>
-                                    <OuiIcon type="apps" size="s" />
-                                    <span>More</span>
-                                  </button>
+                                  <div className="emptySessionPage__workflowItem emptySessionPage__workflowItem--more">
+                                    <span className="emptySessionPage__moreGrid">
+                                      {WORKFLOW_ITEMS_OVERFLOW.slice(0, 3).map((item, i) => (
+                                        <OuiToolTip key={i} content={item.label} position="top">
+                                          <span
+                                            className="emptySessionPage__moreGridCell"
+                                            role="button"
+                                            tabIndex={0}
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              onOpenPageInNewSession(item.pageKey, item.label);
+                                            }}>
+                                            <OuiIcon type={item.icon} size="s" />
+                                          </span>
+                                        </OuiToolTip>
+                                      ))}
+                                      <OuiToolTip content="More pages" position="top">
+                                        <span
+                                          className="emptySessionPage__moreGridCell emptySessionPage__moreGridCell--accent"
+                                          role="button"
+                                          tabIndex={0}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setWorkflowsExpanded(true);
+                                            setWorkflowSearch('');
+                                          }}>
+                                          <OuiIcon type="arrowRight" size="s" />
+                                        </span>
+                                      </OuiToolTip>
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
                             );
@@ -1722,7 +1742,7 @@ export const EmptySessionPage = ({
                                 <WidgetHeader title="Connection timeout errors" />
                                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
                                   <span className="widgetCard__bigNumber">{dataVariant % 2 === 0 ? '847' : '923'}</span>
-                                  <span className="widgetCard__trend widgetCard__trend--warning">{dataVariant % 2 === 0 ? '↑ 312%' : '↑ 340%'}</span>
+                                  <span className="widgetCard__trend widgetCard__trend--warning">{dataVariant % 2 === 0 ? '↑ 31%' : '↑ 34%'}</span>
                                 </div>
                                 <svg viewBox="0 0 280 68" preserveAspectRatio="none" style={{ width: '100%', height: 68, display: 'block', marginTop: 8 }}>
                                   <defs>
@@ -1822,12 +1842,14 @@ export const EmptySessionPage = ({
                                   <polyline
                                     fill="none"
                                     stroke="#34d399"
-                                    strokeWidth="2"
-                                    strokeLinejoin="round"
+                                    strokeWidth="2.5"
                                     strokeLinecap="round"
                                     points="40,38 75,34 110,30 145,32 175,26 195,24 210,26"
                                   />
-                                  <circle cx="210" cy="26" r="3" fill="#34d399" />
+                                  <circle cx="210" cy="26" r="3" fill="#34d399">
+                                    <animate attributeName="r" values="3;6;3" dur="2s" repeatCount="indefinite" />
+                                    <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite" />
+                                  </circle>
                                   <text x="40" y="74" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">0m</text>
                                   <text x="125" y="74" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">30m</text>
                                   <text x="210" y="74" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">60m</text>

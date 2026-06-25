@@ -293,15 +293,15 @@
 // Inline link — bold + underline + accent color, clickable
 .emptySessionPage__narrativeLink {
   font-weight: $ouiFontWeightSemiBold;
-  color: lightOrDarkTheme(#3B5ED6, #7B9CF5);
+  color: lightOrDarkTheme(#5B4FCF, #A89CF5);
   text-decoration: underline;
-  text-decoration-color: lightOrDarkTheme(#B3C4EF, #4B6086);
+  text-decoration-color: lightOrDarkTheme(#C4B8EF, #5B4F86);
   text-underline-offset: 3px;
   cursor: pointer;
   transition: color 150ms ease;
 
   &:hover {
-    color: lightOrDarkTheme(darken(#3B5ED6, 8%), lighten(#7B9CF5, 8%));
+    color: lightOrDarkTheme(darken(#5B4FCF, 8%), lighten(#A89CF5, 8%));
   }
 
   // Resolved — softer shade, no navigation
@@ -527,8 +527,8 @@
   font-weight: 600;
   line-height: 1;
   margin-left: 4px;
-  background: lightOrDarkTheme(rgba(75, 110, 245, 0.1), rgba(147, 180, 252, 0.15));
-  color: lightOrDarkTheme(rgba(75, 110, 245, 1), rgba(147, 180, 252, 1));
+  background: lightOrDarkTheme(rgba(91, 79, 207, 0.1), rgba(168, 156, 245, 0.15));
+  color: lightOrDarkTheme(rgba(91, 79, 207, 1), rgba(168, 156, 245, 1));
 }
 
 // Tab content panels — fade transition.
@@ -898,11 +898,11 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  border: 1px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.3), rgba(#7B9CF5, 0.3));
+  border: 1px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.3), rgba(#A89CF5, 0.3));
   border-radius: 10px;
   background-color: var(--nb-cell, $ouiFormBackgroundColor);
   box-shadow: lightOrDarkTheme(
-    0 4px 16px rgba(59, 93, 214, 0.06),
+    0 4px 16px rgba(91, 79, 207, 0.06),
     0 6px 22px rgba(0, 0, 0, 0.3)
   );
   transition: box-shadow 300ms ease;
@@ -915,11 +915,11 @@
     inset: -1.5px;
     border-radius: 11px;
     background: conic-gradient(
-      lightOrDarkTheme(rgba(75, 110, 245, 0.10), rgba(147, 180, 252, 0.12)),
+      lightOrDarkTheme(rgba(91, 79, 207, 0.10), rgba(168, 156, 245, 0.12)),
       lightOrDarkTheme(rgba(16, 185, 129, 0.06), rgba(52, 211, 153, 0.07)),
-      lightOrDarkTheme(rgba(75, 110, 245, 0.02), rgba(147, 180, 252, 0.03)),
+      lightOrDarkTheme(rgba(91, 79, 207, 0.02), rgba(168, 156, 245, 0.03)),
       lightOrDarkTheme(rgba(217, 119, 6, 0.04), rgba(251, 191, 36, 0.05)),
-      lightOrDarkTheme(rgba(75, 110, 245, 0.10), rgba(147, 180, 252, 0.12))
+      lightOrDarkTheme(rgba(91, 79, 207, 0.10), rgba(168, 156, 245, 0.12))
     );
     pointer-events: none;
     z-index: 0;
@@ -938,7 +938,7 @@
 
   &:focus-within {
     box-shadow: lightOrDarkTheme(
-      0 6px 22px rgba(59, 93, 214, 0.14),
+      0 6px 22px rgba(91, 79, 207, 0.14),
       0 8px 28px rgba(0, 0, 0, 0.5)
     );
   }
@@ -1013,8 +1013,8 @@ textarea.emptySessionPage__textarea {
     &:disabled,
     &[disabled] {
       background-color: transparent !important; // sass-lint:disable-line no-important
-      border: 1.5px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.25), rgba(#7B9CF5, 0.25));
-      color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.4), rgba(#7B9CF5, 0.4));
+      border: 1.5px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.25), rgba(#A89CF5, 0.25));
+      color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.4), rgba(#A89CF5, 0.4));
       opacity: 1 !important; // sass-lint:disable-line no-important
     }
   }
@@ -1833,7 +1833,7 @@ textarea.emptySessionPage__textarea {
   }
 
   &:hover {
-    background-color: lightOrDarkTheme(rgba(75, 110, 245, 0.04), rgba(147, 180, 252, 0.06));
+    background-color: lightOrDarkTheme(rgba(91, 79, 207, 0.04), rgba(168, 156, 245, 0.06));
   }
 }
 
@@ -2022,7 +2022,7 @@ textarea.emptySessionPage__textarea {
 
     &:hover {
       transform: scale(1.02);
-      border-color: lightOrDarkTheme(rgba(75, 110, 245, 0.3), rgba(147, 180, 252, 0.2));
+      border-color: lightOrDarkTheme(rgba(91, 79, 207, 0.3), rgba(168, 156, 245, 0.2));
       box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
 
       .emptySessionPage__insightInspect {
@@ -2052,7 +2052,7 @@ textarea.emptySessionPage__textarea {
 
     &:hover {
       transform: scale(1.02);
-      border-color: lightOrDarkTheme(rgba(75, 110, 245, 0.3), rgba(147, 180, 252, 0.2));
+      border-color: lightOrDarkTheme(rgba(91, 79, 207, 0.3), rgba(168, 156, 245, 0.2));
       box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
     }
 
@@ -2189,7 +2189,7 @@ textarea.emptySessionPage__textarea {
 
   &:hover {
     transform: translateY(-2px);
-    border-color: lightOrDarkTheme(rgba(75, 110, 245, 0.3), rgba(147, 180, 252, 0.2));
+    border-color: lightOrDarkTheme(rgba(91, 79, 207, 0.3), rgba(168, 156, 245, 0.2));
     box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
 
     .emptySessionPage__explorerWidgetArrow {
@@ -2231,7 +2231,7 @@ textarea.emptySessionPage__textarea {
 .emptySessionPage__widgetGrid--editing {
   .emptySessionPage__widgetWrap {
     position: relative;
-    border: 2px dashed lightOrDarkTheme(rgba(75, 110, 245, 0.4), rgba(147, 180, 252, 0.3));
+    border: 2px dashed lightOrDarkTheme(rgba(91, 79, 207, 0.4), rgba(168, 156, 245, 0.3));
     border-radius: $ouiBorderRadius + 2;
     cursor: grab;
     animation: widgetJiggle 0.3s ease-in-out infinite alternate;
@@ -2242,7 +2242,7 @@ textarea.emptySessionPage__textarea {
 
     &:hover {
       border-color: $ouiColorPrimary;
-      box-shadow: 0 0 0 3px lightOrDarkTheme(rgba(75, 110, 245, 0.1), rgba(147, 180, 252, 0.08));
+      box-shadow: 0 0 0 3px lightOrDarkTheme(rgba(91, 79, 207, 0.1), rgba(168, 156, 245, 0.08));
       animation: none;
     }
 
@@ -2476,7 +2476,7 @@ textarea.emptySessionPage__textarea {
   transition: background 120ms ease;
 
   &:hover {
-    background: lightOrDarkTheme(rgba(75, 110, 245, 0.06), rgba(147, 180, 252, 0.08));
+    background: lightOrDarkTheme(rgba(91, 79, 207, 0.06), rgba(168, 156, 245, 0.08));
   }
 
   &:active {
@@ -2865,12 +2865,80 @@ textarea.emptySessionPage__textarea {
   }
 
   &--more {
-    border-style: dashed;
-    border-width: 1.5px;
-    border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.4), rgba($ouiColorPrimary, 0.35));
-    color: $ouiColorPrimary;
-    background-color: lightOrDarkTheme(#F5F6FB, rgba($ouiColorPrimary, 0.06));
+    border: none;
+    padding: 0;
+    background-color: transparent;
     box-shadow: none;
+    gap: 0;
+    align-self: stretch;
+
+    &:hover {
+      transform: none;
+      background-color: transparent;
+      border-color: transparent;
+      box-shadow: none;
+    }
+
+    &:active {
+      transform: none;
+    }
+  }
+}
+
+// 2×2 mini-grid inside the "More" workflow button
+.emptySessionPage__moreGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 6px;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+
+  // OuiToolTip wraps each cell in a span — make it stretch
+  > * {
+    display: flex;
+    min-height: 0;
+    min-width: 0;
+  }
+}
+
+.emptySessionPage__moreGridCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  border-radius: 8px;
+  background-color: lightOrDarkTheme(#fff, rgba(255, 255, 255, 0.04));
+  border: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.06));
+  box-shadow: lightOrDarkTheme(0 1px 3px rgba(0, 0, 0, 0.04), none);
+  cursor: pointer;
+  min-height: 0;
+  min-width: 0;
+  transition:
+    transform 200ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+
+  .ouiIcon {
+    color: lightOrDarkTheme(#6E6678, #8A92A0);
+  }
+
+  &:hover {
+    transform: scale(1.06);
+    background-color: lightOrDarkTheme(#fff, rgba($ouiColorPrimary, 0.10));
+    border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.25), rgba($ouiColorPrimary, 0.20));
+    box-shadow: lightOrDarkTheme(0 2px 8px rgba(0, 0, 0, 0.06), none);
+
+    .ouiIcon {
+      color: $ouiColorPrimary;
+    }
+  }
+
+  &--accent {
+    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.06), rgba($ouiColorPrimary, 0.10));
+    border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.20), rgba($ouiColorPrimary, 0.18));
 
     .ouiIcon {
       color: $ouiColorPrimary;
