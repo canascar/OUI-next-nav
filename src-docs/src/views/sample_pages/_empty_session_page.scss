@@ -316,15 +316,15 @@
 // Inline link — bold + underline + accent color, clickable
 .emptySessionPage__narrativeLink {
   font-weight: $ouiFontWeightSemiBold;
-  color: lightOrDarkTheme(#6A42C7, #A88BF5);
+  color: lightOrDarkTheme(#3B5ED6, #7B9CF5);
   text-decoration: underline;
-  text-decoration-color: lightOrDarkTheme(#CABBEF, #5A4B86);
+  text-decoration-color: lightOrDarkTheme(#B3C4EF, #4B6086);
   text-underline-offset: 3px;
   cursor: pointer;
   transition: color 150ms ease;
 
   &:hover {
-    color: lightOrDarkTheme(darken(#6A42C7, 8%), lighten(#A88BF5, 8%));
+    color: lightOrDarkTheme(darken(#3B5ED6, 8%), lighten(#7B9CF5, 8%));
   }
 
   // Resolved — softer shade, no navigation
@@ -479,21 +479,39 @@
 }
 
 .emptySessionPage__overviewTitle {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   letter-spacing: -0.02em;
   color: $ouiTitleColor;
+  flex: 1;
+}
+
+.emptySessionPage__overviewStatus {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
+  font-size: 11px;
+  color: lightOrDarkTheme(#6E7686, #8A92A0);
+  margin-right: 8px;
+}
+
+.emptySessionPage__overviewStatusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: $ouiColorSuccess;
 }
 
 .emptySessionPage__tabRowActions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 
   .ouiButtonIcon {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
     border: 1px solid lightOrDarkTheme(#D3D8E7, rgba(255, 255, 255, 0.08));
     background: transparent;
 
@@ -531,8 +549,8 @@
   font-weight: 600;
   line-height: 1;
   margin-left: 4px;
-  background: lightOrDarkTheme(rgba(99, 102, 241, 0.1), rgba(165, 180, 252, 0.15));
-  color: lightOrDarkTheme(rgba(99, 102, 241, 1), rgba(165, 180, 252, 1));
+  background: lightOrDarkTheme(rgba(75, 110, 245, 0.1), rgba(147, 180, 252, 0.15));
+  color: lightOrDarkTheme(rgba(75, 110, 245, 1), rgba(147, 180, 252, 1));
 }
 
 // Tab content panels — fade transition.
@@ -902,11 +920,11 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  border: 1px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.3), rgba(#9A7CF5, 0.3));
+  border: 1px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.3), rgba(#7B9CF5, 0.3));
   border-radius: 10px;
   background-color: var(--nb-cell, $ouiFormBackgroundColor);
   box-shadow: lightOrDarkTheme(
-    0 4px 16px rgba(108, 75, 216, 0.06),
+    0 4px 16px rgba(59, 93, 214, 0.06),
     0 6px 22px rgba(0, 0, 0, 0.3)
   );
   transition: box-shadow 300ms ease;
@@ -919,11 +937,11 @@
     inset: -1.5px;
     border-radius: 11px;
     background: conic-gradient(
-      lightOrDarkTheme(rgba(99, 102, 241, 0.10), rgba(165, 180, 252, 0.12)),
+      lightOrDarkTheme(rgba(75, 110, 245, 0.10), rgba(147, 180, 252, 0.12)),
       lightOrDarkTheme(rgba(16, 185, 129, 0.06), rgba(52, 211, 153, 0.07)),
-      lightOrDarkTheme(rgba(99, 102, 241, 0.02), rgba(165, 180, 252, 0.03)),
+      lightOrDarkTheme(rgba(75, 110, 245, 0.02), rgba(147, 180, 252, 0.03)),
       lightOrDarkTheme(rgba(217, 119, 6, 0.04), rgba(251, 191, 36, 0.05)),
-      lightOrDarkTheme(rgba(99, 102, 241, 0.10), rgba(165, 180, 252, 0.12))
+      lightOrDarkTheme(rgba(75, 110, 245, 0.10), rgba(147, 180, 252, 0.12))
     );
     pointer-events: none;
     z-index: 0;
@@ -942,7 +960,7 @@
 
   &:focus-within {
     box-shadow: lightOrDarkTheme(
-      0 6px 22px rgba(108, 75, 216, 0.14),
+      0 6px 22px rgba(59, 93, 214, 0.14),
       0 8px 28px rgba(0, 0, 0, 0.5)
     );
   }
@@ -1017,8 +1035,8 @@ textarea.emptySessionPage__textarea {
     &:disabled,
     &[disabled] {
       background-color: transparent !important; // sass-lint:disable-line no-important
-      border: 1.5px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.25), rgba(#9A7CF5, 0.25));
-      color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.4), rgba(#9A7CF5, 0.4));
+      border: 1.5px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.25), rgba(#7B9CF5, 0.25));
+      color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.4), rgba(#7B9CF5, 0.4));
       opacity: 1 !important; // sass-lint:disable-line no-important
     }
   }
@@ -1837,7 +1855,7 @@ textarea.emptySessionPage__textarea {
   }
 
   &:hover {
-    background-color: lightOrDarkTheme(rgba(99, 102, 241, 0.04), rgba(165, 180, 252, 0.06));
+    background-color: lightOrDarkTheme(rgba(75, 110, 245, 0.04), rgba(147, 180, 252, 0.06));
   }
 }
 
@@ -2026,7 +2044,7 @@ textarea.emptySessionPage__textarea {
 
     &:hover {
       transform: scale(1.02);
-      border-color: lightOrDarkTheme(rgba(99, 102, 241, 0.3), rgba(165, 180, 252, 0.2));
+      border-color: lightOrDarkTheme(rgba(75, 110, 245, 0.3), rgba(147, 180, 252, 0.2));
       box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
 
       .emptySessionPage__insightInspect {
@@ -2045,7 +2063,7 @@ textarea.emptySessionPage__textarea {
 .emptySessionPage__widgetGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-auto-rows: 1fr;
+  grid-auto-rows: auto;
   gap: 10px;
   padding-top: 0;
 
@@ -2056,7 +2074,7 @@ textarea.emptySessionPage__textarea {
 
     &:hover {
       transform: scale(1.02);
-      border-color: lightOrDarkTheme(rgba(99, 102, 241, 0.3), rgba(165, 180, 252, 0.2));
+      border-color: lightOrDarkTheme(rgba(75, 110, 245, 0.3), rgba(147, 180, 252, 0.2));
       box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
     }
 
@@ -2078,25 +2096,34 @@ textarea.emptySessionPage__textarea {
   outline: none;
 }
 
-.emptySessionPage__widgetListHeader {
+.emptySessionPage__widgetListHeader,
+.widgetHeader {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  min-height: 18px;
 }
 
-.emptySessionPage__widgetListIcon {
+.emptySessionPage__widgetListIcon,
+.widgetHeader__icon {
   display: flex;
-  opacity: 0.7;
+  align-items: center;
+  opacity: 0.65;
+  font-size: 0;
+  line-height: 0;
 }
 
-.emptySessionPage__widgetListTitle {
+.emptySessionPage__widgetListTitle,
+.widgetHeader__title {
   font-weight: $ouiFontWeightSemiBold;
-  font-size: 12px;
+  font-size: 13px;
   flex: 1;
+  color: $ouiTitleColor;
 }
 
-.emptySessionPage__widgetListAction {
+.emptySessionPage__widgetListAction,
+.widgetHeader__action {
   font-size: $ouiFontSizeXS;
   opacity: 0.5;
   background: none;
@@ -2122,16 +2149,29 @@ textarea.emptySessionPage__textarea {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
   padding: 8px 0;
   border-top: 1px solid $ouiBorderColor;
-  font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
-  font-size: 9px;
+  background: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  font-family: $ouiFontFamily;
+  font-size: 10px;
   line-height: 1.4;
   color: lightOrDarkTheme(#6E6678, #9BA3B0);
+  text-align: left;
+  cursor: pointer;
+  border-radius: 0;
+  transition: background 150ms ease;
+
+  &:hover {
+    background: lightOrDarkTheme(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.05));
+  }
 
   strong {
     font-family: inherit;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: $ouiFontWeightMedium;
     color: $ouiTitleColor;
   }
@@ -2171,7 +2211,7 @@ textarea.emptySessionPage__textarea {
 
   &:hover {
     transform: translateY(-2px);
-    border-color: lightOrDarkTheme(rgba(99, 102, 241, 0.3), rgba(165, 180, 252, 0.2));
+    border-color: lightOrDarkTheme(rgba(75, 110, 245, 0.3), rgba(147, 180, 252, 0.2));
     box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
 
     .emptySessionPage__explorerWidgetArrow {
@@ -2213,7 +2253,7 @@ textarea.emptySessionPage__textarea {
 .emptySessionPage__widgetGrid--editing {
   .emptySessionPage__widgetWrap {
     position: relative;
-    border: 2px dashed lightOrDarkTheme(rgba(99, 102, 241, 0.4), rgba(165, 180, 252, 0.3));
+    border: 2px dashed lightOrDarkTheme(rgba(75, 110, 245, 0.4), rgba(147, 180, 252, 0.3));
     border-radius: $ouiBorderRadius + 2;
     cursor: grab;
     animation: widgetJiggle 0.3s ease-in-out infinite alternate;
@@ -2224,7 +2264,7 @@ textarea.emptySessionPage__textarea {
 
     &:hover {
       border-color: $ouiColorPrimary;
-      box-shadow: 0 0 0 3px lightOrDarkTheme(rgba(99, 102, 241, 0.1), rgba(165, 180, 252, 0.08));
+      box-shadow: 0 0 0 3px lightOrDarkTheme(rgba(75, 110, 245, 0.1), rgba(147, 180, 252, 0.08));
       animation: none;
     }
 
@@ -2458,7 +2498,7 @@ textarea.emptySessionPage__textarea {
   transition: background 120ms ease;
 
   &:hover {
-    background: lightOrDarkTheme(rgba(99, 102, 241, 0.06), rgba(165, 180, 252, 0.08));
+    background: lightOrDarkTheme(rgba(75, 110, 245, 0.06), rgba(147, 180, 252, 0.08));
   }
 
   &:active {
@@ -2534,10 +2574,10 @@ textarea.emptySessionPage__textarea {
 }
 
 .widgetCard__title {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: $ouiTitleColor;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .widgetCard__mono {
@@ -2586,7 +2626,7 @@ textarea.emptySessionPage__textarea {
   background: $ouiColorPrimary;
 
   &--secondary {
-    background: lightOrDarkTheme(#9B82E6, #8262D8);
+    background: lightOrDarkTheme(#7B8FE6, #6278D8);
   }
 }
 
@@ -2600,9 +2640,9 @@ textarea.emptySessionPage__textarea {
 }
 
 .widgetCard__bigNumber {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   color: $ouiTitleColor;
   line-height: 1;
 }
@@ -2764,11 +2804,13 @@ textarea.emptySessionPage__textarea {
 // ─── Workflows Widget (App Library style) ───────────────────
 .emptySessionPage__workflowsWidget {
   @include ouiGlassPanel;
-  padding: 14px 16px;
+  padding: 16px 16px 12px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   height: 100%;
+  background-color: lightOrDarkTheme(#F0F2F8, rgba(255, 255, 255, 0.03));
+  border-color: lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.08));
 }
 
 .emptySessionPage__workflowsHeader {
@@ -2788,7 +2830,7 @@ textarea.emptySessionPage__textarea {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: 1fr 1fr;
-  gap: 6px;
+  gap: 8px;
   flex: 1;
 
   &--overflow {
@@ -2812,25 +2854,32 @@ textarea.emptySessionPage__textarea {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  padding: 10px 4px;
-  border-radius: 10px;
-  border: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.06));
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.04));
+  gap: 8px;
+  padding: 14px 8px;
+  border-radius: 12px;
+  border: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.06));
+  background-color: lightOrDarkTheme(#fff, rgba(255, 255, 255, 0.04));
+  box-shadow: lightOrDarkTheme(0 1px 3px rgba(0, 0, 0, 0.04), none);
   cursor: pointer;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: $ouiFontWeightMedium;
-  color: $ouiTitleColor;
+  color: lightOrDarkTheme(#3C3648, #B0B8C4);
   appearance: none;
   transition:
     transform 200ms cubic-bezier(0.2, 0.7, 0.2, 1),
     background-color 150ms ease,
-    border-color 150ms ease;
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+
+  .ouiIcon {
+    color: lightOrDarkTheme(#6E6678, #8A92A0);
+  }
 
   &:hover {
     transform: scale(1.04);
-    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.06), rgba($ouiColorPrimary, 0.10));
+    background-color: lightOrDarkTheme(#fff, rgba($ouiColorPrimary, 0.10));
     border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.25), rgba($ouiColorPrimary, 0.20));
+    box-shadow: lightOrDarkTheme(0 2px 8px rgba(0, 0, 0, 0.06), none);
   }
 
   &:active {
@@ -2839,7 +2888,14 @@ textarea.emptySessionPage__textarea {
 
   &--more {
     border-style: dashed;
+    border-width: 1.5px;
+    border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.4), rgba($ouiColorPrimary, 0.35));
     color: $ouiColorPrimary;
-    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.04), rgba($ouiColorPrimary, 0.06));
+    background-color: lightOrDarkTheme(#F5F6FB, rgba($ouiColorPrimary, 0.06));
+    box-shadow: none;
+
+    .ouiIcon {
+      color: $ouiColorPrimary;
+    }
   }
 }

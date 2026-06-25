@@ -130,7 +130,7 @@ const SurroundShimmer = ({ children }) => {
       cv.height = Math.round(h * dpr);
       const ctx = cv.getContext('2d');
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const sp = 9;
+      const sp = 7;
       const cols = Math.max(1, Math.round((w - sp) / sp));
       const rows = Math.max(1, Math.round((h - sp) / sp));
       const ox = (w - (cols - 1) * sp) / 2, oy = (h - (rows - 1) * sp) / 2;
@@ -159,17 +159,17 @@ const SurroundShimmer = ({ children }) => {
         const sdist = Math.hypot(sdx, sdy);
         const bcx = (hl.x0 + hl.x1) / 2, bcy = (hl.y0 + hl.y1) / 2;
         const sa = (Math.atan2(d.y - bcy, d.x - bcx) / 6.2832) + 0.5;
-        const sph = (t * 0.07) % 1;
+        const sph = (t * 0.04) % 1;
         const sdm = Math.min(Math.abs(sa - sph), 1 - Math.abs(sa - sph));
         const sph2 = (sph + 0.5) % 1;
         const sd2m = Math.min(Math.abs(sa - sph2), 1 - Math.abs(sa - sph2));
         const near = Math.exp(-Math.pow(sdist / (sp * 2.6), 2));
         const sg = Math.exp(-Math.pow(sdm * 6, 2)) + 0.4 * Math.exp(-Math.pow(sd2m * 6, 2));
-        b = 0.05 * Math.exp(-Math.pow(sdist / (sp * 4.5), 2)) + 0.5 * sg * near;
+        b = 0.07 * Math.exp(-Math.pow(sdist / (sp * 4.5), 2)) + 0.6 * sg * near;
         if (b < 0.01) continue;
         b = Math.max(0, Math.min(1, b));
-        const a = (0.06 + 0.50 * b).toFixed(3);
-        const r = Math.round(96 + 44 * b), g = Math.round(60 + 62 * b), bl = Math.round(196 + 40 * b);
+        const a = (0.10 + 0.60 * b).toFixed(3);
+        const r = Math.round(60 + 50 * b), g = Math.round(80 + 50 * b), bl = Math.round(200 + 40 * b);
         ctx.beginPath();
         ctx.arc(d.x, d.y, 0.6 + b * 1.4, 0, 6.2832);
         ctx.fillStyle = `rgba(${r},${g},${bl},${a})`;
@@ -188,6 +188,62 @@ const SurroundShimmer = ({ children }) => {
     </div>
   );
 };
+
+/**
+ * ChartTexture — SVG pattern fills for area charts.
+ * `variant="stripe"` — diagonal hatching (for warning/orange charts).
+ * `variant="dots"` — dot grid (for success/green charts).
+ * Renders an SVG `<defs>` block with a `<pattern>` identified by `id`.
+ */
+const ChartTexture = ({ id, variant = 'dots', color }) => {
+  if (variant === 'stripe') {
+    return (
+      <pattern
+        id={id}
+        width="6"
+        height="6"
+        patternUnits="userSpaceOnUse"
+        patternTransform="rotate(45)">
+        <line x1="0" y1="0" x2="0" y2="6" stroke={color || '#DD8A3A'} strokeWidth="1" opacity="0.42" />
+      </pattern>
+    );
+  }
+  return (
+    <pattern
+      id={id}
+      width="6.5"
+      height="6.5"
+      patternUnits="userSpaceOnUse">
+      <circle cx="3.25" cy="3.25" r="1.05" fill={color || '#1F9D6B'} opacity="0.42" />
+    </pattern>
+  );
+};
+
+/**
+ * WidgetHeader — Consistent title row for all right-column widgets.
+ * Ensures uniform spacing, icon sizing, and text treatment.
+ */
+const WidgetHeader = ({ icon, title, action, onAction }) => (
+  <div className="widgetHeader">
+    {icon && (
+      <span className="widgetHeader__icon">
+        <OuiIcon type={icon} size="s" />
+      </span>
+    )}
+    <span className="widgetHeader__title">{title}</span>
+    {action && (
+      <button
+        type="button"
+        className="widgetHeader__action"
+        onClick={(e) => {
+          e.stopPropagation();
+          onAction && onAction();
+        }}>
+        <OuiIcon type="arrowRight" size="s" />
+      </button>
+    )}
+  </div>
+);
 
 /**
  * Quick access shortcut definitions.
@@ -1124,16 +1180,24 @@ export const EmptySessionPage = ({
   const [widgetOrder, setWidgetOrder] = useState([
     'top-services',
     'workflows',
-    'recent-alerts',
     'connection-timeout',
+    'recent-alerts',
     'resource-utilization',
     'saved-queries',
     'dashboards',
+    'deployment-timeline',
   ]);
-  const [widgetSizes, setWidgetSizes] = useState({ dashboards: 2 });
+  const [widgetSizes, setWidgetSizes] = useState({ dashboards: 2, 'deployment-timeline': 2 });
   const [workflowsExpanded, setWorkflowsExpanded] = useState(false);
   const [workflowSearch, setWorkflowSearch] = useState('');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [refreshingWidgets, setRefreshingWidgets] = useState(() => {
+    const initial = {};
+    ['top-services', 'connection-timeout', 'recent-alerts', 'deployment-timeline', 'resource-utilization', 'saved-queries', 'dashboards'].forEach((id) => {
+      initial[id] = true;
+    });
+    return initial;
+  });
   const [dataVariant, setDataVariant] = useState(0);
   const [confirmingRemoval, setConfirmingRemoval] = useState(null);
   const dragWidget = useRef(null);
@@ -1171,6 +1235,18 @@ export const EmptySessionPage = ({
   const scrollRef = useRef(null);
   const briefingRef = useRef(null);
   const insightsRef = useRef(null);
+
+  // Staggered initial load — each widget resolves after 1-3s
+  useEffect(() => {
+    const ids = ['top-services', 'connection-timeout', 'recent-alerts', 'deployment-timeline', 'resource-utilization', 'saved-queries', 'dashboards'];
+    const timers = ids.map((id) => {
+      const delay = 1000 + Math.random() * 2000;
+      return setTimeout(() => {
+        setRefreshingWidgets((prev) => ({ ...prev, [id]: false }));
+      }, delay);
+    });
+    return () => timers.forEach(clearTimeout);
+  }, []);
 
   // Mark briefing animations as done after initial load
   React.useEffect(() => {
@@ -1307,7 +1383,7 @@ export const EmptySessionPage = ({
                   setMascotExpression(undefined);
                 }}>
                 <Mascot
-                  size={32}
+                  size={24}
                   expression={mascotExpression}
                   idle={!mascotExpression}
                   bob
@@ -1441,6 +1517,10 @@ export const EmptySessionPage = ({
               }}>
               <div className="emptySessionPage__tabRow emptySessionPage__tabRow--sticky">
                 <span className="emptySessionPage__overviewTitle">Overview</span>
+                <span className="emptySessionPage__overviewStatus">
+                  <span className="emptySessionPage__overviewStatusDot" />
+                  updated 2m ago
+                </span>
                 <div className="emptySessionPage__tabRowActions">
                   <OuiToolTip content="Refresh" position="left">
                     <OuiButtonIcon
@@ -1449,13 +1529,19 @@ export const EmptySessionPage = ({
                       size="s"
                       color="text"
                       display="empty"
-                      isDisabled={isRefreshing}
+                      isDisabled={Object.values(refreshingWidgets).some(Boolean)}
                       onClick={() => {
-                        setIsRefreshing(true);
-                        setTimeout(() => {
-                          setIsRefreshing(false);
-                          setDataVariant((v) => v + 1);
-                        }, 3000);
+                        const ids = ['top-services', 'connection-timeout', 'recent-alerts', 'deployment-timeline', 'resource-utilization', 'saved-queries', 'dashboards'];
+                        const updated = {};
+                        ids.forEach((id) => { updated[id] = true; });
+                        setRefreshingWidgets((prev) => ({ ...prev, ...updated }));
+                        ids.forEach((id) => {
+                          const delay = 1000 + Math.random() * 2000;
+                          setTimeout(() => {
+                            setRefreshingWidgets((prev) => ({ ...prev, [id]: false }));
+                          }, delay);
+                        });
+                        setDataVariant((v) => v + 1);
                       }}
                     />
                   </OuiToolTip>
@@ -1573,7 +1659,7 @@ export const EmptySessionPage = ({
                                       onClick={() =>
                                         onOpenPageInNewSession(item.pageKey, item.label)
                                       }>
-                                      <OuiIcon type={item.icon} size="m" />
+                                      <OuiIcon type={item.icon} size="s" />
                                       <span>{item.label}</span>
                                     </button>
                                   ))}
@@ -1585,7 +1671,7 @@ export const EmptySessionPage = ({
                                       setWorkflowsExpanded(true);
                                       setWorkflowSearch('');
                                     }}>
-                                    <OuiIcon type="apps" size="m" />
+                                    <OuiIcon type="apps" size="s" />
                                     <span>More</span>
                                   </button>
                                 </div>
@@ -1602,7 +1688,7 @@ export const EmptySessionPage = ({
                                   )
                                 }>
 
-                                <div className="widgetCard__title">Top services by fault rate</div>
+                                <WidgetHeader title="Top services by fault rate" />
                                 <div className="widgetCard__tableHeader">
                                   <span>SERVICE</span>
                                   <span>FAULT RATE</span>
@@ -1634,15 +1720,17 @@ export const EmptySessionPage = ({
                                   onOpenPageInNewSession('logs', 'Logs')
                                 }>
 
-                                <div className="widgetCard__title">Connection timeout errors</div>
+                                <WidgetHeader title="Connection timeout errors" />
                                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
                                   <span className="widgetCard__bigNumber">{dataVariant % 2 === 0 ? '847' : '923'}</span>
                                   <span className="widgetCard__trend widgetCard__trend--warning">{dataVariant % 2 === 0 ? '↑ 312%' : '↑ 340%'}</span>
                                 </div>
                                 <svg viewBox="0 0 280 68" preserveAspectRatio="none" style={{ width: '100%', height: 68, display: 'block', marginTop: 8 }}>
-                                  <defs><linearGradient id="connFill2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#DD8A3A" stopOpacity="0.18" /><stop offset="1" stopColor="#DD8A3A" stopOpacity="0" /></linearGradient></defs>
+                                  <defs>
+                                    <ChartTexture id="connStripe" variant="stripe" />
+                                  </defs>
                                   <line x1="0" y1="8" x2="280" y2="8" stroke="#DD8A3A" strokeWidth="0.8" strokeDasharray="3 3" opacity="0.45" />
-                                  <path d="M0,56 C50,55 90,53 130,47 C170,41 210,26 280,8 L280,68 L0,68 Z" fill="url(#connFill2)" />
+                                  <path d="M0,56 C50,55 90,53 130,47 C170,41 210,26 280,8 L280,68 L0,68 Z" fill="url(#connStripe)" />
                                   <path d="M0,56 C50,55 90,53 130,47 C170,41 210,26 280,8" fill="none" stroke="#DD8A3A" strokeWidth="2.5" strokeLinecap="round" />
                                 </svg>
                               </OuiInsightCard>
@@ -1655,7 +1743,7 @@ export const EmptySessionPage = ({
                                   onOpenPageInNewSession('alerts', 'Alerts')
                                 }>
 
-                                <div className="widgetCard__title">Recent alerts</div>
+                                <WidgetHeader title="Recent alerts" />
                                 <div className="widgetCard__tableHeader">
                                   <span>ALERT</span>
                                   <span>STATUS</span>
@@ -1663,15 +1751,15 @@ export const EmptySessionPage = ({
                                 <div className="widgetCard__rows">
                                   <div className="widgetCard__statusRow">
                                     <span className="widgetCard__statusLabel">P99 latency breach</span>
-                                    <span className="widgetCard__statusBadge widgetCard__statusBadge--critical"><span className="widgetCard__statusDot" />CRITICAL</span>
+                                    <span className="widgetCard__statusBadge widgetCard__statusBadge--critical">CRITICAL</span>
                                   </div>
                                   <div className="widgetCard__statusRow">
                                     <span className="widgetCard__statusLabel">Disk usage warning</span>
-                                    <span className="widgetCard__statusBadge widgetCard__statusBadge--warning"><span className="widgetCard__statusDot" />WARNING</span>
+                                    <span className="widgetCard__statusBadge widgetCard__statusBadge--warning">WARNING</span>
                                   </div>
                                   <div className="widgetCard__statusRow">
                                     <span className="widgetCard__statusLabel">Error rate spike</span>
-                                    <span className="widgetCard__statusBadge widgetCard__statusBadge--critical"><span className="widgetCard__statusDot" />CRITICAL</span>
+                                    <span className="widgetCard__statusBadge widgetCard__statusBadge--critical">CRITICAL</span>
                                   </div>
                                 </div>
                               </OuiInsightCard>
@@ -1684,22 +1772,25 @@ export const EmptySessionPage = ({
                                   onOpenPageInNewSession('dashboards', 'Dashboards')
                                 }>
 
-                                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 12 }}>
-                                  <div className="widgetCard__title" style={{ marginBottom: 0 }}>Deployment timeline</div>
-                                  <span className="widgetCard__mono" style={{ fontSize: 9.5, letterSpacing: '0.08em' }}>Σ 55</span>
-                                </div>
-                                <div style={{ position: 'relative', height: 92, display: 'flex', alignItems: 'flex-end', gap: 16 }}>
-                                  {[{v:8,h:38},{v:12,h:58},{v:15,h:72},{v:11,h:53},{v:9,h:43}].map((d, i) => (
-                                    <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', gap: 5 }}>
-                                      <span className="widgetCard__mono" style={{ fontSize: 9.5, fontWeight: 600, color: '#1F9D6B' }}>{d.v}</span>
-                                      <div style={{ width: '58%', height: d.h, background: '#2BA98A', borderRadius: 1 }} />
-                                    </div>
-                                  ))}
-                                </div>
-                                <div style={{ display: 'flex', gap: 16, marginTop: 6 }}>
-                                  {['1-3','5-7','9-11','13-15','17-23'].map((l, i) => (
-                                    <div key={i} className="widgetCard__mono" style={{ flex: 1, textAlign: 'center', fontSize: 10 }}>{l}</div>
-                                  ))}
+                                <WidgetHeader title="Deployment timeline" />
+                                <div style={{ position: 'relative', background: 'rgba(255,255,255,0.32)', padding: '12px 14px 0', borderRadius: 4 }}>
+                                  <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(to right, rgba(59,93,214,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(59,93,214,0.06) 1px, transparent 1px)', backgroundSize: '18px 16px', borderRadius: 'inherit' }} />
+                                  <div style={{ position: 'relative', height: 92, display: 'flex', alignItems: 'flex-end', gap: 16 }}>
+                                    <div style={{ position: 'absolute', left: 0, right: 0, bottom: 53, borderTop: '1px dashed rgba(52,72,140,0.32)' }} />
+                                    <div className="widgetCard__mono" style={{ position: 'absolute', left: 0, bottom: 55, fontSize: 8, letterSpacing: '0.1em', color: '#7B8FE6' }}>AVG 11</div>
+                                    {[{v:8,h:38},{v:12,h:58},{v:15,h:72},{v:11,h:53},{v:9,h:43}].map((d, i) => (
+                                      <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', gap: 5 }}>
+                                        <span className="widgetCard__mono" style={{ fontSize: 9.5, fontWeight: 600, color: '#1F9D6B' }}>{d.v}</span>
+                                        <div style={{ width: '58%', height: d.h, background: '#2BA98A', borderRadius: 1 }} />
+                                      </div>
+                                    ))}
+                                  </div>
+                                  <div style={{ height: 1, background: 'rgba(52,72,140,0.32)' }} />
+                                  <div style={{ display: 'flex', gap: 16, padding: '6px 0 12px' }}>
+                                    {['1-3','5-7','9-11','13-15','17-23'].map((l, i) => (
+                                      <div key={i} className="widgetCard__mono" style={{ flex: 1, textAlign: 'center', fontSize: 10 }}>{l}</div>
+                                    ))}
+                                  </div>
                                 </div>
                               </OuiInsightCard>
                             );
@@ -1711,116 +1802,23 @@ export const EmptySessionPage = ({
                                   onOpenPageInNewSession('metrics', 'Metrics')
                                 }>
 
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                                  <span className="widgetCard__title" style={{ marginBottom: 0 }}>Resource utilization</span>
-                                  <span style={{ fontSize: 22, fontWeight: 700, color: '#1F9D6B', letterSpacing: '-0.01em' }}>56%</span>
-                                </div>
+                                <WidgetHeader title="Resource utilization" />
+                                <span style={{ fontSize: 22, fontWeight: 700, color: '#1F9D6B', letterSpacing: '-0.01em', marginBottom: 4, display: 'block' }}>56%</span>
                                 <svg
-                                  viewBox="0 0 220 100"
-                                  style={{ width: '100%', height: 100 }}>
-                                  <line
-                                    x1="30"
-                                    y1="10"
-                                    x2="210"
-                                    y2="10"
-                                    stroke="currentColor"
-                                    strokeOpacity="0.1"
-                                    strokeWidth="0.5"
-                                  />
-                                  <line
-                                    x1="30"
-                                    y1="32"
-                                    x2="210"
-                                    y2="32"
-                                    stroke="currentColor"
-                                    strokeOpacity="0.1"
-                                    strokeWidth="0.5"
-                                  />
-                                  <line
-                                    x1="30"
-                                    y1="54"
-                                    x2="210"
-                                    y2="54"
-                                    stroke="currentColor"
-                                    strokeOpacity="0.1"
-                                    strokeWidth="0.5"
-                                  />
-                                  <line
-                                    x1="30"
-                                    y1="76"
-                                    x2="210"
-                                    y2="76"
-                                    stroke="currentColor"
-                                    strokeOpacity="0.1"
-                                    strokeWidth="0.5"
-                                  />
-                                  <text
-                                    x="22"
-                                    y="13"
-                                    fontSize="7"
-                                    fill="currentColor"
-                                    opacity="0.65"
-                                    textAnchor="end">
-                                    100
-                                  </text>
-                                  <text
-                                    x="22"
-                                    y="35"
-                                    fontSize="7"
-                                    fill="currentColor"
-                                    opacity="0.65"
-                                    textAnchor="end">
-                                    75
-                                  </text>
-                                  <text
-                                    x="22"
-                                    y="57"
-                                    fontSize="7"
-                                    fill="currentColor"
-                                    opacity="0.65"
-                                    textAnchor="end">
-                                    50
-                                  </text>
-                                  <text
-                                    x="22"
-                                    y="79"
-                                    fontSize="7"
-                                    fill="currentColor"
-                                    opacity="0.65"
-                                    textAnchor="end">
-                                    25
-                                  </text>
-                                  <text
-                                    x="22"
-                                    y="96"
-                                    fontSize="7"
-                                    fill="currentColor"
-                                    opacity="0.65"
-                                    textAnchor="end">
-                                    0
-                                  </text>
+                                  viewBox="0 0 220 80"
+                                  style={{ width: '100%', height: 80 }}>
+                                  <line x1="30" y1="14" x2="210" y2="14" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
+                                  <line x1="30" y1="38" x2="210" y2="38" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
+                                  <line x1="30" y1="62" x2="210" y2="62" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
+                                  <text x="22" y="17" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">50</text>
+                                  <text x="22" y="41" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">25</text>
+                                  <text x="22" y="65" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">0</text>
                                   <defs>
-                                    <linearGradient
-                                      id="resFill"
-                                      x1="0"
-                                      y1="0"
-                                      x2="0"
-                                      y2="1">
-                                      <stop
-                                        offset="0%"
-                                        stopColor="#34d399"
-                                        stopOpacity="0.25"
-                                      />
-                                      <stop
-                                        offset="100%"
-                                        stopColor="#34d399"
-                                        stopOpacity="0.03"
-                                      />
-                                    </linearGradient>
+                                    <ChartTexture id="resDots" variant="dots" />
                                   </defs>
                                   <path
-                                    d="M40,58 L75,54 L110,50 L145,52 L175,46 L195,44 L210,46 V96 H40 Z"
-                                    fill="url(#resFill)"
+                                    d="M40,38 L75,34 L110,30 L145,32 L175,26 L195,24 L210,26 V62 H40 Z"
+                                    fill="url(#resDots)"
                                   />
                                   <polyline
                                     fill="none"
@@ -1828,128 +1826,30 @@ export const EmptySessionPage = ({
                                     strokeWidth="2"
                                     strokeLinejoin="round"
                                     strokeLinecap="round"
-                                    points="40,58 75,54 110,50 145,52 175,46 195,44 210,46"
+                                    points="40,38 75,34 110,30 145,32 175,26 195,24 210,26"
                                   />
-                                  <circle
-                                    cx="40"
-                                    cy="58"
-                                    r="3"
-                                    fill="#34d399"
-                                  />
-                                  <circle
-                                    cx="75"
-                                    cy="54"
-                                    r="3"
-                                    fill="#34d399"
-                                  />
-                                  <circle
-                                    cx="110"
-                                    cy="50"
-                                    r="3"
-                                    fill="#34d399"
-                                  />
-                                  <circle
-                                    cx="145"
-                                    cy="52"
-                                    r="3"
-                                    fill="#34d399"
-                                  />
-                                  <circle
-                                    cx="175"
-                                    cy="46"
-                                    r="3"
-                                    fill="#34d399"
-                                  />
-                                  <circle
-                                    cx="195"
-                                    cy="44"
-                                    r="3"
-                                    fill="#34d399"
-                                  />
-                                  <circle
-                                    cx="210"
-                                    cy="46"
-                                    r="3"
-                                    fill="#34d399"
-                                  />
-                                  <text
-                                    x="40"
-                                    y="96"
-                                    fontSize="7"
-                                    fill="currentColor"
-                                    opacity="0.65"
-                                    textAnchor="middle">
-                                    0m
-                                  </text>
-                                  <text
-                                    x="85"
-                                    y="96"
-                                    fontSize="7"
-                                    fill="currentColor"
-                                    opacity="0.65"
-                                    textAnchor="middle">
-                                    15m
-                                  </text>
-                                  <text
-                                    x="130"
-                                    y="96"
-                                    fontSize="7"
-                                    fill="currentColor"
-                                    opacity="0.65"
-                                    textAnchor="middle">
-                                    30m
-                                  </text>
-                                  <text
-                                    x="175"
-                                    y="96"
-                                    fontSize="7"
-                                    fill="currentColor"
-                                    opacity="0.65"
-                                    textAnchor="middle">
-                                    45m
-                                  </text>
-                                  <text
-                                    x="210"
-                                    y="96"
-                                    fontSize="7"
-                                    fill="currentColor"
-                                    opacity="0.65"
-                                    textAnchor="middle">
-                                    60m
-                                  </text>
+                                  <circle cx="210" cy="26" r="3" fill="#34d399" />
+                                  <text x="40" y="74" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">0m</text>
+                                  <text x="125" y="74" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">30m</text>
+                                  <text x="210" y="74" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">60m</text>
                                 </svg>
                               </OuiInsightCard>
                             );
                           case 'saved-queries':
                             return (
                               <div
-                                className="emptySessionPage__widgetList"
-                                onClick={() =>
-                                  !isEditMode &&
-                                  onOpenPageInNewSession('logs', 'Logs')
-                                }
-                                role="button"
-                                tabIndex={0}>
-                                <div className="emptySessionPage__widgetListHeader">
-                                  <span className="emptySessionPage__widgetListIcon">
-                                    <OuiIcon type="search" size="m" />
-                                  </span>
-                                  <span className="emptySessionPage__widgetListTitle">
-                                    Saved queries
-                                  </span>
+                                className="emptySessionPage__widgetList">
+                                <WidgetHeader
+                                  icon="search"
+                                  title="Saved queries"
+                                  action
+                                  onAction={() => onBrowseLibrary && onBrowseLibrary('query')}
+                                />
+                                <div className="emptySessionPage__widgetListItems">
                                   <button
                                     type="button"
-                                    className="emptySessionPage__widgetListAction"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onBrowseLibrary &&
-                                        onBrowseLibrary('query');
-                                    }}>
-                                    <OuiIcon type="arrowRight" size="s" />
-                                  </button>
-                                </div>
-                                <div className="emptySessionPage__widgetListItems">
-                                  <div className="emptySessionPage__widgetListItem">
+                                    className="emptySessionPage__widgetListItem"
+                                    onClick={() => !isEditMode && onOpenPageInNewSession('logs', '5xx by service')}>
                                     <div>
                                       <strong>5xx by service</strong>
                                       <br />
@@ -1958,8 +1858,11 @@ export const EmptySessionPage = ({
                                         last 1h
                                       </span>
                                     </div>
-                                  </div>
-                                  <div className="emptySessionPage__widgetListItem">
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="emptySessionPage__widgetListItem"
+                                    onClick={() => !isEditMode && onOpenPageInNewSession('logs', 'Slow traces > 2s')}>
                                     <div>
                                       <strong>Slow traces &gt; 2s</strong>
                                       <br />
@@ -1968,43 +1871,25 @@ export const EmptySessionPage = ({
                                         all services
                                       </span>
                                     </div>
-                                  </div>
+                                  </button>
                                 </div>
                               </div>
                             );
                           case 'dashboards':
                             return (
                               <div
-                                className="emptySessionPage__widgetList"
-                                onClick={() =>
-                                  !isEditMode &&
-                                  onOpenPageInNewSession(
-                                    'dashboards',
-                                    'Dashboards'
-                                  )
-                                }
-                                role="button"
-                                tabIndex={0}>
-                                <div className="emptySessionPage__widgetListHeader">
-                                  <span className="emptySessionPage__widgetListIcon">
-                                    <OuiIcon type="grid" size="m" />
-                                  </span>
-                                  <span className="emptySessionPage__widgetListTitle">
-                                    Dashboards
-                                  </span>
+                                className="emptySessionPage__widgetList">
+                                <WidgetHeader
+                                  icon="dashboard"
+                                  title="Dashboards"
+                                  action
+                                  onAction={() => onBrowseLibrary && onBrowseLibrary('dashboard')}
+                                />
+                                <div className="emptySessionPage__widgetListItems">
                                   <button
                                     type="button"
-                                    className="emptySessionPage__widgetListAction"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onBrowseLibrary &&
-                                        onBrowseLibrary('dashboard');
-                                    }}>
-                                    <OuiIcon type="arrowRight" size="s" />
-                                  </button>
-                                </div>
-                                <div className="emptySessionPage__widgetListItems">
-                                  <div className="emptySessionPage__widgetListItem">
+                                    className="emptySessionPage__widgetListItem"
+                                    onClick={() => !isEditMode && onOpenPageInNewSession('dashboards', 'Service overview')}>
                                     <div>
                                       <strong>Service overview</strong>
                                       <br />
@@ -2020,6 +1905,10 @@ export const EmptySessionPage = ({
                                         height: 20,
                                         flexShrink: 0,
                                       }}>
+                                      <defs>
+                                        <ChartTexture id="dashDots1" variant="dots" />
+                                      </defs>
+                                      <path d="M0,14 L10,10 L20,12 L30,8 L40,10 L50,6 L60,8 V20 H0 Z" fill="url(#dashDots1)" />
                                       <polyline
                                         fill="none"
                                         stroke="#34d399"
@@ -2029,8 +1918,11 @@ export const EmptySessionPage = ({
                                         points="0,14 10,10 20,12 30,8 40,10 50,6 60,8"
                                       />
                                     </svg>
-                                  </div>
-                                  <div className="emptySessionPage__widgetListItem">
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="emptySessionPage__widgetListItem"
+                                    onClick={() => !isEditMode && onOpenPageInNewSession('dashboards', 'p99 latency')}>
                                     <div>
                                       <strong>p99 latency</strong>
                                       <br />
@@ -2046,6 +1938,10 @@ export const EmptySessionPage = ({
                                         height: 20,
                                         flexShrink: 0,
                                       }}>
+                                      <defs>
+                                        <ChartTexture id="dashStripe1" variant="stripe" />
+                                      </defs>
+                                      <path d="M0,16 L10,14 L20,12 L30,10 L40,8 L50,6 L60,4 V20 H0 Z" fill="url(#dashStripe1)" />
                                       <polyline
                                         fill="none"
                                         stroke="#d97706"
@@ -2055,7 +1951,73 @@ export const EmptySessionPage = ({
                                         points="0,16 10,14 20,12 30,10 40,8 50,6 60,4"
                                       />
                                     </svg>
-                                  </div>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="emptySessionPage__widgetListItem"
+                                    onClick={() => !isEditMode && onOpenPageInNewSession('dashboards', 'Error rate by service')}>
+                                    <div>
+                                      <strong>Error rate by service</strong>
+                                      <br />
+                                      <span
+                                        style={{ fontSize: 11, opacity: 0.6 }}>
+                                        6 panels · opened yesterday
+                                      </span>
+                                    </div>
+                                    <svg
+                                      viewBox="0 0 60 20"
+                                      style={{
+                                        width: 60,
+                                        height: 20,
+                                        flexShrink: 0,
+                                      }}>
+                                      <defs>
+                                        <ChartTexture id="dashStripe2" variant="stripe" color="#ef4444" />
+                                      </defs>
+                                      <path d="M0,16 L10,12 L20,14 L30,8 L40,10 L50,4 L60,6 V20 H0 Z" fill="url(#dashStripe2)" />
+                                      <polyline
+                                        fill="none"
+                                        stroke="#ef4444"
+                                        strokeWidth="2"
+                                        strokeLinejoin="round"
+                                        strokeLinecap="round"
+                                        points="0,16 10,12 20,14 30,8 40,10 50,4 60,6"
+                                      />
+                                    </svg>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="emptySessionPage__widgetListItem"
+                                    onClick={() => !isEditMode && onOpenPageInNewSession('dashboards', 'Connection pool health')}>
+                                    <div>
+                                      <strong>Connection pool health</strong>
+                                      <br />
+                                      <span
+                                        style={{ fontSize: 11, opacity: 0.6 }}>
+                                        4 panels · opened 3h ago
+                                      </span>
+                                    </div>
+                                    <svg
+                                      viewBox="0 0 60 20"
+                                      style={{
+                                        width: 60,
+                                        height: 20,
+                                        flexShrink: 0,
+                                      }}>
+                                      <defs>
+                                        <ChartTexture id="dashDots2" variant="dots" />
+                                      </defs>
+                                      <path d="M0,12 L10,10 L20,8 L30,10 L40,6 L50,8 L60,6 V20 H0 Z" fill="url(#dashDots2)" />
+                                      <polyline
+                                        fill="none"
+                                        stroke="#34d399"
+                                        strokeWidth="2"
+                                        strokeLinejoin="round"
+                                        strokeLinecap="round"
+                                        points="0,12 10,10 20,8 30,10 40,6 50,8 60,6"
+                                      />
+                                    </svg>
+                                  </button>
                                 </div>
                               </div>
                             );
@@ -2132,9 +2094,14 @@ export const EmptySessionPage = ({
                               </div>
                             </div>
                           )}
-                          {isRefreshing && widgetId !== 'workflows' ? (
-                            <div className="ouiInsightCard" style={{ position: 'relative', overflow: 'hidden', flex: 1 }}>
-                              <ScanShimmerOverlay />
+                          {(isRefreshing || refreshingWidgets[widgetId]) && widgetId !== 'workflows' ? (
+                            <div style={{ position: 'relative', overflow: 'hidden', flex: 1 }}>
+                              <div style={{ visibility: 'hidden' }}>{renderWidget()}</div>
+                              <div style={{ position: 'absolute', inset: 0, borderRadius: 'inherit' }}>
+                                <div className="ouiInsightCard" style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+                                  <ScanShimmerOverlay />
+                                </div>
+                              </div>
                             </div>
                           ) : renderWidget()}
                         </div>
