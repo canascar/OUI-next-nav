@@ -969,16 +969,15 @@ export const EmptySessionPage = ({
   const [isEditMode, setIsEditMode] = useState(false);
   const [gallerySearch, setGallerySearch] = useState('');
   const [widgetOrder, setWidgetOrder] = useState([
-    'workflows',
     'top-services',
-    'connection-timeout',
+    'workflows',
     'recent-alerts',
-    'deployment-timeline',
+    'connection-timeout',
     'resource-utilization',
     'saved-queries',
     'dashboards',
   ]);
-  const [widgetSizes, setWidgetSizes] = useState({ dashboards: 2, workflows: 2 });
+  const [widgetSizes, setWidgetSizes] = useState({ dashboards: 2 });
   const [workflowsExpanded, setWorkflowsExpanded] = useState(false);
   const [confirmingRemoval, setConfirmingRemoval] = useState(null);
   const dragWidget = useRef(null);
