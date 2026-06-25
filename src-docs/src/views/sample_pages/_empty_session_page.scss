@@ -67,7 +67,7 @@
   align-items: center;
   gap: 10px;
   width: 100%;
-  max-width: 640px;
+  max-width: 480px;
   padding-bottom: 4px;
   flex-shrink: 0;
 }
@@ -147,7 +147,7 @@
 
   > .ouiTitle {
     width: 100%;
-    max-width: 640px;
+    max-width: 480px;
     padding-bottom: 4px;
     flex-shrink: 0;
   }
@@ -166,7 +166,7 @@
   flex-direction: column;
   gap: 0;
   width: 100%;
-  max-width: 640px;
+  max-width: 480px;
   margin-left: auto;
   margin-right: auto;
   overflow-y: auto;
@@ -426,7 +426,7 @@
 // Scrollable content wrapper
 .emptySessionPage__scrollContent {
   min-height: 0;
-  max-width: 640px;
+  max-width: 480px;
   min-width: 200px;
   width: 100%;
   margin: 0 auto;
@@ -495,7 +495,7 @@
   gap: 12px;
   padding-bottom: 32px;
   width: 100%;
-  max-width: 640px;
+  max-width: 480px;
 
   // Space between tabs and content below
   .ouiTabs {
@@ -873,7 +873,7 @@
 // Inline input — fixed at the bottom of the left column (not scrollable)
 .emptySessionPage__inlineInput {
   width: 100%;
-  max-width: 640px;
+  max-width: 480px;
   margin-left: auto;
   margin-right: auto;
   padding-top: 8px;
@@ -895,35 +895,35 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  border: 1.5px solid lightOrDarkTheme($ouiColorPrimary, #9A7CF5);
+  border: 1px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.3), rgba(#9A7CF5, 0.3));
   border-radius: 14px;
   background-color: var(--nb-cell, $ouiFormBackgroundColor);
   box-shadow: lightOrDarkTheme(
-    0 4px 16px rgba(108, 75, 216, 0.10),
-    0 6px 22px rgba(0, 0, 0, 0.4)
+    0 4px 16px rgba(108, 75, 216, 0.06),
+    0 6px 22px rgba(0, 0, 0, 0.3)
   );
   transition: box-shadow 300ms ease;
   overflow: visible;
 
-  // Animated shimmer border — uses an oversized rotating gradient behind a mask
+  // Subtle shimmer border — soft color shift
   &::before {
     content: '';
     position: absolute;
-    inset: -2px;
+    inset: -1.5px;
     border-radius: 15px;
     background: conic-gradient(
-      lightOrDarkTheme(rgba(99, 102, 241, 0.30), rgba(165, 180, 252, 0.35)),
-      lightOrDarkTheme(rgba(16, 185, 129, 0.20), rgba(52, 211, 153, 0.25)),
-      lightOrDarkTheme(rgba(99, 102, 241, 0.06), rgba(165, 180, 252, 0.08)),
-      lightOrDarkTheme(rgba(217, 119, 6, 0.18), rgba(251, 191, 36, 0.20)),
-      lightOrDarkTheme(rgba(99, 102, 241, 0.30), rgba(165, 180, 252, 0.35))
+      lightOrDarkTheme(rgba(99, 102, 241, 0.18), rgba(165, 180, 252, 0.20)),
+      lightOrDarkTheme(rgba(16, 185, 129, 0.10), rgba(52, 211, 153, 0.12)),
+      lightOrDarkTheme(rgba(99, 102, 241, 0.04), rgba(165, 180, 252, 0.05)),
+      lightOrDarkTheme(rgba(217, 119, 6, 0.08), rgba(251, 191, 36, 0.10)),
+      lightOrDarkTheme(rgba(99, 102, 241, 0.18), rgba(165, 180, 252, 0.20))
     );
     pointer-events: none;
     z-index: 0;
-    animation: emptySessionInputShimmer 4s linear infinite;
+    animation: emptySessionInputShimmer 8s linear infinite;
   }
 
-  // Inner mask to cut out the center, leaving only the border ring
+  // Inner fill to cut out center, leaving only the border ring
   &::after {
     content: '';
     position: absolute;
