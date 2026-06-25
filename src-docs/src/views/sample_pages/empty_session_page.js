@@ -2132,15 +2132,11 @@ export const EmptySessionPage = ({
                               </div>
                             </div>
                           )}
-                          <div style={{ position: 'relative', flex: 1 }}>
-                            {isRefreshing && widgetId !== 'workflows' && (
-                              <>
-                                <ScanShimmerOverlay />
-                                <div style={{ position: 'absolute', inset: 0, zIndex: 5, background: 'var(--nb-cell, white)', opacity: 0.85, borderRadius: 'inherit' }} />
-                              </>
-                            )}
-                            {renderWidget()}
-                          </div>
+                          {isRefreshing && widgetId !== 'workflows' ? (
+                            <div className="ouiInsightCard" style={{ position: 'relative', overflow: 'hidden', flex: 1 }}>
+                              <ScanShimmerOverlay />
+                            </div>
+                          ) : renderWidget()}
                         </div>
                       );
                     })}
