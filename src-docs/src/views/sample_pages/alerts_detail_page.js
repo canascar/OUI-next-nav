@@ -2,7 +2,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import React from 'react';
-import { OuiText } from '../../../../src/components';
 import { PlaceholderPage } from './placeholder_page';
 import { DetailPageHeader } from './detail_page_header';
 import { AlertPageMock } from './mock_canvas_pages';
@@ -51,7 +50,7 @@ export const AlertsDetailPage = ({
           overflow: 'hidden',
         }}>
         <DetailPageHeader
-          title="Payment service P99 latency breach"
+          title="Alert: P95 Latency > 2s"
           onContinueAsThread={onContinueAsThread}
           isPanelOpen={isPanelOpen}
           onTogglePanel={onTogglePanel}

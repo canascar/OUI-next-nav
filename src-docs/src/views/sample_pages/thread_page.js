@@ -35,6 +35,7 @@ import {
   OuiTab,
   OuiTabs,
   OuiText,
+  OuiTitle,
   OuiToolTip,
   OuiCompressedTextArea,
   OuiThreadScrollButton,
@@ -844,14 +845,14 @@ const CodeBlockAttachment = ({ title, language, code }) => {
     <div className="threadPage__attachmentWrap">
       <div className="threadPage__attachment threadPage__attachment--codeBlock">
         {title && (
-          <OuiText size="xs" style={{ marginBottom: 12 }}>
+          <OuiText size="xs">
             <strong>{title}</strong>
           </OuiText>
         )}
         <OuiCodeBlock
           language={language}
           fontSize="s"
-          paddingSize="s"
+          paddingSize="m"
           isCopyable>
           {code}
         </OuiCodeBlock>
@@ -2642,12 +2643,12 @@ export const ThreadPage = ({
                 ) : (
                   <div className="threadPage__canvasTabContent">
                     <div className="threadPage__canvasPageHeader">
-                      <OuiText size="s">
-                        <strong>
+                      <OuiTitle size="l">
+                        <h1>
                           {canvasItems[activeCanvasTab]?.title ||
                             `Asset ${activeCanvasTab + 1}`}
-                        </strong>
-                      </OuiText>
+                        </h1>
+                      </OuiTitle>
                       <div className="threadPage__canvasPageHeaderActions">
                         <OuiToolTip content="Open page" position="bottom">
                           <OuiButtonIcon

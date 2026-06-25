@@ -97,7 +97,15 @@ export const AlertPageMock = () => (
     <OuiSpacer size="m" />
 
     <OuiPanel paddingSize="m" hasShadow={false} hasBorder>
-      <OuiText size="xs">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+        <OuiText size="xs" color="subdued">
+          <span style={{ fontFamily: 'var(--oui-code-font-family, monospace)', fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', fontWeight: 700 }}>P99 Latency · 6h</span>
+        </OuiText>
+        <OuiText size="xs" color="subdued">
+          <span style={{ fontFamily: 'var(--oui-code-font-family, monospace)', fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#CE4239', fontWeight: 700 }}>--- Threshold 2,000ms</span>
+        </OuiText>
+      </div>
+      <OuiText size="s">
         <strong>Metric: payment-service P99 latency</strong>
       </OuiText>
       <OuiSpacer size="s" />
