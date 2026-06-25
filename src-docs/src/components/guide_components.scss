@@ -29,12 +29,13 @@ $elasticLogoTextDark: #1C1E23;
 body {
   @include ouiHeaderAffordForFixed;
 
-  // v10 Blueprint — simple major grid only
-  background-color: $ouiPageBackgroundColor;
+  // Notebook grid-line background
+  background-color: var(--nb-canvas, $ouiPageBackgroundColor);
   background-image:
-    linear-gradient(to right,  lightOrDarkTheme(rgba(13, 48, 87, 0.015), rgba(207, 228, 247, 0.015)) 1px, transparent 1px),
-    linear-gradient(to bottom, lightOrDarkTheme(rgba(13, 48, 87, 0.015), rgba(207, 228, 247, 0.015)) 1px, transparent 1px);
-  background-size: 40px 40px;
+    linear-gradient(to right, color-mix(in srgb, var(--nb-accent, #{$ouiColorPrimary}) 38%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--nb-accent, #{$ouiColorPrimary}) 38%, transparent) 1px, transparent 1px);
+  background-size: 19px 19px;
+  box-shadow: inset 0 0 140px 70px var(--nb-canvas, $ouiPageBackgroundColor);
 }
 
 .ouiBody--headerIsFixed--double {
