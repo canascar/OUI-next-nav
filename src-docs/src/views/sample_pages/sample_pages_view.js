@@ -56,10 +56,13 @@ import {
 
 // Session-based navigation imports
 import { SessionLeftNav } from './session_left_nav';
+import { LeftNavV4 } from './left_nav_v4';
 import { SessionContainer } from './session_container';
 import { SessionList } from './session_list';
 import { LibraryPage } from './library_page';
 import { EmptySessionPage } from './empty_session_page';
+import { EmptySessionPageV2 } from './empty_session_page_v2';
+import { EmptySessionPageV3 } from './empty_session_page_v3';
 import { SOURCE_PAGE_MOCK } from './session_models';
 import {
   createSession,
@@ -1521,7 +1524,8 @@ function initializeSessionState() {
  * Replaces the icon-based left nav with a session model where each session
  * is an independent workspace containing a thread panel and page panel with tabs.
  */
-export const SessionPagesView = () => {
+export const SessionPagesView = ({ variant } = {}) => {
+  const EmptyPage = variant === 'v4' ? EmptySessionPageV3 : variant === 'v3' ? EmptySessionPageV3 : variant === 'v2' ? EmptySessionPageV2 : EmptySessionPage;
   // Prevent page scroll when this full-screen view is mounted
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -1708,7 +1712,7 @@ export const SessionPagesView = () => {
 
     if (isEmptySession) {
       return (
-        <EmptySessionPage
+        <EmptyPage
           onStartThread={handleStartThread}
           onOpenPage={handleOpenPage}
           onOpenPageInNewSession={handleOpenCanvasPage}
@@ -1771,27 +1775,45 @@ export const SessionPagesView = () => {
         right: 0,
         bottom: 0,
       }}>
-      <SessionLeftNav
-        sessionCount={
-          sessionState.sessions.filter(
+      {variant === 'v4' ? (
+        <LeftNavV4
+          activePage={activeView}
+          activeSessionId={sessionState.activeSessionId}
+          onPageChange={(key) => {
+            if (key === 'explore') handleOpenPage('logs');
+            else if (key === 'monitor') handleOpenPage('alerts');
+            else if (key === 'notebooks') handleOpenPage('notebooks');
+            else if (key === 'boards') handleOpenPage('dashboards');
+            else if (key === 'investigations') handleBrowseSessions();
+            else if (key === 'all-chats') handleBrowseSessions();
+          }}
+          onStartThread={() => handleCreateSession()}
+          onSelectSession={handleSelectSession}
+        />
+      ) : (
+        <SessionLeftNav
+          sessionCount={
+            sessionState.sessions.filter(
+              (s) => s.threadKey || s.pendingThread || s.tabs.length > 0
+            ).length
+          }
+          sessions={sessionState.sessions.filter(
             (s) => s.threadKey || s.pendingThread || s.tabs.length > 0
-          ).length
-        }
-        sessions={sessionState.sessions.filter(
-          (s) => s.threadKey || s.pendingThread || s.tabs.length > 0
-        )}
-        onCreateSession={handleCreateSession}
-        onBrowseSessions={handleBrowseSessions}
-        onBrowseLibrary={handleBrowseLibrary}
-        onSelectSession={handleSelectSession}
-        activeView={activeView}
-        isEmptySession={isEmptySession}
-      />
+          )}
+          onCreateSession={handleCreateSession}
+          onBrowseSessions={handleBrowseSessions}
+          onBrowseLibrary={handleBrowseLibrary}
+          onSelectSession={handleSelectSession}
+          activeView={activeView}
+          isEmptySession={isEmptySession}
+        />
+      )}
       <div
         style={{
           flex: 1,
           overflow: 'hidden',
           display: 'flex',
+          paddingLeft: variant === 'v4' ? 14 : 0,
         }}>
         {renderMainContent()}
       </div>

@@ -112,6 +112,30 @@ render(
           />
 
           <Route
+            path="/sample-pages-v4"
+            render={() => (
+              <LinkWrapper>
+                <SessionPagesView variant="v4" />
+              </LinkWrapper>
+            )}
+          />
+          <Route
+            path="/sample-pages-v3"
+            render={() => (
+              <LinkWrapper>
+                <SessionPagesView variant="v3" />
+              </LinkWrapper>
+            )}
+          />
+          <Route
+            path="/sample-pages-v2"
+            render={() => (
+              <LinkWrapper>
+                <SessionPagesView variant="v2" />
+              </LinkWrapper>
+            )}
+          />
+          <Route
             path="/sample-pages"
             render={() => (
               <LinkWrapper>
