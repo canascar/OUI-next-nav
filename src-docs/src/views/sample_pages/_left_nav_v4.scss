@@ -1,0 +1,624 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+// ============================================================
+// LEFT NAV V4 — Olly agentic navigation sidebar
+// Spec: two states (collapsed 56px, expanded 256px).
+// Motion: width-only reveal, no opacity fades on labels.
+// ============================================================
+
+$leftNavV4-collapsed-width: 56px;
+$leftNavV4-expanded-width: 240px;
+$leftNavV4-icon-x: 28px;
+$leftNavV4-row-height: 34px;
+$leftNavV4-pill-inset: 8px;
+$leftNavV4-pill-radius: 7px;
+
+.leftNavV4 {
+  width: $leftNavV4-expanded-width;
+  min-width: $leftNavV4-expanded-width;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: lightOrDarkTheme(#fff, #1A1722);
+  border-right: 1px solid lightOrDarkTheme(#EEEDF2, rgba(255, 255, 255, 0.06));
+  flex-shrink: 0;
+  z-index: 2;
+  overflow: hidden;
+  transition:
+    width 260ms cubic-bezier(0.2, 0.72, 0.18, 1),
+    min-width 260ms cubic-bezier(0.2, 0.72, 0.18, 1);
+
+  &--collapsed {
+    width: $leftNavV4-collapsed-width;
+    min-width: $leftNavV4-collapsed-width;
+    transition:
+      width 180ms ease-in,
+      min-width 180ms ease-in;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &--collapsed {
+      transition: none;
+    }
+  }
+}
+
+// ─── Brand row ──────────────────────────────────────────────
+.leftNavV4__brandRow {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 4px;
+  gap: 8px;
+  margin-top: 8px;
+
+  .leftNavV4--collapsed & {
+    justify-content: center;
+    padding: 0;
+    margin-top: 4px;
+  }
+}
+
+.leftNavV4__brandMark {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+
+  .ouiIcon {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.leftNavV4__brandWordmark {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: $ouiTitleColor;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.leftNavV4__collapseButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.22), rgba(255, 255, 255, 0.22));
+  flex-shrink: 0;
+  transition: color 120ms ease, background-color 120ms ease;
+  appearance: none;
+
+  &:hover {
+    color: lightOrDarkTheme(rgba(0, 0, 0, 0.55), rgba(255, 255, 255, 0.55));
+    background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.05));
+  }
+}
+
+// Logo toggle in collapsed state — cross-fades to expand icon
+.leftNavV4__logoToggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 8px;
+  appearance: none;
+  transition: background-color 120ms ease;
+
+  &:hover {
+    background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.06));
+  }
+}
+
+.leftNavV4__logoIcon,
+.leftNavV4__expandIcon {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 200ms ease;
+}
+
+.leftNavV4__logoIcon {
+  opacity: 1;
+
+  .ouiIcon {
+    width: 22px;
+    height: 22px;
+  }
+
+  &--hidden {
+    opacity: 0;
+  }
+}
+
+.leftNavV4__expandIcon {
+  opacity: 0;
+  color: lightOrDarkTheme(#6E6678, #8A92A0);
+
+  &--visible {
+    opacity: 1;
+  }
+}
+
+// ─── Sticky header ──────────────────────────────────────────
+.leftNavV4__stickyHeader {
+  flex-shrink: 0;
+  padding: 0 $leftNavV4-pill-inset;
+
+  .leftNavV4--collapsed & {
+    padding: 0 (($leftNavV4-collapsed-width - 40px) / 2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.leftNavV4__primaryRow {
+  padding: 4px 0;
+
+  .leftNavV4--collapsed & {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.leftNavV4__headerEdge {
+  height: 0.5px;
+  background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.06));
+  margin: 4px 0 0;
+  transition: box-shadow 200ms ease;
+
+  &--shadow {
+    box-shadow: 0 2px 6px lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.25));
+  }
+}
+
+// ─── Scroll body ────────────────────────────────────────────
+.leftNavV4__scrollBody {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding: 8px $leftNavV4-pill-inset;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: thin;
+  scrollbar-color: lightOrDarkTheme(rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.15)) transparent;
+
+  .leftNavV4--collapsed & {
+    padding: 8px (($leftNavV4-collapsed-width - 40px) / 2);
+    align-items: center;
+  }
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: lightOrDarkTheme(rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.12));
+    border-radius: 4px;
+
+    &:hover {
+      background: lightOrDarkTheme(rgba(0, 0, 0, 0.22), rgba(255, 255, 255, 0.22));
+    }
+  }
+}
+
+// ─── Sticky footer ──────────────────────────────────────────
+.leftNavV4__stickyFooter {
+  flex-shrink: 0;
+  transition: box-shadow 200ms ease;
+
+  &--shadow {
+    box-shadow: 0 -2px 6px lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.25));
+  }
+}
+
+.leftNavV4__recentItem--active,
+.leftNavV4__recentItem--active:hover {
+  background-color: lightOrDarkTheme(rgba(91, 79, 207, 0.08), rgba(168, 156, 245, 0.12));
+  color: lightOrDarkTheme(#5B4FCF, #A89CF5);
+  font-weight: 500;
+
+  .leftNavV4__recentLabel {
+    color: lightOrDarkTheme(#5B4FCF, #A89CF5);
+  }
+}
+
+.leftNavV4__recentItem--allChats {
+  margin-top: 4px;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.55), rgba(255, 255, 255, 0.55));
+
+  .leftNavV4__itemIcon {
+    margin-right: 8px;
+  }
+
+  &:hover {
+    color: lightOrDarkTheme(rgba(0, 0, 0, 0.82), rgba(255, 255, 255, 0.82));
+  }
+}
+
+// ─── Divider ────────────────────────────────────────────────
+.leftNavV4__divider {
+  height: 1px;
+  background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.04));
+  margin: 6px 4px;
+
+  .leftNavV4--collapsed & {
+    width: 20px;
+    margin: 6px auto;
+  }
+}
+
+// ─── Sections ───────────────────────────────────────────────
+.leftNavV4__section {
+  display: flex;
+  flex-direction: column;
+  margin-top: 12px;
+
+  &--expandedOnly {
+    overflow: visible;
+
+    .leftNavV4--collapsed & {
+      display: none;
+    }
+  }
+
+  &--surfaces .leftNavV4__sectionHeader {
+    .leftNavV4--collapsed & {
+      display: none;
+    }
+  }
+}
+
+.leftNavV4__sectionHeader {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.30), rgba(255, 255, 255, 0.28));
+  padding: 4px 12px 5px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+// ─── Item list ──────────────────────────────────────────────
+.leftNavV4__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+
+  .leftNavV4--collapsed & {
+    align-items: center;
+  }
+}
+
+// ─── Nav item ───────────────────────────────────────────────
+.leftNavV4__item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: $leftNavV4-row-height;
+  padding: 0 10px;
+  border-radius: $leftNavV4-pill-radius;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.82), rgba(255, 255, 255, 0.82));
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: background-color 120ms ease;
+  appearance: none;
+
+  .leftNavV4--collapsed & {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  &:hover {
+    background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.035), rgba(255, 255, 255, 0.04));
+  }
+
+  &--active {
+    background-color: lightOrDarkTheme(rgba(91, 79, 207, 0.06), rgba(168, 156, 245, 0.09));
+    color: lightOrDarkTheme(#5B4FCF, #A89CF5);
+    font-weight: 500;
+
+    .leftNavV4__itemIcon .ouiIcon {
+      color: lightOrDarkTheme(#5B4FCF, #A89CF5);
+    }
+
+    &:hover {
+      background-color: lightOrDarkTheme(rgba(91, 79, 207, 0.09), rgba(168, 156, 245, 0.12));
+    }
+  }
+
+  &--primary {
+    color: lightOrDarkTheme(#5B4FCF, #A89CF5);
+    font-weight: 500;
+
+    .leftNavV4__itemIcon .ouiIcon {
+      color: lightOrDarkTheme(#5B4FCF, #A89CF5);
+    }
+
+    &:hover {
+      background-color: lightOrDarkTheme(rgba(91, 79, 207, 0.06), rgba(168, 156, 245, 0.08));
+    }
+  }
+}
+
+.leftNavV4__itemIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-right: 10px;
+
+  .ouiIcon {
+    width: 16px;
+    height: 16px;
+    color: lightOrDarkTheme(rgba(0, 0, 0, 0.65), rgba(255, 255, 255, 0.65));
+  }
+
+  .leftNavV4--collapsed & {
+    margin-right: 0;
+  }
+}
+
+.leftNavV4__itemContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  overflow: hidden;
+
+  .leftNavV4--collapsed & {
+    display: none;
+  }
+}
+
+.leftNavV4__itemLabel {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1;
+}
+
+.leftNavV4__itemSubtitle {
+  font-size: 10.5px;
+  font-weight: 400;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.50), rgba(255, 255, 255, 0.50));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1;
+}
+
+// ─── Recent items ───────────────────────────────────────────
+.leftNavV4__list--recent {
+  gap: 1px;
+}
+
+.leftNavV4__recentItem {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 5px 24px 5px 10px;
+  position: relative;
+  border: none;
+  background: none;
+  border-radius: $leftNavV4-pill-radius;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 400;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.72), rgba(255, 255, 255, 0.72));
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background-color 120ms ease;
+  appearance: none;
+
+  &:hover {
+    background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.035), rgba(255, 255, 255, 0.04));
+  }
+}
+
+.leftNavV4__recentDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  &--active {
+    background-color: $ouiColorSuccess;
+  }
+
+  &--done {
+    background-color: $ouiColorPrimary;
+  }
+}
+
+.leftNavV4__recentLabel {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1;
+}
+
+// ─── Loader ─────────────────────────────────────────────────
+.leftNavV4__loader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10px 12px;
+}
+
+// ─── Bottom item ────────────────────────────────────────────
+.leftNavV4__bottom {
+  padding: 8px $leftNavV4-pill-inset;
+  border-top: 0.5px solid lightOrDarkTheme(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.05));
+
+  .leftNavV4--collapsed & {
+    border-top: none;
+    padding: 8px (($leftNavV4-collapsed-width - 40px) / 2);
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.leftNavV4__bottomButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 6px 10px;
+  border-radius: $leftNavV4-pill-radius;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: background-color 120ms ease;
+  appearance: none;
+
+  &:hover {
+    background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.035), rgba(255, 255, 255, 0.04));
+  }
+
+  .leftNavV4--collapsed & {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    justify-content: center;
+    gap: 0;
+  }
+}
+
+.leftNavV4__bottomInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  overflow: hidden;
+
+  .leftNavV4--collapsed & {
+    display: none;
+  }
+}
+
+.leftNavV4__bottomName {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.72), rgba(255, 255, 255, 0.72));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1;
+}
+
+.leftNavV4__bottomRole {
+  font-size: 10.5px;
+  font-weight: 400;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.30), rgba(255, 255, 255, 0.28));
+  line-height: 1;
+}
+
+// ─── Workspace popover ──────────────────────────────────────
+.leftNavV4__workspacePanel {
+  border-radius: 12px !important; // sass-lint:disable-line no-important
+  box-shadow: 0 8px 32px lightOrDarkTheme(rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.5)) !important; // sass-lint:disable-line no-important
+}
+
+.leftNavV4__workspaceMenu {
+  width: 220px;
+  padding: 8px 0;
+}
+
+.leftNavV4__workspaceMenuHeader {
+  padding: 12px 16px;
+  border-bottom: 1px solid lightOrDarkTheme(#EEEDF2, rgba(255, 255, 255, 0.06));
+  margin-bottom: 4px;
+}
+
+.leftNavV4__workspaceMenuTitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: $ouiTitleColor;
+}
+
+.leftNavV4__workspaceMenuList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.leftNavV4__workspaceMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.72), rgba(255, 255, 255, 0.72));
+  text-align: left;
+  transition: background-color 120ms ease;
+  appearance: none;
+
+  &:hover {
+    background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.05));
+  }
+
+  .ouiIcon {
+    color: lightOrDarkTheme(rgba(0, 0, 0, 0.45), rgba(255, 255, 255, 0.45));
+  }
+}
