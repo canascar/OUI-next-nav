@@ -160,6 +160,24 @@ export const GuidePageHeader: React.FunctionComponent<{}> = () => {
               }}>
               First Run experience
             </OuiContextMenuItem>,
+            <OuiContextMenuItem
+              key="v2"
+              icon="empty"
+              onClick={() => {
+                setSamplePagesPopoverOpen(false);
+                window.location.hash = '/sample-pages-v2';
+              }}>
+              Home v2
+            </OuiContextMenuItem>,
+            <OuiContextMenuItem
+              key="v3"
+              icon="empty"
+              onClick={() => {
+                setSamplePagesPopoverOpen(false);
+                window.location.hash = '/sample-pages-v3';
+              }}>
+              Home v3
+            </OuiContextMenuItem>,
           ]}
         />
       </OuiPopover>
