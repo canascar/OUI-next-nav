@@ -3225,6 +3225,58 @@ textarea.emptySessionPage__textarea {
   }
 }
 
+// Inner row highlights — specific rows glow when finding is active
+.emptySessionPage__widgetGrid--highlight-latency [data-row="payment"] {
+  background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.08), rgba($ouiColorPrimary, 0.12));
+  border-radius: 4px;
+  margin: 0 -4px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.emptySessionPage__widgetGrid--highlight-checkout [data-row="checkout"] {
+  background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.08), rgba($ouiColorPrimary, 0.12));
+  border-radius: 4px;
+  margin: 0 -4px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.emptySessionPage__widgetGrid--highlight-dns [data-row="payment"] {
+  background-color: lightOrDarkTheme(rgba($ouiColorWarning, 0.08), rgba($ouiColorWarning, 0.12));
+  border-radius: 4px;
+  margin: 0 -4px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+// Contextual title shown above widgets when a finding is highlighted
+.emptySessionPage__widgetContext {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: $ouiColorPrimary;
+  background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.05), rgba($ouiColorPrimary, 0.08));
+  border-radius: 6px;
+  animation: widgetContextIn 200ms ease;
+}
+
+@keyframes widgetContextIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 // ─── Finding Detail (inline expand) ────────────────────────────
 .emptySessionPage__findingDetail {
   display: flex;

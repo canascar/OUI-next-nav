@@ -1599,7 +1599,7 @@ export const EmptySessionPageV3 = ({
                     });
                 }
               }}>
-              {!workflowsExpanded && (
+              {!workflowsExpanded && !highlightedFinding && (
                 <div className="emptySessionPage__tabRow emptySessionPage__tabRow--sticky">
                   <div className="emptySessionPage__panelTabs">
                     <button
@@ -1825,6 +1825,12 @@ export const EmptySessionPageV3 = ({
                 ) : (
                 <div className="emptySessionPage__briefingPanel">
 
+                  {highlightedFinding && (
+                    <div className="emptySessionPage__widgetContext">
+                      <OuiIcon type="iInCircle" size="s" />
+                      <span>Related to selected insight</span>
+                    </div>
+                  )}
                   <div
                     className={`emptySessionPage__widgetGrid${
                       isEditMode ? ' emptySessionPage__widgetGrid--editing' : ''
@@ -1913,22 +1919,22 @@ export const EmptySessionPageV3 = ({
                                   <span>FAULT RATE</span>
                                 </div>
                                 <div className="widgetCard__rows">
-                                  <div className="widgetCard__barRow" style={{ cursor: 'pointer' }} onClick={() => !isEditMode && onSelectSession('error-rate-spike-session')}>
+                                  <div className="widgetCard__barRow" data-row="checkout" style={{ cursor: 'pointer' }} onClick={() => !isEditMode && onSelectSession('error-rate-spike-session')}>
                                     <span className="widgetCard__barLabel">checkout</span>
                                     <div className="widgetCard__barTrack"><div className="widgetCard__barFill" style={{ width: '67%' }} /></div>
                                     <span className="widgetCard__barValue">{dataVariant % 2 === 0 ? '66.67%' : '58.23%'}</span>
                                   </div>
-                                  <div className="widgetCard__barRow" style={{ cursor: 'pointer' }} onClick={() => !isEditMode && onOpenPageInNewSession('app-perf-services', 'Frontend service')}>
+                                  <div className="widgetCard__barRow" data-row="frontend" style={{ cursor: 'pointer' }} onClick={() => !isEditMode && onOpenPageInNewSession('app-perf-services', 'Frontend service')}>
                                     <span className="widgetCard__barLabel">frontend</span>
                                     <div className="widgetCard__barTrack"><div className="widgetCard__barFill widgetCard__barFill--secondary" style={{ width: dataVariant % 2 === 0 ? '14.5%' : '22%' }} /></div>
                                     <span className="widgetCard__barValue">{dataVariant % 2 === 0 ? '14.49%' : '21.88%'}</span>
                                   </div>
-                                  <div className="widgetCard__barRow" style={{ cursor: 'pointer' }} onClick={() => !isEditMode && onOpenPageInNewSession('app-perf-services', 'Frontend-proxy service')}>
+                                  <div className="widgetCard__barRow" data-row="frontend-proxy" style={{ cursor: 'pointer' }} onClick={() => !isEditMode && onOpenPageInNewSession('app-perf-services', 'Frontend-proxy service')}>
                                     <span className="widgetCard__barLabel">frontend-proxy</span>
                                     <div className="widgetCard__barTrack"><div className="widgetCard__barFill widgetCard__barFill--secondary" style={{ width: dataVariant % 2 === 0 ? '14.3%' : '11%' }} /></div>
                                     <span className="widgetCard__barValue">{dataVariant % 2 === 0 ? '14.29%' : '10.94%'}</span>
                                   </div>
-                                  <div className="widgetCard__barRow" style={{ cursor: 'pointer' }} onClick={() => !isEditMode && onSelectSession('latency-spike-session')}>
+                                  <div className="widgetCard__barRow" data-row="payment" style={{ cursor: 'pointer' }} onClick={() => !isEditMode && onSelectSession('latency-spike-session')}>
                                     <span className="widgetCard__barLabel">payment</span>
                                     <div className="widgetCard__barTrack"><div className="widgetCard__barFill widgetCard__barFill--secondary" style={{ width: dataVariant % 2 === 0 ? '8%' : '6%' }} /></div>
                                     <span className="widgetCard__barValue">{dataVariant % 2 === 0 ? '7.84%' : '5.91%'}</span>
