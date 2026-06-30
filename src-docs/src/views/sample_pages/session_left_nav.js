@@ -149,7 +149,11 @@ export const SessionLeftNav = ({
           <div className="sessionLeftNav__navItemExpandedRow">
             <button
               type="button"
-              className="sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--main"
+              className={`sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--main${
+                activeView === 'session' && isEmptySession
+                  ? ' sessionLeftNav__navItemExpanded--active'
+                  : ''
+              }`}
               onClick={() => {
                 setIsNavExpanded(false);
                 onCreateSession();
@@ -537,7 +541,11 @@ export const SessionLeftNav = ({
             <OuiPopover
               button={
                 <OuiButtonIcon
-                  className="sessionLeftNav__actionButton"
+                  className={`sessionLeftNav__actionButton${
+                    activeView === 'session' && isEmptySession
+                      ? ' sessionLeftNav__actionButton--active'
+                      : ''
+                  }`}
                   iconType="plusInCircle"
                   aria-label="New session"
                   color="text"
@@ -582,7 +590,11 @@ export const SessionLeftNav = ({
         ) : (
           <OuiToolTip content="New session" position="right">
             <OuiButtonIcon
-              className="sessionLeftNav__actionButton"
+              className={`sessionLeftNav__actionButton${
+                activeView === 'session' && isEmptySession
+                  ? ' sessionLeftNav__actionButton--active'
+                  : ''
+              }`}
               iconType="plusInCircle"
               aria-label="New session"
               color="text"
@@ -709,7 +721,11 @@ export const SessionLeftNav = ({
               button={
                 <div className="sessionLeftNav__sessionsButtonWrap">
                   <OuiButtonIcon
-                    className="sessionLeftNav__actionButton"
+                    className={`sessionLeftNav__actionButton${
+                      activeView === 'session-list'
+                        ? ' sessionLeftNav__actionButton--active'
+                        : ''
+                    }`}
                     iconType="navTicketing"
                     aria-label="All sessions"
                     color="text"
