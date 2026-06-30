@@ -1179,7 +1179,6 @@ export const EmptySessionPage = ({
   const [gallerySearch, setGallerySearch] = useState('');
   const [widgetOrder, setWidgetOrder] = useState([
     'top-services',
-    'workflows',
     'connection-timeout',
     'recent-alerts',
     'resource-utilization',
@@ -1481,6 +1480,32 @@ export const EmptySessionPage = ({
                 borderActive={inputActive}
               />
             </div>
+
+            {/* Jump to */}
+            <div className="emptySessionPage__jumpTo">
+              <span className="emptySessionPage__jumpToLabel">Jump to</span>
+              <button type="button" className="emptySessionPage__jumpToChip" onClick={() => onOpenPageInNewSession('logs', 'Logs')}>
+                <OuiIcon type="navDiscover" size="s" />
+                <span>Logs</span>
+              </button>
+              <button type="button" className="emptySessionPage__jumpToChip" onClick={() => onOpenPageInNewSession('metrics', 'Metrics')}>
+                <OuiIcon type="visArea" size="s" />
+                <span>Metrics</span>
+              </button>
+              <button type="button" className="emptySessionPage__jumpToChip" onClick={() => onOpenPageInNewSession('dashboards', 'Dashboards')}>
+                <OuiIcon type="navDashboards" size="s" />
+                <span>Dashboards</span>
+              </button>
+              <button type="button" className="emptySessionPage__jumpToChip" onClick={() => onOpenPageInNewSession('alerts', 'Alerts')}>
+                <OuiIcon type="navAlerting" size="s" />
+                <span>Alerts</span>
+              </button>
+              <OuiToolTip content="More" position="top">
+                <button type="button" className="emptySessionPage__jumpToChip emptySessionPage__jumpToChip--round" onClick={() => setWorkflowsExpanded(true)}>
+                  <OuiIcon type="plusInCircle" size="s" />
+                </button>
+              </OuiToolTip>
+            </div>
           </div>
 
           {/* Resize handle */}
@@ -1516,12 +1541,15 @@ export const EmptySessionPage = ({
               }}>
               <div className="emptySessionPage__tabRow emptySessionPage__tabRow--sticky">
                 <div className="emptySessionPage__overviewTitleGroup">
-                  <span className="emptySessionPage__overviewTitle">Overview</span>
-                  <span className="emptySessionPage__overviewStatus">
-                    <span className="emptySessionPage__overviewStatusDot" />
-                    Updated 2m ago
-                  </span>
+                  <span className="emptySessionPage__overviewTitle">{workflowsExpanded ? 'Open a page' : 'Overview'}</span>
+                  {!workflowsExpanded && (
+                    <span className="emptySessionPage__overviewStatus">
+                      <span className="emptySessionPage__overviewStatusDot" />
+                      Updated 2m ago
+                    </span>
+                  )}
                 </div>
+                {!workflowsExpanded && (
                 <div className="emptySessionPage__tabRowActions">
                   <OuiToolTip content="Refresh" position="left">
                     <OuiButtonIcon
@@ -1573,6 +1601,7 @@ export const EmptySessionPage = ({
                     </OuiToolTip>
                   )}
                 </div>
+                )}
               </div>
 
               <div className="emptySessionPage__briefingContent">

@@ -64,6 +64,7 @@ import { EmptySessionPage } from './empty_session_page';
 import { EmptySessionPageV2 } from './empty_session_page_v2';
 import { EmptySessionPageV3 } from './empty_session_page_v3';
 import { EmptySessionPageV5 } from './empty_session_page_v5';
+import { EmptySessionPageV6 } from './empty_session_page_v6';
 import { SOURCE_PAGE_MOCK } from './session_models';
 import {
   createSession,
@@ -1530,8 +1531,9 @@ export const SessionPagesView = ({ variant } = {}) => {
   const v5ScenarioMatch = variant && variant.match(/^v5-scenario(\d+)$/);
   const v5ScenarioNumber = v5ScenarioMatch ? parseInt(v5ScenarioMatch[1], 10) : null;
   const isV5Variant = variant === 'v5' || v5ScenarioNumber != null;
+  const isV6Variant = variant === 'v6';
 
-  const EmptyPage = isV5Variant ? EmptySessionPageV5 : variant === 'v4' ? EmptySessionPageV3 : variant === 'v3' ? EmptySessionPageV3 : variant === 'v2' ? EmptySessionPageV2 : EmptySessionPage;
+  const EmptyPage = isV6Variant ? EmptySessionPageV6 : isV5Variant ? EmptySessionPageV5 : variant === 'v4' ? EmptySessionPageV3 : variant === 'v3' ? EmptySessionPageV3 : variant === 'v2' ? EmptySessionPageV2 : EmptySessionPage;
   // Prevent page scroll when this full-screen view is mounted
   useEffect(() => {
     document.body.style.overflow = 'hidden';
