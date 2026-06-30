@@ -40,6 +40,7 @@ $leftNavV4-pill-radius: 7px;
   &--collapsed {
     width: $leftNavV4-collapsed-width;
     min-width: $leftNavV4-collapsed-width;
+    cursor: pointer;
     transition:
       width 180ms ease-in,
       min-width 180ms ease-in;
@@ -500,8 +501,24 @@ $leftNavV4-pill-radius: 7px;
 }
 
 // ─── Bottom item ────────────────────────────────────────────
+.leftNavV4__utilityGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 8px $leftNavV4-pill-inset 4px;
+
+  .leftNavV4--collapsed & {
+    padding: 8px (($leftNavV4-collapsed-width - 40px) / 2) 4px;
+    align-items: center;
+  }
+
+  .leftNavV4__divider {
+    margin: 4px 0;
+  }
+}
+
 .leftNavV4__bottom {
-  padding: 8px $leftNavV4-pill-inset;
+  padding: 4px $leftNavV4-pill-inset 8px;
   border-top: 0.5px solid lightOrDarkTheme(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.05));
 
   .leftNavV4--collapsed & {

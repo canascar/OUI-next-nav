@@ -21,6 +21,8 @@ import { OuiAgenticSpinner } from '../../../../src/components/headless/agentic_s
 import { ThemeContext } from '../../components/with_theme';
 
 const CORE_ITEMS = [
+  { key: 'sessions', label: 'Sessions', icon: 'editorComment' },
+  { key: 'library', label: 'Library', icon: 'folderClosed' },
   { key: 'investigations', label: 'Investigations', icon: 'securitySignalDetected' },
   { key: 'boards', label: 'Boards', icon: 'navDashboards' },
   { key: 'spaces', label: 'Spaces', icon: 'grid' },
@@ -132,8 +134,10 @@ export const LeftNavV4 = ({
   const [workspaceOpen, setWorkspaceOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(true);
   const [logoHovered, setLogoHovered] = useState(false);
+  const [showExpandHint, setShowExpandHint] = useState(false);
   const [recentsLoading, setRecentsLoading] = useState(true);
   const [selectedRecentKey, setSelectedRecentKey] = useState(null);
+  const expandHintTimer = useRef(null);
   const [scrolledTop, setScrolledTop] = useState(false);
   const [scrolledBottom, setScrolledBottom] = useState(false);
   const scrollRef = useRef(null);
@@ -184,14 +188,33 @@ export const LeftNavV4 = ({
     }
   }, [onPageChange, onStartThread]);
 
-  const toggle = useCallback(() => setCollapsed((c) => !c), []);
+  const toggle = useCallback(() => {
+    setCollapsed((c) => {
+      if (!c) {
+        setShowExpandHint(true);
+        if (expandHintTimer.current) clearTimeout(expandHintTimer.current);
+        expandHintTimer.current = setTimeout(() => setShowExpandHint(false), 3000);
+      } else {
+        setShowExpandHint(false);
+        if (expandHintTimer.current) clearTimeout(expandHintTimer.current);
+      }
+      return !c;
+    });
+  }, []);
 
   const primaryItem = { key: 'ask-olly', label: 'New session', icon: 'plusInCircle', primary: true };
+
+  const handleNavClick = useCallback((e) => {
+    if (!collapsed) return;
+    if (e.target.closest('button, a, [role="button"]')) return;
+    toggle();
+  }, [collapsed, toggle]);
 
   return (
     <nav
       className={`leftNavV4${collapsed ? ' leftNavV4--collapsed' : ''}`}
-      aria-label="Main navigation">
+      aria-label="Main navigation"
+      onClick={handleNavClick}>
 
       {/* ─── Sticky header ─── */}
       <div className="leftNavV4__stickyHeader">
@@ -205,10 +228,10 @@ export const LeftNavV4 = ({
               onMouseEnter={() => setLogoHovered(true)}
               onMouseLeave={() => setLogoHovered(false)}
               aria-label="Expand navigation">
-              <span className={`leftNavV4__logoIcon${logoHovered ? ' leftNavV4__logoIcon--hidden' : ''}`}>
+              <span className={`leftNavV4__logoIcon${(logoHovered || showExpandHint) ? ' leftNavV4__logoIcon--hidden' : ''}`}>
                 <OuiIcon type="logoOpenSearch" size="l" />
               </span>
-              <span className={`leftNavV4__expandIcon${logoHovered ? ' leftNavV4__expandIcon--visible' : ''}`}>
+              <span className={`leftNavV4__expandIcon${(logoHovered || showExpandHint) ? ' leftNavV4__expandIcon--visible' : ''}`}>
                 <OuiIcon type="menuRight" size="s" />
               </span>
             </button>
@@ -343,7 +366,23 @@ export const LeftNavV4 = ({
 
       {/* ─── Sticky footer ─── */}
       <div className={`leftNavV4__stickyFooter${scrolledBottom ? ' leftNavV4__stickyFooter--shadow' : ''}`}>
-        {/* Divider + user/workspace */}
+        {/* Utility items */}
+        <div className="leftNavV4__utilityGroup">
+          <NavItem
+            item={{ key: 'dev-tools', label: 'Dev tools', icon: 'wrench' }}
+            active={false}
+            collapsed={collapsed}
+            onClick={() => onPageChange && onPageChange('dev-tools')}
+          />
+          <NavItem
+            item={{ key: 'settings', label: 'Settings', icon: 'gear' }}
+            active={false}
+            collapsed={collapsed}
+            onClick={() => onPageChange && onPageChange('settings')}
+          />
+        </div>
+
+        {/* User/workspace */}
         <div className="leftNavV4__bottom">
           <OuiPopover
             button={
