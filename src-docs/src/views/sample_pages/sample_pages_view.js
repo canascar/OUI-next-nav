@@ -63,6 +63,7 @@ import { LibraryPage } from './library_page';
 import { EmptySessionPage } from './empty_session_page';
 import { EmptySessionPageV2 } from './empty_session_page_v2';
 import { EmptySessionPageV3 } from './empty_session_page_v3';
+import { EmptySessionPageV5 } from './empty_session_page_v5';
 import { SOURCE_PAGE_MOCK } from './session_models';
 import {
   createSession,
@@ -1525,7 +1526,12 @@ function initializeSessionState() {
  * is an independent workspace containing a thread panel and page panel with tabs.
  */
 export const SessionPagesView = ({ variant } = {}) => {
-  const EmptyPage = variant === 'v4' ? EmptySessionPageV3 : variant === 'v3' ? EmptySessionPageV3 : variant === 'v2' ? EmptySessionPageV2 : EmptySessionPage;
+  // Parse v5 scenario variants (e.g., 'v5-scenario3' → scenario 3)
+  const v5ScenarioMatch = variant && variant.match(/^v5-scenario(\d+)$/);
+  const v5ScenarioNumber = v5ScenarioMatch ? parseInt(v5ScenarioMatch[1], 10) : null;
+  const isV5Variant = variant === 'v5' || v5ScenarioNumber != null;
+
+  const EmptyPage = isV5Variant ? EmptySessionPageV5 : variant === 'v4' ? EmptySessionPageV3 : variant === 'v3' ? EmptySessionPageV3 : variant === 'v2' ? EmptySessionPageV2 : EmptySessionPage;
   // Prevent page scroll when this full-screen view is mounted
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -1713,6 +1719,7 @@ export const SessionPagesView = ({ variant } = {}) => {
     if (isEmptySession) {
       return (
         <EmptyPage
+          scenario={v5ScenarioNumber || 1}
           onStartThread={handleStartThread}
           onOpenPage={handleOpenPage}
           onOpenPageInNewSession={handleOpenCanvasPage}
@@ -1775,7 +1782,7 @@ export const SessionPagesView = ({ variant } = {}) => {
         right: 0,
         bottom: 0,
       }}>
-      {variant === 'v4' ? (
+      {(variant === 'v4' || isV5Variant) ? (
         <LeftNavV4
           activePage={activeView}
           activeSessionId={sessionState.activeSessionId}
@@ -1785,7 +1792,9 @@ export const SessionPagesView = ({ variant } = {}) => {
             else if (key === 'notebooks') handleOpenPage('notebooks');
             else if (key === 'boards') handleOpenPage('dashboards');
             else if (key === 'investigations') handleBrowseSessions();
+            else if (key === 'sessions') handleBrowseSessions();
             else if (key === 'all-chats') handleBrowseSessions();
+            else if (key === 'library') handleBrowseLibrary();
           }}
           onStartThread={() => handleCreateSession()}
           onSelectSession={handleSelectSession}
@@ -1813,7 +1822,7 @@ export const SessionPagesView = ({ variant } = {}) => {
           flex: 1,
           overflow: 'hidden',
           display: 'flex',
-          paddingLeft: variant === 'v4' ? 14 : 0,
+          paddingLeft: (variant === 'v4' || isV5Variant) ? 14 : 0,
         }}>
         {renderMainContent()}
       </div>

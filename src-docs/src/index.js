@@ -112,6 +112,54 @@ render(
           />
 
           <Route
+            path="/sample-pages-v5-scenario1"
+            render={() => (
+              <LinkWrapper>
+                <SessionPagesView variant="v5-scenario1" />
+              </LinkWrapper>
+            )}
+          />
+          <Route
+            path="/sample-pages-v5-scenario2"
+            render={() => (
+              <LinkWrapper>
+                <SessionPagesView variant="v5-scenario2" />
+              </LinkWrapper>
+            )}
+          />
+          <Route
+            path="/sample-pages-v5-scenario3"
+            render={() => (
+              <LinkWrapper>
+                <SessionPagesView variant="v5-scenario3" />
+              </LinkWrapper>
+            )}
+          />
+          <Route
+            path="/sample-pages-v5-scenario4"
+            render={() => (
+              <LinkWrapper>
+                <SessionPagesView variant="v5-scenario4" />
+              </LinkWrapper>
+            )}
+          />
+          <Route
+            path="/sample-pages-v5-scenario5"
+            render={() => (
+              <LinkWrapper>
+                <SessionPagesView variant="v5-scenario5" />
+              </LinkWrapper>
+            )}
+          />
+          <Route
+            path="/sample-pages-v5"
+            render={() => (
+              <LinkWrapper>
+                <SessionPagesView variant="v5" />
+              </LinkWrapper>
+            )}
+          />
+          <Route
             path="/sample-pages-v4"
             render={() => (
               <LinkWrapper>
