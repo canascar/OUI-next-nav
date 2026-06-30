@@ -484,12 +484,22 @@ export const SessionLeftNav = ({
   );
 
   // ---------- COLLAPSED NAV RENDER ----------
+  const handleNavBackgroundClick = useCallback((e) => {
+    // Don't expand if user clicked on a button, link, or popover content
+    const interactive = e.target.closest('button, a, [role="button"], .ouiPopover__panel');
+    if (!interactive) {
+      setIsNavExpanded(true);
+    }
+  }, []);
+
   const renderCollapsedNav = () => (
     <nav
       className={`sessionLeftNav${
         inActiveSession ? ' sessionLeftNav--inSession' : ''
       }`}
-      aria-label="Session navigation">
+      aria-label="Session navigation"
+      onClick={handleNavBackgroundClick}
+      style={{ cursor: 'pointer' }}>
       {/* Logo — on hover shows expand icon, click expands nav */}
       <div className="sessionLeftNav__logo">
         <button
