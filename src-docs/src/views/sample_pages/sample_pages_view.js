@@ -1813,7 +1813,28 @@ export const SessionPagesView = ({ variant } = {}) => {
           onBrowseSessions={handleBrowseSessions}
           onBrowseLibrary={handleBrowseLibrary}
           onSelectSession={handleSelectSession}
+          onOpenPage={(pageKey, title) => {
+            setSessionState((prev) => {
+              const next = createSession(prev);
+              const newSessionId = next.activeSessionId;
+              const tab = {
+                id: `tab-${Date.now()}-${Math.random()
+                  .toString(36)
+                  .slice(2, 9)}`,
+                pageKey,
+                title,
+              };
+              return updateSession(next, newSessionId, {
+                tabs: [tab],
+                activeTabId: tab.id,
+                threadPanelState: 'minimized',
+                title,
+              });
+            });
+            setActiveView('session');
+          }}
           activeView={activeView}
+          activeSessionId={sessionState.activeSessionId}
           isEmptySession={isEmptySession}
         />
       )}
