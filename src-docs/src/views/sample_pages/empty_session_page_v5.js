@@ -20,6 +20,7 @@ import {
   OuiButtonIcon,
   OuiIcon,
   OuiInsightCard,
+  OuiTitle,
   OuiToolTip,
 } from '../../../../src/components';
 
@@ -241,14 +242,17 @@ const SCENARIO_TABS = {
 const SCENARIOS = {
   1: {
     statusColor: 'green',
-    greeting: 'Morning, John. Quiet night. I looked into two anomalies — both were nothing.',
+    greeting: 'Hey hey, John!',
+    summary: '<strong>244 of 247</strong> services healthy. No degradation, no cascading failures. <strong>3 findings</strong> need your attention.',
     findings: [
       {
-        key: 'investigated-latency',
+        key: 'investigated-anomalies',
         status: 'Investigated',
         statusColor: 'teal',
-        title: 'search-tool latency spike · triage model drift',
-        body: 'Checked both. The spike was a cold start; the drift self-corrected. No action needed.',
+        title: 'Two anomalies — both benign',
+        conf: 0.91,
+        sources: ['OpenSearch · traces'],
+        body: 'A search-tool latency spike (cold start) and triage model drift (self-corrected). No action needed.',
         actions: [{ label: 'See the two queries', key: 'see-queries' }],
       },
       {
@@ -256,28 +260,34 @@ const SCENARIOS = {
         status: 'Watching',
         statusColor: 'gray',
         title: 'Groundedness on docs-retrieval is sliding',
-        body: '0.81 → 0.74 over three days. Within range, but trending. I’ll flag it at 0.70.',
-        actions: [{ label: 'See the query', key: 'see-query' }],
+        sources: ['OpenSearch · eval'],
+        body: "0.81 → 0.74 over three days. Within range, but trending. I'll flag it at 0.70.",
+        actions: [{ label: 'Adjust the threshold', key: 'adjust-threshold' }],
       },
       {
         key: 'recommends-routing',
         status: 'Recommends',
         statusColor: 'blue',
-        title: 'The planner sends simple intents to the expensive model',
-        body: '38% of them — $410 a day in tokens. Routing them to the cheap model is a runtime change, so it’s yours.',
+        title: 'The planner over-uses the expensive model',
+        conf: 0.79,
+        sources: ['OpenSearch · gen_ai.usage'],
+        body: "38% of simple intents hit the expensive model — $410/day. Routing them cheap is a runtime change, so it's yours.",
         actions: [{ label: 'Open the runbook', key: 'open-runbook' }],
       },
     ],
   },
   2: {
     statusColor: 'red',
-    greeting: 'John — checkout-agent has been looping for six minutes. I traced it.',
+    greeting: 'Hey John,',
+    summary: '<strong>Active incident</strong> — checkout-agent is looping in prod. <strong>1 finding</strong> needs you now, two more to review.',
     findings: [
       {
         key: 'traced-loop',
         status: 'Traced',
         statusColor: 'amber',
-        title: 'It’s stuck on order-lookup',
+        title: "It's stuck on order-lookup",
+        conf: 0.93,
+        sources: ['OpenSearch · traces'],
         body: 'The tool returns 200 with an empty body on a miss. The agent reads empty as retryable and loops.',
         actions: [{ label: 'Open the trace', key: 'open-trace' }],
       },
@@ -285,16 +295,19 @@ const SCENARIOS = {
         key: 'root-cause-pool',
         status: 'Root cause',
         statusColor: 'red',
-        title: 'order-db connection pool is exhausted',
-        body: 'At the bottom of the trace: the pool is at 98%, so order-lookup times out and returns empty.',
-        actions: [{ label: 'See the query', key: 'see-query' }],
+        title: 'order-db is exhausted, and the loop is a code bug',
+        conf: 0.88,
+        sources: ['CloudWatch', 'RDS', 'GitHub'],
+        body: "The pool is at 98% (CloudWatch), so the tool times out — and it loops because the handler returns 200 on empty instead of 404 (your code).",
+        actions: [{ label: 'See the code', key: 'see-code' }],
       },
       {
         key: 'recommends-fixes',
         status: 'Recommends',
         statusColor: 'blue',
-        title: 'Two fixes — both yours to make',
-        body: 'Cap order-lookup retries (runtime), or raise the db pool (infra). I can’t touch either. Paging on-call now.',
+        title: "Two fixes — both yours to make",
+        sources: ['PagerDuty'],
+        body: "Cap retries (runtime), raise the pool (infra), and fix 200-on-empty (code). I can't touch any of them. Paging on-call now.",
         actions: [
           { label: 'Page on-call', key: 'page-oncall' },
           { label: 'Open the notebook', key: 'open-notebook' },
@@ -304,13 +317,15 @@ const SCENARIOS = {
   },
   3: {
     statusColor: 'red',
-    greeting: 'One thing needs you, John. I investigated — but this is a judgment call.',
+    greeting: 'Hey John,',
+    summary: "<strong>244 of 247</strong> healthy. But <strong>1 finding</strong> needs your call — I investigated and couldn't decide it.",
     findings: [
       {
         key: 'needs-you-billing',
         status: 'Needs you',
         statusColor: 'red',
         title: 'billing-agent may be inventing dollar figures',
+        sources: ['OpenSearch · eval'],
         body: 'Groundedness dropped to 0.58. The answers read fine, but citations stopped matching the source. This is customer-facing.',
         actions: [],
       },
@@ -318,8 +333,8 @@ const SCENARIOS = {
         key: 'found-causes',
         status: 'Found',
         statusColor: 'purple',
-        title: 'Two causes, equally supported',
-        body: 'I ran both. Yesterday’s prompt change lines up in time. The retrieval index is also 26h stale — that fits too. The data supports both equally; I can’t separate them.',
+        title: "Two causes, and I can't separate them",
+        body: "A prompt change yesterday lines up in time. A 26h-stale retrieval index also fits. I score them nearly even.",
         actions: [{ label: 'Open the notebook', key: 'open-notebook' }],
       },
       {
@@ -327,20 +342,24 @@ const SCENARIOS = {
         status: 'Recommends',
         statusColor: 'blue',
         title: 'Deciding wrong is expensive',
-        body: 'A rollback loses a day of tuning. A reindex takes the agent offline 20 minutes. That trade-off is yours to make.',
+        sources: ['PagerDuty'],
+        body: "A rollback loses a day of tuning. A reindex takes the agent offline 20 minutes. That trade-off is yours.",
         actions: [{ label: 'Page the owner', key: 'page-owner' }],
       },
     ],
   },
   4: {
     statusColor: 'green',
-    greeting: 'Morning, John. Quiet — but there’s a reasoning regression I’d dig into.',
+    greeting: 'Hey hey, John!',
+    summary: "<strong>All services healthy.</strong> A reasoning regression is worth a look — <strong>3 findings</strong>, none of them an outage.",
     findings: [
       {
         key: 'found-tool-selection',
         status: 'Found',
         statusColor: 'purple',
         title: 'The orchestrator picks the wrong tool more often',
+        conf: 0.84,
+        sources: ['OpenSearch · eval'],
         body: 'Tool-selection accuracy fell from 0.71 to 0.58 this week. Not an outage — a quality slip in the reasoning.',
         actions: [{ label: 'See the query', key: 'see-query' }],
       },
@@ -349,7 +368,8 @@ const SCENARIOS = {
         status: 'Watching',
         statusColor: 'gray',
         title: 'Infra is clean',
-        body: 'Every golden signal is green. This lives in the model’s choices, not the stack — so don’t go looking there.',
+        sources: ['CloudWatch'],
+        body: "Every golden signal is green. This lives in the model's choices, not the stack — so don't go looking there.",
         actions: [],
       },
       {
@@ -357,21 +377,24 @@ const SCENARIOS = {
         status: 'Recommends',
         statusColor: 'blue',
         title: 'I can run a deeper read',
-        body: 'Which agent path regressed, lined up against the prompt deploy. It’s read-only — say the word.',
+        body: "Which agent path regressed, lined up against the prompt deploy. It's read-only — say the word.",
         actions: [{ label: 'Run the investigation', key: 'run-investigation' }],
       },
     ],
   },
   5: {
     statusColor: 'amber',
-    greeting: 'Morning, John. The research-agent loop is back — fifth time this month. The fix isn’t mine to make.',
+    greeting: 'Hey hey, John!',
+    summary: "<strong>Healthy</strong>, but a familiar loop is back — <strong>2 findings</strong>, and the real fix is yours to ship.",
     findings: [
       {
         key: 'found-pattern',
         status: 'Found',
         statusColor: 'purple',
         title: 'Same loop, every time',
-        body: 'Across five traces this month: web-fetch returns 200 with an empty body, the agent retries forever. I keep finding it; the contract never gets fixed.',
+        conf: 0.90,
+        sources: ['OpenSearch · patterns', 'incident history'],
+        body: "Across five traces this month, same signature: web-fetch returns 200 with an empty body, the agent retries forever. I matched it against the prior four.",
         actions: [{ label: 'See the pattern', key: 'see-pattern' }],
       },
       {
@@ -379,7 +402,8 @@ const SCENARIOS = {
         status: 'Recommends',
         statusColor: 'blue',
         title: 'The real fix is a code change',
-        body: 'The upstream returns 200 instead of 404, or the agent mishandles empty. Both are yours. I’d open a root-cause notebook and file the issue.',
+        sources: ['GitHub'],
+        body: "The upstream returns 200 instead of 404, or the agent mishandles empty. Both are yours. I'd open a notebook and file the issue.",
         actions: [
           { label: 'Open the notebook', key: 'open-notebook' },
           { label: 'File the issue', key: 'file-issue' },
@@ -623,7 +647,6 @@ export const EmptySessionPageV5 = ({
 
   const [inputValue, setInputValue] = useState('');
   const [mascotExpression, setMascotExpression] = useState(undefined);
-  const [rightPanelTab, setRightPanelTab] = useState('overview');
   const [isEditMode, setIsEditMode] = useState(false);
   const [refreshingWidgets, setRefreshingWidgets] = useState(() => {
     const initial = {};
@@ -834,35 +857,10 @@ export const EmptySessionPageV5 = ({
           </div>
 
           {/* Greeting */}
-          <p className="v5Scenario__greeting">{scenarioData.greeting}</p>
-
-          {/* Findings */}
-          <div className="v5Scenario__findings">
-            {scenarioData.findings.map((finding) => (
-              <div key={finding.key} className="v5Scenario__finding">
-                <div className="v5Scenario__findingHeader">
-                  <StatusPill status={finding.status} color={finding.statusColor} />
-                  <span className="v5Scenario__findingTitle">{finding.title}</span>
-                </div>
-                <p className="v5Scenario__findingBody">{finding.body}</p>
-                {finding.actions && finding.actions.length > 0 && (
-                  <div className="v5Scenario__findingActions">
-                    {finding.actions.map((action) => (
-                      <button
-                        key={action.key}
-                        type="button"
-                        className="v5Scenario__findingAction"
-                        onClick={() => {
-                          if (onStartThread) onStartThread(action.label);
-                        }}>
-                        {action.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+          <OuiTitle size="m" className="v5Scenario__title">
+            <h1>{scenarioData.greeting}</h1>
+          </OuiTitle>
+          <p className="v5Scenario__summary" dangerouslySetInnerHTML={{ __html: scenarioData.summary }} />
 
           {/* Input */}
           <div className="v5Scenario__inputArea">
@@ -916,21 +914,14 @@ export const EmptySessionPageV5 = ({
 
         {/* Right column */}
         <div className="v5Scenario__rightCol">
-          {/* Tabs */}
+          {/* Header: System Overview + actions */}
           <div className="v5Scenario__tabRow">
-            <div className="v5Scenario__panelTabs">
-              <button
-                type="button"
-                className={`v5Scenario__panelTab${rightPanelTab === 'overview' ? ' v5Scenario__panelTab--active' : ''}`}
-                onClick={() => setRightPanelTab('overview')}>
-                {SCENARIO_TABS[scenario] || 'Overview'}
-              </button>
-              <button
-                type="button"
-                className={`v5Scenario__panelTab${rightPanelTab === 'favorites' ? ' v5Scenario__panelTab--active' : ''}`}
-                onClick={() => setRightPanelTab('favorites')}>
-                Favorites
-              </button>
+            <div className="v5Scenario__overviewTitleGroup">
+              <span className="v5Scenario__overviewTitle">System Overview</span>
+              <span className="v5Scenario__overviewStatus">
+                <span className="v5Scenario__overviewStatusDot" />
+                Updated 2m ago
+              </span>
             </div>
             <div className="v5Scenario__tabRowActions">
               <OuiToolTip content="Refresh" position="left">
@@ -956,139 +947,122 @@ export const EmptySessionPageV5 = ({
                   }}
                 />
               </OuiToolTip>
+              <OuiToolTip content="Edit custom widgets" position="left">
+                <OuiButtonIcon
+                  iconType="controlsHorizontal"
+                  aria-label="Edit custom widgets"
+                  size="s"
+                  color="text"
+                  display="empty"
+                  onClick={() => setIsEditMode(!isEditMode)}
+                />
+              </OuiToolTip>
             </div>
           </div>
 
-          {/* Scenario evidence + widget grid */}
-          {rightPanelTab === 'overview' ? (
-            <div className="v5Scenario__overviewContent">
-              {/* Scenario-specific evidence */}
-              <ScenarioEvidence scenario={scenario} />
+          {/* All in one section: findings → evidence → correlated widgets → custom widgets */}
+          <div className="v5Scenario__overviewContent">
+            {/* Section: System findings */}
+            <div className="v5Scenario__sectionEyebrow">System findings</div>
+            {/* Findings */}
+            <div className="v5Scenario__findings">
+              {scenarioData.findings.map((finding) => (
+                <div key={finding.key} className="v5Scenario__finding">
+                  <div className="v5Scenario__findingHeader">
+                    <StatusPill status={finding.status} color={finding.statusColor} />
+                    <span className="v5Scenario__findingTitle">{finding.title}</span>
+                  </div>
+                  <p className="v5Scenario__findingBody">{finding.body}</p>
+                  {/* Meta: confidence + sources */}
+                  {(finding.conf || finding.sources) && (
+                    <div className="v5Scenario__findingMeta">
+                      {finding.conf && (
+                        <span className="v5Scenario__confBadge">
+                          conf {finding.conf.toFixed(2)}
+                          <span className="v5Scenario__confBar">
+                            <span className="v5Scenario__confFill" style={{ width: `${finding.conf * 100}%` }} />
+                          </span>
+                        </span>
+                      )}
+                      {finding.sources && finding.sources.map((s, i) => (
+                        <span key={i} className="v5Scenario__sourceBadge">{s}</span>
+                      ))}
+                    </div>
+                  )}
+                  {finding.actions && finding.actions.length > 0 && (
+                    <div className="v5Scenario__findingActions">
+                      {finding.actions.map((action) => (
+                        <button
+                          key={action.key}
+                          type="button"
+                          className="v5Scenario__findingAction"
+                          onClick={() => {
+                            if (onStartThread) onStartThread(action.label);
+                          }}>
+                          {action.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
 
-              {/* Widget grid below */}
-              <div className="v5Scenario__widgetGrid">
-                {widgetOrder.map((widgetId) => {
-                  const size = widgetSizes[widgetId] || 1;
-                  const wrapClass = `v5Scenario__widgetWrap${size >= 2 ? ' v5Scenario__widget--wide' : ''}`;
-                  return (
-                    <div key={widgetId} className={wrapClass} data-widget={widgetId}>
-                      {refreshingWidgets[widgetId] ? (
-                        <div style={{ position: 'relative', overflow: 'hidden', flex: 1 }}>
-                          <div style={{ visibility: 'hidden' }}>{renderWidget(widgetId)}</div>
-                          <div style={{ position: 'absolute', inset: 0, borderRadius: 'inherit' }}>
-                            <div className="ouiInsightCard" style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-                              <ScanShimmerOverlay />
-                            </div>
+            {/* Scenario-specific evidence */}
+            <ScenarioEvidence scenario={scenario} />
+
+            {/* Pinned widgets */}
+            <div className="v5Scenario__sectionEyebrow">Pinned widgets</div>
+            <div className="v5Scenario__widgetGrid">
+              {widgetOrder.map((widgetId) => {
+                const size = widgetSizes[widgetId] || 1;
+                const wrapClass = `v5Scenario__widgetWrap${size >= 2 ? ' v5Scenario__widget--wide' : ''}`;
+                return (
+                  <div key={widgetId} className={wrapClass} data-widget={widgetId}>
+                    {refreshingWidgets[widgetId] ? (
+                      <div style={{ position: 'relative', overflow: 'hidden', flex: 1 }}>
+                        <div style={{ visibility: 'hidden' }}>{renderWidget(widgetId)}</div>
+                        <div style={{ position: 'absolute', inset: 0, borderRadius: 'inherit' }}>
+                          <div className="ouiInsightCard" style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+                            <ScanShimmerOverlay />
                           </div>
                         </div>
-                      ) : renderWidget(widgetId)}
+                      </div>
+                    ) : renderWidget(widgetId)}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Custom widgets (bookmarked) */}
+            <div className="v5Scenario__customWidgetsSection">
+              <div className="v5Scenario__customWidgetsHeader">
+                <span className="v5Scenario__customWidgetsLabel">Favorites</span>
+              </div>
+              <div className="v5Scenario__widgetGrid">
+                <div className="v5Scenario__widgetWrap" data-widget="custom-1">
+                  <OuiInsightCard onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('dashboards', 'Payment pool health')}>
+                    <div className="v5Scenario__customWidgetHeader">
+                      <WidgetHeader title="Payment pool health" />
+                      <OuiIcon type="starFilled" size="s" className="v5Scenario__bookmarkStar" />
                     </div>
-                  );
-                })}
+                    <span style={{ fontSize: 18, fontWeight: 700, color: '#1F9D6B', display: 'block' }}>31%</span>
+                    <span className="widgetCard__mono" style={{ fontSize: 10 }}>pool utilization · steady</span>
+                  </OuiInsightCard>
+                </div>
+                <div className="v5Scenario__widgetWrap" data-widget="custom-2">
+                  <OuiInsightCard onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('metrics', 'Token spend')}>
+                    <div className="v5Scenario__customWidgetHeader">
+                      <WidgetHeader title="Token spend · 24h" />
+                      <OuiIcon type="starFilled" size="s" className="v5Scenario__bookmarkStar" />
+                    </div>
+                    <span style={{ fontSize: 18, fontWeight: 700, color: '#DC2626', display: 'block' }}>$1,284</span>
+                    <span className="widgetCard__mono" style={{ fontSize: 10 }}>↑18% from yesterday</span>
+                  </OuiInsightCard>
+                </div>
               </div>
             </div>
-          ) : (
-            <div className="v5Scenario__favoritesPanel">
-              <div className="v5Scenario__favSection">
-                <span className="v5Scenario__favSectionTitle">Dashboards</span>
-                <button
-                  type="button"
-                  className="v5Scenario__favItem"
-                  onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('dashboards', 'Service overview')}>
-                  <div className="v5Scenario__favItemInfo">
-                    <strong>Service overview</strong>
-                    <span className="v5Scenario__favItemMeta">12 panels &middot; opened 2h ago</span>
-                  </div>
-                  <svg className="v5Scenario__favItemSpark" viewBox="0 0 60 20">
-                    <defs><ChartTexture id="v5favStripe1" variant="stripe" color="#1F9D6B" /></defs>
-                    <path d="M0,14 L10,10 L20,12 L30,8 L40,10 L50,6 L60,8 V20 H0 Z" fill="url(#v5favStripe1)" />
-                    <polyline fill="none" stroke="#34d399" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points="0,14 10,10 20,12 30,8 40,10 50,6 60,8" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  className="v5Scenario__favItem"
-                  onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('dashboards', 'p99 latency')}>
-                  <div className="v5Scenario__favItemInfo">
-                    <strong>p99 latency</strong>
-                    <span className="v5Scenario__favItemMeta">8 panels &middot; opened today</span>
-                  </div>
-                  <svg className="v5Scenario__favItemSpark" viewBox="0 0 60 20">
-                    <defs><ChartTexture id="v5favStripe2" variant="stripe" /></defs>
-                    <path d="M0,16 L10,14 L20,12 L30,10 L40,8 L50,6 L60,4 V20 H0 Z" fill="url(#v5favStripe2)" />
-                    <polyline fill="none" stroke="#d97706" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points="0,16 10,14 20,12 30,10 40,8 50,6 60,4" />
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  className="v5Scenario__favItem"
-                  onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('dashboards', 'Error rate by service')}>
-                  <div className="v5Scenario__favItemInfo">
-                    <strong>Error rate by service</strong>
-                    <span className="v5Scenario__favItemMeta">6 panels &middot; opened yesterday</span>
-                  </div>
-                  <svg className="v5Scenario__favItemSpark" viewBox="0 0 60 20">
-                    <defs><ChartTexture id="v5favStripe3" variant="stripe" color="#ef4444" /></defs>
-                    <path d="M0,16 L10,12 L20,14 L30,8 L40,10 L50,4 L60,6 V20 H0 Z" fill="url(#v5favStripe3)" />
-                    <polyline fill="none" stroke="#ef4444" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points="0,16 10,12 20,14 30,8 40,10 50,4 60,6" />
-                  </svg>
-                </button>
-              </div>
-
-              <div className="v5Scenario__favSection">
-                <span className="v5Scenario__favSectionTitle">Saved queries</span>
-                <button
-                  type="button"
-                  className="v5Scenario__favItem"
-                  onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('logs', '5xx by service')}>
-                  <div className="v5Scenario__favItemInfo">
-                    <strong>5xx by service</strong>
-                    <span className="v5Scenario__favItemMeta">last 1h &middot; Logs</span>
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  className="v5Scenario__favItem"
-                  onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('logs', 'Slow traces > 2s')}>
-                  <div className="v5Scenario__favItemInfo">
-                    <strong>Slow traces &gt; 2s</strong>
-                    <span className="v5Scenario__favItemMeta">all services &middot; Traces</span>
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  className="v5Scenario__favItem"
-                  onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('metrics', 'Memory pressure events')}>
-                  <div className="v5Scenario__favItemInfo">
-                    <strong>Memory pressure events</strong>
-                    <span className="v5Scenario__favItemMeta">last 24h &middot; Metrics</span>
-                  </div>
-                </button>
-              </div>
-
-              <div className="v5Scenario__favSection">
-                <span className="v5Scenario__favSectionTitle">Pinned sessions</span>
-                <button
-                  type="button"
-                  className="v5Scenario__favItem"
-                  onClick={() => onSelectSession && onSelectSession('latency-spike-session')}>
-                  <div className="v5Scenario__favItemInfo">
-                    <strong>Payment latency investigation</strong>
-                    <span className="v5Scenario__favItemMeta">Yesterday &middot; 12 messages</span>
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  className="v5Scenario__favItem"
-                  onClick={() => onSelectSession && onSelectSession('error-rate-spike-session')}>
-                  <div className="v5Scenario__favItemInfo">
-                    <strong>Checkout error deep-dive</strong>
-                    <span className="v5Scenario__favItemMeta">2 days ago &middot; 8 messages</span>
-                  </div>
-                </button>
-              </div>
-            </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

@@ -46,11 +46,17 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  padding: 48px 40px 48px 48px;
+  align-items: center;
+  justify-content: safe center;
+  gap: 16px;
+  padding: 0 48px 16px;
   overflow-y: auto;
-  justify-content: center;
-  max-width: 640px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .v5Scenario__rightCol {
@@ -59,9 +65,21 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 24px 24px 24px 16px;
+  padding: 32px 24px 24px 24px;
   overflow-y: auto;
-  border-left: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.06));
+  background-color: lightOrDarkTheme(rgba(236, 238, 248, 0.50), rgba(13, 19, 30, 0.50));
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// ─── Left column inner content ────────────────────────────────
+.v5Scenario__leftContent {
+  width: 100%;
+  max-width: 480px;
 }
 
 // ─── Mascot row ────────────────────────────────────────────────
@@ -69,6 +87,9 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%;
+  max-width: 480px;
+  padding-bottom: 4px;
 }
 
 .v5Scenario__mascotWrap {
@@ -78,8 +99,9 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 200ms ease;
+  transition: transform 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
   border-radius: 50%;
+  transform-origin: center center;
 }
 
 .v5Scenario__statusDot {
@@ -90,14 +112,35 @@
   box-shadow: 0 0 0 3px lightOrDarkTheme(rgba(255, 255, 255, 0.8), rgba(0, 0, 0, 0.3));
 }
 
-// ─── Greeting ──────────────────────────────────────────────────
-.v5Scenario__greeting {
-  font-size: 18px;
-  font-weight: 500;
-  line-height: 1.5;
-  color: $ouiTitleColor;
+// ─── Title + summary ───────────────────────────────────────────
+.v5Scenario__title {
+  width: 100%;
+  max-width: 480px;
+  padding-bottom: 4px;
+}
+
+.v5Scenario__summary {
+  font-size: 15px;
+  line-height: 1.55;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.65), rgba(255, 255, 255, 0.65));
   margin: 0;
-  letter-spacing: -0.01em;
+  width: 100%;
+  max-width: 480px;
+
+  strong {
+    color: $ouiTitleColor;
+    font-weight: 600;
+  }
+}
+
+// ─── Section eyebrow ──────────────────────────────────────────
+.v5Scenario__sectionEyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.38), rgba(255, 255, 255, 0.38));
+  margin-bottom: 12px;
 }
 
 // ─── Findings ──────────────────────────────────────────────────
@@ -165,6 +208,51 @@
   padding-top: 2px;
 }
 
+.v5Scenario__findingMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 4px;
+}
+
+.v5Scenario__confBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
+  font-size: 10px;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.55), rgba(255, 255, 255, 0.55));
+  white-space: nowrap;
+}
+
+.v5Scenario__confBar {
+  display: inline-block;
+  width: 32px;
+  height: 4px;
+  border-radius: 2px;
+  background: lightOrDarkTheme(#E5E5EC, rgba(255, 255, 255, 0.10));
+  overflow: hidden;
+}
+
+.v5Scenario__confFill {
+  display: block;
+  height: 4px;
+  border-radius: 2px;
+  background: $ouiColorPrimary;
+}
+
+.v5Scenario__sourceBadge {
+  display: inline-flex;
+  font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: lightOrDarkTheme(rgba(91, 79, 207, 0.08), rgba(168, 156, 245, 0.12));
+  color: lightOrDarkTheme(#5B4FCF, #A89CF5);
+  white-space: nowrap;
+}
+
 .v5Scenario__findingAction {
   font-size: 13px;
   font-weight: 500;
@@ -184,7 +272,9 @@
 
 // ─── Input area ────────────────────────────────────────────────
 .v5Scenario__inputArea {
-  margin-top: 8px;
+  width: 100%;
+  max-width: 480px;
+  padding-top: 8px;
 }
 
 .v5Scenario__inputField {
@@ -233,6 +323,8 @@
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
+  width: 100%;
+  max-width: 480px;
 }
 
 .v5Scenario__jumpToLabel {
@@ -264,50 +356,81 @@
   }
 }
 
-// ─── Right column tabs ─────────────────────────────────────────
+// ─── Right column header ──────────────────────────────────────
 .v5Scenario__tabRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 0 8px;
+  padding: 0 0 12px;
   position: sticky;
   top: 0;
   z-index: 10;
   background: inherit;
 }
 
-.v5Scenario__panelTabs {
+.v5Scenario__overviewTitleGroup {
   display: flex;
-  gap: 0;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.v5Scenario__panelTab {
-  padding: 6px 14px;
-  font-size: 13px;
-  font-weight: 500;
-  color: lightOrDarkTheme(rgba(0, 0, 0, 0.50), rgba(255, 255, 255, 0.50));
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
-  font-family: inherit;
-  transition: color 120ms ease, border-color 120ms ease;
-  appearance: none;
+.v5Scenario__overviewTitle {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: $ouiTitleColor;
+}
 
-  &:hover {
-    color: lightOrDarkTheme(rgba(0, 0, 0, 0.75), rgba(255, 255, 255, 0.75));
-  }
+.v5Scenario__overviewStatus {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
+  font-size: 10px;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.40), rgba(255, 255, 255, 0.40));
+}
 
-  &--active {
-    color: $ouiTitleColor;
-    border-bottom-color: $ouiColorPrimary;
-  }
+.v5Scenario__overviewStatusDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: $ouiColorSuccess;
 }
 
 .v5Scenario__tabRowActions {
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+// ─── Custom widgets section ───────────────────────────────────
+.v5Scenario__customWidgetsSection {
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.06));
+}
+
+.v5Scenario__customWidgetsHeader {
+  margin-bottom: 10px;
+}
+
+.v5Scenario__customWidgetsLabel {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.35), rgba(255, 255, 255, 0.35));
+}
+
+.v5Scenario__customWidgetHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.v5Scenario__bookmarkStar {
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.22), rgba(255, 255, 255, 0.30));
+  flex-shrink: 0;
 }
 
 // ─── Overview content wrapper ──────────────────────────────────
