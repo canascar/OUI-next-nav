@@ -79,3 +79,55 @@ Duplicated dark-surface literals were also re-pointed at the theme variables
 - **Glass panel tint:** change the `rgba(26, 23, 33, …)` triplet
   (and the chat-pill `rgba(33, 25, 50, …)`).
 - **Canvas gradients:** adjust the `hsla(...)` saturation values listed above.
+
+---
+
+## Pass 2 — Harmonize to a cool blue-slate hue
+
+**Problem:** Pass 1 only *desaturated* the violet base, which kept the violet
+**hue** (~260). The result was inconsistent: form inputs read muddy, panels
+read bluish, and the accent read purplish-violet — three different hue casts.
+
+**Goal:** unify every dark surface, input, border, and the accent onto a single
+cool blue-slate hue (~222, matching the light-mode primary), so the whole UI
+reads as one harmonized family.
+
+### Theme color variables — `src/themes/v9/v9_colors_dark.scss`
+Surfaces switched from `desaturate(<violet>, …)` to direct slate hexes (hue ~222):
+
+| Token | Pass 1 (violet, desat) | Pass 2 (slate) |
+|-------|------------------------|----------------|
+| `$ouiColorPrimary` / `$ouiColorAccent` | `desaturate(#93b4fc)` | `#93b4fc` (clean blue) |
+| `$ouiColorEmptyShade` | `#191523` | `#13161d` |
+| `$ouiColorLightestShade` | `#282335` | `#171b23` |
+| `$ouiColorLightShade` | `#433f4a` | `#303748` |
+| `$ouiPageBackgroundColor` | `#0f0c14` | `#0c0e13` |
+| `$ouiColorHighlight` / `$ouiBackgroundElevated` | `#231f2a` | `#191d26` |
+| `$ouiFormBackgroundColor` | `#302d35` (muddy) | `#1c212b` |
+| `$ouiBorderColor` / `$ouiBorderElevated` | `#3e3a44` | `#282e3a` |
+| `$ouiLinkColor` | desat `#7B9CF8` | `#8ab0ff` |
+| code name/type / keyword | desat violet | `#93b4fc` / `#82a0f8` |
+
+The Pass 1 desaturation knobs (`$glassDarkSurfaceDesat`,
+`$glassDarkAccentDesat`) are now unused (kept for reference).
+
+### Glass panel tint (frosted backdrop)
+The violet glass tint was the remaining hue outlier (hue ~256). Shifted to slate
+across `_empty_session_page{,_v2,_v3}.scss`, `_onboarding_wizard_page.scss`,
+`_sample_pages_left_nav.scss`, `_session_left_nav.scss`:
+
+| Original | After |
+|----------|-------|
+| `rgba(26, 23, 33, α)` | `rgba(20, 24, 32, α)` |
+
+And the chat-pill ambient glow in
+`src/components/headless/olly_chat_pill/_olly_chat_pill.scss`:
+
+| Original | After |
+|----------|-------|
+| `rgba(33, 25, 50, α)` | `rgba(24, 28, 44, α)` |
+
+### How to retune
+- **Whole-UI hue:** all surfaces now sit at hue ~222. Nudge the slate hexes
+  above (keep G between R and B, B highest) to shift warmer/cooler.
+- **Glass panel tint:** change the `rgba(20, 24, 32, …)` triplet.

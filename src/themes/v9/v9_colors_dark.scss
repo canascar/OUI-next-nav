@@ -19,50 +19,50 @@ $ouiColorInk: #0a0a0a;
 // Glass Theme — Dark
 
 // ============================================================
-// DARK MODE PURPLE TONE-DOWN
-// The Glass dark palette is violet-tinted. To reduce the purple
-// cast, every violet is desaturated toward neutral while keeping
-// the same hue + lightness. Tune the two amounts below to push
-// more or less purple globally. Original (pre-tone-down) hexes
-// are preserved as the desaturate() inputs for reference.
+// DARK MODE — HARMONIZED COOL BLUE-SLATE PALETTE (Pass 2)
+// Pass 1 only desaturated the violet base, which kept the violet
+// HUE (~260) and read muddy/inconsistent. Pass 2 shifts all
+// surfaces to a single cool blue-slate hue (~222, matching the
+// light-mode primary) and uses a clean blue accent, so inputs,
+// panels, and highlights are harmonized.
 // Full change log: src/themes/v9/DARK_COLOR_TUNING.md
 // ============================================================
-$glassDarkSurfaceDesat: 26%;  // surfaces, backgrounds, borders
-$glassDarkAccentDesat: 16%;   // accent, links, code shades
+$glassDarkSurfaceDesat: 26%;  // (legacy Pass 1 knob — no longer used)
+$glassDarkAccentDesat: 16%;   // (legacy Pass 1 knob — no longer used)
 
-// Core — blue-indigo accent palette (lighter for dark bg)
-$ouiColorPrimary: desaturate(#93b4fc, $glassDarkAccentDesat);       // was #a5b4fc → shifted bluer
+// Core — clean blue accent (harmonized with the cool slate surfaces)
+$ouiColorPrimary: #93b4fc;       // cornflower blue
 $ouiColorSecondary: #34d399;     // Green
-$ouiColorAccent: desaturate(#93b4fc, $glassDarkAccentDesat);        // was #a5b4fc → shifted bluer
+$ouiColorAccent: #93b4fc;        // cornflower blue
 
 // Status
 $ouiColorSuccess: #34d399;       // Green
 $ouiColorWarning: #fbbf24;       // Amber
 $ouiColorDanger: #f87171;        // Red
 
-// Shades — Glass dark violet-tinted (desaturated)
-$ouiColorEmptyShade: desaturate(#160e2a, $glassDarkSurfaceDesat);             // was #160e2a — card surfaces
-$ouiColorLightestShade: desaturate(#221840, $glassDarkSurfaceDesat);          // was #221840 — subtle backgrounds
-$ouiColorLightShade: desaturate(#3d2d5c, $glassDarkSurfaceDesat);             // was #3d2d5c — borders
+// Shades — cool blue-slate ramp (harmonized, hue ~222)
+$ouiColorEmptyShade: #13161d;             // card surfaces
+$ouiColorLightestShade: #171b23;          // subtle backgrounds
+$ouiColorLightShade: #303748;             // borders
 $ouiColorMediumShade: rgba(250, 250, 250, 0.50); // Muted text
 $ouiColorDarkShade: #fafafa;              // Body text
 $ouiColorDarkestShade: #ffffff;           // Foreground text
 $ouiColorFullShade: #FFFFFF;              // Brightest foreground
 
 // Backgrounds
-$ouiPageBackgroundColor: desaturate(#0d0818, $glassDarkSurfaceDesat);         // was #0d0818 — canvas
-$ouiColorHighlight: desaturate(#1f1633, $glassDarkSurfaceDesat);              // was #1f1633 — elevated surface
+$ouiPageBackgroundColor: #0c0e13;         // canvas
+$ouiColorHighlight: #191d26;              // elevated surface
 
-// Form input background
-$ouiFormBackgroundColor: desaturate(#2c2042, $glassDarkSurfaceDesat);         // was #2c2042
+// Form input background — clean cool slate (harmonized, was muddy)
+$ouiFormBackgroundColor: #1c212b;
 
 // CodeBlock — Glass dark syntax palette
 $ouiCodeBlockCommentShade: rgba(250, 250, 250, 0.32); // ink-fade
 $ouiCodeBlockStringShade: #fbbf24;   // amber — strings
-$ouiCodeBlockNameShade: desaturate(#a5b4fc, $glassDarkAccentDesat);     // was #a5b4fc
+$ouiCodeBlockNameShade: #93b4fc;
 $ouiCodeBlockNumberShade: #34d399;   // green — numerics
-$ouiCodeBlockKeywordShade: desaturate(#818cf8, $glassDarkAccentDesat);  // was #818cf8
-$ouiCodeBlockTypeShade: desaturate(#a5b4fc, $glassDarkAccentDesat);     // was #a5b4fc
+$ouiCodeBlockKeywordShade: #82a0f8;
+$ouiCodeBlockTypeShade: #93b4fc;
 $ouiCodeBlockTitleShade: #fafafa;    // ink
 
 // Variations from core
@@ -79,7 +79,7 @@ $ouiColorWarningText: makeHighContrastColor($ouiColorWarning) !default;
 $ouiColorDangerText: makeHighContrastColor($ouiColorDanger) !default;
 $ouiColorDisabledText: rgba(250, 250, 250, 0.32) !default;
 $ouiColorSuccessText: $ouiColorSecondaryText !default;
-$ouiLinkColor: desaturate(#7B9CF8, $glassDarkAccentDesat) !default; // blue-shifted accent-bright
+$ouiLinkColor: #8ab0ff !default; // clean blue
 
 // Charts
 $ouiColorChartLines: $ouiColorLightShade;
@@ -101,11 +101,11 @@ $ouiShadow4: 0 4px 12px rgba(0, 0, 0, 0.4), 0 24px 48px rgba(0, 0, 0, 0.4);
 $ouiShadow5: 0 4px 12px rgba(0, 0, 0, 0.4), 0 24px 48px rgba(0, 0, 0, 0.4);
 
 // Border color
-$ouiBorderColor: desaturate(#392a54, $glassDarkSurfaceDesat);       // was #392a54
+$ouiBorderColor: #282e3a;
 
 // Elevated surfaces
-$ouiBackgroundElevated: desaturate(#1f1633, $glassDarkSurfaceDesat); // was #1f1633
-$ouiBorderElevated: desaturate(#392a54, $glassDarkSurfaceDesat);     // was #392a54
+$ouiBackgroundElevated: #191d26;
+$ouiBorderElevated: #282e3a;
 
 //CodeBlock Colors
 $ouiCodeBlockCommentColor: $ouiCodeBlockCommentShade;

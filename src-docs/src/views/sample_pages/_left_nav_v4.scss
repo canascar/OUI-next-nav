@@ -28,7 +28,7 @@ $leftNavV4-pill-radius: 7px;
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: lightOrDarkTheme(#fff, #1A1722);
+  background-color: lightOrDarkTheme(#fff, #141820);
   border-right: 1px solid lightOrDarkTheme(#EEEDF2, rgba(255, 255, 255, 0.06));
   flex-shrink: 0;
   z-index: 2;
@@ -244,12 +244,12 @@ $leftNavV4-pill-radius: 7px;
 
 .leftNavV4__recentItem--active,
 .leftNavV4__recentItem--active:hover {
-  background-color: lightOrDarkTheme(rgba(91, 79, 207, 0.08), rgba(168, 156, 245, 0.12));
-  color: lightOrDarkTheme(#5B4FCF, #A89CF5);
+  background-color: lightOrDarkTheme(rgba(75, 110, 245, 0.08), rgba(147, 180, 252, 0.12));
+  color: lightOrDarkTheme(#4B6EF5, #93B4FC);
   font-weight: 500;
 
   .leftNavV4__recentLabel {
-    color: lightOrDarkTheme(#5B4FCF, #A89CF5);
+    color: lightOrDarkTheme(#4B6EF5, #93B4FC);
   }
 }
 
@@ -357,29 +357,29 @@ $leftNavV4-pill-radius: 7px;
   }
 
   &--active {
-    background-color: lightOrDarkTheme(rgba(91, 79, 207, 0.06), rgba(168, 156, 245, 0.09));
-    color: lightOrDarkTheme(#5B4FCF, #A89CF5);
+    background-color: lightOrDarkTheme(rgba(75, 110, 245, 0.06), rgba(147, 180, 252, 0.09));
+    color: lightOrDarkTheme(#4B6EF5, #93B4FC);
     font-weight: 500;
 
     .leftNavV4__itemIcon .ouiIcon {
-      color: lightOrDarkTheme(#5B4FCF, #A89CF5);
+      color: lightOrDarkTheme(#4B6EF5, #93B4FC);
     }
 
     &:hover {
-      background-color: lightOrDarkTheme(rgba(91, 79, 207, 0.09), rgba(168, 156, 245, 0.12));
+      background-color: lightOrDarkTheme(rgba(75, 110, 245, 0.09), rgba(147, 180, 252, 0.12));
     }
   }
 
   &--primary {
-    color: lightOrDarkTheme(#5B4FCF, #A89CF5);
+    color: lightOrDarkTheme(#4B6EF5, #93B4FC);
     font-weight: 500;
 
     .leftNavV4__itemIcon .ouiIcon {
-      color: lightOrDarkTheme(#5B4FCF, #A89CF5);
+      color: lightOrDarkTheme(#4B6EF5, #93B4FC);
     }
 
     &:hover {
-      background-color: lightOrDarkTheme(rgba(91, 79, 207, 0.06), rgba(168, 156, 245, 0.08));
+      background-color: lightOrDarkTheme(rgba(75, 110, 245, 0.06), rgba(147, 180, 252, 0.08));
     }
   }
 }

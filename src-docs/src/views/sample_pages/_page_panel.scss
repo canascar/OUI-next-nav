@@ -111,11 +111,11 @@
   outline: none;
 
   &:hover {
-    background-color: lightOrDarkTheme(#FBF9F5, #12161F);
+    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.04), rgba($ouiColorPrimary, 0.08));
   }
 
   &:focus-visible {
-    background-color: lightOrDarkTheme(#FBF9F5, #12161F);
+    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.04), rgba($ouiColorPrimary, 0.08));
   }
 
   // Active tab — subtle primary color highlight (softer than an active outline button)
