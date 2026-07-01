@@ -802,8 +802,35 @@ export const EmptySessionPageV6 = ({
     'deployment-timeline',
   ]);
   const [widgetSizes, setWidgetSizes] = useState({});
+  const [draggedWidget, setDraggedWidget] = useState(null);
+  const [dragOverWidget, setDragOverWidget] = useState(null);
+
+  const [summaryLoading, setSummaryLoading] = useState(true);
+  const [findingsLoaded, setFindingsLoaded] = useState(0);
 
   const scenarioData = SCENARIOS[scenario] || SCENARIOS[1];
+
+  // Staggered agentic loading: summary first, then findings one by one
+  useEffect(() => {
+    const summaryDelay = 1000 + Math.random() * 2000;
+    const summaryTimer = setTimeout(() => {
+      setSummaryLoading(false);
+    }, summaryDelay);
+
+    const findingCount = scenarioData.findings.length;
+    const findingTimers = [];
+    for (let i = 0; i < findingCount; i++) {
+      const delay = summaryDelay + 800 + (i * (1000 + Math.random() * 1500));
+      findingTimers.push(setTimeout(() => {
+        setFindingsLoaded((prev) => prev + 1);
+      }, delay));
+    }
+
+    return () => {
+      clearTimeout(summaryTimer);
+      findingTimers.forEach(clearTimeout);
+    };
+  }, []);
 
   // Staggered initial load for widgets
   useEffect(() => {
@@ -1206,7 +1233,13 @@ export const EmptySessionPageV6 = ({
           <OuiTitle size="m" className="v6Scenario__title">
             <h1>{scenarioData.greeting}</h1>
           </OuiTitle>
-          <p className="v6Scenario__summary" dangerouslySetInnerHTML={{ __html: scenarioData.summary }} />
+          {summaryLoading ? (
+            <div className="v6Scenario__summaryLoader">
+              <OuiAgenticSpinner size="s" />
+            </div>
+          ) : (
+            <p className="v6Scenario__summary" dangerouslySetInnerHTML={{ __html: scenarioData.summary }} />
+          )}
 
           {/* Input */}
           <div className="v6Scenario__inputArea">
@@ -1356,7 +1389,7 @@ export const EmptySessionPageV6 = ({
                 <button
                   type="button"
                   className="v6Scenario__doneButton"
-                  onClick={() => setIsEditMode(false)}>
+                  onClick={() => { setIsEditMode(false); setShowWidgetPicker(false); setWidgetPickerSearch(''); }}>
                   Done
                 </button>
               ) : (
@@ -1421,7 +1454,8 @@ export const EmptySessionPageV6 = ({
           <div className="v6Scenario__overviewContent">
             {/* Findings */}
             <div className="v6Scenario__findings">
-              {scenarioData.findings.map((finding) => {
+              {scenarioData.findings.map((finding, findingIndex) => {
+                if (findingIndex >= findingsLoaded) return null;
                 if (removedFindings.has(finding.key)) return null;
                 const isDismissed = finding.key in dismissedFindings;
                 const isExpanded = expandedFindings.has(finding.key);
@@ -1546,15 +1580,56 @@ export const EmptySessionPageV6 = ({
                   </div>
                 );
               })}
+              {findingsLoaded < scenarioData.findings.length && (
+                <div className="v6Scenario__findingsLoader">
+                  <OuiAgenticSpinner size="s" />
+                </div>
+              )}
             </div>
 
             {/* Pinned widgets (favorites) */}
             <div className={`v6Scenario__widgetGrid${isEditMode ? ' v6Scenario__widgetGrid--editing' : ''}`}>
               {widgetOrder.map((widgetId) => {
                 const size = widgetSizes[widgetId] || 1;
-                const wrapClass = `v6Scenario__widgetWrap v6Scenario__widget--span${size}`;
+                const isDragging = draggedWidget === widgetId;
+                const isDragOver = dragOverWidget === widgetId;
+                const wrapClass = `v6Scenario__widgetWrap v6Scenario__widget--span${size}${isDragging ? ' v6Scenario__widgetWrap--dragging' : ''}${isDragOver ? ' v6Scenario__widgetWrap--dragOver' : ''}`;
                 return (
-                  <div key={widgetId} className={wrapClass} data-widget={widgetId}>
+                  <div
+                    key={widgetId}
+                    className={wrapClass}
+                    data-widget={widgetId}
+                    draggable={isEditMode}
+                    onDragStart={(e) => {
+                      if (!isEditMode) return;
+                      setDraggedWidget(widgetId);
+                      e.dataTransfer.effectAllowed = 'move';
+                    }}
+                    onDragEnd={() => {
+                      setDraggedWidget(null);
+                      setDragOverWidget(null);
+                    }}
+                    onDragOver={(e) => {
+                      if (!isEditMode || !draggedWidget || draggedWidget === widgetId) return;
+                      e.preventDefault();
+                      e.dataTransfer.dropEffect = 'move';
+                      setDragOverWidget(widgetId);
+                    }}
+                    onDragLeave={() => {
+                      if (dragOverWidget === widgetId) setDragOverWidget(null);
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      if (!draggedWidget || draggedWidget === widgetId) return;
+                      setWidgetOrder((prev) => {
+                        const next = prev.filter((id) => id !== draggedWidget);
+                        const dropIdx = next.indexOf(widgetId);
+                        next.splice(dropIdx, 0, draggedWidget);
+                        return next;
+                      });
+                      setDraggedWidget(null);
+                      setDragOverWidget(null);
+                    }}>
                     {isEditMode && (
                       <>
                         <button
@@ -1570,12 +1645,13 @@ export const EmptySessionPageV6 = ({
                         <span
                           className="v6Scenario__widgetExpand"
                           aria-label="Drag to resize"
+                          draggable={false}
                           onMouseDown={(e) => {
                             e.stopPropagation();
                             e.preventDefault();
                             const startX = e.clientX;
                             const startSize = widgetSizes[widgetId] || 1;
-                            const gridEl = e.target.closest('.v6Scenario__widgetGrid');
+                            const gridEl = e.currentTarget.closest('.v6Scenario__widgetGrid');
                             const colWidth = gridEl ? gridEl.clientWidth / 3 : 100;
                             const onMove = (ev) => {
                               const dx = ev.clientX - startX;
@@ -1587,8 +1663,10 @@ export const EmptySessionPageV6 = ({
                               document.removeEventListener('mousemove', onMove);
                               document.removeEventListener('mouseup', onUp);
                               document.body.style.cursor = '';
+                              document.body.style.userSelect = '';
                             };
-                            document.body.style.cursor = 'nwse-resize';
+                            document.body.style.cursor = 'ew-resize';
+                            document.body.style.userSelect = 'none';
                             document.addEventListener('mousemove', onMove);
                             document.addEventListener('mouseup', onUp);
                           }}>
@@ -1637,7 +1715,7 @@ export const EmptySessionPageV6 = ({
                   <button
                     type="button"
                     className="v6Scenario__widgetPickerClose"
-                    onClick={() => { setShowWidgetPicker(false); setWidgetPickerSearch(''); }}>
+                    onClick={() => { setShowWidgetPicker(false); setWidgetPickerSearch(''); setIsEditMode(false); }}>
                     <OuiIcon type="cross" size="m" />
                   </button>
                 </div>

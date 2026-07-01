@@ -4,6 +4,22 @@ Design spec for the `/home` page (v6) — insights panel and widget grid in the 
 
 ---
 
+## Agentic Loading Sequence
+
+On page load, content appears progressively with the `OuiAgenticSpinner` blob loader, left-aligned:
+
+1. **Agentic message (summary)** — spinner shows in place of the summary text below the greeting. After loading completes, the summary fades in.
+2. **Insights (findings)** — spinner shows below already-loaded findings. Each finding card appears one at a time. Spinner remains until all findings have loaded.
+
+### Loader Placement
+
+| Location | Alignment | Container |
+|----------|-----------|-----------|
+| Summary (left column) | Left-aligned, below greeting title | `.v6Scenario__summaryLoader` — `width: 100%; max-width: 480px` |
+| Findings (right column) | Left-aligned, below last loaded finding | `.v6Scenario__findingsLoader` — `padding: 12px 16px` |
+
+---
+
 ## Insights (Finding Cards)
 
 ### Structure
@@ -49,7 +65,8 @@ Each insight is a collapsible card with:
 
 ### Layout
 
-- CSS Grid: `repeat(3, 1fr)` with `8px` gap
+- CSS Grid: `repeat(auto-fill, minmax(var(--widget-min-w, 131px), 1fr))` with `8px` gap
+- Responsive: collapses from 3 → 2 → 1 columns based on container width (see "Responsive Widget Grid" section below)
 - Each widget card: `display: flex; flex-direction: column; flex: 1`
 - Grid rows auto-size to the tallest card
 
@@ -128,11 +145,66 @@ Each of the 5 scenarios provides unique data for all 6 widgets. The data must be
 
 ---
 
+## Responsive Widget Grid (Min-Width from Font Size)
+
+The widget grid uses a font-size-derived minimum width so columns collapse naturally during resize or on smaller screens.
+
+### How It Works
+
+| Variable | Value | Derivation |
+|----------|-------|------------|
+| `--widget-font-base` | `10.5px` | Header font size (largest text needing to fit) |
+| `--widget-min-w` | `calc(var(--widget-font-base) * 12.5)` ≈ 131px | Fits ~15 chars of title + icon + padding |
+
+The grid uses `repeat(auto-fill, minmax(var(--widget-min-w), 1fr))` — the browser fills as many columns as fit, then wraps automatically.
+
+### Collapse Behavior
+
+| Container width | Columns | Trigger |
+|-----------------|---------|---------|
+| > ~420px | 3 | Default — three 131px+ columns fit |
+| ~280px – 420px | 2 | Only two columns fit at min-width |
+| < ~280px | 1 | Floor — cannot resize further |
+
+### Container Queries
+
+The right column has `container-type: inline-size`. Two `@container` breakpoints handle span collapse:
+
+- **≤ 420px**: span-3+ widgets cap at span 2
+- **≤ 280px**: all multi-span widgets collapse to span 1
+
+### Min-Width Constraints
+
+| Element | Min-width | Reason |
+|---------|-----------|--------|
+| Right column | `calc(var(--widget-min-w) + 128px)` | 1 widget column + 64px padding on each side |
+| Left column | `280px` | Prevents input area from being crushed |
+
+These act as a hard floor — the drag-resize handle (25%–70% range in JS) is a soft guide; the CSS min-widths are the real limit.
+
+### Adjusting for Different Density Modes
+
+To change the responsive thresholds, only update `--widget-font-base`. Everything cascades:
+- Larger font → wider min-width → earlier collapse to fewer columns
+- Smaller font → narrower min-width → widgets stay in 3 columns longer
+
+---
+
 ## Edit Mode
 
 - Widgets get remove (x) and drag-resize handles
-- **"Add widget" tile**: fixed `height: 48px`, `align-self: start` — does NOT stretch to fill the grid row
+- **Drag to reorder**: native HTML5 drag-and-drop — grab any widget card and drop it on another to swap positions. Dragged widget goes semi-transparent; drop target highlights with primary border color
+- **Resize**: horizontal drag on the bottom-right handle snaps widget span between 1–3 columns (cursor: `ew-resize`)
+- **"Add widget" tile**: `aspect-ratio: 1` for a square look; stretches to match row height when sharing a row with other widgets
+- **Widget picker close (x)**: also exits edit mode (same as clicking "Done")
+- **"Done" button**: exits edit mode and closes the widget picker if open
 - Widget picker overlay with search
+
+### Overview Panel Alignment
+
+- The right column uses `align-items: center` to horizontally center all content when the panel is wider than the content's `max-width: 720px`
+- The tab row ("Overview" title + refresh/edit buttons) and overview content both have `max-width: 720px; width: 100%` — they fill available space up to the cap, then center
+- The widget grid caps at 3 columns max using `minmax(max(131px, calc((100% - 16px) / 3)), 1fr)` — prevents 4+ columns from appearing on wide panels
 
 ---
 
