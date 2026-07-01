@@ -90,14 +90,29 @@ const renderPage = (
   onPageChange,
   onNavigate,
   isAskAiPanelOpen,
-  onAskAiToggle
+  onAskAiToggle,
+  threadSessionProps
 ) => {
   switch (activePage) {
     case 'home':
       return (
         <OuiErrorBoundary>
           <EmptySessionPage
-            onStartThread={onContinueAsThread}
+            onStartThread={(prompt) => {
+              // Navigate to thread with just user prompt (no response yet)
+              const threadKey = `thread-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+              const messages = prompt
+                ? [{ role: 'user', author: 'You', content: prompt }]
+                : [];
+              onPageChange('thread');
+              if (threadSessionProps && threadSessionProps.onSetupSession) {
+                threadSessionProps.onSetupSession({
+                  threadKey,
+                  messages,
+                  title: prompt ? prompt.slice(0, 40) : 'New Thread',
+                });
+              }
+            }}
             onOpenPage={(pageKey) => onPageChange(pageKey)}
             onOpenPageInNewSession={(pageKey) => onPageChange(pageKey)}
             onBrowseLibrary={() => {}}
@@ -136,34 +151,20 @@ const renderPage = (
           />
         </OuiErrorBoundary>
       );
-    case 'thread':
-      return (
-        <OuiErrorBoundary>
-          <ThreadPage
-            selectedItem={selectedItem}
-            onItemSelect={onItemSelect}
-            pendingMessages={
-              pendingThread && pendingThread.key === selectedItem
-                ? pendingThread.messages
-                : null
-            }
-            sourcePage={
-              pendingThread && pendingThread.key === selectedItem
-                ? pendingThread.sourcePage
-                : null
-            }
-            sourcePageTitle={
-              pendingThread && pendingThread.key === selectedItem
-                ? pendingThread.pageTitle
-                : null
-            }
-            isPanelOpen={isPanelOpen}
-            onTogglePanel={onTogglePanel}
-            onPageChange={onPageChange}
-            onNavigate={onNavigate}
-          />
-        </OuiErrorBoundary>
-      );
+    case 'thread': {
+      if (threadSessionProps) {
+        return (
+          <OuiErrorBoundary>
+            <SessionContainer
+              session={threadSessionProps.session}
+              onUpdateSession={threadSessionProps.onUpdateSession}
+              onOpenCanvasPage={threadSessionProps.onOpenCanvasPage}
+            />
+          </OuiErrorBoundary>
+        );
+      }
+      return null;
+    }
     case 'alerts':
       return (
         <OuiErrorBoundary>
@@ -524,6 +525,61 @@ export const SamplePagesView = () => {
   const [isPanelOpen, setIsPanelOpen] = useState(true);
   const [isPanelCollapsing, setIsPanelCollapsing] = useState(false);
   const [isAskAiPanelOpen, setIsAskAiPanelOpen] = useState(false);
+
+  // Session state for thread page (mirrors SessionPagesView pattern)
+  const [threadSession, setThreadSession] = useState({
+    id: 'thread-session',
+    threadKey: null,
+    pendingThread: null,
+    pendingInputValue: null,
+    threadPanelState: 'full-screen',
+    threadPanelWidth: 50,
+    tabs: [],
+    activeTabId: null,
+    title: 'New Thread',
+    summary: null,
+  });
+
+  const handleThreadSessionUpdate = useCallback((updates) => {
+    setThreadSession((prev) => ({ ...prev, ...updates }));
+  }, []);
+
+  const handleThreadOpenCanvasPage = useCallback((pageKey, title) => {
+    setThreadSession((prev) => {
+      const pageEntry = SOURCE_PAGE_MOCK[pageKey];
+      const displayTitle = title || (pageEntry ? pageEntry.title : pageKey);
+      const existingTab = prev.tabs.find((t) => t.pageKey === pageKey);
+      if (existingTab) {
+        return { ...prev, activeTabId: existingTab.id };
+      }
+      const newTab = {
+        id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        pageKey,
+        title: displayTitle,
+      };
+      return {
+        ...prev,
+        tabs: [...prev.tabs, newTab],
+        activeTabId: newTab.id,
+        threadPanelState: prev.threadPanelState === 'full-screen' ? 'side-by-side' : prev.threadPanelState,
+      };
+    });
+  }, []);
+
+  // When navigating to thread page from nav (existing thread), initialize session
+  useEffect(() => {
+    if (activePage === 'thread' && selectedItem && !pendingThread) {
+      setThreadSession((prev) => ({
+        ...prev,
+        threadKey: selectedItem,
+        pendingThread: null,
+        threadPanelState: 'full-screen',
+        tabs: [],
+        activeTabId: null,
+        title: selectedItem,
+      }));
+    }
+  }, [activePage, selectedItem, pendingThread]);
   const [isAskAiPanelClosing, setIsAskAiPanelClosing] = useState(false);
   const [askAiDetached, setAskAiDetached] = useState(false);
   const createThreadRef = useRef(null);
@@ -548,72 +604,6 @@ export const SamplePagesView = () => {
   }, []);
 
   const PANEL_CONFIGS = {
-    thread: {
-      title: 'Thread',
-      items: [
-        {
-          key: 'latency-spike',
-          title: 'Latency spike investigation',
-          subtitle: 'Use for investigation demo · 2 hours ago',
-        },
-        {
-          key: 'checkout-error',
-          title: 'Checkout error rate alert',
-          subtitle: 'Placeholder only · 5 hours ago',
-        },
-
-        {
-          key: 'disk-pressure',
-          title: 'Node disk pressure alerts',
-          subtitle: 'Placeholder only · 1 day ago',
-        },
-        {
-          key: 'connection-timeout',
-          title: 'Connection timeout investigation',
-          subtitle: 'Demo flow · just now',
-        },
-        {
-          key: 'tool-demo-1',
-          title: 'Thread tool demo 1',
-          subtitle: 'Emily Zhang · 30 min ago',
-        },
-        {
-          key: 'tool-demo-2',
-          title: 'Thread tool demo 2',
-          subtitle: 'Carlos Rivera · 1 hour ago',
-        },
-        {
-          key: 'tool-demo-3',
-          title: 'Thread tool demo 3',
-          subtitle: 'Aisha Patel · 2 hours ago',
-        },
-      ],
-    },
-    dashboards: {
-      title: 'Dashboards',
-      items: [
-        {
-          key: 'system-overview',
-          title: 'System overview',
-          subtitle: 'Updated 5 min ago',
-        },
-        {
-          key: 'web-traffic',
-          title: 'Web traffic analytics',
-          subtitle: 'Updated 15 min ago',
-        },
-        {
-          key: 'api-performance',
-          title: 'API performance',
-          subtitle: 'Updated 30 min ago',
-        },
-        {
-          key: 'payment-pool-dashboard',
-          title: 'Payment service — connection pool',
-          subtitle: 'Created from thread · just now',
-        },
-      ],
-    },
     logs: {
       title: 'Logs',
       tabs: [
@@ -1077,9 +1067,51 @@ export const SamplePagesView = () => {
     'ai-mcp-servers': 'mcp-opensearch',
   };
 
+  // Pages that should open within a session tab instead of as standalone pages
+  const SESSION_TAB_PAGES = new Set([
+    'alerts', 'dashboards', 'logs', 'metrics', 'topology-map',
+    'agent-monitoring-traces', 'agent-monitoring-spans',
+    'app-perf-traces', 'app-perf-services',
+  ]);
+
+  // Map nav keys to their correct page keys (some nav items show list/empty variants)
+  const NAV_TO_PAGE_KEY = {
+    'alerts': 'alerts-list',
+    'dashboards': 'dashboards-list',
+    'logs': 'discover-log',
+    'metrics': 'discover-metric',
+    'topology-map': 'app-map',
+  };
+
   const handlePageChange = (page) => {
     if (page === 'login') {
       window.location.href = '#/login';
+      return;
+    }
+    // Pages that open as a tab within a new session
+    if (SESSION_TAB_PAGES.has(page)) {
+      const resolvedPageKey = NAV_TO_PAGE_KEY[page] || page;
+      const pageEntry = SOURCE_PAGE_MOCK[resolvedPageKey];
+      const title = pageEntry ? pageEntry.title : page;
+      const tab = {
+        id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+        pageKey: resolvedPageKey,
+        title,
+      };
+      setThreadSession({
+        id: 'thread-session',
+        threadKey: null,
+        pendingThread: null,
+        pendingInputValue: null,
+        threadPanelState: 'minimized',
+        threadPanelWidth: 50,
+        tabs: [tab],
+        activeTabId: tab.id,
+        title,
+        summary: null,
+      });
+      setActivePage('thread');
+      setSelectedItem(null);
       return;
     }
     if (page === activePage) {
@@ -1266,6 +1298,7 @@ export const SamplePagesView = () => {
           setExpandAnim(null);
           skipPanelOpenRef.current = true;
           setActivePage('thread');
+          const threadKey = `thread-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
           if (createThreadRef.current) {
             const newKey = createThreadRef.current();
             setPendingThread({
@@ -1275,11 +1308,30 @@ export const SamplePagesView = () => {
               pageTitle: displayTitle,
             });
           }
+          // Set up thread session for SessionContainer
+          const sourceTab = sourcePage ? {
+            id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+            pageKey: sourcePage,
+            title: displayTitle || sourcePage,
+          } : null;
+          setThreadSession({
+            id: 'thread-session',
+            threadKey,
+            pendingThread: { key: threadKey, messages },
+            pendingInputValue: null,
+            threadPanelState: sourcePage ? 'side-by-side' : 'full-screen',
+            threadPanelWidth: 50,
+            tabs: sourceTab ? [sourceTab] : [],
+            activeTabId: sourceTab ? sourceTab.id : null,
+            title: prompt ? prompt.slice(0, 40) : 'New Thread',
+            summary: null,
+          });
         }, 400);
       } else {
         // Fallback: no animation
         skipPanelOpenRef.current = true;
         setActivePage('thread');
+        const threadKey = `thread-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
         if (createThreadRef.current) {
           const newKey = createThreadRef.current();
           setPendingThread({
@@ -1289,6 +1341,24 @@ export const SamplePagesView = () => {
             pageTitle: displayTitle,
           });
         }
+        // Set up thread session for SessionContainer
+        const sourceTab = sourcePage ? {
+          id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+          pageKey: sourcePage,
+          title: displayTitle || sourcePage,
+        } : null;
+        setThreadSession({
+          id: 'thread-session',
+          threadKey,
+          pendingThread: { key: threadKey, messages },
+          pendingInputValue: null,
+          threadPanelState: sourcePage ? 'side-by-side' : 'full-screen',
+          threadPanelWidth: 50,
+          tabs: sourceTab ? [sourceTab] : [],
+          activeTabId: sourceTab ? sourceTab.id : null,
+          title: prompt ? prompt.slice(0, 40) : 'New Thread',
+          summary: null,
+        });
       }
     },
     [activePage]
@@ -1386,11 +1456,11 @@ export const SamplePagesView = () => {
         style={{
           flex: 1,
           overflow: 'hidden',
-          padding: '16px',
+          padding: activePage === 'thread' ? '0 0 0 16px' : '16px',
           display: 'flex',
         }}>
         <div
-          className="samplePagesContentPanel"
+          className={activePage === 'thread' ? undefined : 'samplePagesContentPanel'}
           style={{ flex: 1, minWidth: 0, position: 'relative' }}>
           {renderPage(
             activePage,
@@ -1408,7 +1478,26 @@ export const SamplePagesView = () => {
             handlePageChange,
             handlePopoverNavigate,
             isAskAiPanelOpen,
-            handleAskAiToggle
+            handleAskAiToggle,
+            {
+              session: threadSession,
+              onUpdateSession: handleThreadSessionUpdate,
+              onOpenCanvasPage: handleThreadOpenCanvasPage,
+              onSetupSession: ({ threadKey, messages, title }) => {
+                setThreadSession({
+                  id: 'thread-session',
+                  threadKey,
+                  pendingThread: { key: threadKey, messages },
+                  pendingInputValue: null,
+                  threadPanelState: 'full-screen',
+                  threadPanelWidth: 50,
+                  tabs: [],
+                  activeTabId: null,
+                  title: title || 'New Thread',
+                  summary: null,
+                });
+              },
+            }
           )}
           {panelConfig && isPanelOpen && (
             <>

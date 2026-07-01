@@ -57,10 +57,16 @@ const NAV_ITEMS = [
   },
   // Essentials
   {
+    key: 'alerts',
+    label: 'Alerts',
+    icon: 'navAlerting',
+    sectionHeader: 'Essentials',
+    group: 'essentials',
+  },
+  {
     key: 'dashboards',
     label: 'Dashboards',
     icon: 'navDashboards',
-    sectionHeader: 'Essentials',
     group: 'essentials',
   },
   { key: 'logs', label: 'Logs', icon: 'navDiscover', group: 'essentials' },
@@ -2219,9 +2225,6 @@ export const SamplePagesLeftNav = ({
 
   const NAV_AUTO_SELECT = {
     thread: { page: 'thread', item: 'latency-spike' },
-    dashboards: { page: 'dashboards', item: 'system-overview' },
-    logs: { page: 'logs', item: null },
-    metrics: { page: 'metrics', item: null },
   };
 
   const TOOLS_PAGES = new Set([
@@ -2246,6 +2249,8 @@ export const SamplePagesLeftNav = ({
     'sample-data',
   ]);
   const isNavItemActive = (itemKey) => {
+    // When in a session (thread page), no nav items should be highlighted
+    if (activePage === 'thread') return false;
     if (activePage === itemKey) return true;
     if (itemKey === 'tools' && TOOLS_PAGES.has(activePage)) return true;
     if (itemKey === 'manage-workspace' && WORKSPACE_PAGES.has(activePage))
