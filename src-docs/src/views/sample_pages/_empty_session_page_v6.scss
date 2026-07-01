@@ -538,6 +538,11 @@
   &--visible {
     opacity: 1;
   }
+
+  // Keep visible when any button has active feedback
+  &:has(.v6Scenario__findingSideBtn--active) {
+    opacity: 1;
+  }
 }
 
 .v6Scenario__findingSideBtn {
@@ -557,6 +562,58 @@
   &:hover {
     background: lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.08));
     color: lightOrDarkTheme(rgba(0, 0, 0, 0.60), rgba(255, 255, 255, 0.60));
+  }
+
+  &--active {
+    opacity: 1;
+    color: lightOrDarkTheme(rgba(0, 0, 0, 0.85), rgba(255, 255, 255, 0.85));
+  }
+}
+
+// ─── Dismissed finding card ───────────────────────────────────
+.v6Scenario__findingCard--dismissed {
+  opacity: 0.55;
+
+  .v6Scenario__findingCardMain {
+    padding: 10px 14px;
+  }
+}
+
+.v6Scenario__findingDismissedText {
+  font-size: 13px;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.45), rgba(255, 255, 255, 0.45));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+
+  em {
+    font-style: italic;
+    opacity: 0.8;
+  }
+}
+
+.v6Scenario__dotCountdownRing {
+  flex-shrink: 0;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.40), rgba(255, 255, 255, 0.40));
+}
+
+.v6Scenario__findingUndoBtn {
+  font-size: 12px;
+  font-weight: 500;
+  color: lightOrDarkTheme(#2563EB, #818cf8);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+  transition: background-color 120ms ease;
+  appearance: none;
+
+  &:hover {
+    background: lightOrDarkTheme(rgba(37, 99, 235, 0.08), rgba(129, 140, 248, 0.12));
+    text-decoration: underline;
   }
 }
 
@@ -1102,6 +1159,7 @@
 .v6Scenario__widgetWrap {
   display: flex;
   min-width: 0;
+  min-height: 0;
   position: relative;
 
   &.v6Scenario__widget--span1 { grid-column: span 1; }
@@ -1113,8 +1171,25 @@
 
   .ouiInsightCard {
     width: 100%;
+    flex: 1;
     padding: 10px 11px;
     border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-bottom: 66px;
+
+    .widgetCard__chart {
+      position: absolute;
+      left: 11px;
+      right: 11px;
+      bottom: 10px;
+    }
+
+    // Cards without charts don't need the extra padding
+    &:not(:has(.widgetCard__chart)) {
+      padding-bottom: 10px;
+    }
 
     .widgetHeader {
       margin-bottom: 4px;
@@ -1131,6 +1206,8 @@
     }
 
     .widgetCard__rows {
+      flex: 1;
+      overflow: hidden;
       gap: 4px;
     }
 
@@ -1193,11 +1270,50 @@
     .widgetCard__mono {
       font-size: 8px;
     }
-
-    svg {
-      max-height: 40px;
-    }
   }
+}
+
+// ─── Dashboard rows (name + value | age) ─────────────────────
+.widgetCard__dashRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 4px;
+  border-radius: 3px;
+  transition: background-color 150ms ease;
+
+  &:hover {
+    background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.05));
+  }
+}
+
+.widgetCard__dashLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}
+
+.widgetCard__dashName {
+  font-size: 9.5px;
+  font-weight: 450;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.75), rgba(255, 255, 255, 0.75));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.widgetCard__dashValue {
+  font-size: 8.5px;
+  font-family: 'IBM Plex Mono', 'Menlo', monospace;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.38), rgba(255, 255, 255, 0.38));
+}
+
+.widgetCard__dashAge {
+  font-size: 8.5px;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.30), rgba(255, 255, 255, 0.30));
+  flex-shrink: 0;
+  margin-left: 10px;
 }
 
 // ─── Add widget tile ──────────────────────────────────────────
@@ -1207,7 +1323,8 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-height: 80px;
+  height: 48px;
+  align-self: start;
   border: 2px dashed lightOrDarkTheme(rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.12));
   border-radius: 5px;
   cursor: pointer;
