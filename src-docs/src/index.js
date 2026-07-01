@@ -104,13 +104,31 @@ render(
               <LinkWrapper>
                 <LoginPage
                   onLogin={() => {
-                    history.push('/sample-pages');
+                    history.push('/home');
                   }}
                 />
               </LinkWrapper>
             )}
           />
 
+          <Route
+            exact
+            path="/home"
+            render={() => (
+              <LinkWrapper>
+                <SessionPagesView variant="v6" />
+              </LinkWrapper>
+            )}
+          />
+          <Route
+            exact
+            path="/sample-pages-v6"
+            render={() => (
+              <LinkWrapper>
+                <SessionPagesView variant="v6" />
+              </LinkWrapper>
+            )}
+          />
           <Route
             path="/sample-pages-v5-scenario1"
             render={() => (

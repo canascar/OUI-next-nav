@@ -878,6 +878,59 @@
   }
 }
 
+// Jump to chips
+.emptySessionPage__jumpTo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 20px;
+  flex-shrink: 0;
+}
+
+.emptySessionPage__jumpToLabel {
+  font-size: 13px;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.45), rgba(255, 255, 255, 0.45));
+  white-space: nowrap;
+}
+
+.emptySessionPage__jumpToChip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.62), rgba(255, 255, 255, 0.62));
+  background: lightOrDarkTheme(rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.04));
+  border: 1px solid lightOrDarkTheme(rgba(120, 120, 165, 0.14), rgba(255, 255, 255, 0.08));
+  cursor: pointer;
+  transition: background-color 140ms ease, box-shadow 140ms ease;
+  appearance: none;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+
+  &:hover {
+    background: lightOrDarkTheme(#fff, rgba(255, 255, 255, 0.08));
+    box-shadow: 0 4px 12px -4px lightOrDarkTheme(rgba(30, 30, 55, 0.12), rgba(0, 0, 0, 0.3));
+  }
+
+  &--round {
+    width: 32px;
+    padding: 0;
+    border-radius: 10px;
+  }
+}
+
 // Inline input — fixed at the bottom of the left column (not scrollable)
 .emptySessionPage__inlineInput {
   width: 100%;
