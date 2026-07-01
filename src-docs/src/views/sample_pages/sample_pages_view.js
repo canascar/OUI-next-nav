@@ -96,11 +96,17 @@ const renderPage = (
     case 'home':
       return (
         <OuiErrorBoundary>
-          <HomePage
-            onNavigate={onNavigate}
-            onContinueAsThread={onContinueAsThread}
-            isAskAiPanelOpen={isAskAiPanelOpen}
-            onAskAiToggle={onAskAiToggle}
+          <EmptySessionPage
+            onStartThread={onContinueAsThread}
+            onOpenPage={(pageKey) => onPageChange(pageKey)}
+            onOpenPageInNewSession={(pageKey) => onPageChange(pageKey)}
+            onBrowseLibrary={() => {}}
+            onViewSession={() => {}}
+            onStartInvestigation={() => {}}
+            sessions={[]}
+            recentItems={[]}
+            favoriteItems={[]}
+            systemAlert={null}
           />
         </OuiErrorBoundary>
       );
