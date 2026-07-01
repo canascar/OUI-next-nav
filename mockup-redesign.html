@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home Page Redesign Mockup</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    background: #0a0e1a;
+    color: #e2e8f0;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .app {
+    display: flex;
+    height: 100vh;
+  }
+
+  /* Left nav rail */
+  .left-nav {
+    width: 48px;
+    background: #0f1420;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 0;
+    gap: 16px;
+  }
+  .nav-logo {
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+  }
+  .nav-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.15s;
+  }
+  .nav-btn:hover {
+    background: rgba(255,255,255,0.06);
+    color: #94a3b8;
+  }
+
+  /* Main content area */
+  .main {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+
+  /* Two column layout */
+  .two-col {
+    display: flex;
+    flex: 1;
+    padding: 0;
+  }
+
+  /* Left column */
+  .left-col {
+    flex: 1 1 58%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 48px 56px;
+    gap: 0;
+    overflow-y: auto;
+  }
+
+  /* Mascot */
+  .mascot-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .mascot {
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, #6366f1, #a78bfa);
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mascot::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: #34d399;
+    border-radius: 50%;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    border: 2px solid #0a0e1a;
+  }
+  .mascot-eyes {
+    display: flex;
+    gap: 4px;
+  }
+  .mascot-eye {
+    width: 4px;
+    height: 5px;
+    background: white;
+    border-radius: 50%;
+  }
+
+  /* Greeting */
+  .greeting {
+    font-size: 28px;
+    font-weight: 600;
+    color: #f1f5f9;
+    margin-bottom: 20px;
+    letter-spacing: -0.02em;
+  }
+
+  /* Briefing narrative (insights) */
+  .briefing {
+    margin-bottom: 28px;
+  }
+  .briefing-summary {
+    font-size: 14px;
+    color: #94a3b8;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+  .briefing-summary strong {
+    color: #e2e8f0;
+  }
+  .news-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+  .news-item:hover {
+    background: rgba(99, 102, 241, 0.06);
+  }
+  .news-item[data-correlates]:hover {
+    background: rgba(99, 102, 241, 0.08);
+  }
+  .badge {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .badge--critical {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+  }
+  .badge--warning {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+  }
+  .news-body {
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.45;
+  }
+  .news-link {
+    color: #a5b4fc;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .news-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Input area */
+  .input-area {
+    margin-bottom: 16px;
+  }
+  .input-wrap {
+    position: relative;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s;
+  }
+  .input-wrap:focus-within {
+    border-color: rgba(99, 102, 241, 0.5);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    background: rgba(255,255,255,0.06);
+  }
+  .input-icon {
+    color: #64748b;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .input-field {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: #e2e8f0;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  .input-field::placeholder {
+    color: #475569;
+  }
+  .input-actions {
+    display: flex;
+    gap: 4px;
+  }
+  .input-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.15s;
+  }
+  .input-btn:hover {
+    background: rgba(255,255,255,0.08);
+    color: #94a3b8;
+  }
+  .input-btn--send {
+    background: rgba(99, 102, 241, 0.2);
+    color: #a5b4fc;
+  }
+  .input-btn--send:hover {
+    background: rgba(99, 102, 241, 0.35);
+  }
+
+  /* Page shortcuts — the moved "Open a page" */
+  .page-shortcuts {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .page-shortcuts__label {
+    font-size: 11px;
+    color: #475569;
+    margin-right: 4px;
+    letter-spacing: 0.02em;
+  }
+  .shortcut-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 11px;
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 450;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+  }
+  .shortcut-pill:hover {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.25);
+    color: #c7d2fe;
+  }
+  .shortcut-pill svg {
+    width: 13px;
+    height: 13px;
+    opacity: 0.7;
+  }
+  .shortcut-more {
+    padding: 5px 9px;
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: transparent;
+    color: #64748b;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .shortcut-more:hover {
+    color: #94a3b8;
+    border-color: rgba(255,255,255,0.12);
+  }
+
+  /* Resize handle */
+  .resize-handle {
+    width: 1px;
+    background: rgba(255,255,255,0.06);
+    position: relative;
+    cursor: col-resize;
+    flex-shrink: 0;
+  }
+  .resize-handle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -3px;
+    width: 7px;
+    height: 40px;
+    transform: translateY(-50%);
+    border-radius: 4px;
+  }
+  .resize-handle:hover::after {
+    background: rgba(99, 102, 241, 0.3);
+  }
+
+  /* Right column */
+  .right-col {
+    flex: 0 0 40%;
+    overflow-y: auto;
+    padding: 24px;
+    background: rgba(255,255,255,0.01);
+  }
+
+  /* Tab row */
+  .tab-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    position: sticky;
+    top: 0;
+    background: rgba(10, 14, 26, 0.95);
+    backdrop-filter: blur(8px);
+    padding: 4px 0 12px;
+    z-index: 10;
+  }
+  .tabs {
+    display: flex;
+    gap: 0;
+    background: rgba(255,255,255,0.04);
+    border-radius: 9px;
+    padding: 3px;
+  }
+  .tab {
+    padding: 6px 14px;
+    border-radius: 7px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #64748b;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .tab:hover {
+    color: #94a3b8;
+  }
+  .tab--active {
+    background: rgba(255,255,255,0.08);
+    color: #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .tab-agent-dot {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    background: #818cf8;
+    border-radius: 50%;
+    margin-left: 5px;
+    vertical-align: middle;
+    animation: pulse-dot 2s infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .tab-row__actions {
+    display: flex;
+    gap: 4px;
+  }
+  .tab-row__btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.15s;
+  }
+  .tab-row__btn:hover {
+    background: rgba(255,255,255,0.06);
+    color: #94a3b8;
+  }
+
+  /* Agent subtitle */
+  .overview-subtitle {
+    font-size: 11px;
+    color: #64748b;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .overview-subtitle svg {
+    width: 12px;
+    height: 12px;
+    color: #818cf8;
+  }
+
+  /* Widget grid */
+  .widget-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* Widget card */
+  .widget {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .widget:hover {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.1);
+    transform: translateY(-1px);
+  }
+  .widget--wide {
+    grid-column: span 2;
+  }
+  .widget--highlighted {
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.1);
+  }
+  .widget__title {
+    font-size: 11.5px;
+    font-weight: 500;
+    color: #94a3b8;
+    margin-bottom: 10px;
+    letter-spacing: 0.01em;
+  }
+  .widget__big-number {
+    font-size: 26px;
+    font-weight: 700;
+    color: #e2e8f0;
+    letter-spacing: -0.02em;
+  }
+  .widget__trend {
+    font-size: 12px;
+    font-weight: 500;
+    margin-left: 8px;
+  }
+  .widget__trend--up { color: #f87171; }
+  .widget__trend--down { color: #34d399; }
+
+  /* Bar chart widget */
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .bar-label {
+    font-size: 11.5px;
+    color: #94a3b8;
+    width: 80px;
+    flex-shrink: 0;
+  }
+  .bar-track {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: #6366f1;
+  }
+  .bar-fill--warning { background: #f59e0b; }
+  .bar-fill--secondary { background: #475569; }
+  .bar-value {
+    font-size: 11px;
+    color: #64748b;
+    width: 44px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Alert list */
+  .alert-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+  }
+  .alert-label {
+    font-size: 12px;
+    color: #94a3b8;
+  }
+  .alert-badge {
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 3px;
+    letter-spacing: 0.04em;
+  }
+  .alert-badge--critical {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+  }
+  .alert-badge--warning {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+  }
+
+  /* Mini chart */
+  .mini-chart {
+    margin-top: 8px;
+  }
+  .mini-chart svg {
+    width: 100%;
+    height: 50px;
+  }
+
+  /* Favorites tab content */
+  .favorites-content {
+    display: none;
+  }
+  .favorites-content.active {
+    display: block;
+  }
+  .overview-content {
+    display: block;
+  }
+  .overview-content.hidden {
+    display: none;
+  }
+
+  .fav-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.05);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .fav-item:hover {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.1);
+  }
+  .fav-item__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .fav-item__title {
+    font-size: 13px;
+    font-weight: 500;
+    color: #e2e8f0;
+  }
+  .fav-item__meta {
+    font-size: 11px;
+    color: #64748b;
+  }
+  .fav-item__spark {
+    width: 50px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  /* Correlation highlight on hover */
+  .news-item:hover ~ .right-col .widget--correlated,
+  .news-item[data-highlight="services"]:hover {
+    /* handled by JS for cross-panel */
+  }
+
+  /* Insight action buttons (hover reveal) */
+  .news-item {
+    position: relative;
+  }
+  .news-actions {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 0.15s;
+    background: rgba(15, 20, 32, 0.95);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 3px 4px;
+    backdrop-filter: blur(8px);
+  }
+  .news-item:hover .news-actions {
+    opacity: 1;
+  }
+  .news-action-btn {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    transition: all 0.12s;
+  }
+  .news-action-btn:hover {
+    background: rgba(255,255,255,0.08);
+    color: #e2e8f0;
+  }
+  .news-action-btn--up:hover {
+    color: #34d399;
+    background: rgba(52, 211, 153, 0.12);
+  }
+  .news-action-btn--down:hover {
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.12);
+  }
+  .news-action-btn--dismiss:hover {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.12);
+  }
+  .news-action-btn--reco:hover {
+    color: #818cf8;
+    background: rgba(129, 140, 248, 0.12);
+  }
+  .news-action-btn.active {
+    background: rgba(52, 211, 153, 0.15);
+    color: #34d399;
+  }
+  .news-action-btn--down.active {
+    background: rgba(248, 113, 113, 0.15);
+    color: #f87171;
+  }
+
+  /* Dismissed state */
+  .news-item--dismissed {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .news-item--dismissed .news-body,
+  .news-item--dismissed .badge {
+    display: none;
+  }
+  .news-item--dismissed .news-actions {
+    display: none;
+  }
+  .dismissed-label {
+    display: none;
+    font-size: 13px;
+    color: #64748b;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+  }
+  .news-item--dismissed .dismissed-label {
+    display: flex;
+  }
+  .news-item--dismissed {
+    pointer-events: auto;
+  }
+  .undo-btn {
+    font-size: 12px;
+    color: #818cf8;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .undo-btn:hover {
+    color: #a5b4fc;
+  }
+
+  /* Reco popover */
+  .reco-popover {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 6px);
+    right: 8px;
+    background: rgba(15, 20, 32, 0.97);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 10px;
+    padding: 12px 14px;
+    width: 240px;
+    backdrop-filter: blur(12px);
+    z-index: 50;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .reco-popover.visible {
+    display: block;
+  }
+  .reco-popover__title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #818cf8;
+    margin-bottom: 6px;
+  }
+  .reco-popover__text {
+    font-size: 12.5px;
+    color: #cbd5e1;
+    line-height: 1.5;
+    margin-bottom: 10px;
+  }
+  .reco-popover__actions {
+    display: flex;
+    gap: 6px;
+  }
+  .reco-btn {
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .reco-btn--primary {
+    background: rgba(99, 102, 241, 0.2);
+    color: #a5b4fc;
+  }
+  .reco-btn--primary:hover {
+    background: rgba(99, 102, 241, 0.35);
+  }
+  .reco-btn--secondary {
+    background: rgba(255,255,255,0.06);
+    color: #94a3b8;
+  }
+  .reco-btn--secondary:hover {
+    background: rgba(255,255,255,0.1);
+  }
+
+  /* Section label in favorites */
+  .fav-section {
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #475569;
+    margin: 16px 0 8px;
+  }
+  .fav-section:first-child {
+    margin-top: 0;
+  }
+
+  /* Annotation labels */
+  .annotation {
+    position: absolute;
+    font-size: 10px;
+    color: #818cf8;
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    padding: 2px 8px;
+    border-radius: 4px;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 100;
+  }
+
+  /* Design notes overlay */
+  .design-notes {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(30, 27, 75, 0.95);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 12px;
+    padding: 14px 20px;
+    display: flex;
+    gap: 24px;
+    font-size: 11.5px;
+    color: #a5b4fc;
+    backdrop-filter: blur(12px);
+    z-index: 1000;
+  }
+  .design-notes span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .design-notes .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+  .dot--purple { background: #818cf8; }
+  .dot--green { background: #34d399; }
+  .dot--amber { background: #fbbf24; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Left nav rail -->
+  <nav class="left-nav">
+    <div class="nav-logo">O</div>
+    <button class="nav-btn" title="New session">+</button>
+    <button class="nav-btn" title="All sessions">&#9776;</button>
+    <button class="nav-btn" title="Library">&#128193;</button>
+  </nav>
+
+  <!-- Main two-column content -->
+  <main class="main">
+    <div class="two-col">
+      <!-- LEFT COLUMN -->
+      <div class="left-col">
+        <!-- Mascot + status -->
+        <div class="mascot-row">
+          <div class="mascot">
+            <div class="mascot-eyes">
+              <div class="mascot-eye"></div>
+              <div class="mascot-eye"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Greeting -->
+        <h1 class="greeting">Good morning, Jason</h1>
+
+        <!-- Briefing narrative / insights -->
+        <div class="briefing">
+          <p class="briefing-summary">
+            <strong>244 of 247</strong> services healthy. No degradation, no cascading failures.
+          </p>
+          <div class="news-item" data-correlates="services" data-title="Payment service P99 breached 2,000ms" data-reco="Scale payment-service pods to 6 replicas and flush connection pool on affected nodes." onmouseenter="highlightWidget('services')" onmouseleave="unhighlightWidget('services')">
+            <span class="badge badge--critical">Critical</span>
+            <span class="news-body">
+              <a href="#" class="news-link">Payment service P99 breached 2,000ms</a>
+              — connection pool exhaustion on 3 of 4 pods.
+            </span>
+            <span class="dismissed-label"></span>
+            <div class="news-actions">
+              <button class="news-action-btn news-action-btn--up" title="Helpful" onclick="event.stopPropagation(); feedbackInsight(this, 'up')">&#x1F44D;</button>
+              <button class="news-action-btn news-action-btn--down" title="Not helpful" onclick="event.stopPropagation(); feedbackInsight(this, 'down')">&#x1F44E;</button>
+              <button class="news-action-btn news-action-btn--reco" title="Recommend action" onclick="event.stopPropagation(); toggleReco(this)">&#x1F4A1;</button>
+              <button class="news-action-btn news-action-btn--dismiss" title="Dismiss" onclick="event.stopPropagation(); dismissInsight(this)">&#x2715;</button>
+            </div>
+            <div class="reco-popover">
+              <div class="reco-popover__title">Recommended action</div>
+              <div class="reco-popover__text"></div>
+              <div class="reco-popover__actions">
+                <button class="reco-btn reco-btn--primary" onclick="event.stopPropagation();">Apply</button>
+                <button class="reco-btn reco-btn--secondary" onclick="event.stopPropagation(); closeReco(this)">Dismiss</button>
+              </div>
+            </div>
+          </div>
+          <div class="news-item" data-correlates="services" data-title="Checkout error-rate spike" data-reco="Roll back auth-service to v2.14.1 and monitor error rate for 10 min." onmouseenter="highlightWidget('services')" onmouseleave="unhighlightWidget('services')">
+            <span class="badge badge--warning">Warning</span>
+            <span class="news-body">
+              <a href="#" class="news-link">Checkout error-rate spike</a>
+              tied to auth-service regression. Not yet customer-impacting.
+            </span>
+            <span class="dismissed-label"></span>
+            <div class="news-actions">
+              <button class="news-action-btn news-action-btn--up" title="Helpful" onclick="event.stopPropagation(); feedbackInsight(this, 'up')">&#x1F44D;</button>
+              <button class="news-action-btn news-action-btn--down" title="Not helpful" onclick="event.stopPropagation(); feedbackInsight(this, 'down')">&#x1F44E;</button>
+              <button class="news-action-btn news-action-btn--reco" title="Recommend action" onclick="event.stopPropagation(); toggleReco(this)">&#x1F4A1;</button>
+              <button class="news-action-btn news-action-btn--dismiss" title="Dismiss" onclick="event.stopPropagation(); dismissInsight(this)">&#x2715;</button>
+            </div>
+            <div class="reco-popover">
+              <div class="reco-popover__title">Recommended action</div>
+              <div class="reco-popover__text"></div>
+              <div class="reco-popover__actions">
+                <button class="reco-btn reco-btn--primary" onclick="event.stopPropagation();">Apply</button>
+                <button class="reco-btn reco-btn--secondary" onclick="event.stopPropagation(); closeReco(this)">Dismiss</button>
+              </div>
+            </div>
+          </div>
+          <div class="news-item" data-correlates="timeout" data-title="DNS resolution timeout" data-reco="Restart coredns pods and verify upstream resolver health." onmouseenter="highlightWidget('timeout')" onmouseleave="unhighlightWidget('timeout')">
+            <span class="badge badge--warning">Warning</span>
+            <span class="news-body">
+              <a href="#" class="news-link">DNS resolution timeout</a>
+              flagged 3 hours ago — monitoring for recurrence.
+            </span>
+            <span class="dismissed-label"></span>
+            <div class="news-actions">
+              <button class="news-action-btn news-action-btn--up" title="Helpful" onclick="event.stopPropagation(); feedbackInsight(this, 'up')">&#x1F44D;</button>
+              <button class="news-action-btn news-action-btn--down" title="Not helpful" onclick="event.stopPropagation(); feedbackInsight(this, 'down')">&#x1F44E;</button>
+              <button class="news-action-btn news-action-btn--reco" title="Recommend action" onclick="event.stopPropagation(); toggleReco(this)">&#x1F4A1;</button>
+              <button class="news-action-btn news-action-btn--dismiss" title="Dismiss" onclick="event.stopPropagation(); dismissInsight(this)">&#x2715;</button>
+            </div>
+            <div class="reco-popover">
+              <div class="reco-popover__title">Recommended action</div>
+              <div class="reco-popover__text"></div>
+              <div class="reco-popover__actions">
+                <button class="reco-btn reco-btn--primary" onclick="event.stopPropagation();">Apply</button>
+                <button class="reco-btn reco-btn--secondary" onclick="event.stopPropagation(); closeReco(this)">Dismiss</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Input -->
+        <div class="input-area">
+          <div class="input-wrap">
+            <span class="input-icon">+</span>
+            <input type="text" class="input-field" placeholder="Ask AI anything, or type to search a page" />
+            <div class="input-actions">
+              <button class="input-btn" title="Dictate">&#127908;</button>
+              <button class="input-btn input-btn--send" title="Send">&#8593;</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAGE SHORTCUTS — moved here from right panel -->
+        <div class="page-shortcuts">
+          <span class="page-shortcuts__label">Jump to</span>
+          <a class="shortcut-pill" href="#">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h10"/></svg>
+            Logs
+          </a>
+          <a class="shortcut-pill" href="#">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,12 5,6 8,10 11,4 14,8"/></svg>
+            Metrics
+          </a>
+          <a class="shortcut-pill" href="#">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="10" rx="1"/><line x1="2" y1="7" x2="14" y2="7"/><line x1="7" y1="7" x2="7" y2="13"/></svg>
+            Dashboards
+          </a>
+          <a class="shortcut-pill" href="#">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 3v4l3 2"/><circle cx="8" cy="8" r="5"/></svg>
+            Alerts
+          </a>
+          <button class="shortcut-more">More &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Resize handle -->
+      <div class="resize-handle"></div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="right-col">
+        <!-- Tab row with Overview / Favorites -->
+        <div class="tab-row">
+          <div class="tabs">
+            <button class="tab tab--active" onclick="switchTab('overview')">
+              Overview
+              <span class="tab-agent-dot"></span>
+            </button>
+            <button class="tab" onclick="switchTab('favorites')">Favorites</button>
+          </div>
+          <div class="tab-row__actions">
+            <button class="tab-row__btn" title="Refresh">&#8635;</button>
+            <button class="tab-row__btn" title="Edit widgets">&#9881;</button>
+          </div>
+        </div>
+
+        <!-- Overview tab content -->
+        <div class="overview-content" id="overview-content">
+          <!-- Agent subtitle -->
+          <div class="overview-subtitle">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1l1.5 3.2L13 5l-2.5 2.5.6 3.5L8 9.5 4.9 11l.6-3.5L3 5l3.5-.8L8 1z"/></svg>
+            Synthesized from your active alerts and system state
+          </div>
+
+          <div class="widget-grid">
+            <!-- Top services by fault rate -->
+            <div class="widget" id="widget-services">
+              <div class="widget__title">Top services by fault rate</div>
+              <div class="bar-row">
+                <span class="bar-label">checkout</span>
+                <div class="bar-track"><div class="bar-fill" style="width: 67%"></div></div>
+                <span class="bar-value">66.67%</span>
+              </div>
+              <div class="bar-row">
+                <span class="bar-label">frontend</span>
+                <div class="bar-track"><div class="bar-fill bar-fill--secondary" style="width: 15%"></div></div>
+                <span class="bar-value">14.49%</span>
+              </div>
+              <div class="bar-row">
+                <span class="bar-label">payment</span>
+                <div class="bar-track"><div class="bar-fill bar-fill--warning" style="width: 8%"></div></div>
+                <span class="bar-value">7.84%</span>
+              </div>
+            </div>
+
+            <!-- Connection timeouts -->
+            <div class="widget" id="widget-timeout">
+              <div class="widget__title">Connection timeout errors</div>
+              <div>
+                <span class="widget__big-number">847</span>
+                <span class="widget__trend widget__trend--up">&uarr; 31%</span>
+              </div>
+              <div class="mini-chart">
+                <svg viewBox="0 0 200 50" preserveAspectRatio="none">
+                  <path d="M0,40 C40,39 70,37 100,32 C140,27 170,16 200,5 L200,50 L0,50 Z" fill="rgba(245,158,11,0.1)"/>
+                  <path d="M0,40 C40,39 70,37 100,32 C140,27 170,16 200,5" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Recent alerts -->
+            <div class="widget">
+              <div class="widget__title">Recent alerts</div>
+              <div class="alert-row">
+                <span class="alert-label">P99 latency breach</span>
+                <span class="alert-badge alert-badge--critical">CRITICAL</span>
+              </div>
+              <div class="alert-row">
+                <span class="alert-label">Disk usage warning</span>
+                <span class="alert-badge alert-badge--warning">WARNING</span>
+              </div>
+              <div class="alert-row">
+                <span class="alert-label">Error rate spike</span>
+                <span class="alert-badge alert-badge--critical">CRITICAL</span>
+              </div>
+            </div>
+
+            <!-- Resource utilization -->
+            <div class="widget">
+              <div class="widget__title">Resource utilization</div>
+              <div>
+                <span class="widget__big-number" style="color: #34d399;">56%</span>
+              </div>
+              <div class="mini-chart">
+                <svg viewBox="0 0 200 50" preserveAspectRatio="none">
+                  <path d="M0,30 L40,27 L80,24 L120,26 L160,20 L180,18 L200,20 V50 H0 Z" fill="rgba(52,211,153,0.1)"/>
+                  <polyline fill="none" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" points="0,30 40,27 80,24 120,26 160,20 180,18 200,20"/>
+                  <circle cx="200" cy="20" r="3" fill="#34d399">
+                    <animate attributeName="r" values="3;5;3" dur="2s" repeatCount="indefinite"/>
+                    <animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite"/>
+                  </circle>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Deployment timeline — wide -->
+            <div class="widget widget--wide">
+              <div class="widget__title">Deployment timeline</div>
+              <div style="display: flex; align-items: flex-end; gap: 16px; height: 60px; padding-top: 8px;">
+                <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;">
+                  <span style="font-size:10px; font-weight:600; color:#34d399;">8</span>
+                  <div style="width:60%; height:32px; background:#2BA98A; border-radius:2px;"></div>
+                  <span style="font-size:9px; color:#64748b;">Mon</span>
+                </div>
+                <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;">
+                  <span style="font-size:10px; font-weight:600; color:#34d399;">12</span>
+                  <div style="width:60%; height:48px; background:#2BA98A; border-radius:2px;"></div>
+                  <span style="font-size:9px; color:#64748b;">Tue</span>
+                </div>
+                <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;">
+                  <span style="font-size:10px; font-weight:600; color:#34d399;">15</span>
+                  <div style="width:60%; height:60px; background:#2BA98A; border-radius:2px;"></div>
+                  <span style="font-size:9px; color:#64748b;">Wed</span>
+                </div>
+                <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;">
+                  <span style="font-size:10px; font-weight:600; color:#34d399;">11</span>
+                  <div style="width:60%; height:44px; background:#2BA98A; border-radius:2px;"></div>
+                  <span style="font-size:9px; color:#64748b;">Thu</span>
+                </div>
+                <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;">
+                  <span style="font-size:10px; font-weight:600; color:#34d399;">9</span>
+                  <div style="width:60%; height:36px; background:#2BA98A; border-radius:2px;"></div>
+                  <span style="font-size:9px; color:#64748b;">Fri</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Favorites tab content -->
+        <div class="favorites-content" id="favorites-content">
+          <div class="fav-section">Dashboards</div>
+          <div class="fav-item">
+            <div class="fav-item__info">
+              <span class="fav-item__title">Service overview</span>
+              <span class="fav-item__meta">12 panels &middot; opened 2h ago</span>
+            </div>
+            <svg class="fav-item__spark" viewBox="0 0 50 18">
+              <polyline fill="none" stroke="#34d399" stroke-width="1.5" stroke-linecap="round" points="0,12 8,9 16,10 24,7 32,8 40,5 50,6"/>
+            </svg>
+          </div>
+          <div class="fav-item">
+            <div class="fav-item__info">
+              <span class="fav-item__title">p99 latency</span>
+              <span class="fav-item__meta">8 panels &middot; opened today</span>
+            </div>
+            <svg class="fav-item__spark" viewBox="0 0 50 18">
+              <polyline fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" points="0,14 8,12 16,10 24,9 32,7 40,5 50,3"/>
+            </svg>
+          </div>
+          <div class="fav-item">
+            <div class="fav-item__info">
+              <span class="fav-item__title">Error rate by service</span>
+              <span class="fav-item__meta">6 panels &middot; opened yesterday</span>
+            </div>
+            <svg class="fav-item__spark" viewBox="0 0 50 18">
+              <polyline fill="none" stroke="#6366f1" stroke-width="1.5" stroke-linecap="round" points="0,10 8,11 16,9 24,12 32,8 40,10 50,7"/>
+            </svg>
+          </div>
+
+          <div class="fav-section">Saved queries</div>
+          <div class="fav-item">
+            <div class="fav-item__info">
+              <span class="fav-item__title">5xx by service</span>
+              <span class="fav-item__meta">last 1h &middot; Logs</span>
+            </div>
+          </div>
+          <div class="fav-item">
+            <div class="fav-item__info">
+              <span class="fav-item__title">Slow traces &gt; 2s</span>
+              <span class="fav-item__meta">all services &middot; Traces</span>
+            </div>
+          </div>
+          <div class="fav-item">
+            <div class="fav-item__info">
+              <span class="fav-item__title">Memory pressure events</span>
+              <span class="fav-item__meta">last 24h &middot; Metrics</span>
+            </div>
+          </div>
+
+          <div class="fav-section">Pinned sessions</div>
+          <div class="fav-item">
+            <div class="fav-item__info">
+              <span class="fav-item__title">Payment latency investigation</span>
+              <span class="fav-item__meta">Yesterday &middot; 12 messages</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Design notes footer -->
+<div class="design-notes">
+  <span><span class="dot dot--purple"></span> "Open a page" &rarr; shortcuts below input</span>
+  <span><span class="dot dot--green"></span> Overview is agent-curated (pulsing dot + subtitle)</span>
+  <span><span class="dot dot--amber"></span> Hover left insights &rarr; highlights correlated right widgets</span>
+</div>
+
+<script>
+  // Tab switching
+  function switchTab(tab) {
+    const overviewContent = document.getElementById('overview-content');
+    const favoritesContent = document.getElementById('favorites-content');
+    const tabs = document.querySelectorAll('.tab');
+
+    tabs.forEach(t => t.classList.remove('tab--active'));
+
+    if (tab === 'overview') {
+      overviewContent.classList.remove('hidden');
+      favoritesContent.classList.remove('active');
+      tabs[0].classList.add('tab--active');
+    } else {
+      overviewContent.classList.add('hidden');
+      favoritesContent.classList.add('active');
+      tabs[1].classList.add('tab--active');
+    }
+  }
+
+  // Cross-panel correlation highlight
+  function highlightWidget(id) {
+    const widget = document.getElementById('widget-' + id);
+    if (widget) {
+      widget.classList.add('widget--highlighted');
+      widget.style.borderColor = 'rgba(99, 102, 241, 0.4)';
+      widget.style.boxShadow = '0 0 0 1px rgba(99, 102, 241, 0.15), 0 4px 12px rgba(99, 102, 241, 0.1)';
+    }
+  }
+
+  function unhighlightWidget(id) {
+    const widget = document.getElementById('widget-' + id);
+    if (widget) {
+      widget.classList.remove('widget--highlighted');
+      widget.style.borderColor = '';
+      widget.style.boxShadow = '';
+    }
+  }
+
+  // Thumbs up / thumbs down feedback
+  function feedbackInsight(btn, direction) {
+    const item = btn.closest('.news-item');
+    const allBtns = item.querySelectorAll('.news-action-btn--up, .news-action-btn--down');
+    allBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  // Dismiss insight with undo
+  function dismissInsight(btn) {
+    const item = btn.closest('.news-item');
+    const title = item.getAttribute('data-title') || 'Insight';
+    item.classList.add('news-item--dismissed');
+
+    const label = item.querySelector('.dismissed-label');
+    label.innerHTML = '<span style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' +
+      title + ' — <em style="color:#64748b;">dismissed</em></span>' +
+      '<button class="undo-btn" onclick="event.stopPropagation(); undoInsight(this)">Undo</button>';
+  }
+
+  // Undo dismiss
+  function undoInsight(btn) {
+    const item = btn.closest('.news-item');
+    item.classList.remove('news-item--dismissed');
+  }
+
+  // Recommend action popover toggle
+  function toggleReco(btn) {
+    const item = btn.closest('.news-item');
+    const popover = item.querySelector('.reco-popover');
+    const recoText = item.getAttribute('data-reco') || 'No recommendation available.';
+
+    // Close any other open popovers
+    document.querySelectorAll('.reco-popover.visible').forEach(p => {
+      if (p !== popover) p.classList.remove('visible');
+    });
+
+    popover.querySelector('.reco-popover__text').textContent = recoText;
+    popover.classList.toggle('visible');
+  }
+
+  // Close reco popover
+  function closeReco(btn) {
+    btn.closest('.reco-popover').classList.remove('visible');
+  }
+
+  // Close popovers on outside click
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.reco-popover') && !e.target.closest('.news-action-btn--reco')) {
+      document.querySelectorAll('.reco-popover.visible').forEach(p => p.classList.remove('visible'));
+    }
+  });
+</script>
+</body>
+</html>

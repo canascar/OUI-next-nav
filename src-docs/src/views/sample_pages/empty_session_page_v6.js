@@ -429,6 +429,53 @@ const StatusDot = ({ color }) => {
   );
 };
 
+// ─── Dot countdown ring ───────────────────────────────────────────────────────
+
+const DOT_COUNT = 12;
+const RING_DURATION = 5000;
+
+const DotCountdownRing = ({ startTime }) => {
+  const [dotsRemaining, setDotsRemaining] = useState(DOT_COUNT);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, DOT_COUNT - Math.floor((elapsed / RING_DURATION) * DOT_COUNT));
+      setDotsRemaining(remaining);
+      if (remaining <= 0) clearInterval(interval);
+    }, RING_DURATION / DOT_COUNT);
+    return () => clearInterval(interval);
+  }, [startTime]);
+
+  const dots = [];
+  for (let i = 0; i < DOT_COUNT; i++) {
+    const angle = (i / DOT_COUNT) * Math.PI * 2 - Math.PI / 2;
+    const x = 7 + Math.cos(angle) * 5;
+    const y = 7 + Math.sin(angle) * 5;
+    const isActive = i < dotsRemaining;
+    dots.push(
+      <circle
+        key={i}
+        cx={x}
+        cy={y}
+        r={isActive ? 1 : 0.6}
+        fill="currentColor"
+        opacity={isActive ? 0.7 : 0.15}
+      />
+    );
+  }
+
+  return (
+    <svg
+      viewBox="0 0 14 14"
+      width="14"
+      height="14"
+      className="v6Scenario__dotCountdownRing">
+      {dots}
+    </svg>
+  );
+};
+
 // ─── Jump-to chips ─────────────────────────────────────────────────────────────
 
 const JUMP_TO_ITEMS = [
@@ -734,6 +781,10 @@ export const EmptySessionPageV6 = ({
   const [showPageBrowser, setShowPageBrowser] = useState(false);
   const [pageBrowserSearch, setPageBrowserSearch] = useState('');
   const [expandedFindings, setExpandedFindings] = useState(() => new Set());
+  const [dismissedFindings, setDismissedFindings] = useState({});
+  const [removedFindings, setRemovedFindings] = useState(() => new Set());
+  const [feedbackFindings, setFeedbackFindings] = useState({});
+  const dismissTimersRef = useRef({});
   const [refreshingWidgets, setRefreshingWidgets] = useState(() => {
     const initial = {};
     ['connection-timeout', 'recent-alerts', 'resource-utilization', 'saved-queries', 'dashboards', 'deployment-timeline'].forEach((id) => {
@@ -767,6 +818,7 @@ export const EmptySessionPageV6 = ({
   }, []);
 
   const toggleFinding = (key) => {
+    if (key in dismissedFindings) return;
     setExpandedFindings((prev) => {
       const next = new Set(prev);
       if (next.has(key)) {
@@ -775,6 +827,52 @@ export const EmptySessionPageV6 = ({
         next.add(key);
       }
       return next;
+    });
+  };
+
+  const dismissFinding = (key) => {
+    const dismissedAt = Date.now();
+    setDismissedFindings((prev) => ({ ...prev, [key]: dismissedAt }));
+    setExpandedFindings((prev) => {
+      const next = new Set(prev);
+      next.delete(key);
+      return next;
+    });
+    dismissTimersRef.current[key] = setTimeout(() => {
+      setRemovedFindings((prev) => {
+        const next = new Set(prev);
+        next.add(key);
+        return next;
+      });
+      setDismissedFindings((prev) => {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
+      delete dismissTimersRef.current[key];
+    }, 5000);
+  };
+
+  const undoDismissFinding = (key) => {
+    if (dismissTimersRef.current[key]) {
+      clearTimeout(dismissTimersRef.current[key]);
+      delete dismissTimersRef.current[key];
+    }
+    setDismissedFindings((prev) => {
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
+  };
+
+  const setFeedback = (key, direction) => {
+    setFeedbackFindings((prev) => {
+      if (prev[key] === direction) {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      }
+      return { ...prev, [key]: direction };
     });
   };
 
@@ -811,6 +909,122 @@ export const EmptySessionPageV6 = ({
     }
   };
 
+  // Per-scenario widget data
+  const WIDGET_DATA = {
+    1: {
+      timeout: { value: '847', trend: '↑ 31%' },
+      alerts: [
+        { name: 'P99 latency breach', status: 'CRITICAL' },
+        { name: 'Disk usage warning', status: 'WARNING' },
+        { name: 'Error rate spike', status: 'CRITICAL' },
+      ],
+      utilization: '56%',
+      services: [
+        { name: 'checkout', pct: 67, value: '66.67%' },
+        { name: 'frontend', pct: 15, value: '14.49%' },
+        { name: 'frontend-proxy', pct: 14, value: '14.29%' },
+        { name: 'payment', pct: 8, value: '7.84%' },
+      ],
+      dashboards: [
+        { name: 'Service overview', value: '244 healthy', age: '2h ago' },
+        { name: 'p99 latency', value: '175ms', age: 'today' },
+        { name: 'Error rate by service', value: '2.1%', age: 'yesterday' },
+        { name: 'Connection pool health', value: '87%', age: '3d ago' },
+      ],
+      deploys: [8, 12, 15, 11, 9],
+    },
+    2: {
+      timeout: { value: '2,341', trend: '↑ 184%' },
+      alerts: [
+        { name: 'checkout-agent loop', status: 'CRITICAL' },
+        { name: 'order-db pool 98%', status: 'CRITICAL' },
+        { name: 'Connection pool exhaustion', status: 'CRITICAL' },
+      ],
+      utilization: '94%',
+      services: [
+        { name: 'checkout', pct: 89, value: '88.91%' },
+        { name: 'order-service', pct: 42, value: '41.67%' },
+        { name: 'payment', pct: 18, value: '17.82%' },
+        { name: 'frontend', pct: 6, value: '5.44%' },
+      ],
+      dashboards: [
+        { name: 'Checkout flow', value: '1,994 retries', age: 'just now' },
+        { name: 'Order DB health', value: '98% pool', age: 'just now' },
+        { name: 'Service overview', value: '3 critical', age: '1h ago' },
+        { name: 'Agent retry count', value: '332/min', age: 'today' },
+      ],
+      deploys: [11, 14, 9, 13, 2],
+    },
+    3: {
+      timeout: { value: '124', trend: '↓ 8%' },
+      alerts: [
+        { name: 'billing-agent accuracy', status: 'CRITICAL' },
+        { name: 'Citation match below SLO', status: 'CRITICAL' },
+        { name: 'Groundedness drift', status: 'WARNING' },
+      ],
+      utilization: '41%',
+      services: [
+        { name: 'billing-agent', pct: 72, value: '71.88%' },
+        { name: 'retrieval-index', pct: 34, value: '33.50%' },
+        { name: 'frontend', pct: 8, value: '7.92%' },
+        { name: 'auth-service', pct: 3, value: '2.81%' },
+      ],
+      dashboards: [
+        { name: 'Agent accuracy', value: '0.58 score', age: 'just now' },
+        { name: 'Billing conversations', value: '340 affected', age: '1h ago' },
+        { name: 'Retrieval latency', value: '890ms', age: 'today' },
+        { name: 'Citation coverage', value: '31%', age: '2h ago' },
+      ],
+      deploys: [6, 9, 12, 8, 7],
+    },
+    4: {
+      timeout: { value: '203', trend: '↓ 12%' },
+      alerts: [
+        { name: 'Tool-selection accuracy', status: 'WARNING' },
+        { name: 'Lookup path degraded', status: 'WARNING' },
+        { name: 'Prompt deploy drift', status: 'INFO' },
+      ],
+      utilization: '38%',
+      services: [
+        { name: 'research-agent', pct: 42, value: '42.11%' },
+        { name: 'lookup-tool', pct: 31, value: '31.25%' },
+        { name: 'route-tool', pct: 12, value: '11.72%' },
+        { name: 'summarize-tool', pct: 5, value: '4.69%' },
+      ],
+      dashboards: [
+        { name: 'Tool accuracy', value: '0.58', age: 'today' },
+        { name: 'Agent throughput', value: '9.6k/hr', age: '3h ago' },
+        { name: 'p99 latency', value: '175ms', age: 'yesterday' },
+        { name: 'Model cost', value: '$284/day', age: 'today' },
+      ],
+      deploys: [10, 8, 14, 11, 12],
+    },
+    5: {
+      timeout: { value: '512', trend: '↑ 47%' },
+      alerts: [
+        { name: 'research-agent retry loop', status: 'WARNING' },
+        { name: 'Upstream 200-on-empty', status: 'WARNING' },
+        { name: 'Pattern recurrence (5th)', status: 'INFO' },
+      ],
+      utilization: '62%',
+      services: [
+        { name: 'research-agent', pct: 58, value: '57.81%' },
+        { name: 'web-fetch', pct: 44, value: '43.75%' },
+        { name: 'data-service', pct: 22, value: '21.88%' },
+        { name: 'frontend', pct: 6, value: '5.47%' },
+      ],
+      dashboards: [
+        { name: 'Agent retry rate', value: '47/min', age: 'just now' },
+        { name: 'web-fetch errors', value: '512 timeouts', age: '1h ago' },
+        { name: 'Service overview', value: '245 healthy', age: '4h ago' },
+        { name: 'Data pipeline health', value: '82%', age: 'yesterday' },
+      ],
+      deploys: [9, 11, 7, 13, 10],
+    },
+  };
+
+  const wd = WIDGET_DATA[scenario] || WIDGET_DATA[1];
+
   const renderWidget = (widgetId) => {
     switch (widgetId) {
       case 'top-services':
@@ -822,26 +1036,13 @@ export const EmptySessionPageV6 = ({
               <span>FAULT RATE</span>
             </div>
             <div className="widgetCard__rows">
-              <div className="widgetCard__barRow" data-row="checkout" style={{ cursor: 'pointer' }} onClick={() => onSelectSession && onSelectSession('error-rate-spike-session')}>
-                <span className="widgetCard__barLabel">checkout</span>
-                <div className="widgetCard__barTrack"><div className="widgetCard__barFill" style={{ width: '67%' }} /></div>
-                <span className="widgetCard__barValue">{dataVariant % 2 === 0 ? '66.67%' : '58.23%'}</span>
-              </div>
-              <div className="widgetCard__barRow" data-row="frontend" style={{ cursor: 'pointer' }} onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('app-perf-services', 'Frontend service')}>
-                <span className="widgetCard__barLabel">frontend</span>
-                <div className="widgetCard__barTrack"><div className="widgetCard__barFill widgetCard__barFill--secondary" style={{ width: dataVariant % 2 === 0 ? '14.5%' : '22%' }} /></div>
-                <span className="widgetCard__barValue">{dataVariant % 2 === 0 ? '14.49%' : '21.88%'}</span>
-              </div>
-              <div className="widgetCard__barRow" data-row="frontend-proxy" style={{ cursor: 'pointer' }} onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('app-perf-services', 'Frontend-proxy service')}>
-                <span className="widgetCard__barLabel">frontend-proxy</span>
-                <div className="widgetCard__barTrack"><div className="widgetCard__barFill widgetCard__barFill--secondary" style={{ width: dataVariant % 2 === 0 ? '14.3%' : '11%' }} /></div>
-                <span className="widgetCard__barValue">{dataVariant % 2 === 0 ? '14.29%' : '10.94%'}</span>
-              </div>
-              <div className="widgetCard__barRow" data-row="payment" style={{ cursor: 'pointer' }} onClick={() => onSelectSession && onSelectSession('latency-spike-session')}>
-                <span className="widgetCard__barLabel">payment</span>
-                <div className="widgetCard__barTrack"><div className="widgetCard__barFill widgetCard__barFill--secondary" style={{ width: dataVariant % 2 === 0 ? '8%' : '6%' }} /></div>
-                <span className="widgetCard__barValue">{dataVariant % 2 === 0 ? '7.84%' : '5.91%'}</span>
-              </div>
+              {wd.services.map((svc, i) => (
+                <div key={svc.name} className="widgetCard__barRow" style={{ cursor: 'pointer' }} onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('app-perf-services', svc.name)}>
+                  <span className="widgetCard__barLabel">{svc.name}</span>
+                  <div className="widgetCard__barTrack"><div className={`widgetCard__barFill${i > 0 ? ' widgetCard__barFill--secondary' : ''}`} style={{ width: `${svc.pct}%` }} /></div>
+                  <span className="widgetCard__barValue">{svc.value}</span>
+                </div>
+              ))}
             </div>
           </OuiInsightCard>
         );
@@ -850,8 +1051,8 @@ export const EmptySessionPageV6 = ({
           <OuiInsightCard onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('logs', 'Logs')}>
             <WidgetHeader title="Connection timeout errors" />
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-              <span className="widgetCard__bigNumber">{dataVariant % 2 === 0 ? '847' : '923'}</span>
-              <span className="widgetCard__trend widgetCard__trend--warning">{dataVariant % 2 === 0 ? '↑ 31%' : '↑ 34%'}</span>
+              <span className="widgetCard__bigNumber">{wd.timeout.value}</span>
+              <span className="widgetCard__trend widgetCard__trend--warning">{wd.timeout.trend}</span>
             </div>
             <svg viewBox="0 0 280 68" preserveAspectRatio="none" style={{ width: '100%', height: 68, display: 'block', marginTop: 8 }}>
               <defs>
@@ -872,26 +1073,22 @@ export const EmptySessionPageV6 = ({
               <span>STATUS</span>
             </div>
             <div className="widgetCard__rows">
-              <div className="widgetCard__statusRow" style={{ cursor: 'pointer' }} onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('alerts', 'P99 latency breach')}>
-                <span className="widgetCard__statusLabel">P99 latency breach</span>
-                <span className="widgetCard__statusBadge widgetCard__statusBadge--critical">CRITICAL</span>
-              </div>
-              <div className="widgetCard__statusRow" style={{ cursor: 'pointer' }} onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('alerts', 'Disk usage warning')}>
-                <span className="widgetCard__statusLabel">Disk usage warning</span>
-                <span className="widgetCard__statusBadge widgetCard__statusBadge--warning">WARNING</span>
-              </div>
-              <div className="widgetCard__statusRow" style={{ cursor: 'pointer' }} onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('alerts', 'Error rate spike')}>
-                <span className="widgetCard__statusLabel">Error rate spike</span>
-                <span className="widgetCard__statusBadge widgetCard__statusBadge--critical">CRITICAL</span>
-              </div>
+              {wd.alerts.map((alert) => (
+                <div key={alert.name} className="widgetCard__statusRow" style={{ cursor: 'pointer' }} onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('alerts', alert.name)}>
+                  <span className="widgetCard__statusLabel">{alert.name}</span>
+                  <span className={`widgetCard__statusBadge widgetCard__statusBadge--${alert.status === 'CRITICAL' ? 'critical' : 'warning'}`}>{alert.status}</span>
+                </div>
+              ))}
             </div>
           </OuiInsightCard>
         );
-      case 'resource-utilization':
+      case 'resource-utilization': {
+        const utilNum = parseInt(wd.utilization);
+        const utilColor = utilNum > 80 ? '#DC2626' : utilNum > 60 ? '#B45309' : '#1F9D6B';
         return (
           <OuiInsightCard onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('metrics', 'Metrics')}>
             <WidgetHeader title="Resource utilization" />
-            <span style={{ fontSize: 22, fontWeight: 700, color: '#1F9D6B', letterSpacing: '-0.01em', marginBottom: 4, display: 'block' }}>56%</span>
+            <span style={{ fontSize: 22, fontWeight: 700, color: utilColor, letterSpacing: '-0.01em', marginBottom: 4, display: 'block' }}>{wd.utilization}</span>
             <svg viewBox="0 0 220 80" style={{ width: '100%', height: 80 }}>
               <line x1="30" y1="14" x2="210" y2="14" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
               <line x1="30" y1="38" x2="210" y2="38" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
@@ -914,6 +1111,7 @@ export const EmptySessionPageV6 = ({
             </svg>
           </OuiInsightCard>
         );
+      }
       case 'saved-queries':
         return (
           <OuiInsightCard onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('logs', 'Logs')}>
@@ -935,39 +1133,38 @@ export const EmptySessionPageV6 = ({
           <OuiInsightCard>
             <WidgetHeader title="Dashboards" />
             <div className="widgetCard__rows">
-              {[
-                { name: 'Service overview', points: '0,14 15,12 30,10 45,11 60,9' },
-                { name: 'p99 latency', points: '0,8 15,10 30,14 45,12 60,16' },
-                { name: 'Error rate by service', points: '0,10 15,8 30,6 45,9 60,7' },
-                { name: 'Connection pool health', points: '0,12 15,11 30,13 45,10 60,8' },
-              ].map((item) => (
-                <div key={item.name} className="widgetCard__statusRow" style={{ cursor: 'pointer' }} onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('dashboards', item.name)}>
-                  <span className="widgetCard__statusLabel">{item.name}</span>
-                  <svg viewBox="0 0 60 20" style={{ width: 48, height: 16, flexShrink: 0 }}>
-                    <polyline points={item.points} fill="none" stroke="#1F9D6B" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
+              {wd.dashboards.map((item) => (
+                <div key={item.name} className="widgetCard__dashRow" style={{ cursor: 'pointer' }} onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('dashboards', item.name)}>
+                  <div className="widgetCard__dashLeft">
+                    <span className="widgetCard__dashName">{item.name}</span>
+                    <span className="widgetCard__dashValue">{item.value}</span>
+                  </div>
+                  <span className="widgetCard__dashAge">{item.age}</span>
                 </div>
               ))}
             </div>
           </OuiInsightCard>
         );
-      case 'deployment-timeline':
+      case 'deployment-timeline': {
+        const deployMax = Math.max(...wd.deploys);
+        const deployAvg = Math.round(wd.deploys.reduce((a, b) => a + b, 0) / wd.deploys.length);
         return (
           <OuiInsightCard onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('dashboards', 'Dashboards')}>
             <WidgetHeader title="Deploys" />
             <div style={{ position: 'relative', height: 60, borderRadius: 3, overflow: 'hidden' }}>
               <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(to right, rgba(59,93,214,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(59,93,214,0.06) 1px, transparent 1px)', backgroundSize: '14px 12px' }} />
               <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', gap: 4, height: '100%', padding: '0 2px' }}>
-                {[8,12,15,11,9].map((v, i) => (
+                {wd.deploys.map((v, i) => (
                   <div key={i} style={{ flex: 1, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', height: '100%' }}>
-                    <div style={{ width: '60%', height: `${(v / 16) * 100}%`, background: '#2BA98A', borderRadius: 1 }} />
+                    <div style={{ width: '60%', height: `${(v / (deployMax + 2)) * 100}%`, background: '#2BA98A', borderRadius: 1 }} />
                   </div>
                 ))}
               </div>
             </div>
-            <div className="widgetCard__mono" style={{ fontSize: 8, marginTop: 3 }}>avg 11/wk</div>
+            <div className="widgetCard__mono" style={{ fontSize: 8, marginTop: 3 }}>avg {deployAvg}/wk</div>
           </OuiInsightCard>
         );
+      }
       default:
         return null;
     }
@@ -1230,7 +1427,34 @@ export const EmptySessionPageV6 = ({
             {/* Findings */}
             <div className="v6Scenario__findings">
               {scenarioData.findings.map((finding) => {
+                if (removedFindings.has(finding.key)) return null;
+                const isDismissed = finding.key in dismissedFindings;
                 const isExpanded = expandedFindings.has(finding.key);
+                const feedback = feedbackFindings[finding.key];
+
+                if (isDismissed) {
+                  return (
+                    <div key={finding.key} className="v6Scenario__findingCard v6Scenario__findingCard--dismissed">
+                      <div className="v6Scenario__findingCardMain">
+                        <div className="v6Scenario__findingCardLeft">
+                          <span className="v6Scenario__findingDismissedText">
+                            {finding.title} — <em>dismissed</em>
+                          </span>
+                        </div>
+                        <div className="v6Scenario__findingCardRight">
+                          <DotCountdownRing startTime={dismissedFindings[finding.key]} />
+                          <button
+                            type="button"
+                            className="v6Scenario__findingUndoBtn"
+                            onClick={() => undoDismissFinding(finding.key)}>
+                            Undo
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
+
                 return (
                   <div key={finding.key} className={`v6Scenario__findingCard${isExpanded ? ' v6Scenario__findingCard--expanded' : ''}`} onClick={() => toggleFinding(finding.key)}>
                     <div className="v6Scenario__findingCardMain">
@@ -1275,16 +1499,16 @@ export const EmptySessionPageV6 = ({
                         <>
                           <button
                             type="button"
-                            className="v6Scenario__findingSideBtn"
+                            className={`v6Scenario__findingSideBtn${feedback === 'up' ? ' v6Scenario__findingSideBtn--active' : ''}`}
                             aria-label="Helpful"
-                            onClick={(e) => e.stopPropagation()}>
+                            onClick={(e) => { e.stopPropagation(); setFeedback(finding.key, 'up'); }}>
                             <OuiIcon type="thumbsUp" size="s" />
                           </button>
                           <button
                             type="button"
-                            className="v6Scenario__findingSideBtn"
+                            className={`v6Scenario__findingSideBtn${feedback === 'down' ? ' v6Scenario__findingSideBtn--active' : ''}`}
                             aria-label="Not helpful"
-                            onClick={(e) => e.stopPropagation()}>
+                            onClick={(e) => { e.stopPropagation(); setFeedback(finding.key, 'down'); }}>
                             <OuiIcon type="thumbsDown" size="s" />
                           </button>
                         </>
@@ -1293,7 +1517,7 @@ export const EmptySessionPageV6 = ({
                         type="button"
                         className="v6Scenario__findingSideBtn"
                         aria-label="Dismiss"
-                        onClick={(e) => e.stopPropagation()}>
+                        onClick={(e) => { e.stopPropagation(); dismissFinding(finding.key); }}>
                         <OuiIcon type="cross" size="s" />
                       </button>
                     </div>
