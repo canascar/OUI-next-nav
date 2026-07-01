@@ -238,13 +238,19 @@
   }
 }
 
-// Header row in expanded mode: logo left, collapse icon right
+// Header row in expanded mode: logo left, controls + collapse icons right
 .sessionLeftNav__headerExpanded {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 20px 12px;
   flex-shrink: 0;
+}
+
+.sessionLeftNav__headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 // Scrollable items area (expanded)
@@ -338,6 +344,7 @@
 .sessionLeftNav__navItemExpanded--main {
   flex: 1;
   min-width: 0;
+  padding-right: 4px;
 }
 
 // Arrow toggle button
@@ -541,5 +548,23 @@
 @media (max-width: 768px) {
   .v6Scenario {
     flex-direction: column;
+  }
+}
+
+// Inline arrow within parent item — separate click target for expand/collapse
+.sessionLeftNav__inlineArrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 0.6;
+
+  &:hover {
+    opacity: 1;
+    background-color: rgba($ouiColorDarkestShade, 0.07);
   }
 }

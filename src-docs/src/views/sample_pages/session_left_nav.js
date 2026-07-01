@@ -171,7 +171,7 @@ export const SessionLeftNav = ({
         inActiveSession ? ' sessionLeftNav--inSession' : ''
       }`}
       aria-label="Session navigation">
-      {/* Header: logo left, collapse icon right */}
+      {/* Header: logo left, controls + collapse icons right */}
       <div className="sessionLeftNav__headerExpanded">
         <button
           type="button"
@@ -180,14 +180,71 @@ export const SessionLeftNav = ({
           onClick={onCreateSession}>
           <OuiIcon type="logoOpenSearch" size="l" aria-hidden="true" />
         </button>
-        <OuiButtonIcon
-          iconType="menuLeft"
-          aria-label="Collapse navigation"
-          color="text"
-          display="empty"
-          size="xs"
-          onClick={() => setIsNavExpanded(false)}
-        />
+        <div className="sessionLeftNav__headerActions">
+          <OuiPopover
+            button={
+              <OuiButtonIcon
+                iconType="controlsHorizontal"
+                aria-label="Customize shortcuts"
+                color="text"
+                display="empty"
+                size="xs"
+                onClick={() => setCustomizePopoverOpen(!customizePopoverOpen)}
+              />
+            }
+            isOpen={customizePopoverOpen}
+            closePopover={() => setCustomizePopoverOpen(false)}
+            anchorPosition="downLeft"
+            panelPaddingSize="s"
+            panelClassName="sessionLeftNav__customizePanel">
+            <div className="sessionLeftNav__customizePopover">
+              <div className="sessionLeftNav__customizeHeader">Customize shortcuts</div>
+              <div className="sessionLeftNav__customizeList">
+                {START_ITEMS.map((item) => (
+                  <div key={item.key} className="sessionLeftNav__customizeItem">
+                    <OuiIcon type={item.icon} size="m" />
+                    <span className="sessionLeftNav__customizeItemLabel">{item.label}</span>
+                    <OuiSwitch
+                      compressed
+                      label=""
+                      showLabel={false}
+                      checked={enabledStartItems.has(item.key)}
+                      onChange={() => toggleStartItem(item.key)}
+                    />
+                  </div>
+                ))}
+                {START_GROUPS.map((group) => (
+                  <React.Fragment key={group.key}>
+                    <div className="sessionLeftNav__customizeItem sessionLeftNav__customizeItem--group">
+                      <span className="sessionLeftNav__customizeItemLabel">{group.label}</span>
+                    </div>
+                    {group.children.map((item) => (
+                      <div key={item.key} className="sessionLeftNav__customizeItem sessionLeftNav__customizeItem--child">
+                        <OuiIcon type={item.icon} size="m" />
+                        <span className="sessionLeftNav__customizeItemLabel">{item.label}</span>
+                        <OuiSwitch
+                          compressed
+                          label=""
+                          showLabel={false}
+                          checked={enabledStartItems.has(item.key)}
+                          onChange={() => toggleStartItem(item.key)}
+                        />
+                      </div>
+                    ))}
+                  </React.Fragment>
+                ))}
+              </div>
+            </div>
+          </OuiPopover>
+          <OuiButtonIcon
+            iconType="menuLeft"
+            aria-label="Collapse navigation"
+            color="text"
+            display="empty"
+            size="xs"
+            onClick={() => setIsNavExpanded(false)}
+          />
+        </div>
       </div>
 
       {/* Expanded nav items with labels */}
@@ -212,63 +269,24 @@ export const SessionLeftNav = ({
               <span className="sessionLeftNav__navItemExpandedLabel">
                 New session
               </span>
+              <span
+                className="sessionLeftNav__inlineArrow"
+                role="button"
+                tabIndex={0}
+                aria-label={expandedSections['new-session'] ? 'Collapse' : 'Expand'}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleSection('new-session');
+                }}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); toggleSection('new-session'); } }}>
+                <OuiIcon
+                  type={expandedSections['new-session'] ? 'arrowDown' : 'arrowRight'}
+                  size="s"
+                />
+              </span>
             </button>
-            <OuiPopover
-              button={
-                <button
-                  type="button"
-                  className="sessionLeftNav__navItemArrowButton"
-                  aria-label="Customize shortcuts"
-                  onClick={() => setCustomizePopoverOpen(!customizePopoverOpen)}>
-                  <OuiIcon type="controlsHorizontal" size="s" />
-                </button>
-              }
-              isOpen={customizePopoverOpen}
-              closePopover={() => setCustomizePopoverOpen(false)}
-              anchorPosition="downLeft"
-              panelPaddingSize="s"
-              panelClassName="sessionLeftNav__customizePanel">
-              <div className="sessionLeftNav__customizePopover">
-                <div className="sessionLeftNav__customizeHeader">Customize shortcuts</div>
-                <div className="sessionLeftNav__customizeList">
-                  {START_ITEMS.map((item) => (
-                    <div key={item.key} className="sessionLeftNav__customizeItem">
-                      <OuiIcon type={item.icon} size="m" />
-                      <span className="sessionLeftNav__customizeItemLabel">{item.label}</span>
-                      <OuiSwitch
-                        compressed
-                        label=""
-                        showLabel={false}
-                        checked={enabledStartItems.has(item.key)}
-                        onChange={() => toggleStartItem(item.key)}
-                      />
-                    </div>
-                  ))}
-                  {START_GROUPS.map((group) => (
-                    <React.Fragment key={group.key}>
-                      <div className="sessionLeftNav__customizeItem sessionLeftNav__customizeItem--group">
-                        <span className="sessionLeftNav__customizeItemLabel">{group.label}</span>
-                      </div>
-                      {group.children.map((item) => (
-                        <div key={item.key} className="sessionLeftNav__customizeItem sessionLeftNav__customizeItem--child">
-                          <OuiIcon type={item.icon} size="m" />
-                          <span className="sessionLeftNav__customizeItemLabel">{item.label}</span>
-                          <OuiSwitch
-                            compressed
-                            label=""
-                            showLabel={false}
-                            checked={enabledStartItems.has(item.key)}
-                            onChange={() => toggleStartItem(item.key)}
-                          />
-                        </div>
-                      ))}
-                    </React.Fragment>
-                  ))}
-                </div>
-              </div>
-            </OuiPopover>
           </div>
-          {/* Always-visible items */}
+          {expandedSections['new-session'] && (
           <div className="sessionLeftNav__sectionChildren">
             {NEW_SESSION_ITEMS.map((item) => (
               <button
@@ -311,6 +329,7 @@ export const SessionLeftNav = ({
               </div>
             ))}
           </div>
+          )}
         </div>
 
         {/* All sessions — collapsible */}
@@ -333,16 +352,21 @@ export const SessionLeftNav = ({
               <span className="sessionLeftNav__navItemExpandedLabel">
                 All sessions
               </span>
-            </button>
-            <button
-              type="button"
-              className="sessionLeftNav__navItemArrowButton"
-              aria-label={expandedSections['all-sessions'] ? 'Collapse' : 'Expand'}
-              onClick={() => toggleSection('all-sessions')}>
-              <OuiIcon
-                type={expandedSections['all-sessions'] ? 'arrowDown' : 'arrowRight'}
-                size="s"
-              />
+              <span
+                className="sessionLeftNav__inlineArrow"
+                role="button"
+                tabIndex={0}
+                aria-label={expandedSections['all-sessions'] ? 'Collapse' : 'Expand'}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleSection('all-sessions');
+                }}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); toggleSection('all-sessions'); } }}>
+                <OuiIcon
+                  type={expandedSections['all-sessions'] ? 'arrowDown' : 'arrowRight'}
+                  size="s"
+                />
+              </span>
             </button>
           </div>
           {expandedSections['all-sessions'] && (
