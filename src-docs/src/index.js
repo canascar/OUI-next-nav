@@ -210,7 +210,7 @@ render(
             )}
           />
           <Route
-            path="/session-pages"
+            path="/sample-pages-alt"
             render={() => (
               <LinkWrapper>
                 <SamplePagesView />

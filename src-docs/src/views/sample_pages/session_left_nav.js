@@ -84,19 +84,21 @@ export const SessionLeftNav = ({
 
   // New session sub-items — all available options
   const ALL_START_ITEMS = [
+    { key: 'alerts', label: 'Alerts', icon: 'navAlerting', page: 'alerts-list', title: 'Alerts' },
+    { key: 'dashboards', label: 'Dashboards', icon: 'navDashboards', page: 'dashboards-list', title: 'Dashboards' },
     { key: 'logs', label: 'Logs', icon: 'navDiscover', page: 'discover-log', title: 'Logs' },
     { key: 'metrics', label: 'Metrics', icon: 'visArea', page: 'discover-metric', title: 'Metrics' },
-    { key: 'dashboards', label: 'Dashboards', icon: 'navDashboards', page: 'dashboards-list', title: 'Dashboards' },
-    { key: 'alerts', label: 'Alerts', icon: 'navAlerting', page: 'alerts-list', title: 'Alerts' },
-    { key: 'service-map', label: 'Service map', icon: 'navAiFlow', page: 'app-map', title: 'Service Map' },
-    { key: 'traces', label: 'Traces', icon: 'apmTrace', page: 'app-traces', title: 'Traces' },
-    { key: 'services', label: 'Services', icon: 'navServices', page: 'app-perf-services', title: 'Services' },
-    { key: 'notebooks', label: 'Notebooks', icon: 'document', page: 'notebooks', title: 'Notebooks' },
+    { key: 'topology-map', label: 'Topology map', icon: 'navAiFlow', page: 'app-map', title: 'Topology Map' },
+    { key: 'agent-traces', label: 'Agent traces', icon: 'visTable', page: 'app-traces', title: 'Agent Traces' },
+    { key: 'agent-spans', label: 'Agent spans', icon: 'visTagCloud', page: 'agent-spans', title: 'Agent Spans' },
+    { key: 'app-traces', label: 'Application traces', icon: 'apmTrace', page: 'traces', title: 'Application Traces' },
+    { key: 'app-services', label: 'Application services', icon: 'navServices', page: 'app-perf-services', title: 'Application Services' },
+    { key: 'app-slos', label: 'Application SLOs', icon: 'visGauge', page: 'app-services', title: 'Application SLOs' },
   ];
 
-  // Enabled start items (keys)
+  // Enabled start items (keys) — top 5 on by default
   const [enabledStartItems, setEnabledStartItems] = useState(
-    () => new Set(['logs', 'metrics', 'dashboards', 'alerts', 'service-map'])
+    () => new Set(['alerts', 'dashboards', 'logs', 'metrics', 'topology-map'])
   );
   const [customizePopoverOpen, setCustomizePopoverOpen] = useState(false);
 

@@ -48,19 +48,25 @@ import { Mascot } from '../../../../olly-mascot/Mascot';
 import { ALL_DRAGGABLE_ITEMS } from './nav_layout_utils';
 
 const NAV_ITEMS = [
-  { key: 'home', label: 'New thread', icon: 'plusInCircle', hoverOnly: false },
+  { key: 'home', label: 'New session', icon: 'plusInCircle', hoverOnly: false },
   {
     key: 'thread',
-    label: 'All threads',
+    label: 'All sessions',
     icon: 'navTicketing',
     rulerAfter: true,
   },
   // Essentials
   {
+    key: 'alerts',
+    label: 'Alerts',
+    icon: 'navAlerting',
+    sectionHeader: 'Essentials',
+    group: 'essentials',
+  },
+  {
     key: 'dashboards',
     label: 'Dashboards',
     icon: 'navDashboards',
-    sectionHeader: 'Essentials',
     group: 'essentials',
   },
   { key: 'logs', label: 'Logs', icon: 'navDiscover', group: 'essentials' },
@@ -2219,9 +2225,6 @@ export const SamplePagesLeftNav = ({
 
   const NAV_AUTO_SELECT = {
     thread: { page: 'thread', item: 'latency-spike' },
-    dashboards: { page: 'dashboards', item: 'system-overview' },
-    logs: { page: 'logs', item: null },
-    metrics: { page: 'metrics', item: null },
   };
 
   const TOOLS_PAGES = new Set([
@@ -2246,6 +2249,8 @@ export const SamplePagesLeftNav = ({
     'sample-data',
   ]);
   const isNavItemActive = (itemKey) => {
+    // When in a session (thread page), no nav items should be highlighted
+    if (activePage === 'thread') return false;
     if (activePage === itemKey) return true;
     if (itemKey === 'tools' && TOOLS_PAGES.has(activePage)) return true;
     if (itemKey === 'manage-workspace' && WORKSPACE_PAGES.has(activePage))
@@ -2372,7 +2377,7 @@ export const SamplePagesLeftNav = ({
 
         {/* Scrollable items */}
         <div className="samplePagesLeftNav__itemsExpanded">
-          {/* New thread — navigates to home page */}
+          {/* New session — navigates to home page */}
           <button
             type="button"
             className={`samplePagesLeftNav__navItemExpanded${
@@ -2389,11 +2394,11 @@ export const SamplePagesLeftNav = ({
               <OuiIcon type="plusInCircle" size="m" />
             </div>
             <span className="samplePagesLeftNav__navItemExpandedLabel">
-              New thread
+              New session
             </span>
           </button>
 
-          {/* All threads — with popover on hover */}
+          {/* All sessions — with popover on hover */}
           {(() => {
             const threadItem = renderedNavItems.find((i) => i.key === 'thread');
             if (!threadItem) return null;
