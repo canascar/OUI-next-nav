@@ -208,6 +208,45 @@ To change the responsive thresholds, only update `--widget-font-base`. Everythin
 
 ---
 
+## Surround Shimmer (Input Dot-Matrix)
+
+The animated dot-matrix around the input field uses a fixed-size canvas to ensure consistent dot density at all screen sizes.
+
+### Sizing Rules
+
+| Property | Value | Reason |
+|----------|-------|--------|
+| `max-width` | `520px` | Caps horizontal extent — dots never spread too far |
+| `max-height` | `200px` | Caps vertical extent — keeps effect tight around input |
+| Dot spacing | `7px` (fixed constant) | Never recalculated from container size |
+| Alignment | `align-self: center` | Centered behind the input box |
+
+### Resize Behavior
+
+The canvas rebuilds its dot field every animation frame if the container size changes (detected via `clientWidth`/`clientHeight` comparison). This ensures dots reflow correctly without stretching or misalignment during panel resize. The dot spacing stays constant — only the number of dots changes.
+
+---
+
+## Page Background Grid
+
+The notebook grid-line background on the `body` uses a vignette radial gradient over repeating grid lines.
+
+### Rules
+
+| Layer | Sizing | Attachment |
+|-------|--------|------------|
+| Vignette gradient | `max(100%, 1200px) max(100vh, 800px)` | `fixed` — stays relative to viewport |
+| Horizontal grid lines | `19px 19px` | `scroll` — moves with page content |
+| Vertical grid lines | `19px 19px` | `scroll` — moves with page content |
+
+### Why
+
+- **Fixed attachment** on the vignette prevents it from stretching on long pages (where `100%` of body height would make it barely visible)
+- **Min size (`1200×800`)** ensures the vignette is visible even on small viewports — without this, a small window would shrink the gradient so much that grid lines lose their soft fade-out
+- Grid lines are always `19px` spacing regardless of page or viewport size
+
+---
+
 ## Font Size Hierarchy (within widget cards)
 
 | Element | Size |
