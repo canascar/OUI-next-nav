@@ -74,8 +74,8 @@ export const OpenSearch3DLogo = ({ size = 240 }) => {
     scene.add(modelGroup);
 
     // Physics — spring-based: always pulled toward idle oscillation
-    const springStrength = 0.006; // Pull toward home (higher = snappier snap-back on release)
-    const damping = 0.93; // Velocity decay (lower = settles faster / snappier)
+    const springStrength = 0.02; // Pull toward home (higher = snappier snap-back on release)
+    const damping = 0.86; // Velocity decay (lower = settles faster / snappier friction)
     const velocity = { x: 0, y: 0, z: 0 };
     let isDragging = false;
     let hasInteracted = false;

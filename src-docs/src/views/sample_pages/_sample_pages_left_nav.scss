@@ -92,7 +92,7 @@
   color: $ouiTextColor;
 
   &:hover {
-    background-color: rgba($ouiColorDarkestShade, 0.07);
+    background-color: rgba($ouiColorPrimary, 0.08);
     border-radius: 4px;
   }
 
@@ -278,11 +278,11 @@
   text-align: left;
 
   &:hover {
-    background-color: rgba($ouiColorDarkestShade, 0.07);
+    background-color: rgba($ouiColorPrimary, 0.08);
   }
 
   &--active {
-    background-color: $ouiColorLightestShade;
+    background-color: rgba($ouiColorPrimary, 0.1);
   }
 }
 
@@ -329,7 +329,7 @@
 .samplePagesLeftNav {
   width: 48px;
   min-width: 48px;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.45), rgba(26, 23, 33, 0.55)); // sass-lint:disable-line no-color-literals
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.45), rgba(27, 22, 42, 0.55)); // sass-lint:disable-line no-color-literals
   -webkit-backdrop-filter: blur(26px) saturate(175%);
   backdrop-filter: blur(26px) saturate(175%);
   border-right: 1px solid lightOrDarkTheme(#ececef, rgba(255, 255, 255, 0.08));
@@ -404,7 +404,7 @@
   appearance: none;
 
   &:hover .samplePagesLeftNav__navIcon {
-    background-color: rgba($ouiColorDarkestShade, 0.07);
+    background-color: rgba($ouiColorPrimary, 0.08);
     transition: background-color 150ms ease-in-out;
   }
 
@@ -529,7 +529,7 @@
 .samplePagesLeftNav__expandedPanel {
   width: 320px;
   min-width: 320px;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.62), rgba(26, 23, 33, 0.55)); // sass-lint:disable-line no-color-literals
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.62), rgba(27, 22, 42, 0.55)); // sass-lint:disable-line no-color-literals
   backdrop-filter: blur(30px) saturate(185%);
   -webkit-backdrop-filter: blur(30px) saturate(185%);
   border-right: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.10));
@@ -574,7 +574,7 @@
   transition: background-color 150ms ease;
 
   &:hover {
-    background-color: rgba($ouiColorDarkestShade, 0.07);
+    background-color: rgba($ouiColorPrimary, 0.08);
     border-radius: 4px;
   }
 
@@ -834,7 +834,7 @@
   left: 60px;
   width: 320px;
   max-height: 400px;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.62), rgba(26, 23, 33, 0.55)); // sass-lint:disable-line no-color-literals
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.62), rgba(27, 22, 42, 0.55)); // sass-lint:disable-line no-color-literals
   -webkit-backdrop-filter: blur(30px) saturate(185%);
   backdrop-filter: blur(30px) saturate(185%);
   border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.12)); // sass-lint:disable-line no-color-literals
@@ -874,6 +874,12 @@
   @include brandGradient;
   @include brandGradientBlur;
   position: relative;
+}
+
+// Interior session screen (chat + canvas) — remove the notebook grid pattern
+.samplePagesWrapper--noPattern {
+  background-image: none;
+  box-shadow: none;
 }
 
 .samplePagesContentPanel {

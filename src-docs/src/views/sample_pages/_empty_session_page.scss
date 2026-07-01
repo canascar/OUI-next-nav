@@ -293,7 +293,7 @@
 // Inline link — bold + underline + accent color, clickable
 .emptySessionPage__narrativeLink {
   font-weight: $ouiFontWeightSemiBold;
-  color: lightOrDarkTheme(#5B4FCF, #A89CF5);
+  color: lightOrDarkTheme(#4B6EF5, #93B4FC);
   text-decoration: underline;
   text-decoration-color: lightOrDarkTheme(#C4B8EF, #5B4F86);
   text-underline-offset: 3px;
@@ -301,7 +301,7 @@
   transition: color 150ms ease;
 
   &:hover {
-    color: lightOrDarkTheme(darken(#5B4FCF, 8%), lighten(#A89CF5, 8%));
+    color: lightOrDarkTheme(darken(#4B6EF5, 8%), lighten(#93B4FC, 8%));
   }
 
   // Resolved — softer shade, no navigation
@@ -532,8 +532,8 @@
   font-weight: 600;
   line-height: 1;
   margin-left: 4px;
-  background: lightOrDarkTheme(rgba(91, 79, 207, 0.1), rgba(168, 156, 245, 0.15));
-  color: lightOrDarkTheme(rgba(91, 79, 207, 1), rgba(168, 156, 245, 1));
+  background: lightOrDarkTheme(rgba(75, 110, 245, 0.1), rgba(147, 180, 252, 0.15));
+  color: lightOrDarkTheme(rgba(75, 110, 245, 1), rgba(147, 180, 252, 1));
 }
 
 // Tab content panels — fade transition.
@@ -565,8 +565,9 @@
   min-width: 0;
   overflow-y: auto;
   padding: 32px 24px 0 24px;
-  border-left: none;
-  background-color: lightOrDarkTheme(rgba(236, 238, 248, 0.50), rgba(13, 19, 30, 0.50));
+  // Clearer split: tinted right panel + a crisp divider (matches v4)
+  border-left: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.1), rgba(255, 255, 255, 0.14));
+  background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.035), rgba(10, 37, 69, 0.45));
   -ms-overflow-style: none;
   scrollbar-width: none;
 
@@ -800,7 +801,7 @@
   gap: 2px;
   width: 100%;
   padding: 10px 14px;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.7), rgba(26, 23, 33, 0.4));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.7), rgba(27, 22, 42, 0.4));
   border: none;
   border-left: 3px solid lightOrDarkTheme(rgba(10, 10, 10, 0.2), rgba(250, 250, 250, 0.3));
   cursor: pointer;
@@ -846,7 +847,7 @@
   justify-content: center;
   width: 100%;
   padding: 20px;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.5), rgba(26, 23, 33, 0.3));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.5), rgba(27, 22, 42, 0.3));
   border: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.08), rgba(250, 250, 250, 0.1));
   cursor: pointer;
   font-size: $ouiFontSizeS;
@@ -956,11 +957,11 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  border: 1px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.3), rgba(#A89CF5, 0.3));
+  border: 1px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.3), rgba(#93B4FC, 0.3));
   border-radius: 10px;
   background-color: var(--nb-cell, $ouiFormBackgroundColor);
   box-shadow: lightOrDarkTheme(
-    0 4px 16px rgba(91, 79, 207, 0.06),
+    0 4px 16px rgba(75, 110, 245, 0.06),
     0 6px 22px rgba(0, 0, 0, 0.3)
   );
   transition: box-shadow 300ms ease;
@@ -973,11 +974,11 @@
     inset: -1.5px;
     border-radius: 11px;
     background: conic-gradient(
-      lightOrDarkTheme(rgba(91, 79, 207, 0.10), rgba(168, 156, 245, 0.12)),
+      lightOrDarkTheme(rgba(75, 110, 245, 0.10), rgba(147, 180, 252, 0.12)),
       lightOrDarkTheme(rgba(16, 185, 129, 0.06), rgba(52, 211, 153, 0.07)),
-      lightOrDarkTheme(rgba(91, 79, 207, 0.02), rgba(168, 156, 245, 0.03)),
+      lightOrDarkTheme(rgba(75, 110, 245, 0.02), rgba(147, 180, 252, 0.03)),
       lightOrDarkTheme(rgba(217, 119, 6, 0.04), rgba(251, 191, 36, 0.05)),
-      lightOrDarkTheme(rgba(91, 79, 207, 0.10), rgba(168, 156, 245, 0.12))
+      lightOrDarkTheme(rgba(75, 110, 245, 0.10), rgba(147, 180, 252, 0.12))
     );
     pointer-events: none;
     z-index: 0;
@@ -996,7 +997,7 @@
 
   &:focus-within {
     box-shadow: lightOrDarkTheme(
-      0 6px 22px rgba(91, 79, 207, 0.14),
+      0 6px 22px rgba(75, 110, 245, 0.14),
       0 8px 28px rgba(0, 0, 0, 0.5)
     );
   }
@@ -1071,8 +1072,8 @@ textarea.emptySessionPage__textarea {
     &:disabled,
     &[disabled] {
       background-color: transparent !important; // sass-lint:disable-line no-important
-      border: 1.5px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.25), rgba(#A89CF5, 0.25));
-      color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.4), rgba(#A89CF5, 0.4));
+      border: 1.5px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.25), rgba(#93B4FC, 0.25));
+      color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.4), rgba(#93B4FC, 0.4));
       opacity: 1 !important; // sass-lint:disable-line no-important
     }
   }
@@ -1223,7 +1224,7 @@ textarea.emptySessionPage__textarea {
   padding: 10px 20px;
   border: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.14), rgba(250, 250, 250, 0.16));
   border-radius: 12px;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(26, 23, 33, 0.4));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(27, 22, 42, 0.4));
   cursor: pointer;
   text-align: left;
   font-size: $ouiFontSizeS;
@@ -1473,7 +1474,7 @@ textarea.emptySessionPage__textarea {
   height: 64px;
   border: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.14), rgba(250, 250, 250, 0.16));
   border-radius: 12px;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(26, 23, 33, 0.4));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(27, 22, 42, 0.4));
   cursor: pointer;
   font-size: $ouiFontSizeS;
   color: $ouiTextColor;
@@ -1497,7 +1498,7 @@ textarea.emptySessionPage__textarea {
     pointer-events: none;
 
     &:hover {
-      background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(26, 23, 33, 0.4));
+      background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(27, 22, 42, 0.4));
       border-color: lightOrDarkTheme(rgba(10, 10, 10, 0.14), rgba(250, 250, 250, 0.16));
       transform: none;
       box-shadow: none;
@@ -1648,7 +1649,7 @@ textarea.emptySessionPage__textarea {
   gap: 8px;
   border: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.09), rgba(255, 255, 255, 0.08));
   border-radius: 12px;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(26, 23, 33, 0.4));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(27, 22, 42, 0.4));
   padding: $ouiSize;
   position: relative;
   cursor: pointer;
@@ -1658,7 +1659,7 @@ textarea.emptySessionPage__textarea {
   overflow: hidden;
 
   &:hover {
-    background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.85), rgba(26, 23, 33, 0.6));
+    background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.85), rgba(27, 22, 42, 0.6));
   }
 }
 
@@ -1742,7 +1743,7 @@ textarea.emptySessionPage__textarea {
 .emptySessionPage__favoritePanel {
   border: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.09), rgba(255, 255, 255, 0.08));
   border-radius: 12px;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(26, 23, 33, 0.4));
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(27, 22, 42, 0.4));
   padding: $ouiSize;
   position: relative;
 }
@@ -1891,7 +1892,7 @@ textarea.emptySessionPage__textarea {
   }
 
   &:hover {
-    background-color: lightOrDarkTheme(rgba(91, 79, 207, 0.04), rgba(168, 156, 245, 0.06));
+    background-color: lightOrDarkTheme(rgba(75, 110, 245, 0.04), rgba(147, 180, 252, 0.06));
   }
 }
 
@@ -2080,7 +2081,7 @@ textarea.emptySessionPage__textarea {
 
     &:hover {
       transform: scale(1.02);
-      border-color: lightOrDarkTheme(rgba(91, 79, 207, 0.3), rgba(168, 156, 245, 0.2));
+      border-color: lightOrDarkTheme(rgba(75, 110, 245, 0.3), rgba(147, 180, 252, 0.2));
       box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
 
       .emptySessionPage__insightInspect {
@@ -2110,7 +2111,7 @@ textarea.emptySessionPage__textarea {
 
     &:hover {
       transform: scale(1.02);
-      border-color: lightOrDarkTheme(rgba(91, 79, 207, 0.3), rgba(168, 156, 245, 0.2));
+      border-color: lightOrDarkTheme(rgba(75, 110, 245, 0.3), rgba(147, 180, 252, 0.2));
       box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
     }
 
@@ -2247,7 +2248,7 @@ textarea.emptySessionPage__textarea {
 
   &:hover {
     transform: translateY(-2px);
-    border-color: lightOrDarkTheme(rgba(91, 79, 207, 0.3), rgba(168, 156, 245, 0.2));
+    border-color: lightOrDarkTheme(rgba(75, 110, 245, 0.3), rgba(147, 180, 252, 0.2));
     box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.2));
 
     .emptySessionPage__explorerWidgetArrow {
@@ -2289,7 +2290,7 @@ textarea.emptySessionPage__textarea {
 .emptySessionPage__widgetGrid--editing {
   .emptySessionPage__widgetWrap {
     position: relative;
-    border: 2px dashed lightOrDarkTheme(rgba(91, 79, 207, 0.4), rgba(168, 156, 245, 0.3));
+    border: 2px dashed lightOrDarkTheme(rgba(75, 110, 245, 0.4), rgba(147, 180, 252, 0.3));
     border-radius: $ouiBorderRadius + 2;
     cursor: grab;
     animation: widgetJiggle 0.3s ease-in-out infinite alternate;
@@ -2300,7 +2301,7 @@ textarea.emptySessionPage__textarea {
 
     &:hover {
       border-color: $ouiColorPrimary;
-      box-shadow: 0 0 0 3px lightOrDarkTheme(rgba(91, 79, 207, 0.1), rgba(168, 156, 245, 0.08));
+      box-shadow: 0 0 0 3px lightOrDarkTheme(rgba(75, 110, 245, 0.1), rgba(147, 180, 252, 0.08));
       animation: none;
     }
 
@@ -2534,7 +2535,7 @@ textarea.emptySessionPage__textarea {
   transition: background 120ms ease;
 
   &:hover {
-    background: lightOrDarkTheme(rgba(91, 79, 207, 0.06), rgba(168, 156, 245, 0.08));
+    background: lightOrDarkTheme(rgba(75, 110, 245, 0.06), rgba(147, 180, 252, 0.08));
   }
 
   &:active {
@@ -3015,4 +3016,10 @@ textarea.emptySessionPage__textarea {
       color: $ouiColorPrimary;
     }
   }
+}
+
+// Chart plot area (deployment timeline widget) — theme-aware fill so it isn't a
+// washed-out light box in dark mode.
+.emptySessionPage__chartPlot {
+  background: lightOrDarkTheme(rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.04));
 }

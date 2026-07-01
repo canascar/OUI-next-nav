@@ -2002,7 +2002,7 @@ export const EmptySessionPageV2 = ({
                                 }>
 
                                 <WidgetHeader title="Deployment timeline" />
-                                <div style={{ position: 'relative', background: 'rgba(255,255,255,0.32)', padding: '12px 14px 0', borderRadius: 4 }}>
+                                <div className="emptySessionPage__chartPlot" style={{ position: 'relative', padding: '12px 14px 0', borderRadius: 4 }}>
                                   <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(to right, rgba(59,93,214,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(59,93,214,0.06) 1px, transparent 1px)', backgroundSize: '18px 16px', borderRadius: 'inherit' }} />
                                   <div style={{ position: 'relative', height: 92, display: 'flex', alignItems: 'flex-end', gap: 16 }}>
                                     <div style={{ position: 'absolute', left: 0, right: 0, bottom: 53, borderTop: '1px dashed rgba(52,72,140,0.32)' }} />

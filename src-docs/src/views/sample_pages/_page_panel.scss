@@ -111,20 +111,32 @@
   outline: none;
 
   &:hover {
-    background-color: lightOrDarkTheme(#FBF9F5, #12161F);
+    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.04), rgba($ouiColorPrimary, 0.08));
   }
 
-  &:focus {
-    background-color: lightOrDarkTheme(#FBF9F5, #12161F);
+  &:focus-visible {
+    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.04), rgba($ouiColorPrimary, 0.08));
   }
 
-  // Active tab
+  // Active tab — subtle primary color highlight (softer than an active outline button)
   &--active {
-    background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.06));
-    border-color: lightOrDarkTheme(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.10));
+    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.06), rgba($ouiColorPrimary, 0.12));
+    border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.3), rgba($ouiColorPrimary, 0.4));
+
+    .pagePanel__tabTitle {
+      color: $ouiColorPrimaryText;
+    }
+
+    // Leading icon and close button follow the title color when active
+    > .ouiIcon,
+    .pagePanel__tabClose .ouiIcon {
+      color: $ouiColorPrimaryText;
+      fill: $ouiColorPrimaryText;
+    }
 
     &:hover {
-      background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.08));
+      background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.1), rgba($ouiColorPrimary, 0.16));
+      border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.4), rgba($ouiColorPrimary, 0.5));
     }
   }
 }
@@ -283,7 +295,7 @@
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 16px 24px 16px 16px;
+  padding: 16px;
 }
 
 // Override detailPageHeader inside pagePanel — no border, 16px lr padding
