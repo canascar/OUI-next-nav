@@ -837,9 +837,206 @@
   .dot--purple { background: #818cf8; }
   .dot--green { background: #34d399; }
   .dot--amber { background: #fbbf24; }
+
+  /* Hamburger menu (hidden on desktop) */
+  .mobile-header {
+    display: none;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    background: rgba(10, 14, 26, 0.95);
+    backdrop-filter: blur(12px);
+    padding: 12px 16px;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .hamburger-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: all 0.15s;
+  }
+  .hamburger-btn:hover {
+    background: rgba(255,255,255,0.06);
+    color: #e2e8f0;
+  }
+  .mobile-logo {
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+  }
+
+  /* Mobile nav drawer */
+  .nav-drawer-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 500;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .nav-drawer-backdrop.open {
+    opacity: 1;
+  }
+  .nav-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 260px;
+    background: #0f1420;
+    border-right: 1px solid rgba(255,255,255,0.08);
+    z-index: 501;
+    transform: translateX(-100%);
+    transition: transform 0.25s cubic-bezier(.22,.61,.36,1);
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .nav-drawer.open {
+    transform: translateX(0);
+  }
+  .nav-drawer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .nav-drawer__close {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+  .nav-drawer__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: #94a3b8;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+  .nav-drawer__item:hover {
+    background: rgba(255,255,255,0.06);
+    color: #e2e8f0;
+  }
+  .nav-drawer__item-icon {
+    width: 20px;
+    text-align: center;
+    font-size: 16px;
+  }
+
+  /* ===== RESPONSIVE: <= 768px ===== */
+  @media (max-width: 768px) {
+    .mobile-header {
+      display: flex;
+    }
+    .left-nav {
+      display: none;
+    }
+    .app {
+      flex-direction: column;
+    }
+    .main {
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .two-col {
+      flex-direction: column;
+    }
+    .left-col {
+      flex: none;
+      padding: 24px 20px;
+    }
+    .resize-handle {
+      display: none;
+    }
+    .right-col {
+      flex: none;
+      padding: 20px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .greeting {
+      font-size: 22px;
+    }
+    .widget-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .widget--wide {
+      grid-column: span 2;
+    }
+    .design-notes {
+      display: none;
+    }
+    .page-shortcuts {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .nav-drawer-backdrop {
+      display: block;
+      pointer-events: none;
+    }
+    .nav-drawer-backdrop.open {
+      pointer-events: auto;
+    }
+  }
 </style>
 </head>
 <body>
+<!-- Mobile header (visible <= 768px) -->
+<div class="mobile-header">
+  <button class="hamburger-btn" onclick="openNavDrawer()" title="Menu">&#9776;</button>
+  <div class="mobile-logo">O</div>
+  <div style="width:36px;"></div>
+</div>
+
+<!-- Mobile nav drawer -->
+<div class="nav-drawer-backdrop" id="navBackdrop" onclick="closeNavDrawer()"></div>
+<nav class="nav-drawer" id="navDrawer">
+  <div class="nav-drawer__header">
+    <div class="nav-logo" style="width:28px;height:28px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;">O</div>
+    <button class="nav-drawer__close" onclick="closeNavDrawer()">&times;</button>
+  </div>
+  <button class="nav-drawer__item"><span class="nav-drawer__item-icon">+</span> New session</button>
+  <button class="nav-drawer__item"><span class="nav-drawer__item-icon">&#9776;</span> All sessions</button>
+  <button class="nav-drawer__item"><span class="nav-drawer__item-icon">&#128193;</span> Library</button>
+</nav>
+
 <div class="app">
   <!-- Left nav rail -->
   <nav class="left-nav">
@@ -1270,6 +1467,18 @@
       document.querySelectorAll('.reco-popover.visible').forEach(p => p.classList.remove('visible'));
     }
   });
+
+  // Mobile nav drawer
+  function openNavDrawer() {
+    document.getElementById('navDrawer').classList.add('open');
+    document.getElementById('navBackdrop').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeNavDrawer() {
+    document.getElementById('navDrawer').classList.remove('open');
+    document.getElementById('navBackdrop').classList.remove('open');
+    document.body.style.overflow = '';
+  }
 </script>
 </body>
 </html>

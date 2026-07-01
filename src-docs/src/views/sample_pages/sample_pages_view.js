@@ -1627,6 +1627,7 @@ export const SessionPagesView = ({ variant } = {}) => {
   const v5ScenarioNumber = v5ScenarioMatch ? parseInt(v5ScenarioMatch[1], 10) : null;
   const isV5Variant = variant === 'v5' || v5ScenarioNumber != null;
   const isV6Variant = variant === 'v6';
+  const navExpandRef = useRef(null);
 
   const EmptyPage = isV6Variant ? EmptySessionPageV6 : isV5Variant ? EmptySessionPageV5 : variant === 'v4' ? EmptySessionPageV3 : variant === 'v3' ? EmptySessionPageV3 : variant === 'v2' ? EmptySessionPageV2 : EmptySessionPage;
   // Prevent page scroll when this full-screen view is mounted
@@ -1855,6 +1856,7 @@ export const SessionPagesView = ({ variant } = {}) => {
           recentItems={[]}
           favoriteItems={[]}
           systemAlert={null}
+          onOpenMobileNav={() => navExpandRef.current && navExpandRef.current()}
         />
       );
     }
@@ -1864,6 +1866,7 @@ export const SessionPagesView = ({ variant } = {}) => {
         session={activeSession}
         onUpdateSession={handleUpdateSession}
         onOpenCanvasPage={handleOpenCanvasPage}
+        onGoBack={handleCreateSession}
       />
     );
   };
@@ -1933,6 +1936,7 @@ export const SessionPagesView = ({ variant } = {}) => {
           activeView={activeView}
           activeSessionId={sessionState.activeSessionId}
           isEmptySession={isEmptySession}
+          expandRef={navExpandRef}
         />
       )}
       <div

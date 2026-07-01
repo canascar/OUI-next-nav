@@ -44,7 +44,9 @@ const SurroundShimmer = ({ children }) => {
     const cv = canvasRef.current;
     if (!cv) return;
 
-    const SP = 7;
+    const isMobile = window.innerWidth <= 768;
+    const SP = isMobile ? 5 : 7;
+    const SPEED = isMobile ? 0.08 : 0.04;
 
     const build = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -84,7 +86,7 @@ const SurroundShimmer = ({ children }) => {
         const sdist = Math.hypot(sdx, sdy);
         const bcx = (hl.x0 + hl.x1) / 2, bcy = (hl.y0 + hl.y1) / 2;
         const sa = (Math.atan2(d.y - bcy, d.x - bcx) / 6.2832) + 0.5;
-        const sph = (t * 0.04) % 1;
+        const sph = (t * SPEED) % 1;
         const sdm = Math.min(Math.abs(sa - sph), 1 - Math.abs(sa - sph));
         const sph2 = (sph + 0.5) % 1;
         const sd2m = Math.min(Math.abs(sa - sph2), 1 - Math.abs(sa - sph2));
@@ -122,9 +124,13 @@ const SurroundShimmer = ({ children }) => {
     return () => { clearTimeout(timeout); cancelAnimationFrame(rafRef.current); };
   }, []);
 
+  const isMobileShimmer = typeof window !== 'undefined' && window.innerWidth <= 768;
+  const hPad = isMobileShimmer ? 20 : 42;
+  const vPad = isMobileShimmer ? 20 : 36;
+
   return (
-    <div style={{ position: 'relative', padding: '36px 42px', margin: '-36px -42px', maxWidth: 520, maxHeight: 200, alignSelf: 'center' }}>
-      <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0, maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)', WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)' }} />
+    <div style={{ position: 'relative', padding: `${vPad}px ${hPad}px`, margin: `-${vPad}px -${hPad}px`, maxWidth: 520, maxHeight: 200, alignSelf: 'center' }}>
+      <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0, maskImage: `radial-gradient(ellipse ${isMobileShimmer ? '55%' : '80%'} 80% at 50% 50%, black ${isMobileShimmer ? '30%' : '40%'}, transparent 100%)`, WebkitMaskImage: `radial-gradient(ellipse ${isMobileShimmer ? '55%' : '80%'} 80% at 50% 50%, black ${isMobileShimmer ? '30%' : '40%'}, transparent 100%)` }} />
       <div data-surround-box="1" style={{ position: 'relative', zIndex: 1 }}>
         {children}
       </div>
@@ -775,6 +781,7 @@ export const EmptySessionPageV6 = ({
   onOpenPageInNewSession,
   onSelectSession,
   onBrowseLibrary,
+  onOpenMobileNav,
   sessions = [],
 }) => {
   const [scenario] = useState(() => Math.floor(Math.random() * 5) + 1);
@@ -1349,6 +1356,16 @@ export const EmptySessionPageV6 = ({
 
   return (
     <div className="v6Scenario">
+      {/* Mobile menu — floating top-left, visible at <= 768px */}
+      <button
+        type="button"
+        className="v6Scenario__mobileMenuBtn"
+        onClick={() => onOpenMobileNav && onOpenMobileNav()}
+        aria-label="Open menu">
+        <OuiIcon type="menu" size="m" />
+      </button>
+
+
       <div className="v6Scenario__twoCol">
         {/* Left column */}
         <div className="v6Scenario__leftCol">

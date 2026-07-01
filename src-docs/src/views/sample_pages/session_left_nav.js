@@ -43,6 +43,7 @@ export const SessionLeftNav = ({
   activeSessionId,
   isEmptySession,
   disableActions = false,
+  expandRef,
 }) => {
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
@@ -55,6 +56,13 @@ export const SessionLeftNav = ({
   // Expand/collapse state
   const [isNavExpanded, setIsNavExpanded] = useState(false);
   const [isLogoHovered, setIsLogoHovered] = useState(false);
+
+  // Expose expand trigger to parent
+  useEffect(() => {
+    if (expandRef) {
+      expandRef.current = () => setIsNavExpanded(true);
+    }
+  }, [expandRef]);
 
   // Reset logo hover when nav expands
   useEffect(() => {
@@ -906,7 +914,13 @@ export const SessionLeftNav = ({
 
   // ---------- MAIN RENDER ----------
   return (
-    <div className="sessionLeftNav__wrapper">
+    <div
+      className="sessionLeftNav__wrapper"
+      onClick={(e) => {
+        if (isNavExpanded && e.target === e.currentTarget) {
+          setIsNavExpanded(false);
+        }
+      }}>
       <div
         className={`sessionLeftNav__clip${
           isNavExpanded

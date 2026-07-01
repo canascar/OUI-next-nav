@@ -465,3 +465,39 @@
 .sessionLeftNav__customizeItem .ouiSwitch__button[aria-checked='false'] .ouiSwitch__body {
   background-color: $ouiColorLightShade;
 }
+
+// ─── Responsive: nav on mobile ────────────────────────────────
+@media (max-width: 768px) {
+  .sessionLeftNav__wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 500;
+    width: auto;
+  }
+
+  .sessionLeftNav__clip--collapsed {
+    width: 0;
+  }
+
+  .sessionLeftNav__clip--expanded {
+    width: 300px;
+    max-width: 85vw;
+  }
+
+  .sessionLeftNav,
+  .sessionLeftNav--expanded {
+    background-color: lightOrDarkTheme(#FFFFFF, #1a1721);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-right: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.06));
+  }
+}
+
+// ─── Responsive: v6 scenario scroll container ────────────────
+@media (max-width: 768px) {
+  .v6Scenario {
+    flex-direction: column;
+  }
+}
