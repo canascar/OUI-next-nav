@@ -97,7 +97,7 @@ const renderPage = (
     case 'home':
       return (
         <OuiErrorBoundary>
-          <EmptySessionPage
+          <EmptySessionPageV6
             onStartThread={(prompt) => {
               // Navigate to thread with just user prompt (no response yet)
               const threadKey = `thread-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -1629,7 +1629,7 @@ export const SessionPagesView = ({ variant } = {}) => {
   const isV6Variant = variant === 'v6';
   const navExpandRef = useRef(null);
 
-  const EmptyPage = isV6Variant ? EmptySessionPageV6 : isV5Variant ? EmptySessionPageV5 : variant === 'v4' ? EmptySessionPageV3 : variant === 'v3' ? EmptySessionPageV3 : variant === 'v2' ? EmptySessionPageV2 : EmptySessionPage;
+  const EmptyPage = isV6Variant ? EmptySessionPageV6 : isV5Variant ? EmptySessionPageV5 : variant === 'v4' ? EmptySessionPageV3 : variant === 'v3' ? EmptySessionPageV3 : variant === 'v2' ? EmptySessionPageV2 : EmptySessionPageV6;
   // Prevent page scroll when this full-screen view is mounted
   useEffect(() => {
     document.body.style.overflow = 'hidden';

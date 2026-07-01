@@ -61,9 +61,29 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 0;
   padding: 0 8px;
   min-height: 0;
+}
+
+// Tighter grouped shortcut icons in collapsed state
+.sessionLeftNav__shortcutIcons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+// Divider in collapsed shortcut icons — matches group subtitle height
+.sessionLeftNav__shortcutIcons .sessionLeftNav__divider {
+  width: 50%;
+  height: 0px;
+  border-top: 1px solid $ouiBorderColor;
+  margin: 10px 0;
+}
+
+.sessionLeftNav__shortcutIcons .sessionLeftNav__divider--edge {
+  margin: 6px 0;
 }
 
 // Horizontal rule divider
@@ -380,7 +400,8 @@
 .sessionLeftNav__sectionChildren {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
+  margin-top: 16px;
 
   .sessionLeftNav__navItemExpanded--child {
     color: $ouiColorDarkShade;
@@ -398,6 +419,13 @@
   .sessionLeftNav__navItemExpandedLabel--muted {
     padding-left: 0;
   }
+}
+
+// Group section within children
+.sessionLeftNav__groupSection {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 // Footer (expanded) — row layout at bottom
@@ -451,9 +479,23 @@
   border-radius: 4px;
   cursor: default;
   font-family: $ouiFontFamily;
-  font-size: $ouiFontSizeS;
+  font-size: 12px;
+  font-weight: 400;
   line-height: 20px;
-  color: $ouiTextColor;
+  color: $ouiColorDarkShade;
+
+  &--group {
+    font-size: $ouiFontSizeXS;
+    font-weight: 500;
+    color: $ouiColorMediumShade;
+    padding-top: 8px;
+  }
+
+  &--child {
+    font-size: 12px;
+    font-weight: 400;
+    color: $ouiColorDarkShade;
+  }
 }
 
 .sessionLeftNav__customizeItemLabel {

@@ -90,23 +90,58 @@ export const SessionLeftNav = ({
     setExpandedSections((prev) => ({ ...prev, [key]: !prev[key] }));
   }, []);
 
-  // New session sub-items — all available options
-  const ALL_START_ITEMS = [
+  // New session sub-items — structured with groups
+  const START_ITEMS = [
     { key: 'alerts', label: 'Alerts', icon: 'navAlerting', page: 'alerts-list', title: 'Alerts' },
     { key: 'dashboards', label: 'Dashboards', icon: 'navDashboards', page: 'dashboards-list', title: 'Dashboards' },
     { key: 'logs', label: 'Logs', icon: 'navDiscover', page: 'discover-log', title: 'Logs' },
     { key: 'metrics', label: 'Metrics', icon: 'visArea', page: 'discover-metric', title: 'Metrics' },
     { key: 'topology-map', label: 'Topology map', icon: 'navAiFlow', page: 'app-map', title: 'Topology Map' },
-    { key: 'agent-traces', label: 'Agent traces', icon: 'visTable', page: 'app-traces', title: 'Agent Traces' },
-    { key: 'agent-spans', label: 'Agent spans', icon: 'visTagCloud', page: 'agent-spans', title: 'Agent Spans' },
-    { key: 'app-traces', label: 'Application traces', icon: 'apmTrace', page: 'traces', title: 'Application Traces' },
-    { key: 'app-services', label: 'Application services', icon: 'navServices', page: 'app-perf-services', title: 'Application Services' },
-    { key: 'app-slos', label: 'Application SLOs', icon: 'visGauge', page: 'app-services', title: 'Application SLOs' },
   ];
 
-  // Enabled start items (keys) — top 5 on by default
+  const START_GROUPS = [
+    {
+      key: 'agent-monitoring',
+      label: 'Agent monitoring',
+      children: [
+        { key: 'agent-traces', label: 'Traces', icon: 'visTable', page: 'app-traces', title: 'Agent Traces' },
+        { key: 'agent-spans', label: 'Spans', icon: 'visTagCloud', page: 'agent-spans', title: 'Agent Spans' },
+      ],
+    },
+    {
+      key: 'app-perf',
+      label: 'Application performance',
+      children: [
+        { key: 'app-traces', label: 'Traces', icon: 'apmTrace', page: 'traces', title: 'Application Traces' },
+        { key: 'app-services', label: 'Services', icon: 'navServices', page: 'app-perf-services', title: 'Application Services' },
+        { key: 'app-slos', label: 'SLOs', icon: 'visGauge', page: 'app-services', title: 'Application SLOs' },
+      ],
+    },
+    {
+      key: 'more',
+      label: 'More',
+      children: [
+        { key: 'notebooks', label: 'Notebooks', icon: 'document', page: 'notebooks', title: 'Notebooks' },
+        { key: 'anomaly-detection', label: 'Anomaly Detection', icon: 'anomalyDetection', page: 'anomaly-dashboard', title: 'Anomaly Detection' },
+        { key: 'forecasting', label: 'Forecasting', icon: 'visLine', page: 'forecasters', title: 'Forecasting' },
+        { key: 'alerting', label: 'Alerting', icon: 'navAlerting', page: 'alerts-detail', title: 'Alerting' },
+      ],
+    },
+  ];
+
+  // All items flat for the customize popover (individual items only)
+  const ALL_START_ITEMS = [
+    ...START_ITEMS,
+    ...START_GROUPS.flatMap((g) => g.children),
+  ];
+
+  // Enabled individual items (keys) — all on by default
   const [enabledStartItems, setEnabledStartItems] = useState(
-    () => new Set(['alerts', 'dashboards', 'logs', 'metrics', 'topology-map'])
+    () => new Set([
+      'alerts', 'dashboards', 'logs', 'metrics', 'topology-map',
+      'agent-traces', 'agent-spans',
+      'app-traces', 'app-services', 'app-slos',
+    ])
   );
   const [customizePopoverOpen, setCustomizePopoverOpen] = useState(false);
 
@@ -122,9 +157,12 @@ export const SessionLeftNav = ({
     });
   }, []);
 
-  const NEW_SESSION_ITEMS = ALL_START_ITEMS.filter((item) =>
-    enabledStartItems.has(item.key)
-  );
+  // Visible items: filtered by enabled state
+  const NEW_SESSION_ITEMS = START_ITEMS.filter((item) => enabledStartItems.has(item.key));
+  const VISIBLE_GROUPS = START_GROUPS.map((g) => ({
+    ...g,
+    children: g.children.filter((item) => enabledStartItems.has(item.key)),
+  })).filter((g) => g.children.length > 0);
 
   // ---------- EXPANDED NAV RENDER ----------
   const renderExpandedNav = () => (
@@ -154,7 +192,7 @@ export const SessionLeftNav = ({
 
       {/* Expanded nav items with labels */}
       <div className="sessionLeftNav__itemsExpanded">
-        {/* New session — collapsible */}
+        {/* New session */}
         <div className="sessionLeftNav__section">
           <div className="sessionLeftNav__navItemExpandedRow">
             <button
@@ -175,43 +213,45 @@ export const SessionLeftNav = ({
                 New session
               </span>
             </button>
-            <button
-              type="button"
-              className="sessionLeftNav__navItemArrowButton"
-              aria-label={expandedSections['new-session'] ? 'Collapse' : 'Expand'}
-              onClick={() => toggleSection('new-session')}>
-              <OuiIcon
-                type={expandedSections['new-session'] ? 'arrowDown' : 'arrowRight'}
-                size="s"
-              />
-            </button>
-          </div>
-          {expandedSections['new-session'] && (
-            <div className="sessionLeftNav__sectionChildren">
-              <div className="sessionLeftNav__sectionSubtitleRow">
-                <span className="sessionLeftNav__sectionSubtitle">
-                  {NEW_SESSION_ITEMS.length > 0 ? 'Or start with' : 'Add shortcuts'}
-                </span>
-                <OuiPopover
-                  button={
-                    <OuiIcon
-                      type="controlsHorizontal"
-                      size="s"
-                      className="sessionLeftNav__sectionSubtitleIcon"
-                      onClick={() => setCustomizePopoverOpen(!customizePopoverOpen)}
-                    />
-                  }
-                  isOpen={customizePopoverOpen}
-                  closePopover={() => setCustomizePopoverOpen(false)}
-                  anchorPosition="downLeft"
-                  panelPaddingSize="s"
-                  panelClassName="sessionLeftNav__customizePanel">
-                  <div className="sessionLeftNav__customizePopover">
-                    <div className="sessionLeftNav__customizeHeader">Customize shortcuts</div>
-                    <div className="sessionLeftNav__customizeList">
-                      {ALL_START_ITEMS.map((item) => (
-                        <div key={item.key} className="sessionLeftNav__customizeItem">
-                          <OuiIcon type={item.icon} size="s" />
+            <OuiPopover
+              button={
+                <button
+                  type="button"
+                  className="sessionLeftNav__navItemArrowButton"
+                  aria-label="Customize shortcuts"
+                  onClick={() => setCustomizePopoverOpen(!customizePopoverOpen)}>
+                  <OuiIcon type="controlsHorizontal" size="s" />
+                </button>
+              }
+              isOpen={customizePopoverOpen}
+              closePopover={() => setCustomizePopoverOpen(false)}
+              anchorPosition="downLeft"
+              panelPaddingSize="s"
+              panelClassName="sessionLeftNav__customizePanel">
+              <div className="sessionLeftNav__customizePopover">
+                <div className="sessionLeftNav__customizeHeader">Customize shortcuts</div>
+                <div className="sessionLeftNav__customizeList">
+                  {START_ITEMS.map((item) => (
+                    <div key={item.key} className="sessionLeftNav__customizeItem">
+                      <OuiIcon type={item.icon} size="m" />
+                      <span className="sessionLeftNav__customizeItemLabel">{item.label}</span>
+                      <OuiSwitch
+                        compressed
+                        label=""
+                        showLabel={false}
+                        checked={enabledStartItems.has(item.key)}
+                        onChange={() => toggleStartItem(item.key)}
+                      />
+                    </div>
+                  ))}
+                  {START_GROUPS.map((group) => (
+                    <React.Fragment key={group.key}>
+                      <div className="sessionLeftNav__customizeItem sessionLeftNav__customizeItem--group">
+                        <span className="sessionLeftNav__customizeItemLabel">{group.label}</span>
+                      </div>
+                      {group.children.map((item) => (
+                        <div key={item.key} className="sessionLeftNav__customizeItem sessionLeftNav__customizeItem--child">
+                          <OuiIcon type={item.icon} size="m" />
                           <span className="sessionLeftNav__customizeItemLabel">{item.label}</span>
                           <OuiSwitch
                             compressed
@@ -222,118 +262,55 @@ export const SessionLeftNav = ({
                           />
                         </div>
                       ))}
-                    </div>
-                  </div>
-                </OuiPopover>
+                    </React.Fragment>
+                  ))}
+                </div>
               </div>
-              {NEW_SESSION_ITEMS.map((item) => (
-                <button
-                  key={item.key}
-                  type="button"
-                  className="sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--child"
-                  onClick={() => {
-                    setIsNavExpanded(false);
-                    if (onOpenPage) onOpenPage(item.page, item.title);
-                  }}>
-                  <div className="sessionLeftNav__navItemIconWrap">
-                    <OuiIcon type={item.icon} size="m" />
-                  </div>
-                  <span className="sessionLeftNav__navItemExpandedLabel">
-                    {item.label}
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Library — collapsible */}
-        <div className="sessionLeftNav__section">
-          <div className="sessionLeftNav__navItemExpandedRow">
-            <button
-              type="button"
-              className={`sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--main${
-                activeView === 'library'
-                  ? ' sessionLeftNav__navItemExpanded--active'
-                  : ''
-              }`}
-              onClick={() => {
-                setIsNavExpanded(false);
-                onBrowseLibrary();
-              }}>
-              <div className="sessionLeftNav__navItemIconWrap">
-                <OuiIcon
-                  type={activeView === 'library' ? 'folderOpen' : 'folderClosed'}
-                  size="m"
-                />
-              </div>
-              <span className="sessionLeftNav__navItemExpandedLabel">
-                Library
-              </span>
-            </button>
-            <button
-              type="button"
-              className="sessionLeftNav__navItemArrowButton"
-              aria-label={expandedSections['library'] ? 'Collapse' : 'Expand'}
-              onClick={() => toggleSection('library')}>
-              <OuiIcon
-                type={expandedSections['library'] ? 'arrowDown' : 'arrowRight'}
-                size="s"
-              />
-            </button>
+            </OuiPopover>
           </div>
-          {expandedSections['library'] && (
-            <div className="sessionLeftNav__sectionChildren">
-              <div className="sessionLeftNav__sectionSubtitleRow">
-                <span className="sessionLeftNav__sectionSubtitle">Pinned</span>
+          {/* Always-visible items */}
+          <div className="sessionLeftNav__sectionChildren">
+            {NEW_SESSION_ITEMS.map((item) => (
+              <button
+                key={item.key}
+                type="button"
+                className="sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--child"
+                onClick={() => {
+                  setIsNavExpanded(false);
+                  if (onOpenPage) onOpenPage(item.page, item.title);
+                }}>
+                <div className="sessionLeftNav__navItemIconWrap">
+                  <OuiIcon type={item.icon} size="m" />
+                </div>
+                <span className="sessionLeftNav__navItemExpandedLabel">
+                  {item.label}
+                </span>
+              </button>
+            ))}
+            {/* Group sections */}
+            {VISIBLE_GROUPS.map((group) => (
+              <div key={group.key} className="sessionLeftNav__groupSection">
+                <span className="sessionLeftNav__sectionSubtitle">{group.label}</span>
+                {group.children.map((item) => (
+                  <button
+                    key={item.key}
+                    type="button"
+                    className="sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--child"
+                    onClick={() => {
+                      setIsNavExpanded(false);
+                      if (onOpenPage) onOpenPage(item.page, item.title);
+                    }}>
+                    <div className="sessionLeftNav__navItemIconWrap">
+                      <OuiIcon type={item.icon} size="m" />
+                    </div>
+                    <span className="sessionLeftNav__navItemExpandedLabel">
+                      {item.label}
+                    </span>
+                  </button>
+                ))}
               </div>
-              <button
-                type="button"
-                className="sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--child"
-                onClick={() => { setIsNavExpanded(false); if (onOpenPage) onOpenPage('dashboards', 'System overview'); }}>
-                <div className="sessionLeftNav__navItemIconWrap">
-                  <OuiIcon type="pin" size="m" />
-                </div>
-                <span className="sessionLeftNav__navItemExpandedLabel">System overview</span>
-              </button>
-              <button
-                type="button"
-                className="sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--child"
-                onClick={() => { setIsNavExpanded(false); if (onOpenPage) onOpenPage('logs', 'Error rate by service'); }}>
-                <div className="sessionLeftNav__navItemIconWrap">
-                  <OuiIcon type="pin" size="m" />
-                </div>
-                <span className="sessionLeftNav__navItemExpandedLabel">Error rate by service</span>
-              </button>
-              <button
-                type="button"
-                className="sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--child"
-                onClick={() => { setIsNavExpanded(false); if (onOpenPage) onOpenPage('metrics', 'Latency percentiles'); }}>
-                <div className="sessionLeftNav__navItemIconWrap">
-                  <OuiIcon type="pin" size="m" />
-                </div>
-                <span className="sessionLeftNav__navItemExpandedLabel">Latency percentiles</span>
-              </button>
-              <button
-                type="button"
-                className="sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--child"
-                onClick={() => { setIsNavExpanded(false); if (onOpenPage) onOpenPage('alerts', 'CPU threshold alert'); }}>
-                <div className="sessionLeftNav__navItemIconWrap">
-                  <OuiIcon type="pin" size="m" />
-                </div>
-                <span className="sessionLeftNav__navItemExpandedLabel">CPU threshold alert</span>
-              </button>
-              <button
-                type="button"
-                className="sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--child"
-                onClick={() => { setIsNavExpanded(false); if (onOpenPage) onOpenPage('dashboards', 'Web traffic analytics'); }}>
-                <div className="sessionLeftNav__navItemIconWrap">
-                  <OuiIcon type="pin" size="m" />
-                </div>
-                <span className="sessionLeftNav__navItemExpandedLabel">Web traffic analytics</span>
-              </button>
-            </div>
-          )}
+            ))}
+          </div>
         </div>
 
         {/* All sessions — collapsible */}
@@ -369,10 +346,7 @@ export const SessionLeftNav = ({
             </button>
           </div>
           {expandedSections['all-sessions'] && (
-            <div className="sessionLeftNav__sectionChildren">
-              <div className="sessionLeftNav__sectionSubtitleRow">
-                <span className="sessionLeftNav__sectionSubtitle">Recents</span>
-              </div>
+            <div className="sessionLeftNav__sectionChildren" style={{ marginTop: 0 }}>
               {sessions.slice(0, 5).map((session) => (
                 <button
                   key={session.id}
@@ -513,15 +487,15 @@ export const SessionLeftNav = ({
       }`}
       aria-label="Session navigation"
       onClick={handleNavBackgroundClick}
+      onMouseEnter={() => setIsLogoHovered(true)}
+      onMouseLeave={() => setIsLogoHovered(false)}
       style={{ cursor: 'pointer' }}>
-      {/* Logo — on hover shows expand icon, click expands nav */}
+      {/* Logo — shows expand icon when nav body is hovered */}
       <div className="sessionLeftNav__logo">
         <button
           type="button"
           className="sessionLeftNav__logoButton"
           aria-label="Expand navigation"
-          onMouseEnter={() => setIsLogoHovered(true)}
-          onMouseLeave={() => setIsLogoHovered(false)}
           onClick={() => setIsNavExpanded(true)}>
           {isLogoHovered ? (
             <div className="sessionLeftNav__expandIconWrap">
@@ -573,7 +547,7 @@ export const SessionLeftNav = ({
                 onMouseLeave={() => closeNavPopover()}>
                 <div className="samplePagesLeftNav__threadPopover">
                   <div className="samplePagesLeftNav__threadPopoverHeader">
-                    <span>Or start with</span>
+                    <span>Start with</span>
                   </div>
                   <div className="samplePagesLeftNav__threadPopoverContent">
                     {NEW_SESSION_ITEMS.map((item) => (
@@ -591,6 +565,29 @@ export const SessionLeftNav = ({
                           {item.label}
                         </span>
                       </button>
+                    ))}
+                    {VISIBLE_GROUPS.map((group) => (
+                      <React.Fragment key={group.key}>
+                        <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--g-ink-mute, #888)', padding: '8px 0 2px' }}>
+                          {group.label}
+                        </div>
+                        {group.children.map((item) => (
+                          <button
+                            key={item.key}
+                            type="button"
+                            className="samplePagesLeftNav__threadPopoverItem"
+                            style={{ flexDirection: 'row', alignItems: 'center' }}
+                            onClick={() => {
+                              setNavPopover(null);
+                              if (onOpenPage) onOpenPage(item.page, item.title);
+                            }}>
+                            <OuiIcon type={item.icon} size="m" style={{ marginRight: 8, flexShrink: 0 }} />
+                            <span className="samplePagesLeftNav__threadPopoverTitle">
+                              {item.label}
+                            </span>
+                          </button>
+                        ))}
+                      </React.Fragment>
                     ))}
                   </div>
                 </div>
@@ -614,103 +611,41 @@ export const SessionLeftNav = ({
           </OuiToolTip>
         )}
 
-        {disableActions ? (
-          <OuiButtonIcon
-            className="sessionLeftNav__actionButton"
-            iconType="folderClosed"
-            aria-label="Library"
-            color="text"
-            display="empty"
-            isDisabled
-          />
-        ) : (
-          <div
-            onMouseEnter={() => openNavPopover('library')}
-            onMouseLeave={() => closeNavPopover()}>
-            <OuiPopover
-              button={
+        {/* Visible start items as icons */}
+        {!disableActions && (
+          <div className="sessionLeftNav__shortcutIcons">
+            <div className="sessionLeftNav__divider sessionLeftNav__divider--edge" />
+            {NEW_SESSION_ITEMS.map((item) => (
+              <OuiToolTip key={item.key} content={item.label} position="right">
                 <OuiButtonIcon
-                  className={`sessionLeftNav__actionButton${
-                    activeView === 'library'
-                      ? ' sessionLeftNav__actionButton--active'
-                      : ''
-                  }`}
-                  iconType={
-                    activeView === 'library' ? 'folderOpen' : 'folderClosed'
-                  }
-                  aria-label="Library"
+                  className="sessionLeftNav__actionButton"
+                  iconType={item.icon}
+                  aria-label={item.label}
                   color="text"
                   display="empty"
-                  onClick={onBrowseLibrary}
+                  onClick={() => { if (onOpenPage) onOpenPage(item.page, item.title); }}
                 />
-              }
-              isOpen={navPopover === 'library'}
-              closePopover={() => setNavPopover(null)}
-              anchorPosition="rightUp"
-              panelPaddingSize="s"
-              panelClassName="samplePagesLeftNav__popoverPanel">
-              <div
-                onMouseEnter={() => openNavPopover('library')}
-                onMouseLeave={() => closeNavPopover()}>
-                <div className="samplePagesLeftNav__threadPopover">
-                  <div className="samplePagesLeftNav__threadPopoverHeader">
-                    <span>Pinned</span>
-                  </div>
-                  <div className="samplePagesLeftNav__threadPopoverContent">
-                    <button
-                      type="button"
-                      className="samplePagesLeftNav__threadPopoverItem"
-                      style={{ flexDirection: 'row', alignItems: 'center' }}
-                      onClick={() => { setNavPopover(null); if (onOpenPage) onOpenPage('dashboards', 'System overview'); }}>
-                      <OuiIcon type="pin" size="m" style={{ marginRight: 8, flexShrink: 0 }} />
-                      <span className="samplePagesLeftNav__threadPopoverTitle">System overview</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="samplePagesLeftNav__threadPopoverItem"
-                      style={{ flexDirection: 'row', alignItems: 'center' }}
-                      onClick={() => { setNavPopover(null); if (onOpenPage) onOpenPage('logs', 'Error rate by service'); }}>
-                      <OuiIcon type="pin" size="m" style={{ marginRight: 8, flexShrink: 0 }} />
-                      <span className="samplePagesLeftNav__threadPopoverTitle">Error rate by service</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="samplePagesLeftNav__threadPopoverItem"
-                      style={{ flexDirection: 'row', alignItems: 'center' }}
-                      onClick={() => { setNavPopover(null); if (onOpenPage) onOpenPage('metrics', 'Latency percentiles'); }}>
-                      <OuiIcon type="pin" size="m" style={{ marginRight: 8, flexShrink: 0 }} />
-                      <span className="samplePagesLeftNav__threadPopoverTitle">Latency percentiles</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="samplePagesLeftNav__threadPopoverItem"
-                      style={{ flexDirection: 'row', alignItems: 'center' }}
-                      onClick={() => { setNavPopover(null); if (onOpenPage) onOpenPage('alerts', 'CPU threshold alert'); }}>
-                      <OuiIcon type="pin" size="m" style={{ marginRight: 8, flexShrink: 0 }} />
-                      <span className="samplePagesLeftNav__threadPopoverTitle">CPU threshold alert</span>
-                    </button>
-                    <button
-                      type="button"
-                      className="samplePagesLeftNav__threadPopoverItem"
-                      style={{ flexDirection: 'row', alignItems: 'center' }}
-                      onClick={() => { setNavPopover(null); if (onOpenPage) onOpenPage('dashboards', 'Web traffic analytics'); }}>
-                      <OuiIcon type="pin" size="m" style={{ marginRight: 8, flexShrink: 0 }} />
-                      <span className="samplePagesLeftNav__threadPopoverTitle">Web traffic analytics</span>
-                    </button>
-                  </div>
-                  <div className="samplePagesLeftNav__threadPopoverFooter">
-                    <OuiButtonEmpty
-                      size="xs"
-                      onClick={() => {
-                        setNavPopover(null);
-                        onBrowseLibrary();
-                      }}>
-                      View all
-                    </OuiButtonEmpty>
-                  </div>
-                </div>
-              </div>
-            </OuiPopover>
+              </OuiToolTip>
+            ))}
+            {/* Visible group items as icons */}
+            {VISIBLE_GROUPS.map((group, groupIdx) => (
+              <React.Fragment key={group.key}>
+                <div className="sessionLeftNav__divider" />
+                {group.children.map((item) => (
+                  <OuiToolTip key={item.key} content={item.label} position="right">
+                    <OuiButtonIcon
+                      className="sessionLeftNav__actionButton"
+                      iconType={item.icon}
+                      aria-label={item.label}
+                      color="text"
+                      display="empty"
+                      onClick={() => { if (onOpenPage) onOpenPage(item.page, item.title); }}
+                    />
+                  </OuiToolTip>
+                ))}
+              </React.Fragment>
+            ))}
+            <div className="sessionLeftNav__divider sessionLeftNav__divider--edge" />
           </div>
         )}
 
