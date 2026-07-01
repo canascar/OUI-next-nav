@@ -38,37 +38,31 @@ const SurroundShimmer = ({ children }) => {
   const rafRef = useRef(null);
   const startRef = useRef(0);
   const fieldRef = useRef(null);
+  const sizeRef = useRef({ w: 0, h: 0 });
 
   useEffect(() => {
     const cv = canvasRef.current;
     if (!cv) return;
-    let timeout = setTimeout(() => {
-      fieldRef.current = build();
-      const tick = (now) => {
-        if (!startRef.current) startRef.current = now;
-        const t = (now - startRef.current) / 1000;
-        if (fieldRef.current) draw(fieldRef.current, t);
-        rafRef.current = requestAnimationFrame(tick);
-      };
-      rafRef.current = requestAnimationFrame(tick);
-    }, 100);
+
+    const SP = 7;
+
     const build = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const w = cv.clientWidth, h = cv.clientHeight;
       if (!w || !h) return null;
+      sizeRef.current = { w, h };
       cv.width = Math.round(w * dpr);
       cv.height = Math.round(h * dpr);
       const ctx = cv.getContext('2d');
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const sp = 7;
-      const cols = Math.max(1, Math.round((w - sp) / sp));
-      const rows = Math.max(1, Math.round((h - sp) / sp));
-      const ox = (w - (cols - 1) * sp) / 2, oy = (h - (rows - 1) * sp) / 2;
+      const cols = Math.max(1, Math.round((w - SP) / SP));
+      const rows = Math.max(1, Math.round((h - SP) / SP));
+      const ox = (w - (cols - 1) * SP) / 2, oy = (h - (rows - 1) * SP) / 2;
       const dots = [];
       for (let j = 0; j < rows; j++)
         for (let i = 0; i < cols; i++)
-          dots.push({ x: ox + i * sp, y: oy + j * sp, gx: i, gy: j, r: Math.random() });
-      const field = { ctx, w, h, sp, dots, cx: w / 2, cy: h / 2 };
+          dots.push({ x: ox + i * SP, y: oy + j * SP, gx: i, gy: j, r: Math.random() });
+      const field = { ctx, w, h, sp: SP, dots, cx: w / 2, cy: h / 2 };
       const box = cv.parentElement && cv.parentElement.querySelector('[data-surround-box]');
       if (box) {
         const cr = cv.getBoundingClientRect(), br = box.getBoundingClientRect();
@@ -76,6 +70,7 @@ const SurroundShimmer = ({ children }) => {
       }
       return field;
     };
+
     const draw = (f, t) => {
       const { ctx, w, h, sp, dots } = f;
       ctx.clearRect(0, 0, w, h);
@@ -106,11 +101,29 @@ const SurroundShimmer = ({ children }) => {
         ctx.fill();
       }
     };
+
+    const tick = (now) => {
+      if (!startRef.current) startRef.current = now;
+      const t = (now - startRef.current) / 1000;
+      // Rebuild if container resized
+      const w = cv.clientWidth, h = cv.clientHeight;
+      if (w !== sizeRef.current.w || h !== sizeRef.current.h) {
+        fieldRef.current = build();
+      }
+      if (fieldRef.current) draw(fieldRef.current, t);
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    let timeout = setTimeout(() => {
+      fieldRef.current = build();
+      rafRef.current = requestAnimationFrame(tick);
+    }, 100);
+
     return () => { clearTimeout(timeout); cancelAnimationFrame(rafRef.current); };
   }, []);
 
   return (
-    <div style={{ position: 'relative', padding: '36px 42px', margin: '-36px -42px' }}>
+    <div style={{ position: 'relative', padding: '36px 42px', margin: '-36px -42px', maxWidth: 520, maxHeight: 200, alignSelf: 'center' }}>
       <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0, maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)', WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)' }} />
       <div data-surround-box="1" style={{ position: 'relative', zIndex: 1 }}>
         {children}
@@ -1187,6 +1200,148 @@ export const EmptySessionPageV6 = ({
           </OuiInsightCard>
         );
       }
+      case 'p99-latency':
+        return (
+          <OuiInsightCard>
+            <WidgetHeader title="P99 latency" />
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+              <span className="widgetCard__bigNumber">175ms</span>
+              <span className="widgetCard__trend widgetCard__trend--success">↓ 8%</span>
+            </div>
+            <div className="widgetCard__chart">
+              <svg viewBox="0 0 280 68" preserveAspectRatio="none" style={{ width: '100%', height: 56, display: 'block' }}>
+                <defs>
+                  <ChartTexture id="v6p99Stripe" variant="stripe" color="#1F9D6B" />
+                </defs>
+                <path d="M0,20 C50,22 90,26 140,30 C180,34 220,38 280,42 L280,68 L0,68 Z" fill="url(#v6p99Stripe)" />
+                <path d="M0,20 C50,22 90,26 140,30 C180,34 220,38 280,42" fill="none" stroke="#1F9D6B" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+            </div>
+          </OuiInsightCard>
+        );
+      case 'error-rate':
+        return (
+          <OuiInsightCard>
+            <WidgetHeader title="Error rate by service" />
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+              <span className="widgetCard__bigNumber">2.1%</span>
+              <span className="widgetCard__trend widgetCard__trend--warning">↑ 0.3%</span>
+            </div>
+            <div className="widgetCard__chart">
+              <svg viewBox="0 0 280 68" preserveAspectRatio="none" style={{ width: '100%', height: 56, display: 'block' }}>
+                <defs>
+                  <ChartTexture id="v6errStripe" variant="stripe" color="#DD8A3A" />
+                </defs>
+                <path d="M0,52 C50,50 90,46 140,40 C180,34 220,28 280,22 L280,68 L0,68 Z" fill="url(#v6errStripe)" />
+                <path d="M0,52 C50,50 90,46 140,40 C180,34 220,28 280,22" fill="none" stroke="#DD8A3A" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+            </div>
+          </OuiInsightCard>
+        );
+      case 'throughput':
+        return (
+          <OuiInsightCard>
+            <WidgetHeader title="Throughput" />
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+              <span className="widgetCard__bigNumber">9.6k</span>
+              <span className="widgetCard__trend" style={{ opacity: 0.45 }}>req/s</span>
+            </div>
+            <div className="widgetCard__chart">
+              <svg viewBox="0 0 280 68" preserveAspectRatio="none" style={{ width: '100%', height: 56, display: 'block' }}>
+                <defs>
+                  <ChartTexture id="v6tpStripe" variant="stripe" color="#2BA98A" />
+                </defs>
+                <path d="M0,36 C50,34 90,32 140,33 C180,34 220,33 280,34 L280,68 L0,68 Z" fill="url(#v6tpStripe)" />
+                <path d="M0,36 C50,34 90,32 140,33 C180,34 220,33 280,34" fill="none" stroke="#2BA98A" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+            </div>
+          </OuiInsightCard>
+        );
+      case 'active-incidents':
+        return (
+          <OuiInsightCard>
+            <WidgetHeader title="Active incidents" />
+            <span className="widgetCard__bigNumber" style={{ color: '#DC2626' }}>3</span>
+            <div className="widgetCard__rows">
+              <div className="widgetCard__statusRow">
+                <span className="widgetCard__statusLabel">checkout-agent loop</span>
+                <span className="widgetCard__statusBadge widgetCard__statusBadge--critical">P1</span>
+              </div>
+              <div className="widgetCard__statusRow">
+                <span className="widgetCard__statusLabel">db pool exhaustion</span>
+                <span className="widgetCard__statusBadge widgetCard__statusBadge--critical">P1</span>
+              </div>
+              <div className="widgetCard__statusRow">
+                <span className="widgetCard__statusLabel">latency regression</span>
+                <span className="widgetCard__statusBadge widgetCard__statusBadge--warning">P2</span>
+              </div>
+            </div>
+          </OuiInsightCard>
+        );
+      case 'slo-compliance':
+        return (
+          <OuiInsightCard>
+            <WidgetHeader title="SLO compliance" />
+            <span className="widgetCard__bigNumber" style={{ color: '#1F9D6B' }}>98.2%</span>
+            <div className="widgetCard__rows">
+              <div className="widgetCard__statusRow">
+                <span className="widgetCard__statusLabel">Availability (99.9%)</span>
+                <span className="widgetCard__statusBadge" style={{ background: 'rgba(31,157,107,0.1)', color: '#1F9D6B' }}>PASS</span>
+              </div>
+              <div className="widgetCard__statusRow">
+                <span className="widgetCard__statusLabel">Latency P99 (&lt;500ms)</span>
+                <span className="widgetCard__statusBadge" style={{ background: 'rgba(31,157,107,0.1)', color: '#1F9D6B' }}>PASS</span>
+              </div>
+              <div className="widgetCard__statusRow">
+                <span className="widgetCard__statusLabel">Error budget</span>
+                <span className="widgetCard__statusBadge widgetCard__statusBadge--warning">12% left</span>
+              </div>
+            </div>
+          </OuiInsightCard>
+        );
+      case 'cost-today':
+        return (
+          <OuiInsightCard>
+            <WidgetHeader title="Cost today" />
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+              <span className="widgetCard__bigNumber">$410</span>
+              <span className="widgetCard__trend widgetCard__trend--warning">↑ 18%</span>
+            </div>
+            <div className="widgetCard__rows">
+              <div className="widgetCard__statusRow">
+                <span className="widgetCard__statusLabel">Compute</span>
+                <span className="widgetCard__statusLabel" style={{ opacity: 0.5 }}>$248</span>
+              </div>
+              <div className="widgetCard__statusRow">
+                <span className="widgetCard__statusLabel">LLM inference</span>
+                <span className="widgetCard__statusLabel" style={{ opacity: 0.5 }}>$127</span>
+              </div>
+              <div className="widgetCard__statusRow">
+                <span className="widgetCard__statusLabel">Storage</span>
+                <span className="widgetCard__statusLabel" style={{ opacity: 0.5 }}>$35</span>
+              </div>
+            </div>
+          </OuiInsightCard>
+        );
+      case 'stale-answer-rate':
+        return (
+          <OuiInsightCard>
+            <WidgetHeader title="Stale answer rate" />
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+              <span className="widgetCard__bigNumber">4.2%</span>
+              <span className="widgetCard__trend widgetCard__trend--warning">↑ 1.1%</span>
+            </div>
+            <div className="widgetCard__chart">
+              <svg viewBox="0 0 280 68" preserveAspectRatio="none" style={{ width: '100%', height: 56, display: 'block' }}>
+                <defs>
+                  <ChartTexture id="v6staleStripe" variant="stripe" color="#DD8A3A" />
+                </defs>
+                <path d="M0,56 C50,54 90,50 140,44 C180,38 220,30 280,24 L280,68 L0,68 Z" fill="url(#v6staleStripe)" />
+                <path d="M0,56 C50,54 90,50 140,44 C180,38 220,30 280,24" fill="none" stroke="#DD8A3A" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+            </div>
+          </OuiInsightCard>
+        );
       default:
         return null;
     }
@@ -1724,14 +1879,16 @@ export const EmptySessionPageV6 = ({
                     .filter((w) => !widgetPickerSearch || w.label.toLowerCase().includes(widgetPickerSearch.toLowerCase()))
                     .map((w) => {
                       const alreadyAdded = widgetOrder.includes(w.id);
+                      const atLimit = widgetOrder.length >= 9;
+                      const isDisabled = alreadyAdded || atLimit;
                       return (
                         <button
                           key={w.id}
                           type="button"
-                          className={`v6Scenario__widgetPickerItem${alreadyAdded ? ' v6Scenario__widgetPickerItem--added' : ''}`}
-                          disabled={alreadyAdded}
+                          className={`v6Scenario__widgetPickerItem${alreadyAdded ? ' v6Scenario__widgetPickerItem--added' : ''}${atLimit && !alreadyAdded ? ' v6Scenario__widgetPickerItem--disabled' : ''}`}
+                          disabled={isDisabled}
                           onClick={() => {
-                            if (!alreadyAdded) {
+                            if (!isDisabled) {
                               setWidgetOrder((prev) => [...prev, w.id]);
                             }
                           }}>
