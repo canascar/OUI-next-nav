@@ -912,13 +912,13 @@ export const EmptySessionPageV6 = ({
   // Per-scenario widget data
   const WIDGET_DATA = {
     1: {
-      timeout: { value: '847', trend: '↑ 31%' },
+      timeout: { value: '847', trend: '↑ 31%', curve: 'M0,52 C50,50 90,46 130,40 C170,34 210,20 280,8', fill: 'M0,52 C50,50 90,46 130,40 C170,34 210,20 280,8 L280,68 L0,68 Z' },
       alerts: [
         { name: 'P99 latency breach', status: 'CRITICAL' },
         { name: 'Disk usage warning', status: 'WARNING' },
         { name: 'Error rate spike', status: 'CRITICAL' },
       ],
-      utilization: '56%',
+      utilization: { value: '56%', curve: 'M0,34 C50,32 90,30 140,28 C180,26 220,24 280,26', fill: 'M0,34 C50,32 90,30 140,28 C180,26 220,24 280,26 L280,68 L0,68 Z' },
       services: [
         { name: 'checkout', pct: 67, value: '66.67%' },
         { name: 'frontend', pct: 15, value: '14.49%' },
@@ -929,18 +929,17 @@ export const EmptySessionPageV6 = ({
         { name: 'Service overview', value: '244 healthy', age: '2h ago' },
         { name: 'p99 latency', value: '175ms', age: 'today' },
         { name: 'Error rate by service', value: '2.1%', age: 'yesterday' },
-        { name: 'Connection pool health', value: '87%', age: '3d ago' },
       ],
       deploys: [8, 12, 15, 11, 9],
     },
     2: {
-      timeout: { value: '2,341', trend: '↑ 184%' },
+      timeout: { value: '2,341', trend: '↑ 184%', curve: 'M0,60 C40,58 80,52 120,40 C160,28 200,12 280,2', fill: 'M0,60 C40,58 80,52 120,40 C160,28 200,12 280,2 L280,68 L0,68 Z' },
       alerts: [
         { name: 'checkout-agent loop', status: 'CRITICAL' },
         { name: 'order-db pool 98%', status: 'CRITICAL' },
         { name: 'Connection pool exhaustion', status: 'CRITICAL' },
       ],
-      utilization: '94%',
+      utilization: { value: '94%', curve: 'M0,50 C50,42 90,30 140,18 C180,10 220,6 280,4', fill: 'M0,50 C50,42 90,30 140,18 C180,10 220,6 280,4 L280,68 L0,68 Z' },
       services: [
         { name: 'checkout', pct: 89, value: '88.91%' },
         { name: 'order-service', pct: 42, value: '41.67%' },
@@ -951,18 +950,17 @@ export const EmptySessionPageV6 = ({
         { name: 'Checkout flow', value: '1,994 retries', age: 'just now' },
         { name: 'Order DB health', value: '98% pool', age: 'just now' },
         { name: 'Service overview', value: '3 critical', age: '1h ago' },
-        { name: 'Agent retry count', value: '332/min', age: 'today' },
       ],
       deploys: [11, 14, 9, 13, 2],
     },
     3: {
-      timeout: { value: '124', trend: '↓ 8%' },
+      timeout: { value: '1,204', trend: '↑ 62%', curve: 'M0,54 C50,50 90,44 130,36 C170,26 210,14 280,6', fill: 'M0,54 C50,50 90,44 130,36 C170,26 210,14 280,6 L280,68 L0,68 Z' },
       alerts: [
         { name: 'billing-agent accuracy', status: 'CRITICAL' },
         { name: 'Citation match below SLO', status: 'CRITICAL' },
         { name: 'Groundedness drift', status: 'WARNING' },
       ],
-      utilization: '41%',
+      utilization: { value: '41%', curve: 'M0,42 C50,44 90,43 140,44 C180,45 220,44 280,45', fill: 'M0,42 C50,44 90,43 140,44 C180,45 220,44 280,45 L280,68 L0,68 Z' },
       services: [
         { name: 'billing-agent', pct: 72, value: '71.88%' },
         { name: 'retrieval-index', pct: 34, value: '33.50%' },
@@ -973,18 +971,17 @@ export const EmptySessionPageV6 = ({
         { name: 'Agent accuracy', value: '0.58 score', age: 'just now' },
         { name: 'Billing conversations', value: '340 affected', age: '1h ago' },
         { name: 'Retrieval latency', value: '890ms', age: 'today' },
-        { name: 'Citation coverage', value: '31%', age: '2h ago' },
       ],
       deploys: [6, 9, 12, 8, 7],
     },
     4: {
-      timeout: { value: '203', trend: '↓ 12%' },
+      timeout: { value: '203', trend: '↓ 12%', curve: 'M0,24 C50,26 90,30 140,34 C180,38 220,42 280,48', fill: 'M0,24 C50,26 90,30 140,34 C180,38 220,42 280,48 L280,68 L0,68 Z' },
       alerts: [
         { name: 'Tool-selection accuracy', status: 'WARNING' },
         { name: 'Lookup path degraded', status: 'WARNING' },
-        { name: 'Prompt deploy drift', status: 'INFO' },
+        { name: 'Prompt deploy drift', status: 'LOW' },
       ],
-      utilization: '38%',
+      utilization: { value: '38%', curve: 'M0,46 C50,45 90,46 140,45 C180,46 220,46 280,45', fill: 'M0,46 C50,45 90,46 140,45 C180,46 220,46 280,45 L280,68 L0,68 Z' },
       services: [
         { name: 'research-agent', pct: 42, value: '42.11%' },
         { name: 'lookup-tool', pct: 31, value: '31.25%' },
@@ -995,18 +992,17 @@ export const EmptySessionPageV6 = ({
         { name: 'Tool accuracy', value: '0.58', age: 'today' },
         { name: 'Agent throughput', value: '9.6k/hr', age: '3h ago' },
         { name: 'p99 latency', value: '175ms', age: 'yesterday' },
-        { name: 'Model cost', value: '$284/day', age: 'today' },
       ],
       deploys: [10, 8, 14, 11, 12],
     },
     5: {
-      timeout: { value: '512', trend: '↑ 47%' },
+      timeout: { value: '512', trend: '↑ 47%', curve: 'M0,48 C50,46 90,42 130,36 C170,28 210,18 280,10', fill: 'M0,48 C50,46 90,42 130,36 C170,28 210,18 280,10 L280,68 L0,68 Z' },
       alerts: [
         { name: 'research-agent retry loop', status: 'WARNING' },
         { name: 'Upstream 200-on-empty', status: 'WARNING' },
-        { name: 'Pattern recurrence (5th)', status: 'INFO' },
+        { name: 'Pattern recurrence (5th)', status: 'LOW' },
       ],
-      utilization: '62%',
+      utilization: { value: '62%', curve: 'M0,38 C50,36 90,34 140,30 C180,28 220,26 280,26', fill: 'M0,38 C50,36 90,34 140,30 C180,28 220,26 280,26 L280,68 L0,68 Z' },
       services: [
         { name: 'research-agent', pct: 58, value: '57.81%' },
         { name: 'web-fetch', pct: 44, value: '43.75%' },
@@ -1017,7 +1013,6 @@ export const EmptySessionPageV6 = ({
         { name: 'Agent retry rate', value: '47/min', age: 'just now' },
         { name: 'web-fetch errors', value: '512 timeouts', age: '1h ago' },
         { name: 'Service overview', value: '245 healthy', age: '4h ago' },
-        { name: 'Data pipeline health', value: '82%', age: 'yesterday' },
       ],
       deploys: [9, 11, 7, 13, 10],
     },
@@ -1046,24 +1041,29 @@ export const EmptySessionPageV6 = ({
             </div>
           </OuiInsightCard>
         );
-      case 'connection-timeout':
+      case 'connection-timeout': {
+        const isDown = wd.timeout.trend.includes('↓');
+        const connColor = isDown ? '#1F9D6B' : '#DD8A3A';
+        const connTrendClass = isDown ? 'widgetCard__trend--success' : 'widgetCard__trend--warning';
         return (
           <OuiInsightCard onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('logs', 'Logs')}>
             <WidgetHeader title="Connection timeout errors" />
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
               <span className="widgetCard__bigNumber">{wd.timeout.value}</span>
-              <span className="widgetCard__trend widgetCard__trend--warning">{wd.timeout.trend}</span>
+              <span className={`widgetCard__trend ${connTrendClass}`}>{wd.timeout.trend}</span>
             </div>
-            <svg viewBox="0 0 280 68" preserveAspectRatio="none" style={{ width: '100%', height: 68, display: 'block', marginTop: 8 }}>
-              <defs>
-                <ChartTexture id="v5connStripe" variant="stripe" />
-              </defs>
-              <line x1="0" y1="8" x2="280" y2="8" stroke="#DD8A3A" strokeWidth="0.8" strokeDasharray="3 3" opacity="0.45" />
-              <path d="M0,56 C50,55 90,53 130,47 C170,41 210,26 280,8 L280,68 L0,68 Z" fill="url(#v5connStripe)" />
-              <path d="M0,56 C50,55 90,53 130,47 C170,41 210,26 280,8" fill="none" stroke="#DD8A3A" strokeWidth="2.5" strokeLinecap="round" />
-            </svg>
+            <div className="widgetCard__chart">
+              <svg viewBox="0 0 280 68" preserveAspectRatio="none" style={{ width: '100%', height: 56, display: 'block' }}>
+                <defs>
+                  <ChartTexture id="v5connStripe" variant="stripe" color={connColor} />
+                </defs>
+                <path d={wd.timeout.fill} fill="url(#v5connStripe)" />
+                <path d={wd.timeout.curve} fill="none" stroke={connColor} strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+            </div>
           </OuiInsightCard>
         );
+      }
       case 'recent-alerts':
         return (
           <OuiInsightCard>
@@ -1083,32 +1083,22 @@ export const EmptySessionPageV6 = ({
           </OuiInsightCard>
         );
       case 'resource-utilization': {
-        const utilNum = parseInt(wd.utilization);
+        const utilNum = parseInt(wd.utilization.value);
         const utilColor = utilNum > 80 ? '#DC2626' : utilNum > 60 ? '#B45309' : '#1F9D6B';
+        const utilStroke = utilNum > 80 ? '#ef4444' : utilNum > 60 ? '#f59e0b' : '#34d399';
         return (
           <OuiInsightCard onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('metrics', 'Metrics')}>
             <WidgetHeader title="Resource utilization" />
-            <span style={{ fontSize: 22, fontWeight: 700, color: utilColor, letterSpacing: '-0.01em', marginBottom: 4, display: 'block' }}>{wd.utilization}</span>
-            <svg viewBox="0 0 220 80" style={{ width: '100%', height: 80 }}>
-              <line x1="30" y1="14" x2="210" y2="14" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
-              <line x1="30" y1="38" x2="210" y2="38" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
-              <line x1="30" y1="62" x2="210" y2="62" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
-              <text x="22" y="17" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">50</text>
-              <text x="22" y="41" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">25</text>
-              <text x="22" y="65" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">0</text>
-              <defs>
-                <ChartTexture id="v5resStripe" variant="stripe" color="#1F9D6B" />
-              </defs>
-              <path d="M40,38 L75,34 L110,30 L145,32 L175,26 L195,24 L210,26 V62 H40 Z" fill="url(#v5resStripe)" />
-              <polyline fill="none" stroke="#34d399" strokeWidth="3.2" strokeLinecap="round" points="40,38 75,34 110,30 145,32 175,26 195,24 210,26" />
-              <circle cx="210" cy="26" r="3" fill="#34d399">
-                <animate attributeName="r" values="3;6;3" dur="2s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite" />
-              </circle>
-              <text x="40" y="74" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">0m</text>
-              <text x="125" y="74" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">30m</text>
-              <text x="210" y="74" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">60m</text>
-            </svg>
+            <span className="widgetCard__bigNumber" style={{ color: utilColor }}>{wd.utilization.value}</span>
+            <div className="widgetCard__chart">
+              <svg viewBox="0 0 280 68" preserveAspectRatio="none" style={{ width: '100%', height: 56, display: 'block' }}>
+                <defs>
+                  <ChartTexture id="v5resStripe" variant="stripe" color={utilStroke} />
+                </defs>
+                <path d={wd.utilization.fill} fill="url(#v5resStripe)" />
+                <path d={wd.utilization.curve} fill="none" stroke={utilStroke} strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+            </div>
           </OuiInsightCard>
         );
       }
@@ -1150,18 +1140,23 @@ export const EmptySessionPageV6 = ({
         const deployAvg = Math.round(wd.deploys.reduce((a, b) => a + b, 0) / wd.deploys.length);
         return (
           <OuiInsightCard onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('dashboards', 'Dashboards')}>
-            <WidgetHeader title="Deploys" />
-            <div style={{ position: 'relative', height: 60, borderRadius: 3, overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(to right, rgba(59,93,214,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(59,93,214,0.06) 1px, transparent 1px)', backgroundSize: '14px 12px' }} />
-              <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', gap: 4, height: '100%', padding: '0 2px' }}>
-                {wd.deploys.map((v, i) => (
-                  <div key={i} style={{ flex: 1, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', height: '100%' }}>
-                    <div style={{ width: '60%', height: `${(v / (deployMax + 2)) * 100}%`, background: '#2BA98A', borderRadius: 1 }} />
-                  </div>
-                ))}
+            <WidgetHeader title="Deployment timeline" />
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+              <span className="widgetCard__bigNumber">{deployAvg}</span>
+              <span className="widgetCard__trend" style={{ opacity: 0.45 }}>avg/wk</span>
+            </div>
+            <div className="widgetCard__chart">
+              <div style={{ position: 'relative', height: 56, borderRadius: 3, overflow: 'hidden' }}>
+                <div style={{ position: 'absolute', left: 0, right: 0, bottom: `${(deployAvg / (deployMax + 2)) * 100}%`, borderTop: '1px dashed rgba(0,0,0,0.2)', pointerEvents: 'none', zIndex: 1 }} />
+                <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', gap: 4, height: '100%', padding: '0 2px' }}>
+                  {wd.deploys.map((v, i) => (
+                    <div key={i} style={{ flex: 1, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', height: '100%' }}>
+                      <div style={{ width: '60%', height: `${(v / (deployMax + 2)) * 100}%`, background: '#2BA98A', borderRadius: 1 }} />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-            <div className="widgetCard__mono" style={{ fontSize: 8, marginTop: 3 }}>avg {deployAvg}/wk</div>
           </OuiInsightCard>
         );
       }
@@ -1438,7 +1433,7 @@ export const EmptySessionPageV6 = ({
                       <div className="v6Scenario__findingCardMain">
                         <div className="v6Scenario__findingCardLeft">
                           <span className="v6Scenario__findingDismissedText">
-                            {finding.title} — <em>dismissed</em>
+                            {finding.title}
                           </span>
                         </div>
                         <div className="v6Scenario__findingCardRight">
@@ -1475,7 +1470,13 @@ export const EmptySessionPageV6 = ({
                         {finding.widget && finding.widget.type === 'spark' && (
                           <div className="v6Scenario__findingWidget">
                             <svg viewBox="0 0 60 20" className="v6Scenario__fwSpark">
-                              <polyline points="0,4 15,6 30,8 45,12 60,18" fill="none" stroke={finding.widget.color} strokeWidth="2" />
+                              <defs>
+                                <pattern id={`spark-stripe-${finding.key}`} width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                                  <line x1="0" y1="0" x2="0" y2="4" stroke={finding.widget.color} strokeWidth="1" opacity="0.35" />
+                                </pattern>
+                              </defs>
+                              <path d="M0,4 L15,6 L30,8 L45,12 L60,18 L60,20 L0,20 Z" fill={`url(#spark-stripe-${finding.key})`} />
+                              <polyline points="0,4 15,6 30,8 45,12 60,18" fill="none" stroke={finding.widget.color} strokeWidth="1.5" strokeLinecap="round" />
                             </svg>
                             <span className="v6Scenario__fwSubLabel">{finding.widget.label}</span>
                           </div>
