@@ -127,6 +127,13 @@
       color: $ouiColorPrimaryText;
     }
 
+    // Leading icon and close button follow the title color when active
+    > .ouiIcon,
+    .pagePanel__tabClose .ouiIcon {
+      color: $ouiColorPrimaryText;
+      fill: $ouiColorPrimaryText;
+    }
+
     &:hover {
       background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.1), rgba($ouiColorPrimary, 0.16));
       border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.4), rgba($ouiColorPrimary, 0.5));
