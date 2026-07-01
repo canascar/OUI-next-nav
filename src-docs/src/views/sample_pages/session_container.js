@@ -19,6 +19,7 @@ import React, {
 
 import {
   OuiButtonIcon,
+  OuiIcon,
   OuiOllyChatPill,
   OuiPopover,
   OuiToolTip,
@@ -38,6 +39,7 @@ export const SessionContainer = ({
   session,
   onUpdateSession,
   onOpenCanvasPage,
+  onGoBack,
 }) => {
   const { threadPanelState, threadPanelWidth } = session;
   const threadPanelRef = useRef(null);
@@ -318,6 +320,16 @@ export const SessionContainer = ({
       className={`sessionContainer${
         isMinimized ? ' sessionContainer--chatMinimized' : ''
       }${isEntering ? ' sessionContainer--entering' : ''}`}>
+      {/* Mobile back button */}
+      {onGoBack && (
+        <button
+          type="button"
+          className="sessionContainer__mobileBack"
+          onClick={onGoBack}
+          aria-label="Back to home">
+          <OuiIcon type="arrowLeft" size="m" />
+        </button>
+      )}
       {/* Left: Chat panel */}
       <ThreadPanel
         ref={threadPanelRef}

@@ -1568,3 +1568,138 @@
   height: 20px;
   flex-shrink: 0;
 }
+
+// ─── Mobile menu button (ghost, floating) ─────────────────────
+.v6Scenario__mobileMenuBtn {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 200;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.45), rgba(255, 255, 255, 0.55));
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: color 150ms ease;
+  appearance: none;
+
+  &:hover {
+    color: lightOrDarkTheme(rgba(0, 0, 0, 0.75), rgba(255, 255, 255, 0.85));
+  }
+}
+
+
+// ─── Responsive: <= 768px ─────────────────────────────────────
+@media (max-width: 768px) {
+  .v6Scenario__mobileMenuBtn {
+    display: flex;
+  }
+
+  .v6Scenario__twoCol {
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+    flex: 1 0 auto;
+    overflow-x: hidden;
+  }
+
+  .v6Scenario__leftCol {
+    flex: none !important; // sass-lint:disable-line no-important
+    min-width: unset !important; // sass-lint:disable-line no-important
+    padding: 64px 24px 20px;
+    overflow-y: visible;
+    justify-content: flex-start;
+    align-items: center;
+    height: auto;
+    gap: 8px;
+  }
+
+  .v6Scenario__resizeHandle {
+    display: none;
+  }
+
+  .v6Scenario__rightCol {
+    flex: none !important; // sass-lint:disable-line no-important
+    min-width: unset !important; // sass-lint:disable-line no-important
+    padding: 20px 24px;
+    border-top: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.06));
+    overflow-y: visible;
+    align-items: stretch;
+    height: auto;
+    gap: 8px;
+  }
+
+  .v6Scenario__leftContent {
+    max-width: 480px;
+    width: 100%;
+  }
+
+  .v6Scenario__mascotRow,
+  .v6Scenario__title,
+  .v6Scenario__summary,
+  .v6Scenario__inputArea,
+  .v6Scenario__jumpTo {
+    max-width: 480px;
+    width: 100%;
+  }
+
+  .v6Scenario__title h1 {
+    font-size: 22px;
+  }
+
+  .v6Scenario__inputArea {
+    padding-top: 16px;
+    overflow: visible;
+  }
+
+  .v6Scenario__jumpTo {
+    padding-top: 12px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .v6Scenario__jumpToChip {
+    flex-shrink: 0;
+    height: 28px;
+    font-size: 11px;
+    padding: 0 10px;
+  }
+
+  // Widget grid: 2-column vertical grid (no horizontal scroll)
+  .v6Scenario__widgetGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .v6Scenario__widgetWrap {
+    // All widgets fit in the 2-col grid, no spanning
+    &.v6Scenario__widget--span2,
+    &.v6Scenario__widget--span3,
+    &.v6Scenario__widget--span4,
+    &.v6Scenario__widget--span5,
+    &.v6Scenario__widget--span6 {
+      grid-column: span 2;
+      grid-row: span 1;
+    }
+  }
+
+  .v6Scenario__overviewContent {
+    max-width: none;
+    width: 100%;
+  }
+
+  .v6Scenario__tabRow {
+    max-width: none;
+    width: 100%;
+  }
+
+}
