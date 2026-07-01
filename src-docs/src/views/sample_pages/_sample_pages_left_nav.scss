@@ -876,6 +876,12 @@
   position: relative;
 }
 
+// Interior session screen (chat + canvas) — remove the notebook grid pattern
+.samplePagesWrapper--noPattern {
+  background-image: none;
+  box-shadow: none;
+}
+
 .samplePagesContentPanel {
   height: 100%;
   background-color: var(--nb-cell, $ouiColorEmptyShade);

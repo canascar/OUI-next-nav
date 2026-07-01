@@ -9,7 +9,14 @@
  * GitHub history for details.
  */
 
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, {
+  useState,
+  useRef,
+  useCallback,
+  useEffect,
+  useContext,
+} from 'react';
+import { ThemeContext } from '../../components/with_theme';
 
 import { SamplePagesLeftNav } from './sample_pages_left_nav';
 import { DetailPagePanel } from './detail_page_panel';
@@ -1640,6 +1647,27 @@ export const SessionPagesView = ({ variant } = {}) => {
     };
   }, []);
 
+  // Keyboard shortcut: Ctrl + M toggles between v9 light and dark themes
+  const { theme, changeTheme } = useContext(ThemeContext);
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // Ctrl + M (no Cmd / Alt). Works even while a field is focused since
+      // Ctrl+M never produces a typed character.
+      if (
+        e.ctrlKey &&
+        !e.metaKey &&
+        !e.altKey &&
+        e.key &&
+        e.key.toLowerCase() === 'm'
+      ) {
+        e.preventDefault();
+        changeTheme(theme === 'v9-dark' ? 'v9-light' : 'v9-dark');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [theme, changeTheme]);
+
   // Session state: sessions array + activeSessionId
   const [sessionState, setSessionState] = useState(initializeSessionState);
 
@@ -1765,6 +1793,10 @@ export const SessionPagesView = ({ variant } = {}) => {
     !activeSession.pendingThread &&
     activeSession.tabs.length === 0;
 
+  /** True when the interior session screen (chat + canvas) is shown */
+  const isSessionView =
+    activeView === 'session' && activeSession && !isEmptySession;
+
   const renderMainContent = () => {
     if (activeView === 'session-list') {
       // Filter out empty sessions (not yet "created")
@@ -1873,7 +1905,9 @@ export const SessionPagesView = ({ variant } = {}) => {
 
   return (
     <div
-      className="samplePagesWrapper"
+      className={`samplePagesWrapper${
+        isSessionView ? ' samplePagesWrapper--noPattern' : ''
+      }`}
       style={{
         display: 'flex',
         position: 'fixed',

@@ -114,17 +114,22 @@
     background-color: lightOrDarkTheme(#FBF9F5, #12161F);
   }
 
-  &:focus {
+  &:focus-visible {
     background-color: lightOrDarkTheme(#FBF9F5, #12161F);
   }
 
-  // Active tab
+  // Active tab — subtle primary color highlight (softer than an active outline button)
   &--active {
-    background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.06));
-    border-color: lightOrDarkTheme(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.10));
+    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.06), rgba($ouiColorPrimary, 0.12));
+    border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.3), rgba($ouiColorPrimary, 0.4));
+
+    .pagePanel__tabTitle {
+      color: $ouiColorPrimaryText;
+    }
 
     &:hover {
-      background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.08));
+      background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.1), rgba($ouiColorPrimary, 0.16));
+      border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.4), rgba($ouiColorPrimary, 0.5));
     }
   }
 }

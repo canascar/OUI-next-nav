@@ -1203,6 +1203,53 @@ export const EmptySessionPageV3 = ({
   const dragOverWidget = useRef(null);
   const resizingWidget = useRef(null);
 
+  // Favorites list proximity-scale hover (matches library & sessions lists),
+  // contained per section so neighbors only scale within the same section.
+  const favPanelRef = useRef(null);
+  const applyFavScales = (activeEl, pressed) => {
+    const section = activeEl.closest('.emptySessionPage__favSection');
+    if (!section) return;
+    const items = Array.from(
+      section.querySelectorAll('.emptySessionPage__favItem')
+    );
+    const activeIndex = items.indexOf(activeEl);
+    if (activeIndex === -1) return;
+    items.forEach((el, i) => {
+      const distance = Math.abs(i - activeIndex);
+      let scale = 1;
+      if (pressed) {
+        if (distance === 0) scale = 0.97;
+        else if (distance === 1) scale = 0.985;
+        else if (distance === 2) scale = 0.995;
+      } else {
+        if (distance === 0) scale = 1.03;
+        else if (distance === 1) scale = 1.015;
+        else if (distance === 2) scale = 1.005;
+      }
+      el.style.transform = `scale(${scale})`;
+    });
+  };
+  const handleFavMouseOver = (e) => {
+    const item = e.target.closest('.emptySessionPage__favItem');
+    if (item) applyFavScales(item, false);
+  };
+  const handleFavMouseDown = (e) => {
+    const item = e.target.closest('.emptySessionPage__favItem');
+    if (item) applyFavScales(item, true);
+  };
+  const handleFavMouseUp = (e) => {
+    const item = e.target.closest('.emptySessionPage__favItem');
+    if (item) applyFavScales(item, false);
+  };
+  const handleFavMouseLeave = () => {
+    if (!favPanelRef.current) return;
+    favPanelRef.current
+      .querySelectorAll('.emptySessionPage__favItem')
+      .forEach((el) => {
+        el.style.transform = '';
+      });
+  };
+
   const handleWidgetDragStart = (idx) => {
     dragWidget.current = idx;
   };
@@ -1677,7 +1724,13 @@ export const EmptySessionPageV3 = ({
 
               <div className="emptySessionPage__briefingContent">
                 {rightPanelTab === 'favorites' ? (
-                  <div className="emptySessionPage__favoritesPanel">
+                  <div
+                    className="emptySessionPage__favoritesPanel"
+                    ref={favPanelRef}
+                    onMouseOver={handleFavMouseOver}
+                    onMouseDown={handleFavMouseDown}
+                    onMouseUp={handleFavMouseUp}
+                    onMouseLeave={handleFavMouseLeave}>
                     <div className="emptySessionPage__favSection">
                       <span className="emptySessionPage__favSectionTitle">Dashboards</span>
                       <button

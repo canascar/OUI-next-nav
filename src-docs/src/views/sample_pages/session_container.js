@@ -271,8 +271,17 @@ export const SessionContainer = ({
   const handleViewAction = useCallback(
     (pageKey, title) => {
       onOpenCanvasPage(pageKey, title);
+      // If the chat is fully expanded (canvas collapsed), reveal the canvas
+      // half-way so the newly opened page is visible.
+      if (threadPanelState === 'full-screen') {
+        triggerAnimation();
+        onUpdateSession({
+          threadPanelState: 'side-by-side',
+          threadPanelWidth: 50,
+        });
+      }
     },
-    [onOpenCanvasPage]
+    [onOpenCanvasPage, onUpdateSession, threadPanelState, triggerAnimation]
   );
 
   const handleSelectPage = useCallback(
