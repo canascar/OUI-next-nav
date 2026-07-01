@@ -64,9 +64,9 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: safe center;
   gap: 8px;
-  padding: 24px;
+  padding: 24px 64px;
   overflow-y: auto;
   background-color: lightOrDarkTheme(rgba(236, 238, 248, 0.50), rgba(13, 19, 30, 0.50));
   -ms-overflow-style: none;
@@ -179,7 +179,7 @@
   align-items: center;
   gap: 8px;
   padding: 10px 14px;
-  border-radius: 10px;
+  border-radius: 5px;
   background: lightOrDarkTheme(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.06));
   border: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.08));
 }
@@ -204,7 +204,7 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: 4px;
   border: none;
   background: none;
   color: $ouiTextSubduedColor;
@@ -231,7 +231,7 @@
   justify-content: center;
   gap: 10px;
   padding: 28px 12px;
-  border-radius: 10px;
+  border-radius: 5px;
   border: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.06));
   background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.04));
   cursor: pointer;
@@ -265,7 +265,7 @@
   padding: 4px 10px;
   cursor: pointer;
   font-family: inherit;
-  border-radius: 6px;
+  border-radius: 3px;
   transition: background-color 120ms ease;
   appearance: none;
 
@@ -277,7 +277,7 @@
 .v6Scenario__widgetGrid--editing .v6Scenario__widgetWrap {
   position: relative;
   border: 2px dashed lightOrDarkTheme(rgba(91, 79, 207, 0.35), rgba(168, 156, 245, 0.30));
-  border-radius: 12px;
+  border-radius: 3px;
   animation: v5WidgetJiggle 0.3s ease-in-out infinite alternate;
 
   &:nth-child(2n) { animation-delay: 0.1s; }
@@ -365,10 +365,11 @@
 }
 
 .v6Scenario__findingCard {
+  position: relative;
   background: lightOrDarkTheme(rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.03));
   border: 1px solid lightOrDarkTheme(rgba(120, 120, 165, 0.12), rgba(255, 255, 255, 0.06));
-  border-radius: 9px;
-  padding: 8px 12px;
+  border-radius: 5px;
+  padding: 12px 14px;
   cursor: pointer;
   transition: box-shadow 140ms ease, background-color 140ms ease;
   -webkit-backdrop-filter: blur(12px);
@@ -432,6 +433,12 @@
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
+
+  .v6Scenario__findingCard--expanded & {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+  }
 }
 
 .v6Scenario__findingBody {
@@ -512,24 +519,75 @@
   }
 }
 
+.v6Scenario__findingActions__side {
+  position: absolute;
+  right: -28px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 150ms ease;
+
+  .v6Scenario__findingCard:hover & {
+    opacity: 1;
+  }
+
+  &--visible {
+    opacity: 1;
+  }
+}
+
+.v6Scenario__findingSideBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: none;
+  background: none;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.30), rgba(255, 255, 255, 0.30));
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease;
+  appearance: none;
+
+  &:hover {
+    background: lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.08));
+    color: lightOrDarkTheme(rgba(0, 0, 0, 0.60), rgba(255, 255, 255, 0.60));
+  }
+}
+
 .v6Scenario__findingCardBody {
   margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.06));
   display: flex;
   flex-direction: column;
   gap: 6px;
+  animation: v6FindingBodyIn 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes v6FindingBodyIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .v6Scenario__evidenceList {
   margin: 0;
-  padding: 0 0 0 18px;
-  font-size: 13px;
-  line-height: 1.6;
+  padding: 0 0 0 14px;
+  font-size: 11px;
+  line-height: 1.5;
   color: lightOrDarkTheme(rgba(0, 0, 0, 0.68), rgba(255, 255, 255, 0.68));
 
   li + li {
-    margin-top: 4px;
+    margin-top: 3px;
   }
 }
 
@@ -616,7 +674,7 @@
   outline: none;
   resize: none;
   appearance: none;
-  border-radius: 10px;
+  border-radius: 5px;
 
   &::placeholder {
     color: lightOrDarkTheme(rgba(0, 0, 0, 0.35), rgba(255, 255, 255, 0.35));
@@ -647,7 +705,7 @@
   gap: 5px;
   height: 32px;
   padding: 0 12px;
-  border-radius: 10px;
+  border-radius: 5px;
   font-size: 12px;
   font-weight: 500;
   font-family: inherit;
@@ -668,7 +726,7 @@
   &--round {
     width: 32px;
     padding: 0;
-    border-radius: 10px;
+    border-radius: 5px;
   }
 }
 
@@ -678,12 +736,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 4px 4px 4px 0;
-  margin-bottom: 0;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: transparent;
+  padding: 4px 4px 12px 0;
 }
 
 .v6Scenario__overviewTitleGroup {
@@ -725,7 +778,7 @@
   .ouiButtonIcon {
     width: 28px;
     height: 28px;
-    border-radius: 8px;
+    border-radius: 4px;
     border: 1px solid lightOrDarkTheme(#D3D8E7, rgba(255, 255, 255, 0.08));
     background: transparent;
 
@@ -778,7 +831,22 @@
 .v6Scenario__evidence {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
+
+  code {
+    font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
+    font-size: 10px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    background: lightOrDarkTheme(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.08));
+  }
+}
+
+.v6Scenario__evidenceText {
+  font-size: 11px;
+  line-height: 1.5;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.62), rgba(255, 255, 255, 0.62));
+  margin: 0;
 }
 
 .v6Scenario__evidenceTitle {
@@ -792,15 +860,15 @@
 .v6Scenario__evidenceCard {
   background: lightOrDarkTheme(#fff, rgba(255, 255, 255, 0.03));
   border: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.08));
-  border-radius: 10px;
-  padding: 14px 16px;
+  border-radius: 4px;
+  padding: 10px 12px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
 }
 
 .v6Scenario__evidenceCardTitle {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
   color: $ouiTitleColor;
 }
@@ -818,7 +886,7 @@
   gap: 3px;
   background: lightOrDarkTheme(#FAFAFD, rgba(255, 255, 255, 0.02));
   border: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.06));
-  border-radius: 8px;
+  border-radius: 4px;
   padding: 10px 12px;
 }
 
@@ -832,7 +900,7 @@
 
 .v6Scenario__metricBoxValue {
   font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 600;
   color: $ouiTitleColor;
 }
@@ -845,28 +913,25 @@
 // ─── PPL blocks ───────────────────────────────────────────────
 .v6Scenario__ppl {
   font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
-  font-size: 12px;
-  line-height: 1.6;
-  background: lightOrDarkTheme(#F4F4F8, rgba(255, 255, 255, 0.03));
-  border: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.06));
-  border-radius: 7px;
-  padding: 10px 12px;
+  font-size: 10.5px;
+  line-height: 1.5;
   color: lightOrDarkTheme(#3A3A45, #C4CBD8);
   overflow-x: auto;
 }
 
 .v6Scenario__pplResult {
-  font-size: 12px;
+  font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
+  font-size: 10.5px;
   color: lightOrDarkTheme(rgba(0, 0, 0, 0.55), rgba(255, 255, 255, 0.55));
-  margin-top: 6px;
-  padding-top: 6px;
+  margin-top: 4px;
+  padding-top: 4px;
   border-top: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.06));
 }
 
 // ─── Trace spans ──────────────────────────────────────────────
 .v6Scenario__trace {
   font-family: var(--oui-code-font-family, $ouiCodeFontFamily);
-  font-size: 12px;
+  font-size: 10.5px;
 }
 
 .v6Scenario__traceSpan {
@@ -1049,7 +1114,7 @@
   .ouiInsightCard {
     width: 100%;
     padding: 10px 11px;
-    border-radius: 10px;
+    border-radius: 5px;
 
     .widgetHeader {
       margin-bottom: 4px;
@@ -1104,7 +1169,17 @@
 
     .widgetCard__statusRow {
       font-size: 9px;
-      padding: 3px 0;
+      padding: 3px 4px;
+      border-radius: 3px;
+      transition: background-color 150ms ease;
+
+      &:hover {
+        background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.05));
+
+        .widgetCard__statusLabel {
+          color: $ouiColorPrimary;
+        }
+      }
     }
 
     .widgetCard__statusLabel {
@@ -1123,6 +1198,129 @@
       max-height: 40px;
     }
   }
+}
+
+// ─── Add widget tile ──────────────────────────────────────────
+.v6Scenario__widgetAdd {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 80px;
+  border: 2px dashed lightOrDarkTheme(rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.12));
+  border-radius: 5px;
+  cursor: pointer;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.35), rgba(255, 255, 255, 0.35));
+  font-size: 11px;
+  font-weight: 500;
+  transition: border-color 150ms ease, color 150ms ease, background-color 150ms ease;
+
+  &:hover {
+    border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.4), rgba($ouiColorPrimary, 0.4));
+    color: $ouiColorPrimary;
+    background: lightOrDarkTheme(rgba($ouiColorPrimary, 0.03), rgba($ouiColorPrimary, 0.05));
+  }
+}
+
+// ─── Widget picker ───────────────────────────────────────────
+.v6Scenario__widgetPicker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: v6FindingBodyIn 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.v6Scenario__widgetPickerHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.v6Scenario__widgetPickerSearch {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  background: lightOrDarkTheme(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.06));
+  border: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.08));
+}
+
+.v6Scenario__widgetPickerInput {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 12px;
+  font-family: inherit;
+  color: $ouiTextColor;
+
+  &::placeholder {
+    color: $ouiTextSubduedColor;
+  }
+}
+
+.v6Scenario__widgetPickerClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  border: none;
+  background: none;
+  color: $ouiTextSubduedColor;
+  cursor: pointer;
+  appearance: none;
+  transition: background 150ms ease, color 150ms ease;
+
+  &:hover {
+    background: lightOrDarkTheme(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.08));
+    color: $ouiTextColor;
+  }
+}
+
+.v6Scenario__widgetPickerList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.v6Scenario__widgetPickerItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  color: $ouiTitleColor;
+  text-align: left;
+  width: 100%;
+  appearance: none;
+  transition: background-color 120ms ease;
+
+  &:hover:not(:disabled) {
+    background: lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.06));
+  }
+
+  &--added {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.v6Scenario__widgetPickerAdded {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 500;
+  color: lightOrDarkTheme(rgba(0, 0, 0, 0.35), rgba(255, 255, 255, 0.35));
 }
 
 // ─── Favorites panel ───────────────────────────────────────────
@@ -1152,7 +1350,7 @@
   align-items: center;
   gap: 12px;
   padding: 10px 12px;
-  border-radius: 8px;
+  border-radius: 4px;
   border: none;
   background: none;
   cursor: pointer;

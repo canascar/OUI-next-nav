@@ -234,76 +234,68 @@ const ScanShimmerOverlay = () => {
 
 // ─── Scenario data ─────────────────────────────────────────────────────────────
 
-const SCENARIO_TABS = {
-  1: 'Quiet morning',
-  2: 'Live fire',
-  3: 'Needs you',
-  4: 'Reasoning quality',
-  5: 'Recurring',
-};
-
 const SCENARIOS = {
   1: {
     statusColor: 'green',
-    greeting: 'Hey hey, John!',
-    summary: '<strong>244 of 247</strong> services healthy. No degradation, no cascading failures. <strong>3 findings</strong> need your attention.',
+    greeting: 'Good morning, John!',
+    summary: '<strong>244 of 247</strong> services healthy. Two anomalies resolved themselves overnight.',
     findings: [
       {
-        key: 'investigated-anomalies',
-        status: 'Investigated',
-        statusColor: 'teal',
-        title: 'Two anomalies — cold start + drift',
-        widget: { type: 'status', label: '2 checked', color: '#0E6E52' },
-        actions: [{ label: 'Details', key: 'see-queries' }],
+        key: 'resolved-anomalies',
+        status: 'Resolved',
+        statusColor: 'green',
+        title: 'Two anomalies flagged overnight — both recovered on their own',
+        widget: { type: 'status', label: 'recovered', color: '#0E6E52' },
+        actions: [{ label: 'View details', key: 'see-queries' }],
       },
       {
-        key: 'watching-groundedness',
-        status: 'Watching',
-        statusColor: 'gray',
-        title: 'Groundedness 0.81→0.74, alert at 0.70',
+        key: 'warning-groundedness',
+        status: 'Warning',
+        statusColor: 'amber',
+        title: 'Groundedness drifting toward alert threshold (0.74, alerts at 0.70)',
         widget: { type: 'spark', label: '0.74', color: '#8A5A00' },
-        actions: [{ label: 'Threshold', key: 'adjust-threshold' }],
+        actions: [{ label: 'See trend', key: 'see-trend' }, { label: 'Adjust threshold', key: 'adjust-threshold' }],
       },
       {
-        key: 'recommends-routing',
-        status: 'Recommends',
+        key: 'info-routing',
+        status: 'Review',
         statusColor: 'blue',
-        title: '38% simple intents → expensive model',
+        title: '38% of simple queries hitting the expensive model — costs up 18%',
         widget: { type: 'bignum', value: '$410', delta: '↑18%', deltaColor: '#B5302E', sub: '/DAY' },
-        actions: [{ label: 'Runbook', key: 'open-runbook' }],
+        actions: [{ label: 'Open runbook', key: 'open-runbook' }],
       },
     ],
   },
   2: {
     statusColor: 'red',
     greeting: 'Hey John,',
-    summary: '<strong>Active incident</strong> — checkout-agent looping. <strong>1</strong> needs you now.',
+    summary: '<strong>Active incident</strong> — checkout-agent is looping. Immediate action needed.',
     findings: [
       {
-        key: 'traced-loop',
-        status: 'Traced',
-        statusColor: 'amber',
-        title: 'order-lookup looping · 200+empty → retry',
-        widget: { type: 'bignum', value: '1,994', delta: 'retries', deltaColor: '#B5302E', sub: '6 MIN' },
-        actions: [{ label: 'Trace', key: 'open-trace' }],
-      },
-      {
-        key: 'root-cause-pool',
-        status: 'Root cause',
+        key: 'critical-loop',
+        status: 'Critical',
         statusColor: 'red',
-        title: 'order-db 98% + handler returns 200 on miss',
-        widget: { type: 'status', label: 'db 98%', color: '#B5302E' },
-        actions: [{ label: 'Code', key: 'see-code' }],
+        title: 'checkout-agent is looping — 1,994 retries in the last 6 minutes',
+        widget: { type: 'bignum', value: '1,994', delta: 'retries', deltaColor: '#B5302E', sub: '6 MIN' },
+        actions: [{ label: 'Investigate', key: 'investigate' }],
       },
       {
-        key: 'recommends-fixes',
-        status: 'Recommends',
+        key: 'critical-root-cause',
+        status: 'Critical',
+        statusColor: 'red',
+        title: 'Root cause: order-db pool at 98%, handler returns 200 on empty',
+        widget: { type: 'status', label: 'db 98%', color: '#B5302E' },
+        actions: [{ label: 'View code', key: 'see-code' }, { label: 'View traces', key: 'open-trace' }],
+      },
+      {
+        key: 'info-fixes',
+        status: 'Review',
         statusColor: 'blue',
-        title: 'Cap retries + raise pool + fix 200-on-empty',
-        widget: { type: 'status', label: 'paged', color: '#8A5A00' },
+        title: 'Three fixes available: cap retries, raise pool, fix 200-on-empty',
+        widget: { type: 'status', label: '3 fixes', color: '#1A5DA8' },
         actions: [
-          { label: 'Page', key: 'page-oncall' },
-          { label: 'Notebook', key: 'open-notebook' },
+          { label: 'Page oncall', key: 'page-oncall' },
+          { label: 'Open notebook', key: 'open-notebook' },
         ],
       },
     ],
@@ -311,87 +303,87 @@ const SCENARIOS = {
   3: {
     statusColor: 'red',
     greeting: 'Hey John,',
-    summary: "<strong>1 finding</strong> needs your call. I can't decide it.",
+    summary: '<strong>billing-agent</strong> is giving inaccurate answers to customers. I need your decision.',
     findings: [
       {
-        key: 'needs-you-billing',
-        status: 'Needs you',
+        key: 'critical-billing',
+        status: 'Critical',
         statusColor: 'red',
-        title: 'billing-agent groundedness 0.58 · customer-facing',
-        widget: { type: 'bignum', value: '0.58', delta: '', deltaColor: '#B5302E', sub: 'GROUND.' },
-        actions: [],
+        title: 'billing-agent accuracy dropped to 0.58 — customers are affected',
+        widget: { type: 'bignum', value: '0.58', delta: '↓0.23', deltaColor: '#B5302E', sub: 'SCORE' },
+        actions: [{ label: 'Investigate', key: 'investigate' }],
       },
       {
-        key: 'found-causes',
-        status: 'Found',
-        statusColor: 'purple',
-        title: 'Prompt change or stale index · 0.52 vs 0.48',
-        widget: { type: 'status', label: 'A 0.52 B 0.48', color: '#5A4FCF' },
-        actions: [{ label: 'Notebook', key: 'open-notebook' }],
+        key: 'warning-causes',
+        status: 'Warning',
+        statusColor: 'amber',
+        title: 'Two possible causes — prompt change vs stale index (52% / 48% likely)',
+        widget: { type: 'status', label: '52 / 48', color: '#8A5A00' },
+        actions: [{ label: 'Compare', key: 'open-notebook' }],
       },
       {
-        key: 'recommends-tradeoff',
-        status: 'Recommends',
+        key: 'info-tradeoff',
+        status: 'Review',
         statusColor: 'blue',
-        title: 'Rollback or reindex — trade-off is yours',
+        title: 'Rollback the prompt (fast, loses tuning) or reindex (20 min offline)',
         widget: { type: 'status', label: '2 options', color: '#1A5DA8' },
-        actions: [{ label: 'Page owner', key: 'page-owner' }],
+        actions: [{ label: 'Rollback now', key: 'rollback' }, { label: 'Page owner', key: 'page-owner' }],
       },
     ],
   },
   4: {
     statusColor: 'green',
-    greeting: 'Hey hey, John!',
-    summary: "<strong>All healthy.</strong> Reasoning regression worth a look.",
+    greeting: 'Good morning, John!',
+    summary: '<strong>All services healthy.</strong> One quality regression worth reviewing.',
     findings: [
       {
-        key: 'found-tool-selection',
-        status: 'Found',
-        statusColor: 'purple',
-        title: 'Tool-selection accuracy 0.71→0.58 this week',
-        widget: { type: 'bignum', value: '0.58', delta: '↓', deltaColor: '#B5302E', sub: 'ACCURACY' },
-        actions: [{ label: 'Query', key: 'see-query' }],
+        key: 'warning-tool-selection',
+        status: 'Warning',
+        statusColor: 'amber',
+        title: 'Tool-selection accuracy dropped from 0.71 to 0.58 this week',
+        widget: { type: 'bignum', value: '0.58', delta: '↓18%', deltaColor: '#B5302E', sub: 'ACCURACY' },
+        actions: [{ label: 'Investigate', key: 'investigate' }],
       },
       {
-        key: 'watching-infra',
-        status: 'Watching',
-        statusColor: 'gray',
-        title: "Infra clean · all golden signals green",
+        key: 'resolved-infra',
+        status: 'Resolved',
+        statusColor: 'green',
+        title: 'Infrastructure is clean — all golden signals normal',
         widget: { type: 'status', label: 'all green', color: '#0E6E52' },
         actions: [],
       },
       {
-        key: 'recommends-investigation',
-        status: 'Recommends',
+        key: 'info-next-steps',
+        status: 'Review',
         statusColor: 'blue',
-        title: 'Per-path regression vs prompt deploy · read-only',
-        widget: { type: 'status', label: 'read-only', color: '#1A5DA8' },
-        actions: [{ label: 'Run it', key: 'run-investigation' }],
+        title: 'Likely correlated with Tuesday\'s prompt deploy — read-only analysis ready',
+        widget: { type: 'status', label: 'ready', color: '#1A5DA8' },
+        actions: [{ label: 'Run analysis', key: 'run-investigation' }],
       },
     ],
   },
   5: {
     statusColor: 'amber',
-    greeting: 'Hey hey, John!',
-    summary: "<strong>Healthy</strong>, but a familiar loop is back. 5th time.",
+    greeting: 'Hey John,',
+    summary: '<strong>Services healthy</strong>, but a familiar issue is back — 5th time in 30 days.',
     findings: [
       {
-        key: 'found-pattern',
-        status: 'Found',
-        statusColor: 'purple',
-        title: 'web-fetch 200+empty → retry loop · 5th occurrence',
+        key: 'warning-pattern',
+        status: 'Warning',
+        statusColor: 'amber',
+        title: 'research-agent retry loop triggered again — same pattern as last 4 times',
         widget: { type: 'spark', label: '5th', color: '#8A5A00' },
-        actions: [{ label: 'Pattern', key: 'see-pattern' }],
+        actions: [{ label: 'See pattern', key: 'see-pattern' }],
       },
       {
-        key: 'recommends-code-change',
-        status: 'Recommends',
+        key: 'info-root-cause',
+        status: 'Review',
         statusColor: 'blue',
-        title: '200 on miss → should be 404 · your code',
-        widget: { type: 'status', label: 'code · issue', color: '#8A5A00' },
+        title: 'Upstream returns 200 on empty instead of 404 — needs a permanent fix',
+        widget: { type: 'status', label: 'code fix', color: '#1A5DA8' },
         actions: [
-          { label: 'Notebook', key: 'open-notebook' },
           { label: 'File issue', key: 'file-issue' },
+          { label: 'Open notebook', key: 'open-notebook' },
         ],
       },
     ],
@@ -459,6 +451,23 @@ const PAGE_BROWSER_ITEMS = [
   { label: 'Agent spans', pageKey: 'agent-spans', icon: 'visTagCloud' },
 ];
 
+const WIDGET_CATALOG = [
+  { id: 'connection-timeout', label: 'Connection timeout errors', icon: 'visLine' },
+  { id: 'recent-alerts', label: 'Recent alerts', icon: 'navAlerting' },
+  { id: 'resource-utilization', label: 'Resource utilization', icon: 'visArea' },
+  { id: 'saved-queries', label: 'Saved queries', icon: 'search' },
+  { id: 'dashboards', label: 'Dashboards', icon: 'navDashboards' },
+  { id: 'deployment-timeline', label: 'Deploys', icon: 'visBarVertical' },
+  { id: 'top-services', label: 'Top services by fault rate', icon: 'visBarHorizontal' },
+  { id: 'p99-latency', label: 'P99 latency', icon: 'visLine' },
+  { id: 'error-rate', label: 'Error rate by service', icon: 'visArea' },
+  { id: 'throughput', label: 'Throughput', icon: 'visLine' },
+  { id: 'active-incidents', label: 'Active incidents', icon: 'alert' },
+  { id: 'slo-compliance', label: 'SLO compliance', icon: 'checkInCircleFilled' },
+  { id: 'cost-today', label: 'Cost today', icon: 'currency' },
+  { id: 'stale-answer-rate', label: 'Stale answer rate', icon: 'machineLearningApp' },
+];
+
 // ─── Scenario-specific right panel evidence ───────────────────────────────────
 
 const PPLBlock = ({ lines, result }) => (
@@ -494,162 +503,134 @@ const MetricBox = ({ label, value, sub, color }) => (
 const FindingEvidence = ({ scenario, findingKey }) => {
   const evidenceMap = {
     1: {
-      'investigated-anomalies': (
+      'resolved-anomalies': (
         <div className="v6Scenario__evidence">
-          <EvidenceCard>
-            <PPLBlock
-              lines={[
-                'source=otel-traces tool.name="search-tool"',
-                '| stats p95(duration) by window',
-              ]}
-              result="spike isolated to one cold-start window"
-            />
-          </EvidenceCard>
-          <EvidenceCard title="Outcome">
-            <ul className="v6Scenario__evidenceList">
-              <li>search-tool: cold start, recovered in 40s</li>
-              <li>triage routing: drift returned to baseline on its own</li>
-            </ul>
-          </EvidenceCard>
+          <p className="v6Scenario__evidenceText">I checked the last 6 hours of traces. Two spikes stood out:</p>
+          <ul className="v6Scenario__evidenceList">
+            <li><strong>search-tool</strong> — cold start at 03:14, recovered in 40s. No user impact.</li>
+            <li><strong>triage-routing</strong> — brief drift at 04:22, returned to baseline on its own.</li>
+          </ul>
+          <p className="v6Scenario__evidenceText">No action needed. Both resolved before any alert threshold.</p>
         </div>
       ),
-      'watching-groundedness': (
+      'warning-groundedness': (
         <div className="v6Scenario__evidence">
+          <p className="v6Scenario__evidenceText">Groundedness scores over the past 7 days:</p>
           <EvidenceCard>
-            <PPLBlock
-              lines={[
-                'source=eval-scores metric="groundedness" path="docs"',
-                '| stats avg(score) by day',
-              ]}
-              result="0.81 -> 0.78 -> 0.74 . alert at 0.70"
-            />
+            <div className="v6Scenario__metricRow">
+              <MetricBox label="7 days ago" value="0.81" />
+              <MetricBox label="3 days ago" value="0.78" />
+              <MetricBox label="Today" value="0.74" color="#B45309" />
+              <MetricBox label="Alert at" value="0.70" color="#DC2626" />
+            </div>
           </EvidenceCard>
+          <p className="v6Scenario__evidenceText">At this rate, the alert will fire in ~2 days unless the trend reverses.</p>
         </div>
       ),
-      'recommends-routing': (
+      'info-routing': (
         <div className="v6Scenario__evidence">
+          <p className="v6Scenario__evidenceText">I analyzed cost by intent complexity over the past 24 hours:</p>
           <EvidenceCard>
-            <PPLBlock
-              lines={[
-                'source=otel-traces gen_ai.operation.name="chat"',
-                '| stats sum(gen_ai.usage.cost) by intent.class',
-              ]}
-              result="simple intents . $410/day on the expensive path"
-            />
+            <div className="v6Scenario__metricRow">
+              <MetricBox label="Simple intents" value="38%" sub="routed to GPT-4" color="#B45309" />
+              <MetricBox label="Daily cost" value="$410" sub="up from $347" color="#DC2626" />
+            </div>
           </EvidenceCard>
+          <p className="v6Scenario__evidenceText">These could route to the lighter model with no quality loss. The runbook has the routing rules.</p>
         </div>
       ),
     },
     2: {
-      'traced-loop': (
+      'critical-loop': (
         <div className="v6Scenario__evidence">
+          <p className="v6Scenario__evidenceText">checkout-agent has called <code>order-lookup</code> 1,994 times in 6 minutes. Each call returns 200 with an empty body, so the agent retries indefinitely.</p>
           <EvidenceCard>
-            <PPLBlock
-              lines={[
-                'source=otel-traces gen_ai.agent.name="checkout-agent"',
-                '| stats count by tool.name, http.status',
-              ]}
-              result="order-lookup . 1,994 calls returning 200 + empty"
-            />
+            <div className="v6Scenario__metricRow">
+              <MetricBox label="Calls" value="1,994" color="#DC2626" />
+              <MetricBox label="Duration" value="6 min" />
+              <MetricBox label="Status" value="200" sub="empty body" />
+            </div>
           </EvidenceCard>
+          <p className="v6Scenario__evidenceText">Customer-facing checkout is degraded. The loop is ongoing.</p>
         </div>
       ),
-      'root-cause-pool': (
+      'critical-root-cause': (
         <div className="v6Scenario__evidence">
-          <EvidenceCard title="Trace tree">
+          <p className="v6Scenario__evidenceText">I traced it from the agent down to the database:</p>
+          <EvidenceCard>
             <div className="v6Scenario__trace">
-              <TraceSpan tag="invoke_agent" tagColor="accent" name="checkout-agent" meta="looping" />
-              <TraceSpan indent={1} tag="execute_tool" tagColor="tool" name="order-lookup" meta="200 + empty" bad />
+              <TraceSpan tag="agent" tagColor="accent" name="checkout-agent" meta="looping" />
+              <TraceSpan indent={1} tag="tool" tagColor="tool" name="order-lookup" meta="200 + empty" bad />
               <TraceSpan indent={2} tag="http" tagColor="infra" name="order-service" meta="p99 2,340ms" bad />
               <TraceSpan indent={3} tag="db" tagColor="infra" name="order-db" meta="pool 98%" bad />
-              <TraceSpan indent={3} tag="code" tagColor="infra" name="returns 200 on miss" meta="handler.go:88" bad />
+              <TraceSpan indent={3} tag="code" tagColor="infra" name="handler.go:88" meta="returns 200 on miss" bad />
             </div>
-            <div className="v6Scenario__traceId">stitched from OpenSearch . CloudWatch . RDS . GitHub</div>
           </EvidenceCard>
+          <p className="v6Scenario__evidenceText">The database pool is nearly exhausted, and the handler returns 200 even when no record is found — the agent interprets this as "try again."</p>
         </div>
       ),
-      'recommends-fixes': (
+      'info-fixes': (
         <div className="v6Scenario__evidence">
-          <EvidenceCard title="Recommended fixes">
-            <ul className="v6Scenario__evidenceList">
-              <li>Cap order-lookup retries — runtime change</li>
-              <li>Raise the order-db pool — infra change</li>
-              <li>Return 404 on empty in handler.go:88 — code change</li>
-            </ul>
-          </EvidenceCard>
+          <p className="v6Scenario__evidenceText">Three fixes, from fastest to most permanent:</p>
+          <ul className="v6Scenario__evidenceList">
+            <li><strong>Cap retries</strong> — runtime config change, stops the bleeding immediately</li>
+            <li><strong>Raise db pool</strong> — infra change, prevents pool exhaustion under load</li>
+            <li><strong>Fix handler.go:88</strong> — return 404 on empty, eliminates the root cause</li>
+          </ul>
         </div>
       ),
     },
     3: {
-      'needs-you-billing': (
+      'critical-billing': (
         <div className="v6Scenario__evidence">
+          <p className="v6Scenario__evidenceText">billing-agent&apos;s accuracy dropped sharply after today&apos;s 14:02 deploy:</p>
           <EvidenceCard>
-            <PPLBlock
-              lines={[
-                'source=eval-scores agent="billing-agent"',
-                '| stats avg(groundedness), avg(citation_match)',
-              ]}
-              result="groundedness 0.58 . citation match 0.31"
-            />
+            <div className="v6Scenario__metricRow">
+              <MetricBox label="Groundedness" value="0.58" sub="was 0.81" color="#DC2626" />
+              <MetricBox label="Citation match" value="0.31" sub="was 0.72" color="#DC2626" />
+            </div>
           </EvidenceCard>
+          <p className="v6Scenario__evidenceText">The agent is giving customers billing answers that don&apos;t match source documents. 340 conversations affected so far.</p>
         </div>
       ),
-      'found-causes': (
+      'warning-causes': (
         <div className="v6Scenario__evidence">
+          <p className="v6Scenario__evidenceText">I narrowed it to two possible causes:</p>
           <EvidenceCard>
             <div className="v6Scenario__hypothesis">
               <div className="v6Scenario__hypothesisHeader">
-                <span>A — prompt change</span>
-                <span className="v6Scenario__verdict">conf 0.52</span>
+                <span>A — Prompt change at 14:02</span>
+                <span className="v6Scenario__verdict">52% likely</span>
               </div>
-              <PPLBlock
-                lines={[
-                  'source=deploys service="billing-agent"',
-                  '| sort -@timestamp | head 1',
-                ]}
-                result="deploy 14:02 . groundedness dropped 14:10"
-              />
+              <p className="v6Scenario__evidenceText">Scores dropped 8 minutes after the deploy. The new prompt removes citation instructions.</p>
             </div>
             <div className="v6Scenario__hypothesis">
               <div className="v6Scenario__hypothesisHeader">
-                <span>B — stale retrieval index</span>
-                <span className="v6Scenario__verdict">conf 0.48</span>
+                <span>B — Stale retrieval index</span>
+                <span className="v6Scenario__verdict">48% likely</span>
               </div>
-              <PPLBlock
-                lines={[
-                  'source=retrieval-meta index="docs"',
-                  '| stats max(reindex_age_h)',
-                ]}
-                result="26h since last reindex"
-              />
-            </div>
-            <div className="v6Scenario__split">
-              <strong>0.52 vs 0.48</strong> — neither clears the bar. Your call.
+              <p className="v6Scenario__evidenceText">The docs index hasn&apos;t been refreshed in 26 hours. New billing policies aren&apos;t in the index.</p>
             </div>
           </EvidenceCard>
+          <p className="v6Scenario__evidenceText">Neither hypothesis is conclusive — I can&apos;t rule one out without your input.</p>
         </div>
       ),
-      'recommends-tradeoff': (
+      'info-tradeoff': (
         <div className="v6Scenario__evidence">
-          <EvidenceCard title="Trade-offs">
-            <ul className="v6Scenario__evidenceList">
-              <li>Roll back the prompt — loses a day of tuning, fast</li>
-              <li>Reindex docs — takes the agent offline ~20 min</li>
-              <li>Either fixes it if it is that cause; only you can weigh which</li>
-            </ul>
-          </EvidenceCard>
+          <p className="v6Scenario__evidenceText">Two paths forward:</p>
+          <ul className="v6Scenario__evidenceList">
+            <li><strong>Rollback the prompt</strong> — fast, but loses today&apos;s tuning work</li>
+            <li><strong>Reindex docs</strong> — takes the agent offline ~20 min, but preserves the new prompt</li>
+          </ul>
+          <p className="v6Scenario__evidenceText">Either fixes it if that&apos;s the actual cause. Only you can weigh the trade-off.</p>
         </div>
       ),
     },
     4: {
-      'found-tool-selection': (
+      'warning-tool-selection': (
         <div className="v6Scenario__evidence">
-          <EvidenceCard title="Accuracy this week">
-            <div className="v6Scenario__metricRow">
-              <MetricBox label="Accuracy" value="0.58" sub="down from 0.71" color="#DC2626" />
-            </div>
-          </EvidenceCard>
-          <EvidenceCard title="Path breakdown">
+          <p className="v6Scenario__evidenceText">Tool-selection accuracy by path this week:</p>
+          <EvidenceCard>
             <div className="v6Scenario__pathBreakdown">
               <div className="v6Scenario__pathRow">
                 <span className="v6Scenario__pathName">lookup</span>
@@ -668,54 +649,52 @@ const FindingEvidence = ({ scenario, findingKey }) => {
               </div>
             </div>
           </EvidenceCard>
+          <p className="v6Scenario__evidenceText">The lookup path is the worst performer. It correlates with Tuesday&apos;s prompt deploy window.</p>
         </div>
       ),
-      'watching-infra': (
+      'resolved-infra': (
         <div className="v6Scenario__evidence">
-          <EvidenceCard title="Golden signals">
+          <EvidenceCard>
             <div className="v6Scenario__metricRow">
               <MetricBox label="Throughput" value="9.6k" sub="steady" />
               <MetricBox label="p99" value="175ms" sub="steady" />
               <MetricBox label="Errors" value="0.1%" sub="steady" color="#1F9D6B" />
             </div>
           </EvidenceCard>
+          <p className="v6Scenario__evidenceText">All golden signals are normal. This is a model/prompt issue, not infrastructure.</p>
         </div>
       ),
-      'recommends-investigation': (
+      'info-next-steps': (
         <div className="v6Scenario__evidence">
-          <EvidenceCard title="Suggested steps">
-            <ul className="v6Scenario__evidenceList">
-              <li>Correlate the per-path accuracy drop to the prompt deploy window</li>
-              <li>Pull the tool-selection traces for the lookup path</li>
-              <li>Produce a notebook — no changes, just evidence</li>
-            </ul>
-          </EvidenceCard>
+          <p className="v6Scenario__evidenceText">I prepared a read-only analysis that will:</p>
+          <ul className="v6Scenario__evidenceList">
+            <li>Correlate the per-path accuracy drop to the prompt deploy window</li>
+            <li>Pull tool-selection traces for the lookup path</li>
+            <li>Produce a notebook with findings — no changes, just evidence</li>
+          </ul>
         </div>
       ),
     },
     5: {
-      'found-pattern': (
+      'warning-pattern': (
         <div className="v6Scenario__evidence">
-          <EvidenceCard title="Recurrence . 30 days">
-            <PPLBlock
-              lines={[
-                'source=otel-traces gen_ai.agent.name="research-agent"',
-                '| patterns tool.response | where pattern="empty"',
-              ]}
-              result="5 traces . identical loop signature"
-            />
-          </EvidenceCard>
+          <p className="v6Scenario__evidenceText">This is the 5th time in 30 days that research-agent has entered this retry loop. Same pattern every time:</p>
+          <ul className="v6Scenario__evidenceList">
+            <li>Agent calls web-fetch for a resource</li>
+            <li>Upstream returns 200 with empty body</li>
+            <li>Agent interprets this as "not done yet" and retries</li>
+          </ul>
+          <p className="v6Scenario__evidenceText">Each occurrence was patched individually. The underlying cause has never been fixed.</p>
         </div>
       ),
-      'recommends-code-change': (
+      'info-root-cause': (
         <div className="v6Scenario__evidence">
-          <EvidenceCard title="Recommended fixes">
-            <ul className="v6Scenario__evidenceList">
-              <li>Upstream should return 404 on miss, not 200 — owner: data team</li>
-              <li>Or the agent should treat empty as terminal — client.ts:40</li>
-              <li>This is the 5th symptomatic patch — file it once</li>
-            </ul>
-          </EvidenceCard>
+          <p className="v6Scenario__evidenceText">The fix needs to happen upstream:</p>
+          <ul className="v6Scenario__evidenceList">
+            <li><strong>Upstream (data team)</strong> — should return 404 on miss, not 200</li>
+            <li><strong>Client workaround</strong> — treat empty 200 as terminal in client.ts:40</li>
+          </ul>
+          <p className="v6Scenario__evidenceText">This is the 5th symptomatic patch. Filing an issue to the data team would prevent recurrence.</p>
         </div>
       ),
     },
@@ -731,7 +710,6 @@ const FindingEvidence = ({ scenario, findingKey }) => {
 // ─── Main component ────────────────────────────────────────────────────────────
 
 export const EmptySessionPageV6 = ({
-  scenario = 1,
   onStartThread,
   onOpenPage,
   onOpenPageInNewSession,
@@ -739,6 +717,7 @@ export const EmptySessionPageV6 = ({
   onBrowseLibrary,
   sessions = [],
 }) => {
+  const [scenario] = useState(() => Math.floor(Math.random() * 5) + 1);
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
   const mascotColor = isDark ? ['#FFFFFF', '#D9DEE5'] : ['#14558E', '#153A5A'];
@@ -749,6 +728,8 @@ export const EmptySessionPageV6 = ({
   const [rightPanelWidth, setRightPanelWidth] = useState(50);
   const resizeRef = useRef(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [showWidgetPicker, setShowWidgetPicker] = useState(false);
+  const [widgetPickerSearch, setWidgetPickerSearch] = useState('');
   const [isAttachMenuOpen, setIsAttachMenuOpen] = useState(false);
   const [showPageBrowser, setShowPageBrowser] = useState(false);
   const [pageBrowserSearch, setPageBrowserSearch] = useState('');
@@ -765,7 +746,7 @@ export const EmptySessionPageV6 = ({
     'connection-timeout',
     'recent-alerts',
     'resource-utilization',
-    'saved-queries',
+    'top-services',
     'dashboards',
     'deployment-timeline',
   ]);
@@ -884,22 +865,22 @@ export const EmptySessionPageV6 = ({
         );
       case 'recent-alerts':
         return (
-          <OuiInsightCard onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('alerts', 'Alerts')}>
+          <OuiInsightCard>
             <WidgetHeader title="Recent alerts" />
             <div className="widgetCard__tableHeader">
               <span>ALERT</span>
               <span>STATUS</span>
             </div>
             <div className="widgetCard__rows">
-              <div className="widgetCard__statusRow">
+              <div className="widgetCard__statusRow" style={{ cursor: 'pointer' }} onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('alerts', 'P99 latency breach')}>
                 <span className="widgetCard__statusLabel">P99 latency breach</span>
                 <span className="widgetCard__statusBadge widgetCard__statusBadge--critical">CRITICAL</span>
               </div>
-              <div className="widgetCard__statusRow">
+              <div className="widgetCard__statusRow" style={{ cursor: 'pointer' }} onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('alerts', 'Disk usage warning')}>
                 <span className="widgetCard__statusLabel">Disk usage warning</span>
                 <span className="widgetCard__statusBadge widgetCard__statusBadge--warning">WARNING</span>
               </div>
-              <div className="widgetCard__statusRow">
+              <div className="widgetCard__statusRow" style={{ cursor: 'pointer' }} onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('alerts', 'Error rate spike')}>
                 <span className="widgetCard__statusLabel">Error rate spike</span>
                 <span className="widgetCard__statusBadge widgetCard__statusBadge--critical">CRITICAL</span>
               </div>
@@ -951,7 +932,7 @@ export const EmptySessionPageV6 = ({
         );
       case 'dashboards':
         return (
-          <OuiInsightCard onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('dashboards', 'Dashboards')}>
+          <OuiInsightCard>
             <WidgetHeader title="Dashboards" />
             <div className="widgetCard__rows">
               {[
@@ -960,7 +941,7 @@ export const EmptySessionPageV6 = ({
                 { name: 'Error rate by service', points: '0,10 15,8 30,6 45,9 60,7' },
                 { name: 'Connection pool health', points: '0,12 15,11 30,13 45,10 60,8' },
               ].map((item) => (
-                <div key={item.name} className="widgetCard__statusRow">
+                <div key={item.name} className="widgetCard__statusRow" style={{ cursor: 'pointer' }} onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('dashboards', item.name)}>
                   <span className="widgetCard__statusLabel">{item.name}</span>
                   <svg viewBox="0 0 60 20" style={{ width: 48, height: 16, flexShrink: 0 }}>
                     <polyline points={item.points} fill="none" stroke="#1F9D6B" strokeWidth="1.5" strokeLinecap="round" />
@@ -1150,7 +1131,6 @@ export const EmptySessionPageV6 = ({
               <span className="v6Scenario__overviewTitle">{showPageBrowser ? 'Open a page' : 'Overview'}</span>
               {!showPageBrowser && (
                 <span className="v6Scenario__overviewStatus">
-                  <span className="v6Scenario__overviewStatusDot" />
                   Updated 2m ago
                 </span>
               )}
@@ -1252,8 +1232,8 @@ export const EmptySessionPageV6 = ({
               {scenarioData.findings.map((finding) => {
                 const isExpanded = expandedFindings.has(finding.key);
                 return (
-                  <div key={finding.key} className={`v6Scenario__findingCard${isExpanded ? ' v6Scenario__findingCard--expanded' : ''}`}>
-                    <div className="v6Scenario__findingCardMain" onClick={() => toggleFinding(finding.key)} style={{ cursor: 'pointer' }}>
+                  <div key={finding.key} className={`v6Scenario__findingCard${isExpanded ? ' v6Scenario__findingCard--expanded' : ''}`} onClick={() => toggleFinding(finding.key)}>
+                    <div className="v6Scenario__findingCardMain">
                       <div className="v6Scenario__findingCardLeft">
                         <div className="v6Scenario__findingHeader">
                           <StatusPill status={finding.status} color={finding.statusColor} />
@@ -1289,6 +1269,33 @@ export const EmptySessionPageV6 = ({
                         )}
                         <OuiIcon type="arrowDown" size="s" className={`v6Scenario__findingChevron${isExpanded ? ' v6Scenario__findingChevron--expanded' : ''}`} />
                       </div>
+                    </div>
+                    <div className={`v6Scenario__findingActions__side${isExpanded ? ' v6Scenario__findingActions__side--visible' : ''}`}>
+                      {isExpanded && (
+                        <>
+                          <button
+                            type="button"
+                            className="v6Scenario__findingSideBtn"
+                            aria-label="Helpful"
+                            onClick={(e) => e.stopPropagation()}>
+                            <OuiIcon type="thumbsUp" size="s" />
+                          </button>
+                          <button
+                            type="button"
+                            className="v6Scenario__findingSideBtn"
+                            aria-label="Not helpful"
+                            onClick={(e) => e.stopPropagation()}>
+                            <OuiIcon type="thumbsDown" size="s" />
+                          </button>
+                        </>
+                      )}
+                      <button
+                        type="button"
+                        className="v6Scenario__findingSideBtn"
+                        aria-label="Dismiss"
+                        onClick={(e) => e.stopPropagation()}>
+                        <OuiIcon type="cross" size="s" />
+                      </button>
                     </div>
                     {isExpanded && (
                       <div className="v6Scenario__findingCardBody">
@@ -1377,7 +1384,63 @@ export const EmptySessionPageV6 = ({
                   </div>
                 );
               })}
+              {isEditMode && (
+                <div
+                  className="v6Scenario__widgetWrap v6Scenario__widgetAdd"
+                  onClick={() => setShowWidgetPicker(true)}>
+                  <OuiIcon type="plusInCircle" size="m" />
+                  <span>Add widget</span>
+                </div>
+              )}
             </div>
+
+            {/* Widget picker */}
+            {showWidgetPicker && (
+              <div className="v6Scenario__widgetPicker">
+                <div className="v6Scenario__widgetPickerHeader">
+                  <div className="v6Scenario__widgetPickerSearch">
+                    <OuiIcon type="search" size="s" />
+                    <input
+                      type="text"
+                      placeholder="Search widgets..."
+                      value={widgetPickerSearch}
+                      onChange={(e) => setWidgetPickerSearch(e.target.value)}
+                      className="v6Scenario__widgetPickerInput"
+                      autoFocus
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="v6Scenario__widgetPickerClose"
+                    onClick={() => { setShowWidgetPicker(false); setWidgetPickerSearch(''); }}>
+                    <OuiIcon type="cross" size="m" />
+                  </button>
+                </div>
+                <div className="v6Scenario__widgetPickerList">
+                  {WIDGET_CATALOG
+                    .filter((w) => !widgetPickerSearch || w.label.toLowerCase().includes(widgetPickerSearch.toLowerCase()))
+                    .map((w) => {
+                      const alreadyAdded = widgetOrder.includes(w.id);
+                      return (
+                        <button
+                          key={w.id}
+                          type="button"
+                          className={`v6Scenario__widgetPickerItem${alreadyAdded ? ' v6Scenario__widgetPickerItem--added' : ''}`}
+                          disabled={alreadyAdded}
+                          onClick={() => {
+                            if (!alreadyAdded) {
+                              setWidgetOrder((prev) => [...prev, w.id]);
+                            }
+                          }}>
+                          <OuiIcon type={w.icon} size="s" />
+                          <span>{w.label}</span>
+                          {alreadyAdded && <span className="v6Scenario__widgetPickerAdded">Added</span>}
+                        </button>
+                      );
+                    })}
+                </div>
+              </div>
+            )}
 
           </div>
           </>
