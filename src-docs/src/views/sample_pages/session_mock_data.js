@@ -301,6 +301,26 @@ export const DNS_TIMEOUT_SESSION = {
 };
 
 // ---------------------------------------------------------------------------
+// V7 Home Overview — Pre-loaded session with Overview tab + greeting in chat
+// ---------------------------------------------------------------------------
+
+export const OVERVIEW_HOME_SESSION = {
+  id: 'overview-home-session',
+  threadKey: 'overview-home',
+  pendingThread: null,
+  title: 'Morning Briefing',
+  summary:
+    'Active incident — checkout-agent is looping. 244 of 247 services healthy.',
+  threadPanelState: 'side-by-side',
+  threadPanelWidth: 35,
+  tabs: [
+    { id: 'tab-overview-home', pageKey: 'overview-home', title: 'Overview' },
+  ],
+  activeTabId: 'tab-overview-home',
+  createdAt: Date.now(),
+};
+
+// ---------------------------------------------------------------------------
 // Mock Flow 2: Page-First Flow — Session Object
 // ---------------------------------------------------------------------------
 

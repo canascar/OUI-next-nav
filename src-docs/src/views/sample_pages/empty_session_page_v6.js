@@ -33,12 +33,14 @@ import { ThemeContext } from '../../components/with_theme';
 
 // ─── SurroundShimmer (copied from v3) ──────────────────────────────────────────
 
-const SurroundShimmer = ({ children }) => {
+const SurroundShimmer = ({ children, hide }) => {
   const canvasRef = useRef(null);
   const rafRef = useRef(null);
   const startRef = useRef(0);
   const fieldRef = useRef(null);
   const sizeRef = useRef({ w: 0, h: 0 });
+
+  if (hide) return <div style={{ width: '100%' }}>{children}</div>;
 
   useEffect(() => {
     const cv = canvasRef.current;
@@ -782,8 +784,10 @@ export const EmptySessionPageV6 = ({
   onSelectSession,
   onBrowseLibrary,
   onOpenMobileNav,
+  layout,
   sessions = [],
 }) => {
+  const isSingleColumn = layout === 'single-column';
   const [scenario] = useState(() => Math.floor(Math.random() * 5) + 1);
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
@@ -949,9 +953,16 @@ export const EmptySessionPageV6 = ({
     document.addEventListener('mouseup', onUp);
   }, [rightPanelWidth]);
 
+  const buildInsightsContext = () => {
+    const loadedFindings = scenarioData.findings.slice(0, findingsLoaded);
+    if (!loadedFindings.length) return null;
+    const lines = loadedFindings.map((f) => `• **${f.status}**: ${f.title}`);
+    return `${scenarioData.summary.replace(/<[^>]+>/g, '')}\n\n${lines.join('\n')}`;
+  };
+
   const handleSubmit = (e) => {
     if (e.key === 'Enter' && inputValue.trim()) {
-      if (onStartThread) onStartThread(inputValue.trim());
+      if (onStartThread) onStartThread(inputValue.trim(), buildInsightsContext());
       setInputValue('');
     }
   };
@@ -1355,7 +1366,7 @@ export const EmptySessionPageV6 = ({
   };
 
   return (
-    <div className="v6Scenario">
+    <div className={`v6Scenario${isSingleColumn ? ' v6Scenario--singleColumn' : ''}`}>
       {/* Mobile menu — floating top-left, visible at <= 768px */}
       <button
         type="button"
@@ -1413,9 +1424,68 @@ export const EmptySessionPageV6 = ({
             <p className="v6Scenario__summary" dangerouslySetInnerHTML={{ __html: scenarioData.summary }} />
           )}
 
+          {/* Inline findings (single-column layout) */}
+          {isSingleColumn && (
+            <div className="v6Scenario__findings v6Scenario__findings--inline">
+              {scenarioData.findings.map((finding, findingIndex) => {
+                if (findingIndex >= findingsLoaded) return null;
+                if (removedFindings.has(finding.key)) return null;
+                const isDismissed = finding.key in dismissedFindings;
+                const isExpanded = expandedFindings.has(finding.key);
+                const feedback = feedbackFindings[finding.key];
+                const statusColors = { red: { bg: 'rgba(220,38,38,0.08)', color: '#DC2626' }, amber: { bg: 'rgba(180,83,9,0.08)', color: '#B45309' }, green: { bg: 'rgba(14,110,82,0.08)', color: '#0E6E52' }, blue: { bg: 'rgba(26,93,168,0.08)', color: '#1A5DA8' } };
+                const colors = statusColors[finding.statusColor] || statusColors.blue;
+                if (isDismissed) {
+                  return (
+                    <div key={finding.key} className="v6Scenario__findingCard v6Scenario__findingCard--dismissed">
+                      <div className="v6Scenario__findingCardMain" style={{ padding: '10px 14px' }}>
+                        <span className="v6Scenario__findingDismissedText">{finding.title} — <em>dismissed</em></span>
+                        <button type="button" className="v6Scenario__findingUndoBtn" onClick={(e) => { e.stopPropagation(); undoDismissFinding(finding.key); }}>Undo</button>
+                      </div>
+                    </div>
+                  );
+                }
+                return (
+                  <div
+                    key={finding.key}
+                    className={`v6Scenario__findingCard${isExpanded ? ' v6Scenario__findingCard--expanded' : ''}`}
+                    onClick={() => toggleFinding(finding.key)}>
+                    <div className="v6Scenario__findingCardMain">
+                      <div className="v6Scenario__findingCardLeft">
+                        <div className="v6Scenario__findingHeader">
+                          <span className="v6Scenario__statusPill" style={{ background: colors.bg, color: colors.color }}>{finding.status}</span>
+                          <span className="v6Scenario__findingTitle">{finding.title}</span>
+                        </div>
+                      </div>
+                      <div className="v6Scenario__findingCardRight">
+                        <OuiIcon type="arrowDown" size="s" className={`v6Scenario__findingChevron${isExpanded ? ' v6Scenario__findingChevron--expanded' : ''}`} />
+                      </div>
+                    </div>
+                    {isExpanded && finding.actions && finding.actions.length > 0 && (
+                      <div className="v6Scenario__findingCardBody">
+                        <div className="v6Scenario__findingActions">
+                          {finding.actions.map((action) => (
+                            <button key={action.key} type="button" className="v6Scenario__findingAction" onClick={(e) => e.stopPropagation()}>
+                              {action.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              {findingsLoaded < scenarioData.findings.length && (
+                <div className="v6Scenario__findingsLoader">
+                  <OuiAgenticSpinner size="s" />
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Input */}
           <div className="v6Scenario__inputArea">
-            <SurroundShimmer>
+            <SurroundShimmer hide={isSingleColumn}>
               <div className="emptySessionPage__inputField">
                 <textarea
                   className="v6Scenario__textarea"
@@ -1476,7 +1546,7 @@ export const EmptySessionPageV6 = ({
                       isDisabled={!inputValue.trim()}
                       onClick={() => {
                         if (inputValue.trim() && onStartThread) {
-                          onStartThread(inputValue.trim());
+                          onStartThread(inputValue.trim(), buildInsightsContext());
                           setInputValue('');
                         }
                       }}
@@ -1512,13 +1582,16 @@ export const EmptySessionPageV6 = ({
         </div>
 
         {/* Resize handle */}
+        {!isSingleColumn && (
         <div
           className="v6Scenario__resizeHandle"
           onMouseDown={handleResizeMouseDown}
           ref={resizeRef}
         />
+        )}
 
         {/* Right column */}
+        {!isSingleColumn && (
         <div
           className="v6Scenario__rightCol"
           style={{ flex: `0 0 ${rightPanelWidth}%` }}>
@@ -1923,6 +1996,7 @@ export const EmptySessionPageV6 = ({
           </>
           )}
         </div>
+        )}
       </div>
     </div>
   );

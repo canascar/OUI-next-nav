@@ -27,6 +27,7 @@ import {
 import { ServicePage } from './service_page';
 import { ServiceDetailPage } from './service_detail_page';
 import { AlertRulePage } from './alert_rule_page';
+import { OverviewHomePage } from './overview_home_page';
 
 /**
  * @typedef {Object} Session
@@ -132,6 +133,7 @@ export const SOURCE_PAGE_MOCK = {
   traces: { component: TraceAnalysisPageMock, title: 'Trace Analysis' },
   forecasting: { component: AppServicesPageMock, title: 'Forecasting' },
   'agent-spans': { component: AppServicesPageMock, title: 'Agent Spans' },
+  'overview-home': { component: OverviewHomePage, title: 'Overview' },
 };
 
 /**

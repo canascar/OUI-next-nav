@@ -122,6 +122,24 @@ render(
           />
           <Route
             exact
+            path="/home2"
+            render={() => (
+              <LinkWrapper>
+                <SessionPagesView variant="v7" />
+              </LinkWrapper>
+            )}
+          />
+          <Route
+            exact
+            path="/home3"
+            render={() => (
+              <LinkWrapper>
+                <SessionPagesView variant="v8" />
+              </LinkWrapper>
+            )}
+          />
+          <Route
+            exact
             path="/sample-pages-v6"
             render={() => (
               <LinkWrapper>
