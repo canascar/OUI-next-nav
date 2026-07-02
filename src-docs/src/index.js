@@ -116,7 +116,7 @@ render(
             path="/home"
             render={() => (
               <LinkWrapper>
-                <SessionPagesView variant="v6" />
+                <SessionPagesView key="v6" variant="v6" />
               </LinkWrapper>
             )}
           />
@@ -125,7 +125,7 @@ render(
             path="/home2"
             render={() => (
               <LinkWrapper>
-                <SessionPagesView variant="v7" />
+                <SessionPagesView key="v7" variant="v7" />
               </LinkWrapper>
             )}
           />
@@ -134,7 +134,7 @@ render(
             path="/home3"
             render={() => (
               <LinkWrapper>
-                <SessionPagesView variant="v8" />
+                <SessionPagesView key="v8" variant="v8" />
               </LinkWrapper>
             )}
           />
