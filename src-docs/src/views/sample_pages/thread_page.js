@@ -44,6 +44,7 @@ import {
 import { DetailPageHeader } from './detail_page_header';
 import { ProgressTracker } from './progress_tracker';
 import { Mascot } from '../../../../olly-mascot/Mascot';
+import { OuiAgenticSpinner } from '../../../../src/components/headless/agentic_spinner';
 import { ThemeContext } from '../../components/with_theme';
 import { OllyIdle } from './olly_idle';
 import {
@@ -77,6 +78,30 @@ const SOURCE_PAGE_MOCK = {
 };
 
 const THREADS = {
+  'overview-home': {
+    title: 'Morning briefing',
+    staggered: true,
+    messages: [],
+    staggeredMessages: [
+      {
+        role: 'assistant',
+        content:
+          'Hey John,\n\n**Active incident** — checkout-agent is looping. Immediate action needed.\n\n244 of 247 services healthy. Connection pool exhaustion detected on 3 of 4 pods.',
+      },
+      {
+        role: 'assistant',
+        content:
+          'Here\'s what I found:\n\n1. **checkout-agent is looping** — 1,994 retries in the last 6 minutes\n2. **Root cause identified** — order-db pool at 98%, handler returns 200 on empty\n3. **Three fixes available** — cap retries, raise pool limit, fix 200-on-empty response\n\nWould you like me to investigate further or apply one of the fixes?',
+        attachments: [
+          {
+            type: 'link-preview',
+            title: 'checkout-agent retry loop alert',
+            description: 'Triggered 6 minutes ago. 1,994 retries detected. Connection pool exhaustion on order-db.',
+          },
+        ],
+      },
+    ],
+  },
   'latency-spike': {
     title: 'Latency spike investigation',
     messages: [
@@ -611,6 +636,18 @@ const UserMessage = ({ author: _author, content, attachment }) => (
   </div>
 );
 
+// Handles inline **bold** within a line
+const parseInlineBold = (text, baseKey) => {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g);
+  if (parts.length === 1) return text;
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={`${baseKey}-b${i}`}>{part.slice(2, -2)}</strong>;
+    }
+    return part;
+  });
+};
+
 // Parses simple markdown-ish content into React elements
 const parseContent = (content) => {
   const lines = content.split('\n');
@@ -635,7 +672,7 @@ const parseContent = (content) => {
     } else if (line.startsWith('- ')) {
       const items = [];
       while (i < lines.length && lines[i].startsWith('- ')) {
-        items.push(<li key={key++}>{lines[i].slice(2)}</li>);
+        items.push(<li key={key++}>{parseInlineBold(lines[i].slice(2), key)}</li>);
         i++;
       }
       elements.push(<ul key={key++}>{items}</ul>);
@@ -643,7 +680,8 @@ const parseContent = (content) => {
     } else if (/^\d+\.\s/.test(line)) {
       const items = [];
       while (i < lines.length && /^\d+\.\s/.test(lines[i])) {
-        items.push(<li key={key++}>{lines[i].replace(/^\d+\.\s/, '')}</li>);
+        const itemText = lines[i].replace(/^\d+\.\s/, '');
+        items.push(<li key={key++}>{parseInlineBold(itemText, key)}</li>);
         i++;
       }
       elements.push(<ol key={key++}>{items}</ol>);
@@ -651,13 +689,14 @@ const parseContent = (content) => {
     } else if (line.trim() === '') {
       elements.push(<div key={key++} style={{ height: 12 }} />);
       i++;
-      // Plain text
+      // Plain text (with inline bold support)
     } else {
       elements.push(
         <p key={key++} style={{ margin: 0 }}>
-          {line}
+          {parseInlineBold(line, key)}
         </p>
       );
+      key++;
       i++;
     }
   }
@@ -1781,6 +1820,31 @@ export const ThreadPage = ({
     setIsCanvasOpen(false);
     streamTimers.current.forEach(clearTimeout);
     streamTimers.current = [];
+
+    // Staggered loading for threads that opt in (e.g. overview-home)
+    if (!pendingMessages && thread.staggered && thread.staggeredMessages) {
+      setMessages([]);
+      setIsTyping(true);
+      // Mascot thinks for 2.5s, then messages appear
+      const thinkDelay = 2500;
+      thread.staggeredMessages.forEach((msg, i) => {
+        const delay = thinkDelay + i * 1800;
+        streamTimers.current.push(setTimeout(() => {
+          setMessages((prev) => [...prev, msg]);
+          if (i < thread.staggeredMessages.length - 1) {
+            setIsTyping(true);
+          } else {
+            setIsTyping(false);
+            window.dispatchEvent(new CustomEvent('staggered-thread-complete'));
+          }
+          if (feedRef.current) {
+            setTimeout(() => {
+              if (feedRef.current) feedRef.current.scrollTop = feedRef.current.scrollHeight;
+            }, 50);
+          }
+        }, delay));
+      });
+    }
     responseIndex.current = 0;
     setCompletedScriptedIds(new Set());
     hasInteracted.current = false;
@@ -2374,7 +2438,26 @@ export const ThreadPage = ({
                 />
               );
             })}
-            {isTyping && null}
+            {isTyping && (
+              <div className="threadPage__message threadPage__message--assistant">
+                <div className="threadPage__assistantStreamRow">
+                  <div className="threadPage__responseMascot threadPage__responseMascot--pulsing">
+                    <Mascot
+                      size={20}
+                      expression="blink"
+                      idle={false}
+                      bob={false}
+                      follow={false}
+                      color={mascotColor}
+                      eyeColor={mascotEyeColor}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0' }}>
+                    <OuiAgenticSpinner size="s" />
+                  </div>
+                </div>
+              </div>
+            )}
             {/* Suggested prompts — inside the chat feed */}
             {(() => {
               if (

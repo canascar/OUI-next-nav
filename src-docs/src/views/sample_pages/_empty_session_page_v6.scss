@@ -165,7 +165,7 @@
 .v6Scenario__findingsLoader {
   display: flex;
   align-items: center;
-  padding: 12px 16px;
+  padding: 12px 0;
 }
 
 .v6Scenario__sectionDivider {
@@ -241,8 +241,8 @@
 
 .v6Scenario__pageBrowserGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(max(var(--widget-min-w, 131px), calc((100% - 16px) / 3)), 1fr));
+  gap: 8px;
 }
 
 .v6Scenario__pageBrowserItem {
@@ -251,7 +251,7 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 28px 12px;
+  padding: 20px 12px;
   border-radius: 5px;
   border: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.06));
   background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.04));
@@ -393,7 +393,23 @@
   margin-bottom: 8px;
 }
 
+// ─── Single-column layout (v8 / home3) ────────────────────────
+.v6Scenario--singleColumn {
+  .v6Scenario__inputArea,
+  .v6Scenario__mascotRow,
+  .v6Scenario__title,
+  .v6Scenario__summary {
+    max-width: 560px;
+  }
+}
+
 // ─── Findings ──────────────────────────────────────────────────
+.v6Scenario__findings--inline {
+  width: 100%;
+  max-width: 560px;
+  padding-top: 8px;
+}
+
 .v6Scenario__findings {
   display: flex;
   flex-direction: column;

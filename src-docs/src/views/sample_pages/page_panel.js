@@ -316,7 +316,24 @@ export const PagePanel = ({
 
     return (
       <div className="pagePanel__canvasWrapper">
-        {!skipHeader && <DetailPageHeader title={activeTab.title} hideAskAi />}
+        {!skipHeader && (
+          <DetailPageHeader
+            title={activeTab.title}
+            hideAskAi
+            headerControls={activeTab.pageKey === 'overview-home' ? (
+              <OuiButtonIcon
+                iconType="refresh"
+                aria-label="Refresh"
+                size="s"
+                color="text"
+                display="empty"
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent('overview-home-refresh'));
+                }}
+              />
+            ) : undefined}
+          />
+        )}
         <div className="pagePanel__canvasContent">
           <PageComponent
             onQueryExecute={

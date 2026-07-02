@@ -83,6 +83,7 @@ import {
   LATENCY_SPIKE_SESSION,
   ERROR_RATE_SPIKE_SESSION,
   DNS_TIMEOUT_SESSION,
+  OVERVIEW_HOME_SESSION,
 } from './session_mock_data';
 
 const renderPage = (
@@ -1633,7 +1634,9 @@ export const SessionPagesView = ({ variant } = {}) => {
   const v5ScenarioMatch = variant && variant.match(/^v5-scenario(\d+)$/);
   const v5ScenarioNumber = v5ScenarioMatch ? parseInt(v5ScenarioMatch[1], 10) : null;
   const isV5Variant = variant === 'v5' || v5ScenarioNumber != null;
-  const isV6Variant = variant === 'v6';
+  const isV6Variant = variant === 'v6' || variant === 'v8';
+  const isV7Variant = variant === 'v7';
+  const isV8Variant = variant === 'v8';
   const navExpandRef = useRef(null);
 
   const EmptyPage = isV6Variant ? EmptySessionPageV6 : isV5Variant ? EmptySessionPageV5 : variant === 'v4' ? EmptySessionPageV3 : variant === 'v3' ? EmptySessionPageV3 : variant === 'v2' ? EmptySessionPageV2 : EmptySessionPageV6;
@@ -1669,7 +1672,21 @@ export const SessionPagesView = ({ variant } = {}) => {
   }, [theme, changeTheme]);
 
   // Session state: sessions array + activeSessionId
-  const [sessionState, setSessionState] = useState(initializeSessionState);
+  const [sessionState, setSessionState] = useState(() => {
+    if (isV7Variant) {
+      return {
+        sessions: [
+          OVERVIEW_HOME_SESSION,
+          LATENCY_SPIKE_SESSION,
+          ERROR_RATE_SPIKE_SESSION,
+          DNS_TIMEOUT_SESSION,
+        ],
+        activeSessionId: OVERVIEW_HOME_SESSION.id,
+        version: 1,
+      };
+    }
+    return initializeSessionState();
+  });
 
   // Active view: 'session' (show active session) or 'session-list' (browse all sessions)
   const [activeView, setActiveView] = useState('session');
@@ -1752,17 +1769,22 @@ export const SessionPagesView = ({ variant } = {}) => {
   // --- EmptySessionPage handlers ---
 
   /** Start a new thread from the empty session page */
-  const handleStartThread = useCallback((prompt) => {
+  const handleStartThread = useCallback((prompt, insightsContext) => {
     setSessionState((prev) => {
       if (!prev.activeSessionId) return prev;
       const threadKey = `thread-${Date.now()}-${Math.random()
         .toString(36)
         .slice(2, 9)}`;
+      const messages = [];
+      if (insightsContext) {
+        messages.push({ role: 'assistant', content: insightsContext });
+      }
+      if (prompt) {
+        messages.push({ role: 'user', author: 'You', content: prompt });
+      }
       const pendingThread = {
         key: threadKey,
-        messages: prompt
-          ? [{ role: 'user', author: 'You', content: prompt }]
-          : [],
+        messages,
         sourcePageTitle: null,
       };
       return updateSession(prev, prev.activeSessionId, {
@@ -1788,6 +1810,7 @@ export const SessionPagesView = ({ variant } = {}) => {
 
   /** Determine if the active session should show EmptySessionPage */
   const isEmptySession =
+    !isV7Variant &&
     activeSession &&
     !activeSession.threadKey &&
     !activeSession.pendingThread &&
@@ -1889,6 +1912,7 @@ export const SessionPagesView = ({ variant } = {}) => {
           favoriteItems={[]}
           systemAlert={null}
           onOpenMobileNav={() => navExpandRef.current && navExpandRef.current()}
+          layout={isV8Variant ? 'single-column' : undefined}
         />
       );
     }
