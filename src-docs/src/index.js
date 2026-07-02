@@ -104,7 +104,7 @@ render(
               <LinkWrapper>
                 <LoginPage
                   onLogin={() => {
-                    history.push('/home');
+                    history.push('/sample-pages');
                   }}
                 />
               </LinkWrapper>
@@ -125,7 +125,7 @@ render(
             path="/home2"
             render={() => (
               <LinkWrapper>
-                <SessionPagesView key="v7" variant="v7" />
+                <SessionPagesView key="v7-home2" variant="v7" />
               </LinkWrapper>
             )}
           />
@@ -223,7 +223,7 @@ render(
             path="/sample-pages"
             render={() => (
               <LinkWrapper>
-                <SessionPagesView />
+                <SessionPagesView key="v7" variant="v7" />
               </LinkWrapper>
             )}
           />
