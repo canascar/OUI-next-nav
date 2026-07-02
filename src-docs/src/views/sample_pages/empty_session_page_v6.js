@@ -836,7 +836,7 @@ export const EmptySessionPageV6 = ({
 
   // Staggered agentic loading: summary first, then findings one by one
   useEffect(() => {
-    const summaryDelay = 1000 + Math.random() * 2000;
+    const summaryDelay = isSingleColumn ? 600 : (1000 + Math.random() * 2000);
     const summaryTimer = setTimeout(() => {
       setSummaryLoading(false);
     }, summaryDelay);
@@ -844,7 +844,8 @@ export const EmptySessionPageV6 = ({
     const findingCount = scenarioData.findings.length;
     const findingTimers = [];
     for (let i = 0; i < findingCount; i++) {
-      const delay = summaryDelay + 800 + (i * (1000 + Math.random() * 1500));
+      const findingGap = isSingleColumn ? (600 + Math.random() * 400) : (1000 + Math.random() * 1500);
+      const delay = summaryDelay + (isSingleColumn ? 400 : 800) + (i * findingGap);
       findingTimers.push(setTimeout(() => {
         setFindingsLoaded((prev) => prev + 1);
       }, delay));
@@ -1425,7 +1426,7 @@ export const EmptySessionPageV6 = ({
           )}
 
           {/* Inline findings (single-column layout) */}
-          {isSingleColumn && (
+          {isSingleColumn && !summaryLoading && (
             <div className="v6Scenario__findings v6Scenario__findings--inline">
               {scenarioData.findings.map((finding, findingIndex) => {
                 if (findingIndex >= findingsLoaded) return null;
