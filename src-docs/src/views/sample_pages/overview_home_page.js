@@ -102,9 +102,17 @@ const WIDGET_DATA = {
     fill: 'M0,40 C30,38 70,32 120,26 C170,20 220,12 280,8 L280,68 L0,68 Z',
   },
   deploys: [8, 12, 15, 11, 9],
+  dashboards: [
+    { name: 'Agent accuracy', value: '0.58 score', age: 'just now' },
+    { name: 'Billing conversations', value: '340 affected', age: '1h ago' },
+    { name: 'Retrieval latency', value: '890ms', age: 'today' },
+  ],
 };
 
 // Dot-matrix scan shimmer (same as home page widgets)
+const SHIMMER_W = 180;
+const SHIMMER_H = 100;
+
 const ScanShimmerOverlay = () => {
   const canvasRef = useRef(null);
   const rafRef = useRef(null);
@@ -115,8 +123,7 @@ const ScanShimmerOverlay = () => {
     if (!cv) return;
     const init = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const w = cv.clientWidth, h = cv.clientHeight;
-      if (!w || !h) return;
+      const w = SHIMMER_W, h = SHIMMER_H;
       cv.width = Math.round(w * dpr);
       cv.height = Math.round(h * dpr);
       const ctx = cv.getContext('2d');
@@ -159,12 +166,13 @@ const ScanShimmerOverlay = () => {
       ref={canvasRef}
       style={{
         position: 'absolute',
-        inset: 0,
-        width: '100%',
-        height: '100%',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: SHIMMER_W,
+        height: SHIMMER_H,
         zIndex: 10,
         pointerEvents: 'none',
-        borderRadius: 'inherit',
       }}
     />
   );
@@ -197,7 +205,7 @@ export const OverviewHomePage = () => {
   const [showWidgetPicker, setShowWidgetPicker] = useState(false);
   const [widgetPickerSearch, setWidgetPickerSearch] = useState('');
   const [widgetOrder, setWidgetOrder] = useState([
-    'connection-timeout', 'recent-alerts', 'resource-utilization', 'top-services', 'deployment-timeline',
+    'connection-timeout', 'recent-alerts', 'resource-utilization', 'top-services', 'dashboards', 'deployment-timeline',
   ]);
   const [draggedWidget, setDraggedWidget] = useState(null);
   const [dragOverWidget, setDragOverWidget] = useState(null);
@@ -206,6 +214,7 @@ export const OverviewHomePage = () => {
     'recent-alerts': true,
     'resource-utilization': true,
     'top-services': true,
+    'dashboards': true,
     'deployment-timeline': true,
   });
 
@@ -247,7 +256,7 @@ export const OverviewHomePage = () => {
         'deployment-timeline': true,
       });
       setFindingsLoaded(0);
-      const ids = ['connection-timeout', 'recent-alerts', 'resource-utilization', 'top-services', 'deployment-timeline'];
+      const ids = ['connection-timeout', 'recent-alerts', 'resource-utilization', 'top-services', 'dashboards', 'deployment-timeline'];
       ids.forEach((id) => {
         setTimeout(() => {
           setRefreshingWidgets((prev) => ({ ...prev, [id]: false }));
@@ -265,7 +274,7 @@ export const OverviewHomePage = () => {
 
   // Staggered widgets: random delays like v6
   useEffect(() => {
-    const ids = ['connection-timeout', 'recent-alerts', 'resource-utilization', 'top-services', 'deployment-timeline'];
+    const ids = ['connection-timeout', 'recent-alerts', 'resource-utilization', 'top-services', 'dashboards', 'deployment-timeline'];
     const timers = ids.map((id) =>
       setTimeout(() => {
         setRefreshingWidgets((prev) => ({ ...prev, [id]: false }));
@@ -304,9 +313,9 @@ export const OverviewHomePage = () => {
             <div className="widgetCard__tableHeader"><span>ALERT</span><span>STATUS</span></div>
             <div className="widgetCard__rows">
               {WIDGET_DATA.alerts.map((alert) => (
-                <div key={alert.name} className="widgetCard__statusRow">
+                <div key={alert.name} className="widgetCard__statusRow" style={{ cursor: 'pointer' }}>
                   <span className="widgetCard__statusLabel">{alert.name}</span>
-                  <span className="widgetCard__statusBadge widgetCard__statusBadge--critical">{alert.status}</span>
+                  <span className={`widgetCard__statusBadge widgetCard__statusBadge--${alert.status === 'WARNING' ? 'warning' : 'critical'}`}>{alert.status}</span>
                 </div>
               ))}
             </div>
@@ -342,19 +351,40 @@ export const OverviewHomePage = () => {
             </div>
           </OuiInsightCard>
         );
-      case 'deployment-timeline':
+      case 'dashboards':
+        return (
+          <OuiInsightCard>
+            <WidgetHeader title="Dashboards" />
+            <div className="widgetCard__rows">
+              {WIDGET_DATA.dashboards.map((dash) => (
+                <div key={dash.name} className="widgetCard__dashRow">
+                  <div className="widgetCard__dashLeft">
+                    <span className="widgetCard__dashName">{dash.name}</span>
+                    <span className="widgetCard__dashValue">{dash.value}</span>
+                  </div>
+                  <span className="widgetCard__dashAge">{dash.age}</span>
+                </div>
+              ))}
+            </div>
+          </OuiInsightCard>
+        );
+      case 'deployment-timeline': {
+        const avg = WIDGET_DATA.deploys.reduce((a, b) => a + b, 0) / WIDGET_DATA.deploys.length;
+        const maxDeploy = Math.max(...WIDGET_DATA.deploys);
+        const avgHeight = (avg / (maxDeploy + 2)) * 36;
         return (
           <OuiInsightCard>
             <WidgetHeader title="Deployment timeline" />
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-              <span className="widgetCard__bigNumber">{Math.round(WIDGET_DATA.deploys.reduce((a, b) => a + b, 0) / WIDGET_DATA.deploys.length)}</span>
-              <span className="widgetCard__trend" style={{ opacity: 0.45 }}>avg/day</span>
+              <span className="widgetCard__bigNumber">{Math.round(avg)}</span>
+              <span className="widgetCard__trend" style={{ opacity: 0.45 }}>avg/wk</span>
             </div>
             <div className="widgetCard__chart">
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 40 }}>
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-end', gap: 4, height: 40 }}>
+                <div style={{ position: 'absolute', left: 0, right: 0, bottom: `${avgHeight + 12}px`, borderTop: '1.5px dashed rgba(0,0,0,0.18)', pointerEvents: 'none' }} />
                 {WIDGET_DATA.deploys.map((d, i) => (
                   <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-                    <div style={{ width: '60%', height: `${(d / Math.max(...WIDGET_DATA.deploys)) * 36}px`, background: '#2BA98A', borderRadius: 2 }} />
+                    <div style={{ width: '60%', height: `${(d / (maxDeploy + 2)) * 36}px`, background: '#2BA98A', borderRadius: 2 }} />
                     <span style={{ fontSize: 8, color: 'rgba(0,0,0,0.35)' }}>{['M','T','W','T','F'][i]}</span>
                   </div>
                 ))}
@@ -362,6 +392,7 @@ export const OverviewHomePage = () => {
             </div>
           </OuiInsightCard>
         );
+      }
       default:
         return <OuiInsightCard><WidgetHeader title={widgetId} /><span className="widgetCard__bigNumber">—</span></OuiInsightCard>;
     }
@@ -369,63 +400,6 @@ export const OverviewHomePage = () => {
 
   return (
     <div className="overviewHomePage">
-      {/* Findings / Insights section */}
-      <div className="overviewHomePage__section">
-        <div className="overviewHomePage__sectionHeader">
-          <span className="overviewHomePage__sectionTitle">Insights</span>
-          <span className="overviewHomePage__sectionMeta">Updated 2m ago</span>
-        </div>
-        <div className="overviewHomePage__findings">
-          {FINDINGS.map((finding, i) => {
-            if (i >= findingsLoaded) return null;
-            const colors = STATUS_COLORS[finding.statusColor] || STATUS_COLORS.blue;
-            const isExpanded = expandedFindings.has(finding.key);
-            return (
-              <div
-                key={finding.key}
-                className={`overviewHomePage__findingCard${isExpanded ? ' overviewHomePage__findingCard--expanded' : ''}`}
-                onClick={() => {
-                  setExpandedFindings((prev) => {
-                    const next = new Set(prev);
-                    if (next.has(finding.key)) next.delete(finding.key);
-                    else next.add(finding.key);
-                    return next;
-                  });
-                }}>
-                <div className="overviewHomePage__findingCardMain">
-                  <span
-                    className="overviewHomePage__statusPill"
-                    style={{ background: colors.bg, color: colors.color }}>
-                    {finding.status}
-                  </span>
-                  <span className="overviewHomePage__findingTitle">{finding.title}</span>
-                  <OuiIcon
-                    type="arrowDown"
-                    size="s"
-                    className={`overviewHomePage__findingChevron${isExpanded ? ' overviewHomePage__findingChevron--expanded' : ''}`}
-                  />
-                </div>
-                {isExpanded && (
-                  <div className="overviewHomePage__findingBody">
-                    <p className="overviewHomePage__findingBodyText">{finding.body}</p>
-                    {finding.evidence && (
-                      <ul className="overviewHomePage__evidenceList">
-                        {finding.evidence.map((e, idx) => <li key={idx}>{e}</li>)}
-                      </ul>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-          {findingsLoaded < FINDINGS.length && (
-            <div className="overviewHomePage__findingsLoader">
-              <OuiAgenticSpinner size="s" />
-            </div>
-          )}
-        </div>
-      </div>
-
       {/* Widget grid */}
       <div className="overviewHomePage__section">
         <div className={`overviewHomePage__widgetGrid${isEditMode ? ' overviewHomePage__widgetGrid--editing' : ''}`}>

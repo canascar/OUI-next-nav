@@ -47,6 +47,7 @@ import { Mascot } from '../../../../olly-mascot/Mascot';
 import { OuiAgenticSpinner } from '../../../../src/components/headless/agentic_spinner';
 import { ThemeContext } from '../../components/with_theme';
 import { OllyIdle } from './olly_idle';
+import { EmptySessionPageV6 } from './empty_session_page_v6';
 import {
   Chart,
   Settings,
@@ -86,7 +87,12 @@ const THREADS = {
       {
         role: 'assistant',
         content:
-          '## Hey John,\n\n**Active incident** — checkout-agent is looping. Immediate action needed.\n\n244 of 247 services healthy. Connection pool exhaustion detected on 3 of 4 pods.',
+          '## Hey John,\n\n**Active incident** — checkout-agent is looping. Immediate action needed.',
+        findings: [
+          { key: 'critical-loop', status: 'Critical', statusColor: 'red', title: 'checkout-agent is looping — 1,994 retries in the last 6 minutes' },
+          { key: 'critical-root-cause', status: 'Critical', statusColor: 'red', title: 'Root cause: order-db pool at 98%, handler returns 200 on empty' },
+          { key: 'info-fixes', status: 'Review', statusColor: 'blue', title: 'Three fixes available: cap retries, raise pool, fix 200-on-empty' },
+        ],
       },
     ],
   },
@@ -1137,6 +1143,7 @@ const AssistantMessage = ({
   isLastAssistant,
   isTyping,
   largeGreeting,
+  findings,
 }) => {
   const allAttachments = attachments || (attachment ? [attachment] : []);
   const showMascot = isLastAssistant && !isTyping;
@@ -1179,6 +1186,20 @@ const AssistantMessage = ({
             {content && <OuiText size="s">{parseContent(content)}</OuiText>}
             {allAttachments.map((att, idx) =>
               renderSingleAttachment(att, idx, onViewAsPage)
+            )}
+            {findings && findings.length > 0 && (
+              <div className="threadPage__inlineFindings">
+                {findings.map((finding) => {
+                  const statusColors = { red: { bg: 'rgba(220,38,38,0.08)', color: '#DC2626' }, amber: { bg: 'rgba(180,83,9,0.08)', color: '#B45309' }, green: { bg: 'rgba(14,110,82,0.08)', color: '#0E6E52' }, blue: { bg: 'rgba(26,93,168,0.08)', color: '#1A5DA8' } };
+                  const colors = statusColors[finding.statusColor] || statusColors.blue;
+                  return (
+                    <div key={finding.key} className="threadPage__inlineFinding">
+                      <span className="threadPage__inlineFindingPill" style={{ background: colors.bg, color: colors.color }}>{finding.status}</span>
+                      <span className="threadPage__inlineFindingTitle">{finding.title}</span>
+                    </div>
+                  );
+                })}
+              </div>
             )}
             <div className="threadPage__feedback">
               <OuiButtonIcon
@@ -1635,6 +1656,7 @@ export const ThreadPage = ({
   onTogglePanel,
   onPageChange,
   onNavigate,
+  onGreetingStateChange,
 }) => {
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
@@ -1665,6 +1687,17 @@ export const ThreadPage = ({
   const [messages, setMessages] = useState(initialMessages);
   const [message, setMessage] = useState('');
   const [mascotExpression, setMascotExpression] = useState(undefined);
+  const [greetingExiting, setGreetingExiting] = useState(false);
+  const [greetingDone, setGreetingDone] = useState(false);
+
+  const isOverviewHome = threadKey === 'overview-home';
+  useEffect(() => {
+    if (onGreetingStateChange) {
+      onGreetingStateChange(isOverviewHome && !greetingDone);
+    }
+  }, [isOverviewHome, greetingDone, onGreetingStateChange]);
+
+  const pendingSendRef = useRef(null);
   const sendRef = useRef(null);
   const lastProcessedInput = useRef(null);
   const emptyChatTitle = useRef(
@@ -2243,8 +2276,36 @@ export const ThreadPage = ({
     }
   };
 
+  // Overview-home: show home greeting until user sends a message
+  const isOverviewHomeGreeting = threadKey === 'overview-home' && !messages.some((m) => m.role === 'user') && !greetingDone;
+
+  if (isOverviewHomeGreeting) {
+    return (
+      <div className={`threadPage__greetingWrap${greetingExiting ? ' threadPage__greetingWrap--exiting' : ''}`}>
+        <EmptySessionPageV6
+          onStartThread={(text) => {
+            pendingSendRef.current = text;
+            setGreetingExiting(true);
+            setTimeout(() => {
+              setGreetingDone(true);
+              if (pendingSendRef.current) {
+                handleSend(pendingSendRef.current);
+                pendingSendRef.current = null;
+              }
+            }, 350);
+          }}
+          onOpenPageInNewSession={(pageKey, title) => {
+            if (onNavigate) onNavigate(pageKey, title);
+          }}
+          layout="single-column"
+        />
+      </div>
+    );
+  }
+
   return (
     <div
+      className={greetingDone ? 'threadPage__chatEntering' : undefined}
       style={{
         height: '100%',
         display: 'flex',
@@ -2432,6 +2493,7 @@ export const ThreadPage = ({
                   streaming={msg.streaming}
                   attachment={msg.attachment}
                   attachments={msg.attachments}
+                  findings={msg.findings}
                   onViewAsPage={handleViewAsPage}
                   mascotColor={mascotColor}
                   mascotEyeColor={mascotEyeColor}

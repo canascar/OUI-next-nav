@@ -24,231 +24,31 @@ import {
   OuiContextMenu,
   OuiIcon,
   OuiInsightCard,
+  OuiInsightCallout,
   OuiPopover,
   OuiSmallButton,
   OuiSmallButtonEmpty,
+  OuiTab,
+  OuiTabs,
   OuiText,
   OuiTitle,
   OuiToolTip,
 } from '../../../../src/components';
+
+import {
+  Chart,
+  Settings,
+  Axis,
+  BarSeries,
+  LineSeries,
+  ScaleType,
+} from '@elastic/charts';
 
 import { SOURCE_PAGE_MOCK } from './session_models';
 import { OllyAvatar } from './olly_avatar';
 import { OuiAgenticSpinner } from '../../../../src/components/headless/agentic_spinner';
 import { Mascot } from '../../../../olly-mascot/Mascot';
 import { ThemeContext } from '../../components/with_theme';
-
-const ScanShimmerOverlay = () => {
-  const canvasRef = useRef(null);
-  const rafRef = useRef(null);
-  const startRef = useRef(0);
-
-  useEffect(() => {
-    const cv = canvasRef.current;
-    if (!cv) return;
-    const init = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const w = cv.clientWidth, h = cv.clientHeight;
-      if (!w || !h) return;
-      cv.width = Math.round(w * dpr);
-      cv.height = Math.round(h * dpr);
-      const ctx = cv.getContext('2d');
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const sp = 7;
-      const cols = Math.max(1, Math.round((w - sp) / sp));
-      const rows = Math.max(1, Math.round((h - sp) / sp));
-      const ox = (w - (cols - 1) * sp) / 2, oy = (h - (rows - 1) * sp) / 2;
-      const dots = [];
-      for (let j = 0; j < rows; j++)
-        for (let i = 0; i < cols; i++)
-          dots.push({ x: ox + i * sp, y: oy + j * sp, gx: i, gy: j });
-
-      const tick = (now) => {
-        if (!startRef.current) startRef.current = now;
-        const t = (now - startRef.current) / 1000;
-        ctx.clearRect(0, 0, w, h);
-        const p = (t * 0.33) % 1;
-        const lx = p * w;
-        for (const d of dots) {
-          const dx = (d.x - lx) / (sp * 2.2);
-          const b = 0.03 + 0.97 * Math.exp(-dx * dx);
-          const a = (0.04 + 0.35 * b).toFixed(3);
-          const gray = Math.round(140 + 60 * b);
-          ctx.beginPath();
-          ctx.arc(d.x, d.y, 0.6 + b * 1.4, 0, 6.2832);
-          ctx.fillStyle = `rgba(${gray},${gray},${Math.round(gray + 10)},${a})`;
-          ctx.fill();
-        }
-        rafRef.current = requestAnimationFrame(tick);
-      };
-      rafRef.current = requestAnimationFrame(tick);
-    };
-    setTimeout(init, 50);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, []);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      style={{
-        position: 'absolute',
-        inset: 0,
-        width: '100%',
-        height: '100%',
-        zIndex: 10,
-        pointerEvents: 'none',
-        borderRadius: 'inherit',
-      }}
-    />
-  );
-};
-
-const SurroundShimmer = ({ children }) => {
-  const canvasRef = useRef(null);
-  const rafRef = useRef(null);
-  const startRef = useRef(0);
-  const fieldRef = useRef(null);
-  const themeCtx = useContext(ThemeContext);
-  const isDark = themeCtx.theme === 'v9-dark';
-
-  useEffect(() => {
-    const cv = canvasRef.current;
-    if (!cv) return;
-    let timeout = setTimeout(() => {
-      fieldRef.current = build();
-      const tick = (now) => {
-        if (!startRef.current) startRef.current = now;
-        const t = (now - startRef.current) / 1000;
-        if (fieldRef.current) draw(fieldRef.current, t);
-        rafRef.current = requestAnimationFrame(tick);
-      };
-      rafRef.current = requestAnimationFrame(tick);
-    }, 100);
-    const build = () => {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const w = cv.clientWidth, h = cv.clientHeight;
-      if (!w || !h) return null;
-      cv.width = Math.round(w * dpr);
-      cv.height = Math.round(h * dpr);
-      const ctx = cv.getContext('2d');
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const sp = 7;
-      const cols = Math.max(1, Math.round((w - sp) / sp));
-      const rows = Math.max(1, Math.round((h - sp) / sp));
-      const ox = (w - (cols - 1) * sp) / 2, oy = (h - (rows - 1) * sp) / 2;
-      const dots = [];
-      for (let j = 0; j < rows; j++)
-        for (let i = 0; i < cols; i++)
-          dots.push({ x: ox + i * sp, y: oy + j * sp, gx: i, gy: j, r: Math.random() });
-      const field = { ctx, w, h, sp, dots, cx: w / 2, cy: h / 2 };
-      const box = cv.parentElement && cv.parentElement.querySelector('[data-surround-box]');
-      if (box) {
-        const cr = cv.getBoundingClientRect(), br = box.getBoundingClientRect();
-        field.hole = { x0: br.left - cr.left, y0: br.top - cr.top, x1: br.right - cr.left, y1: br.bottom - cr.top };
-      }
-      return field;
-    };
-    const draw = (f, t) => {
-      const { ctx, w, h, sp, dots } = f;
-      ctx.clearRect(0, 0, w, h);
-      for (const d of dots) {
-        let b = 0;
-        const hl = f.hole;
-        if (!hl) continue;
-        if (d.x > hl.x0 && d.x < hl.x1 && d.y > hl.y0 && d.y < hl.y1) continue;
-        const sdx = Math.max(hl.x0 - d.x, d.x - hl.x1, 0);
-        const sdy = Math.max(hl.y0 - d.y, d.y - hl.y1, 0);
-        const sdist = Math.hypot(sdx, sdy);
-        const bcx = (hl.x0 + hl.x1) / 2, bcy = (hl.y0 + hl.y1) / 2;
-        const sa = (Math.atan2(d.y - bcy, d.x - bcx) / 6.2832) + 0.5;
-        const sph = (t * 0.04) % 1;
-        const sdm = Math.min(Math.abs(sa - sph), 1 - Math.abs(sa - sph));
-        const sph2 = (sph + 0.5) % 1;
-        const sd2m = Math.min(Math.abs(sa - sph2), 1 - Math.abs(sa - sph2));
-        const near = Math.exp(-Math.pow(sdist / (sp * 2.6), 2));
-        const sg = Math.exp(-Math.pow(sdm * 6, 2)) + 0.4 * Math.exp(-Math.pow(sd2m * 6, 2));
-        b = 0.07 * Math.exp(-Math.pow(sdist / (sp * 4.5), 2)) + 0.6 * sg * near;
-        if (b < 0.01) continue;
-        b = Math.max(0, Math.min(1, b));
-        // Lighter / more visible dots in dark mode
-        const a = ((isDark ? 0.30 : 0.10) + (isDark ? 0.55 : 0.60) * b).toFixed(3);
-        const r = Math.round((isDark ? 150 : 60) + 50 * b);
-        const g = Math.round((isDark ? 175 : 80) + 40 * b);
-        const bl = Math.round((isDark ? 240 : 200) + (isDark ? 15 : 40) * b);
-        ctx.beginPath();
-        ctx.arc(d.x, d.y, 0.6 + b * 1.4, 0, 6.2832);
-        ctx.fillStyle = `rgba(${r},${g},${bl},${a})`;
-        ctx.fill();
-      }
-    };
-    return () => { clearTimeout(timeout); cancelAnimationFrame(rafRef.current); };
-  }, [isDark]);
-
-  return (
-    <div style={{ position: 'relative', padding: '36px 42px', margin: '-36px -42px' }}>
-      <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0, maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)', WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%)' }} />
-      <div data-surround-box="1" style={{ position: 'relative', zIndex: 1 }}>
-        {children}
-      </div>
-    </div>
-  );
-};
-
-/**
- * ChartTexture — SVG pattern fills for area charts.
- * `variant="stripe"` — diagonal hatching (for warning/orange charts).
- * `variant="dots"` — dot grid (for success/green charts).
- * Renders an SVG `<defs>` block with a `<pattern>` identified by `id`.
- */
-const ChartTexture = ({ id, variant = 'dots', color }) => {
-  if (variant === 'stripe') {
-    return (
-      <pattern
-        id={id}
-        width="6"
-        height="6"
-        patternUnits="userSpaceOnUse"
-        patternTransform="rotate(45)">
-        <line x1="0" y1="0" x2="0" y2="6" stroke={color || '#DD8A3A'} strokeWidth="1" opacity="0.42" />
-      </pattern>
-    );
-  }
-  return (
-    <pattern
-      id={id}
-      width="6.5"
-      height="6.5"
-      patternUnits="userSpaceOnUse">
-      <circle cx="3.25" cy="3.25" r="1.05" fill={color || '#1F9D6B'} opacity="0.42" />
-    </pattern>
-  );
-};
-
-/**
- * WidgetHeader — Consistent title row for all right-column widgets.
- * Ensures uniform spacing, icon sizing, and text treatment.
- */
-const WidgetHeader = ({ icon, title, action, onAction }) => (
-  <div className="widgetHeader">
-    {icon && (
-      <span className="widgetHeader__icon">
-        <OuiIcon type={icon} size="s" />
-      </span>
-    )}
-    <span className="widgetHeader__title">{title}</span>
-    {action && (
-      <button
-        type="button"
-        className="widgetHeader__action"
-        onClick={(e) => {
-          e.stopPropagation();
-          onAction && onAction();
-        }}>
-        <OuiIcon type="arrowRight" size="s" />
-      </button>
-    )}
-  </div>
-);
 
 /**
  * Quick access shortcut definitions.
@@ -269,13 +69,10 @@ const FILTER_CHIPS = [
 /**
  * "Open a page" grid items. Clicking one opens the related page in a new session.
  */
-const WORKFLOW_ITEMS_PRIMARY = [
+const OPEN_PAGE_ITEMS = [
   { label: 'Logs', pageKey: 'logs', icon: 'navDiscover' },
   { label: 'Metrics', pageKey: 'metrics', icon: 'visArea' },
   { label: 'Dashboards', pageKey: 'dashboards', icon: 'navDashboards' },
-];
-
-const WORKFLOW_ITEMS_OVERFLOW = [
   { label: 'Alerts', pageKey: 'alerts', icon: 'navAlerting' },
   { label: 'Application Map', pageKey: 'app-map', icon: 'navServiceMap' },
   {
@@ -301,7 +98,7 @@ const SESSION_PREVIEWS = {
       { label: 'P99', value: '2,340ms', color: 'danger' },
       { label: 'Errors', value: '0.2%', color: 'success' },
       { label: 'Throughput', value: '1,240/s', color: 'default' },
-      { label: 'Pool Util', value: '31%', color: 'success' },
+      { label: 'Pool Util', value: '98%', color: 'danger' },
     ],
     finding:
       'Connection pool at 98% — requests queuing rather than failing fast. 847 connection-acquire-timeout entries in the last 30 min.',
@@ -689,7 +486,6 @@ const DualPurposeInput = ({
       }`}
       onMouseEnter={onHoverStart}
       onMouseLeave={onHoverEnd}>
-      <SurroundShimmer>
       <div className="emptySessionPage__inputField">
         <OuiCompressedTextArea
           placeholder="Ask AI anything, or type to search a page"
@@ -711,7 +507,7 @@ const DualPurposeInput = ({
                 <OuiButtonIcon
                   iconType="plus"
                   aria-label="Add attachment"
-                  size="xs"
+                  size="s"
                   color="text"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => setIsAttachMenuOpen((open) => !open)}
@@ -767,18 +563,18 @@ const DualPurposeInput = ({
               />
             </OuiPopover>
           </OuiToolTip>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
             <OuiToolTip content="Dictate" position="top">
               <OuiButtonIcon
                 aria-label="Dictate"
-                size="xs"
+                size="s"
                 color="text"
                 display="empty"
                 iconType={() => (
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    width="14"
-                    height="14"
+                    width="16"
+                    height="16"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -797,7 +593,7 @@ const DualPurposeInput = ({
                 iconType="sortUp"
                 aria-label="Send"
                 display="fill"
-                size="xs"
+                size="s"
                 isDisabled={!inputValue.trim()}
                 onClick={() => {
                   if (inputValue.trim()) {
@@ -819,7 +615,6 @@ const DualPurposeInput = ({
           </div>
         </div>
       </div>
-      </SurroundShimmer>
     </div>
   );
 };
@@ -1178,31 +973,19 @@ export const EmptySessionPage = ({
   const [hoveredCard, setHoveredCard] = useState(null);
   const [scrolledFromTop, setScrolledFromTop] = useState(false);
   const [mascotExpression, setMascotExpression] = useState(undefined);
-  const [rightPanelWidth, setRightPanelWidth] = useState(40);
-  const resizeRef = useRef(null);
+  const [rightPanelTab, setRightPanelTab] = useState('insights');
   const [isEditMode, setIsEditMode] = useState(false);
   const [gallerySearch, setGallerySearch] = useState('');
   const [widgetOrder, setWidgetOrder] = useState([
     'top-services',
     'connection-timeout',
     'recent-alerts',
+    'deployment-timeline',
     'resource-utilization',
     'saved-queries',
     'dashboards',
-    'deployment-timeline',
   ]);
-  const [widgetSizes, setWidgetSizes] = useState({ dashboards: 2, 'deployment-timeline': 2 });
-  const [workflowsExpanded, setWorkflowsExpanded] = useState(false);
-  const [workflowSearch, setWorkflowSearch] = useState('');
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [refreshingWidgets, setRefreshingWidgets] = useState(() => {
-    const initial = {};
-    ['top-services', 'connection-timeout', 'recent-alerts', 'deployment-timeline', 'resource-utilization', 'saved-queries', 'dashboards'].forEach((id) => {
-      initial[id] = true;
-    });
-    return initial;
-  });
-  const [dataVariant, setDataVariant] = useState(0);
+  const [widgetSizes, setWidgetSizes] = useState({ dashboards: 2 });
   const [confirmingRemoval, setConfirmingRemoval] = useState(null);
   const dragWidget = useRef(null);
   const dragOverWidget = useRef(null);
@@ -1239,18 +1022,6 @@ export const EmptySessionPage = ({
   const scrollRef = useRef(null);
   const briefingRef = useRef(null);
   const insightsRef = useRef(null);
-
-  // Staggered initial load — each widget resolves after 1-3s
-  useEffect(() => {
-    const ids = ['top-services', 'connection-timeout', 'recent-alerts', 'deployment-timeline', 'resource-utilization', 'saved-queries', 'dashboards'];
-    const timers = ids.map((id) => {
-      const delay = 1000 + Math.random() * 2000;
-      return setTimeout(() => {
-        setRefreshingWidgets((prev) => ({ ...prev, [id]: false }));
-      }, delay);
-    });
-    return () => timers.forEach(clearTimeout);
-  }, []);
 
   // Mark briefing animations as done after initial load
   React.useEffect(() => {
@@ -1334,32 +1105,6 @@ export const EmptySessionPage = ({
     );
   }, [searchQuery, allSearchableItems]);
 
-  const handleResizeMouseDown = useCallback((e) => {
-    e.preventDefault();
-    const twoCol = e.target.closest('.emptySessionPage__twoCol');
-    if (!twoCol) return;
-    const startX = e.clientX;
-    const startWidth = rightPanelWidth;
-    const totalWidth = twoCol.getBoundingClientRect().width;
-
-    const onMove = (ev) => {
-      const delta = startX - ev.clientX;
-      const pctDelta = (delta / totalWidth) * 100;
-      const next = Math.min(70, Math.max(25, startWidth + pctDelta));
-      setRightPanelWidth(next);
-    };
-    const onUp = () => {
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseup', onUp);
-      document.body.style.cursor = '';
-      document.body.style.userSelect = '';
-    };
-    document.body.style.cursor = 'col-resize';
-    document.body.style.userSelect = 'none';
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
-  }, [rightPanelWidth]);
-
   return (
     <div className="emptySessionPage">
       <div className="emptySessionPage__panel">
@@ -1369,35 +1114,33 @@ export const EmptySessionPage = ({
           <div className="emptySessionPage__leftCol">
             {/* Mascot + status — above title */}
             <div className="emptySessionPage__headerRow">
-              <OuiToolTip content="Hi, I'm Olly — your OpenSearch agent assistant" position="right">
-                <div
-                  className="emptySessionPage__avatarWrap"
-                  onMouseEnter={() => {
-                    if (!mascotExpression) setMascotExpression('happy');
-                  }}
-                  onMouseDown={(e) => {
-                    e.currentTarget.style.transform = 'scale(0.85)';
-                    setMascotExpression('heart');
-                  }}
-                  onMouseUp={(e) => {
-                    e.currentTarget.style.transform = 'scale(1)';
-                    setMascotExpression('happy');
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'scale(1)';
-                    setMascotExpression(undefined);
-                  }}>
-                  <Mascot
-                    size={24}
-                    expression={mascotExpression}
-                    idle={!mascotExpression}
-                    bob
-                    follow
-                    color={mascotColor}
-                    eyeColor={mascotEyeColor}
-                  />
-                </div>
-              </OuiToolTip>
+              <div
+                className="emptySessionPage__avatarWrap"
+                onMouseDown={(e) => {
+                  e.currentTarget.style.transform = 'scale(0.85)';
+                  setMascotExpression('heart');
+                }}
+                onMouseUp={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  setMascotExpression(undefined);
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)';
+                  setMascotExpression(undefined);
+                }}>
+                <Mascot
+                  size={32}
+                  expression={mascotExpression}
+                  idle={!mascotExpression}
+                  bob={false}
+                  follow={false}
+                  color={mascotColor}
+                  eyeColor={mascotEyeColor}
+                />
+              </div>
+              <span className="emptySessionPage__onlineStatus">
+                Olly is online
+              </span>
             </div>
             <OuiTitle size="m">
               <h1>{greeting}</h1>
@@ -1485,45 +1228,10 @@ export const EmptySessionPage = ({
                 borderActive={inputActive}
               />
             </div>
-
-            {/* Jump to */}
-            <div className="emptySessionPage__jumpTo">
-              <span className="emptySessionPage__jumpToLabel">Jump to</span>
-              <button type="button" className="emptySessionPage__jumpToChip" onClick={() => onOpenPageInNewSession('logs', 'Logs')}>
-                <OuiIcon type="navDiscover" size="s" />
-                <span>Logs</span>
-              </button>
-              <button type="button" className="emptySessionPage__jumpToChip" onClick={() => onOpenPageInNewSession('metrics', 'Metrics')}>
-                <OuiIcon type="visArea" size="s" />
-                <span>Metrics</span>
-              </button>
-              <button type="button" className="emptySessionPage__jumpToChip" onClick={() => onOpenPageInNewSession('dashboards', 'Dashboards')}>
-                <OuiIcon type="navDashboards" size="s" />
-                <span>Dashboards</span>
-              </button>
-              <button type="button" className="emptySessionPage__jumpToChip" onClick={() => onOpenPageInNewSession('alerts', 'Alerts')}>
-                <OuiIcon type="navAlerting" size="s" />
-                <span>Alerts</span>
-              </button>
-              <OuiToolTip content="More" position="top">
-                <button type="button" className="emptySessionPage__jumpToChip emptySessionPage__jumpToChip--round" onClick={() => setWorkflowsExpanded(true)}>
-                  <OuiIcon type="plusInCircle" size="s" />
-                </button>
-              </OuiToolTip>
-            </div>
           </div>
 
-          {/* Resize handle */}
-          <div
-            className="emptySessionPage__resizeHandle"
-            onMouseDown={handleResizeMouseDown}
-            ref={resizeRef}
-          />
-
           {/* Right column — briefing items */}
-          <div
-            className="emptySessionPage__rightCol"
-            style={{ flex: `0 0 ${rightPanelWidth}%` }}>
+          <div className="emptySessionPage__rightCol">
             <div
               className={`emptySessionPage__briefing${
                 hasAnimatedBriefing ? ' emptySessionPage__briefing--noAnim' : ''
@@ -1545,41 +1253,23 @@ export const EmptySessionPage = ({
                 }
               }}>
               <div className="emptySessionPage__tabRow emptySessionPage__tabRow--sticky">
-                <div className="emptySessionPage__overviewTitleGroup">
-                  <span className="emptySessionPage__overviewTitle">{workflowsExpanded ? 'Open a page' : 'Overview'}</span>
-                  {!workflowsExpanded && (
-                    <span className="emptySessionPage__overviewStatus">
-                      <span className="emptySessionPage__overviewStatusDot" />
-                      Updated 2m ago
-                    </span>
-                  )}
-                </div>
-                {!workflowsExpanded && (
-                <div className="emptySessionPage__tabRowActions">
-                  <OuiToolTip content="Refresh" position="left">
-                    <OuiButtonIcon
-                      iconType="refresh"
-                      aria-label="Refresh"
-                      size="s"
-                      color="text"
-                      display="empty"
-                      isDisabled={Object.values(refreshingWidgets).some(Boolean)}
-                      onClick={() => {
-                        const ids = ['top-services', 'connection-timeout', 'recent-alerts', 'deployment-timeline', 'resource-utilization', 'saved-queries', 'dashboards'];
-                        const updated = {};
-                        ids.forEach((id) => { updated[id] = true; });
-                        setRefreshingWidgets((prev) => ({ ...prev, ...updated }));
-                        ids.forEach((id) => {
-                          const delay = 1000 + Math.random() * 2000;
-                          setTimeout(() => {
-                            setRefreshingWidgets((prev) => ({ ...prev, [id]: false }));
-                          }, delay);
-                        });
-                        setDataVariant((v) => v + 1);
-                      }}
-                    />
-                  </OuiToolTip>
-                  {isEditMode ? (
+                <OuiTabs
+                  size="s"
+                  display="condensed"
+                  style={{ maxWidth: 'fit-content' }}>
+                  <OuiTab
+                    isSelected={rightPanelTab === 'insights'}
+                    onClick={() => setRightPanelTab('insights')}>
+                    Overview
+                  </OuiTab>
+                  <OuiTab
+                    isSelected={rightPanelTab === 'open-page'}
+                    onClick={() => setRightPanelTab('open-page')}>
+                    Open a page
+                  </OuiTab>
+                </OuiTabs>
+                {rightPanelTab === 'insights' &&
+                  (isEditMode ? (
                     <OuiSmallButtonEmpty
                       size="xs"
                       color="primary"
@@ -1604,56 +1294,38 @@ export const EmptySessionPage = ({
                         }}
                       />
                     </OuiToolTip>
-                  )}
-                </div>
-                )}
+                  ))}
               </div>
 
               <div className="emptySessionPage__briefingContent">
-                {workflowsExpanded ? (
-                  <div className="emptySessionPage__pageBrowser">
-                    <div className="emptySessionPage__pageBrowserHeader">
-                      <div className="emptySessionPage__pageBrowserSearch">
-                        <OuiIcon type="search" size="s" />
-                        <input
-                          type="text"
-                          placeholder="Search pages..."
-                          value={workflowSearch}
-                          onChange={(e) => setWorkflowSearch(e.target.value)}
-                          className="emptySessionPage__pageBrowserInput"
-                          autoFocus
-                        />
-                      </div>
+                <div
+                  className={`emptySessionPage__briefingPanel${
+                    rightPanelTab !== 'open-page'
+                      ? ' emptySessionPage__briefingPanel--hidden'
+                      : ''
+                  }`}>
+                  <div className="emptySessionPage__openPageGrid">
+                    {OPEN_PAGE_ITEMS.map((item, i) => (
                       <button
+                        key={i}
                         type="button"
-                        className="emptySessionPage__pageBrowserClose"
-                        onClick={() => setWorkflowsExpanded(false)}>
-                        <OuiIcon type="cross" size="m" />
+                        className="emptySessionPage__openPageItem"
+                        onClick={() =>
+                          onOpenPageInNewSession(item.pageKey, item.label)
+                        }>
+                        <OuiIcon type={item.icon} size="m" />
+                        <span>{item.label}</span>
                       </button>
-                    </div>
-                    <div className="emptySessionPage__pageBrowserGrid">
-                      {[...WORKFLOW_ITEMS_PRIMARY, ...WORKFLOW_ITEMS_OVERFLOW]
-                        .filter((item) =>
-                          !workflowSearch ||
-                          item.label.toLowerCase().includes(workflowSearch.toLowerCase())
-                        )
-                        .map((item, i) => (
-                          <button
-                            key={i}
-                            type="button"
-                            className="emptySessionPage__pageBrowserItem"
-                            onClick={() => {
-                              onOpenPageInNewSession(item.pageKey, item.label);
-                              setWorkflowsExpanded(false);
-                            }}>
-                            <OuiIcon type={item.icon} size="l" />
-                            <span>{item.label}</span>
-                          </button>
-                        ))}
-                    </div>
+                    ))}
                   </div>
-                ) : (
-                <div className="emptySessionPage__briefingPanel">
+                </div>
+
+                <div
+                  className={`emptySessionPage__briefingPanel${
+                    rightPanelTab !== 'insights'
+                      ? ' emptySessionPage__briefingPanel--hidden'
+                      : ''
+                  }`}>
                   <div
                     className={`emptySessionPage__widgetGrid${
                       isEditMode ? ' emptySessionPage__widgetGrid--editing' : ''
@@ -1677,90 +1349,104 @@ export const EmptySessionPage = ({
 
                       const renderWidget = () => {
                         switch (widgetId) {
-                          case 'workflows':
-                            return (
-                              <div className="emptySessionPage__workflowsWidget">
-                                <div className="emptySessionPage__workflowsHeader">
-                                  <span className="emptySessionPage__workflowsTitle">
-                                    Open a page
-                                  </span>
-                                </div>
-                                <div className="emptySessionPage__workflowsGrid">
-                                  {WORKFLOW_ITEMS_PRIMARY.map((item, i) => (
-                                    <button
-                                      key={i}
-                                      type="button"
-                                      className="emptySessionPage__workflowItem"
-                                      onClick={() =>
-                                        onOpenPageInNewSession(item.pageKey, item.label)
-                                      }>
-                                      <OuiIcon type={item.icon} size="s" />
-                                      <span>{item.label}</span>
-                                    </button>
-                                  ))}
-                                  <div className="emptySessionPage__workflowItem emptySessionPage__workflowItem--more">
-                                    <span className="emptySessionPage__moreGrid">
-                                      {WORKFLOW_ITEMS_OVERFLOW.slice(0, 3).map((item, i) => (
-                                        <OuiToolTip key={i} content={item.label} position="top">
-                                          <span
-                                            className="emptySessionPage__moreGridCell"
-                                            role="button"
-                                            tabIndex={0}
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              onOpenPageInNewSession(item.pageKey, item.label);
-                                            }}>
-                                            <OuiIcon type={item.icon} size="s" />
-                                          </span>
-                                        </OuiToolTip>
-                                      ))}
-                                      <OuiToolTip content="More pages" position="top">
-                                        <span
-                                          className="emptySessionPage__moreGridCell emptySessionPage__moreGridCell--accent"
-                                          role="button"
-                                          tabIndex={0}
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setWorkflowsExpanded(true);
-                                            setWorkflowSearch('');
-                                          }}>
-                                          <OuiIcon type="arrowRight" size="s" />
-                                        </span>
-                                      </OuiToolTip>
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            );
                           case 'top-services':
                             return (
-                              <OuiInsightCard>
-
-                                <WidgetHeader title="Top services by fault rate" />
-                                <div className="widgetCard__tableHeader">
-                                  <span>SERVICE</span>
-                                  <span>FAULT RATE</span>
-                                </div>
-                                <div className="widgetCard__rows">
-                                  <div className="widgetCard__barRow" style={{ cursor: 'pointer' }} onClick={() => !isEditMode && onSelectSession('error-rate-spike-session')}>
-                                    <span className="widgetCard__barLabel">checkout</span>
-                                    <div className="widgetCard__barTrack"><div className="widgetCard__barFill" style={{ width: '67%' }} /></div>
-                                    <span className="widgetCard__barValue">{dataVariant % 2 === 0 ? '66.67%' : '58.23%'}</span>
+                              <OuiInsightCard
+                                title="Top services by fault rate"
+                                onClick={() =>
+                                  !isEditMode &&
+                                  onOpenPageInNewSession(
+                                    'app-perf-services',
+                                    'Application Services'
+                                  )
+                                }>
+                                <div
+                                  style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 6,
+                                  }}>
+                                  <div
+                                    style={{
+                                      display: 'flex',
+                                      justifyContent: 'space-between',
+                                      fontSize: 11,
+                                      fontWeight: 600,
+                                      opacity: 0.65,
+                                      textTransform: 'uppercase',
+                                      letterSpacing: 0.5,
+                                    }}>
+                                    <span>Service</span>
+                                    <span>Fault rate</span>
                                   </div>
-                                  <div className="widgetCard__barRow" style={{ cursor: 'pointer' }} onClick={() => !isEditMode && onOpenPageInNewSession('app-perf-services', 'Frontend service')}>
-                                    <span className="widgetCard__barLabel">frontend</span>
-                                    <div className="widgetCard__barTrack"><div className="widgetCard__barFill widgetCard__barFill--secondary" style={{ width: dataVariant % 2 === 0 ? '14.5%' : '22%' }} /></div>
-                                    <span className="widgetCard__barValue">{dataVariant % 2 === 0 ? '14.49%' : '21.88%'}</span>
+                                  <div
+                                    style={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: 8,
+                                      fontSize: 13,
+                                    }}>
+                                    <span style={{ flex: '0 0 100px' }}>
+                                      checkout
+                                    </span>
+                                    <span
+                                      style={{
+                                        flex: 1,
+                                        height: 8,
+                                        borderRadius: 4,
+                                        background:
+                                          'linear-gradient(90deg, #a5b4fc 66.67%, transparent 66.67%)',
+                                      }}
+                                    />
+                                    <span style={{ fontWeight: 600 }}>
+                                      66.67%
+                                    </span>
                                   </div>
-                                  <div className="widgetCard__barRow" style={{ cursor: 'pointer' }} onClick={() => !isEditMode && onOpenPageInNewSession('app-perf-services', 'Frontend-proxy service')}>
-                                    <span className="widgetCard__barLabel">frontend-proxy</span>
-                                    <div className="widgetCard__barTrack"><div className="widgetCard__barFill widgetCard__barFill--secondary" style={{ width: dataVariant % 2 === 0 ? '14.3%' : '11%' }} /></div>
-                                    <span className="widgetCard__barValue">{dataVariant % 2 === 0 ? '14.29%' : '10.94%'}</span>
+                                  <div
+                                    style={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: 8,
+                                      fontSize: 13,
+                                    }}>
+                                    <span style={{ flex: '0 0 100px' }}>
+                                      frontend
+                                    </span>
+                                    <span
+                                      style={{
+                                        flex: 1,
+                                        height: 8,
+                                        borderRadius: 4,
+                                        background:
+                                          'linear-gradient(90deg, #a5b4fc 14.49%, transparent 14.49%)',
+                                      }}
+                                    />
+                                    <span style={{ fontWeight: 600 }}>
+                                      14.49%
+                                    </span>
                                   </div>
-                                  <div className="widgetCard__barRow" style={{ cursor: 'pointer' }} onClick={() => !isEditMode && onSelectSession('latency-spike-session')}>
-                                    <span className="widgetCard__barLabel">payment</span>
-                                    <div className="widgetCard__barTrack"><div className="widgetCard__barFill widgetCard__barFill--secondary" style={{ width: dataVariant % 2 === 0 ? '8%' : '6%' }} /></div>
-                                    <span className="widgetCard__barValue">{dataVariant % 2 === 0 ? '7.84%' : '5.91%'}</span>
+                                  <div
+                                    style={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: 8,
+                                      fontSize: 13,
+                                    }}>
+                                    <span style={{ flex: '0 0 100px' }}>
+                                      frontend-proxy
+                                    </span>
+                                    <span
+                                      style={{
+                                        flex: 1,
+                                        height: 8,
+                                        borderRadius: 4,
+                                        background:
+                                          'linear-gradient(90deg, #a5b4fc 14.29%, transparent 14.29%)',
+                                      }}
+                                    />
+                                    <span style={{ fontWeight: 600 }}>
+                                      14.29%
+                                    </span>
                                   </div>
                                 </div>
                               </OuiInsightCard>
@@ -1768,51 +1454,143 @@ export const EmptySessionPage = ({
                           case 'connection-timeout':
                             return (
                               <OuiInsightCard
+                                title="Connection timeout errors"
                                 onClick={() =>
                                   !isEditMode &&
                                   onOpenPageInNewSession('logs', 'Logs')
                                 }>
-
-                                <WidgetHeader title="Connection timeout errors" />
-                                <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
-                                  <span className="widgetCard__bigNumber">{dataVariant % 2 === 0 ? '847' : '923'}</span>
-                                  <span className="widgetCard__trend widgetCard__trend--warning">{dataVariant % 2 === 0 ? '↑ 31%' : '↑ 34%'}</span>
+                                <div
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'baseline',
+                                    gap: 8,
+                                    marginBottom: 8,
+                                  }}>
+                                  <span
+                                    style={{
+                                      color: '#d97706',
+                                      fontWeight: 700,
+                                      fontSize: 28,
+                                      lineHeight: 1,
+                                    }}>
+                                    847
+                                  </span>
+                                  <span
+                                    style={{
+                                      fontSize: 13,
+                                      color: '#d97706',
+                                      fontWeight: 600,
+                                    }}>
+                                    ↑ 312%
+                                  </span>
                                 </div>
-                                <svg viewBox="0 0 280 68" preserveAspectRatio="none" style={{ width: '100%', height: 68, display: 'block', marginTop: 8 }}>
+                                <svg
+                                  viewBox="0 0 200 50"
+                                  style={{ width: '100%', height: 50 }}>
                                   <defs>
-                                    <ChartTexture id="connStripe" variant="stripe" />
+                                    <linearGradient
+                                      id="connFill"
+                                      x1="0"
+                                      y1="0"
+                                      x2="0"
+                                      y2="1">
+                                      <stop
+                                        offset="0%"
+                                        stopColor="#d97706"
+                                        stopOpacity="0.15"
+                                      />
+                                      <stop
+                                        offset="100%"
+                                        stopColor="#d97706"
+                                        stopOpacity="0.01"
+                                      />
+                                    </linearGradient>
                                   </defs>
-                                  <line x1="0" y1="8" x2="280" y2="8" stroke="#DD8A3A" strokeWidth="0.8" strokeDasharray="3 3" opacity="0.45" />
-                                  <path d="M0,56 C50,55 90,53 130,47 C170,41 210,26 280,8 L280,68 L0,68 Z" fill="url(#connStripe)" />
-                                  <path d="M0,56 C50,55 90,53 130,47 C170,41 210,26 280,8" fill="none" stroke="#DD8A3A" strokeWidth="2.5" strokeLinecap="round" />
+                                  <path
+                                    d="M0,48 C40,48 80,46 120,42 S170,20 200,10 V50 H0 Z"
+                                    fill="url(#connFill)"
+                                  />
+                                  <path
+                                    d="M0,48 C40,48 80,46 120,42 S170,20 200,10"
+                                    fill="none"
+                                    stroke="#d97706"
+                                    strokeWidth="2.5"
+                                    strokeLinecap="round"
+                                  />
                                 </svg>
                               </OuiInsightCard>
                             );
                           case 'recent-alerts':
                             return (
                               <OuiInsightCard
+                                title="Recent alerts"
                                 onClick={() =>
                                   !isEditMode &&
                                   onOpenPageInNewSession('alerts', 'Alerts')
                                 }>
-
-                                <WidgetHeader title="Recent alerts" />
-                                <div className="widgetCard__tableHeader">
-                                  <span>ALERT</span>
-                                  <span>STATUS</span>
-                                </div>
-                                <div className="widgetCard__rows">
-                                  <div className="widgetCard__statusRow">
-                                    <span className="widgetCard__statusLabel">P99 latency breach</span>
-                                    <span className="widgetCard__statusBadge widgetCard__statusBadge--critical">CRITICAL</span>
+                                <div
+                                  style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    gap: 6,
+                                  }}>
+                                  <div
+                                    style={{
+                                      display: 'flex',
+                                      justifyContent: 'space-between',
+                                      fontSize: 11,
+                                      fontWeight: 600,
+                                      opacity: 0.65,
+                                      textTransform: 'uppercase',
+                                      letterSpacing: 0.5,
+                                    }}>
+                                    <span>Alert</span>
+                                    <span>Status</span>
                                   </div>
-                                  <div className="widgetCard__statusRow">
-                                    <span className="widgetCard__statusLabel">Disk usage warning</span>
-                                    <span className="widgetCard__statusBadge widgetCard__statusBadge--warning">WARNING</span>
+                                  <div
+                                    style={{
+                                      display: 'flex',
+                                      justifyContent: 'space-between',
+                                      fontSize: 13,
+                                    }}>
+                                    <span>P99 latency breach</span>
+                                    <span
+                                      style={{
+                                        color: '#f87171',
+                                        fontWeight: 600,
+                                      }}>
+                                      Critical
+                                    </span>
                                   </div>
-                                  <div className="widgetCard__statusRow">
-                                    <span className="widgetCard__statusLabel">Error rate spike</span>
-                                    <span className="widgetCard__statusBadge widgetCard__statusBadge--critical">CRITICAL</span>
+                                  <div
+                                    style={{
+                                      display: 'flex',
+                                      justifyContent: 'space-between',
+                                      fontSize: 13,
+                                    }}>
+                                    <span>Disk usage warning</span>
+                                    <span
+                                      style={{
+                                        color: '#fbbf24',
+                                        fontWeight: 600,
+                                      }}>
+                                      Warning
+                                    </span>
+                                  </div>
+                                  <div
+                                    style={{
+                                      display: 'flex',
+                                      justifyContent: 'space-between',
+                                      fontSize: 13,
+                                    }}>
+                                    <span>Error rate spike</span>
+                                    <span
+                                      style={{
+                                        color: '#f87171',
+                                        fontWeight: 600,
+                                      }}>
+                                      Critical
+                                    </span>
                                   </div>
                                 </div>
                               </OuiInsightCard>
@@ -1820,91 +1598,358 @@ export const EmptySessionPage = ({
                           case 'deployment-timeline':
                             return (
                               <OuiInsightCard
+                                title="Deployment timeline"
                                 onClick={() =>
                                   !isEditMode &&
-                                  onOpenPageInNewSession('dashboards', 'Dashboards')
+                                  onOpenPageInNewSession(
+                                    'dashboards',
+                                    'Dashboards'
+                                  )
                                 }>
-
-                                <WidgetHeader title="Deployment timeline" />
-                                <div className="emptySessionPage__chartPlot" style={{ position: 'relative', padding: '12px 14px 0', borderRadius: 4 }}>
-                                  <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(to right, rgba(59,93,214,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(59,93,214,0.06) 1px, transparent 1px)', backgroundSize: '18px 16px', borderRadius: 'inherit' }} />
-                                  <div style={{ position: 'relative', height: 92, display: 'flex', alignItems: 'flex-end', gap: 16 }}>
-                                    <div style={{ position: 'absolute', left: 0, right: 0, bottom: 53, borderTop: '1px dashed rgba(52,72,140,0.32)' }} />
-                                    <div className="widgetCard__mono" style={{ position: 'absolute', left: 0, bottom: 55, fontSize: 8, letterSpacing: '0.1em', color: '#7B8FE6' }}>AVG 11</div>
-                                    {[{v:8,h:38},{v:12,h:58},{v:15,h:72},{v:11,h:53},{v:9,h:43}].map((d, i) => (
-                                      <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', gap: 5 }}>
-                                        <span className="widgetCard__mono" style={{ fontSize: 9.5, fontWeight: 600, color: '#1F9D6B' }}>{d.v}</span>
-                                        <div style={{ width: '58%', height: d.h, background: '#2BA98A', borderRadius: 1 }} />
-                                      </div>
-                                    ))}
-                                  </div>
-                                  <div style={{ height: 1, background: 'rgba(52,72,140,0.32)' }} />
-                                  <div style={{ display: 'flex', gap: 16, padding: '6px 0 12px' }}>
-                                    {['1-3','5-7','9-11','13-15','17-23'].map((l, i) => (
-                                      <div key={i} className="widgetCard__mono" style={{ flex: 1, textAlign: 'center', fontSize: 10 }}>{l}</div>
-                                    ))}
-                                  </div>
-                                </div>
+                                <svg
+                                  viewBox="0 0 200 100"
+                                  style={{ width: '100%', height: 100 }}>
+                                  <rect
+                                    x="12"
+                                    y="55"
+                                    width="28"
+                                    height="35"
+                                    rx="4"
+                                    fill="#34d399"
+                                  />
+                                  <rect
+                                    x="50"
+                                    y="30"
+                                    width="28"
+                                    height="60"
+                                    rx="4"
+                                    fill="#34d399"
+                                  />
+                                  <rect
+                                    x="88"
+                                    y="12"
+                                    width="28"
+                                    height="78"
+                                    rx="4"
+                                    fill="#34d399"
+                                  />
+                                  <rect
+                                    x="126"
+                                    y="38"
+                                    width="28"
+                                    height="52"
+                                    rx="4"
+                                    fill="#34d399"
+                                  />
+                                  <rect
+                                    x="164"
+                                    y="48"
+                                    width="28"
+                                    height="42"
+                                    rx="4"
+                                    fill="#34d399"
+                                  />
+                                  <text
+                                    x="26"
+                                    y="98"
+                                    fontSize="8"
+                                    fill="currentColor"
+                                    opacity="0.65"
+                                    textAnchor="middle">
+                                    1–3
+                                  </text>
+                                  <text
+                                    x="64"
+                                    y="98"
+                                    fontSize="8"
+                                    fill="currentColor"
+                                    opacity="0.65"
+                                    textAnchor="middle">
+                                    5–7
+                                  </text>
+                                  <text
+                                    x="102"
+                                    y="98"
+                                    fontSize="8"
+                                    fill="currentColor"
+                                    opacity="0.65"
+                                    textAnchor="middle">
+                                    9–11
+                                  </text>
+                                  <text
+                                    x="140"
+                                    y="98"
+                                    fontSize="8"
+                                    fill="currentColor"
+                                    opacity="0.65"
+                                    textAnchor="middle">
+                                    13–15
+                                  </text>
+                                  <text
+                                    x="178"
+                                    y="98"
+                                    fontSize="8"
+                                    fill="currentColor"
+                                    opacity="0.65"
+                                    textAnchor="middle">
+                                    17–23
+                                  </text>
+                                </svg>
                               </OuiInsightCard>
                             );
                           case 'resource-utilization':
                             return (
                               <OuiInsightCard
+                                title="Resource utilization"
                                 onClick={() =>
                                   !isEditMode &&
                                   onOpenPageInNewSession('metrics', 'Metrics')
+                                }
+                                titleExtra={
+                                  <span
+                                    style={{
+                                      color: '#34d399',
+                                      fontWeight: 700,
+                                      fontSize: 18,
+                                    }}>
+                                    56%
+                                  </span>
                                 }>
-
-                                <WidgetHeader title="Resource utilization" />
-                                <span style={{ fontSize: 22, fontWeight: 700, color: '#1F9D6B', letterSpacing: '-0.01em', marginBottom: 4, display: 'block' }}>56%</span>
                                 <svg
-                                  viewBox="0 0 220 80"
-                                  style={{ width: '100%', height: 80 }}>
-                                  <line x1="30" y1="14" x2="210" y2="14" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
-                                  <line x1="30" y1="38" x2="210" y2="38" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
-                                  <line x1="30" y1="62" x2="210" y2="62" stroke="currentColor" strokeOpacity="0.1" strokeWidth="0.5" />
-                                  <text x="22" y="17" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">50</text>
-                                  <text x="22" y="41" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">25</text>
-                                  <text x="22" y="65" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="end">0</text>
+                                  viewBox="0 0 220 100"
+                                  style={{ width: '100%', height: 100 }}>
+                                  <line
+                                    x1="30"
+                                    y1="10"
+                                    x2="210"
+                                    y2="10"
+                                    stroke="currentColor"
+                                    strokeOpacity="0.1"
+                                    strokeWidth="0.5"
+                                  />
+                                  <line
+                                    x1="30"
+                                    y1="32"
+                                    x2="210"
+                                    y2="32"
+                                    stroke="currentColor"
+                                    strokeOpacity="0.1"
+                                    strokeWidth="0.5"
+                                  />
+                                  <line
+                                    x1="30"
+                                    y1="54"
+                                    x2="210"
+                                    y2="54"
+                                    stroke="currentColor"
+                                    strokeOpacity="0.1"
+                                    strokeWidth="0.5"
+                                  />
+                                  <line
+                                    x1="30"
+                                    y1="76"
+                                    x2="210"
+                                    y2="76"
+                                    stroke="currentColor"
+                                    strokeOpacity="0.1"
+                                    strokeWidth="0.5"
+                                  />
+                                  <text
+                                    x="22"
+                                    y="13"
+                                    fontSize="7"
+                                    fill="currentColor"
+                                    opacity="0.65"
+                                    textAnchor="end">
+                                    100
+                                  </text>
+                                  <text
+                                    x="22"
+                                    y="35"
+                                    fontSize="7"
+                                    fill="currentColor"
+                                    opacity="0.65"
+                                    textAnchor="end">
+                                    75
+                                  </text>
+                                  <text
+                                    x="22"
+                                    y="57"
+                                    fontSize="7"
+                                    fill="currentColor"
+                                    opacity="0.65"
+                                    textAnchor="end">
+                                    50
+                                  </text>
+                                  <text
+                                    x="22"
+                                    y="79"
+                                    fontSize="7"
+                                    fill="currentColor"
+                                    opacity="0.65"
+                                    textAnchor="end">
+                                    25
+                                  </text>
+                                  <text
+                                    x="22"
+                                    y="96"
+                                    fontSize="7"
+                                    fill="currentColor"
+                                    opacity="0.65"
+                                    textAnchor="end">
+                                    0
+                                  </text>
                                   <defs>
-                                    <ChartTexture id="resStripe" variant="stripe" color="#1F9D6B" />
+                                    <linearGradient
+                                      id="resFill"
+                                      x1="0"
+                                      y1="0"
+                                      x2="0"
+                                      y2="1">
+                                      <stop
+                                        offset="0%"
+                                        stopColor="#34d399"
+                                        stopOpacity="0.25"
+                                      />
+                                      <stop
+                                        offset="100%"
+                                        stopColor="#34d399"
+                                        stopOpacity="0.03"
+                                      />
+                                    </linearGradient>
                                   </defs>
                                   <path
-                                    d="M40,38 L75,34 L110,30 L145,32 L175,26 L195,24 L210,26 V62 H40 Z"
-                                    fill="url(#resStripe)"
+                                    d="M40,58 L75,54 L110,50 L145,52 L175,46 L195,44 L210,46 V96 H40 Z"
+                                    fill="url(#resFill)"
                                   />
                                   <polyline
                                     fill="none"
                                     stroke="#34d399"
-                                    strokeWidth="3.2"
+                                    strokeWidth="2"
+                                    strokeLinejoin="round"
                                     strokeLinecap="round"
-                                    points="40,38 75,34 110,30 145,32 175,26 195,24 210,26"
+                                    points="40,58 75,54 110,50 145,52 175,46 195,44 210,46"
                                   />
-                                  <circle cx="210" cy="26" r="3" fill="#34d399">
-                                    <animate attributeName="r" values="3;6;3" dur="2s" repeatCount="indefinite" />
-                                    <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite" />
-                                  </circle>
-                                  <text x="40" y="74" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">0m</text>
-                                  <text x="125" y="74" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">30m</text>
-                                  <text x="210" y="74" fontSize="7" fill="currentColor" opacity="0.65" textAnchor="middle">60m</text>
+                                  <circle
+                                    cx="40"
+                                    cy="58"
+                                    r="3"
+                                    fill="#34d399"
+                                  />
+                                  <circle
+                                    cx="75"
+                                    cy="54"
+                                    r="3"
+                                    fill="#34d399"
+                                  />
+                                  <circle
+                                    cx="110"
+                                    cy="50"
+                                    r="3"
+                                    fill="#34d399"
+                                  />
+                                  <circle
+                                    cx="145"
+                                    cy="52"
+                                    r="3"
+                                    fill="#34d399"
+                                  />
+                                  <circle
+                                    cx="175"
+                                    cy="46"
+                                    r="3"
+                                    fill="#34d399"
+                                  />
+                                  <circle
+                                    cx="195"
+                                    cy="44"
+                                    r="3"
+                                    fill="#34d399"
+                                  />
+                                  <circle
+                                    cx="210"
+                                    cy="46"
+                                    r="3"
+                                    fill="#34d399"
+                                  />
+                                  <text
+                                    x="40"
+                                    y="96"
+                                    fontSize="7"
+                                    fill="currentColor"
+                                    opacity="0.65"
+                                    textAnchor="middle">
+                                    0m
+                                  </text>
+                                  <text
+                                    x="85"
+                                    y="96"
+                                    fontSize="7"
+                                    fill="currentColor"
+                                    opacity="0.65"
+                                    textAnchor="middle">
+                                    15m
+                                  </text>
+                                  <text
+                                    x="130"
+                                    y="96"
+                                    fontSize="7"
+                                    fill="currentColor"
+                                    opacity="0.65"
+                                    textAnchor="middle">
+                                    30m
+                                  </text>
+                                  <text
+                                    x="175"
+                                    y="96"
+                                    fontSize="7"
+                                    fill="currentColor"
+                                    opacity="0.65"
+                                    textAnchor="middle">
+                                    45m
+                                  </text>
+                                  <text
+                                    x="210"
+                                    y="96"
+                                    fontSize="7"
+                                    fill="currentColor"
+                                    opacity="0.65"
+                                    textAnchor="middle">
+                                    60m
+                                  </text>
                                 </svg>
                               </OuiInsightCard>
                             );
                           case 'saved-queries':
                             return (
                               <div
-                                className="emptySessionPage__widgetList">
-                                <WidgetHeader
-                                  icon="search"
-                                  title="Saved queries"
-                                  action
-                                  onAction={() => onBrowseLibrary && onBrowseLibrary('query')}
-                                />
-                                <div className="emptySessionPage__widgetListItems">
+                                className="emptySessionPage__widgetList"
+                                onClick={() =>
+                                  !isEditMode &&
+                                  onOpenPageInNewSession('logs', 'Logs')
+                                }
+                                role="button"
+                                tabIndex={0}>
+                                <div className="emptySessionPage__widgetListHeader">
+                                  <span className="emptySessionPage__widgetListIcon">
+                                    <OuiIcon type="search" size="m" />
+                                  </span>
+                                  <span className="emptySessionPage__widgetListTitle">
+                                    Saved queries
+                                  </span>
                                   <button
                                     type="button"
-                                    className="emptySessionPage__widgetListItem"
-                                    onClick={() => !isEditMode && onOpenPageInNewSession('logs', '5xx by service')}>
+                                    className="emptySessionPage__widgetListAction"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onBrowseLibrary &&
+                                        onBrowseLibrary('query');
+                                    }}>
+                                    <OuiIcon type="arrowRight" size="s" />
+                                  </button>
+                                </div>
+                                <div className="emptySessionPage__widgetListItems">
+                                  <div className="emptySessionPage__widgetListItem">
                                     <div>
                                       <strong>5xx by service</strong>
                                       <br />
@@ -1913,11 +1958,8 @@ export const EmptySessionPage = ({
                                         last 1h
                                       </span>
                                     </div>
-                                  </button>
-                                  <button
-                                    type="button"
-                                    className="emptySessionPage__widgetListItem"
-                                    onClick={() => !isEditMode && onOpenPageInNewSession('logs', 'Slow traces > 2s')}>
+                                  </div>
+                                  <div className="emptySessionPage__widgetListItem">
                                     <div>
                                       <strong>Slow traces &gt; 2s</strong>
                                       <br />
@@ -1926,25 +1968,43 @@ export const EmptySessionPage = ({
                                         all services
                                       </span>
                                     </div>
-                                  </button>
+                                  </div>
                                 </div>
                               </div>
                             );
                           case 'dashboards':
                             return (
                               <div
-                                className="emptySessionPage__widgetList">
-                                <WidgetHeader
-                                  icon="dashboard"
-                                  title="Dashboards"
-                                  action
-                                  onAction={() => onBrowseLibrary && onBrowseLibrary('dashboard')}
-                                />
-                                <div className="emptySessionPage__widgetListItems">
+                                className="emptySessionPage__widgetList"
+                                onClick={() =>
+                                  !isEditMode &&
+                                  onOpenPageInNewSession(
+                                    'dashboards',
+                                    'Dashboards'
+                                  )
+                                }
+                                role="button"
+                                tabIndex={0}>
+                                <div className="emptySessionPage__widgetListHeader">
+                                  <span className="emptySessionPage__widgetListIcon">
+                                    <OuiIcon type="grid" size="m" />
+                                  </span>
+                                  <span className="emptySessionPage__widgetListTitle">
+                                    Dashboards
+                                  </span>
                                   <button
                                     type="button"
-                                    className="emptySessionPage__widgetListItem"
-                                    onClick={() => !isEditMode && onOpenPageInNewSession('dashboards', 'Service overview')}>
+                                    className="emptySessionPage__widgetListAction"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onBrowseLibrary &&
+                                        onBrowseLibrary('dashboard');
+                                    }}>
+                                    <OuiIcon type="arrowRight" size="s" />
+                                  </button>
+                                </div>
+                                <div className="emptySessionPage__widgetListItems">
+                                  <div className="emptySessionPage__widgetListItem">
                                     <div>
                                       <strong>Service overview</strong>
                                       <br />
@@ -1960,10 +2020,6 @@ export const EmptySessionPage = ({
                                         height: 20,
                                         flexShrink: 0,
                                       }}>
-                                      <defs>
-                                        <ChartTexture id="dashStripe3" variant="stripe" color="#1F9D6B" />
-                                      </defs>
-                                      <path d="M0,14 L10,10 L20,12 L30,8 L40,10 L50,6 L60,8 V20 H0 Z" fill="url(#dashStripe3)" />
                                       <polyline
                                         fill="none"
                                         stroke="#34d399"
@@ -1973,11 +2029,8 @@ export const EmptySessionPage = ({
                                         points="0,14 10,10 20,12 30,8 40,10 50,6 60,8"
                                       />
                                     </svg>
-                                  </button>
-                                  <button
-                                    type="button"
-                                    className="emptySessionPage__widgetListItem"
-                                    onClick={() => !isEditMode && onOpenPageInNewSession('dashboards', 'p99 latency')}>
+                                  </div>
+                                  <div className="emptySessionPage__widgetListItem">
                                     <div>
                                       <strong>p99 latency</strong>
                                       <br />
@@ -1993,10 +2046,6 @@ export const EmptySessionPage = ({
                                         height: 20,
                                         flexShrink: 0,
                                       }}>
-                                      <defs>
-                                        <ChartTexture id="dashStripe1" variant="stripe" />
-                                      </defs>
-                                      <path d="M0,16 L10,14 L20,12 L30,10 L40,8 L50,6 L60,4 V20 H0 Z" fill="url(#dashStripe1)" />
                                       <polyline
                                         fill="none"
                                         stroke="#d97706"
@@ -2006,73 +2055,7 @@ export const EmptySessionPage = ({
                                         points="0,16 10,14 20,12 30,10 40,8 50,6 60,4"
                                       />
                                     </svg>
-                                  </button>
-                                  <button
-                                    type="button"
-                                    className="emptySessionPage__widgetListItem"
-                                    onClick={() => !isEditMode && onOpenPageInNewSession('dashboards', 'Error rate by service')}>
-                                    <div>
-                                      <strong>Error rate by service</strong>
-                                      <br />
-                                      <span
-                                        style={{ fontSize: 11, opacity: 0.6 }}>
-                                        6 panels · opened yesterday
-                                      </span>
-                                    </div>
-                                    <svg
-                                      viewBox="0 0 60 20"
-                                      style={{
-                                        width: 60,
-                                        height: 20,
-                                        flexShrink: 0,
-                                      }}>
-                                      <defs>
-                                        <ChartTexture id="dashStripe2" variant="stripe" color="#ef4444" />
-                                      </defs>
-                                      <path d="M0,16 L10,12 L20,14 L30,8 L40,10 L50,4 L60,6 V20 H0 Z" fill="url(#dashStripe2)" />
-                                      <polyline
-                                        fill="none"
-                                        stroke="#ef4444"
-                                        strokeWidth="2"
-                                        strokeLinejoin="round"
-                                        strokeLinecap="round"
-                                        points="0,16 10,12 20,14 30,8 40,10 50,4 60,6"
-                                      />
-                                    </svg>
-                                  </button>
-                                  <button
-                                    type="button"
-                                    className="emptySessionPage__widgetListItem"
-                                    onClick={() => !isEditMode && onOpenPageInNewSession('dashboards', 'Connection pool health')}>
-                                    <div>
-                                      <strong>Connection pool health</strong>
-                                      <br />
-                                      <span
-                                        style={{ fontSize: 11, opacity: 0.6 }}>
-                                        4 panels · opened 3h ago
-                                      </span>
-                                    </div>
-                                    <svg
-                                      viewBox="0 0 60 20"
-                                      style={{
-                                        width: 60,
-                                        height: 20,
-                                        flexShrink: 0,
-                                      }}>
-                                      <defs>
-                                        <ChartTexture id="dashStripe4" variant="stripe" color="#1F9D6B" />
-                                      </defs>
-                                      <path d="M0,12 L10,10 L20,8 L30,10 L40,6 L50,8 L60,6 V20 H0 Z" fill="url(#dashStripe4)" />
-                                      <polyline
-                                        fill="none"
-                                        stroke="#34d399"
-                                        strokeWidth="2"
-                                        strokeLinejoin="round"
-                                        strokeLinecap="round"
-                                        points="0,12 10,10 20,8 30,10 40,6 50,8 60,6"
-                                      />
-                                    </svg>
-                                  </button>
+                                  </div>
                                 </div>
                               </div>
                             );
@@ -2149,16 +2132,7 @@ export const EmptySessionPage = ({
                               </div>
                             </div>
                           )}
-                          {(isRefreshing || refreshingWidgets[widgetId]) && widgetId !== 'workflows' ? (
-                            <div style={{ position: 'relative', overflow: 'hidden', flex: 1 }}>
-                              <div style={{ visibility: 'hidden' }}>{renderWidget()}</div>
-                              <div style={{ position: 'absolute', inset: 0, borderRadius: 'inherit' }}>
-                                <div className="ouiInsightCard" style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-                                  <ScanShimmerOverlay />
-                                </div>
-                              </div>
-                            </div>
-                          ) : renderWidget()}
+                          {renderWidget()}
                         </div>
                       );
                     })}
@@ -2312,7 +2286,6 @@ export const EmptySessionPage = ({
                     </div>
                   )}
                 </div>
-                )}
               </div>
             </div>
           </div>

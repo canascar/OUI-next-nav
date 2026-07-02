@@ -310,7 +310,7 @@ export const OVERVIEW_HOME_SESSION = {
   pendingThread: null,
   title: 'New Session',
   summary:
-    'Active incident — checkout-agent is looping. 244 of 247 services healthy.',
+    'Active incident — checkout-agent is looping. Immediate action needed.',
   threadPanelState: 'side-by-side',
   threadPanelWidth: 60,
   tabs: [

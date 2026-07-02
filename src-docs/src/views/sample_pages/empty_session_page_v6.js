@@ -131,7 +131,7 @@ const SurroundShimmer = ({ children, hide }) => {
   const vPad = isMobileShimmer ? 20 : 36;
 
   return (
-    <div style={{ position: 'relative', padding: `${vPad}px ${hPad}px`, margin: `-${vPad}px -${hPad}px`, maxWidth: 520, maxHeight: 200, alignSelf: 'center' }}>
+    <div style={{ position: 'relative', padding: `${vPad}px ${hPad}px`, margin: `-${vPad}px -${hPad}px`, maxHeight: 200, alignSelf: 'center' }}>
       <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 0, maskImage: `radial-gradient(ellipse ${isMobileShimmer ? '55%' : '80%'} 80% at 50% 50%, black ${isMobileShimmer ? '30%' : '40%'}, transparent 100%)`, WebkitMaskImage: `radial-gradient(ellipse ${isMobileShimmer ? '55%' : '80%'} 80% at 50% 50%, black ${isMobileShimmer ? '30%' : '40%'}, transparent 100%)` }} />
       <div data-surround-box="1" style={{ position: 'relative', zIndex: 1 }}>
         {children}
@@ -1434,43 +1434,120 @@ export const EmptySessionPageV6 = ({
                 const isDismissed = finding.key in dismissedFindings;
                 const isExpanded = expandedFindings.has(finding.key);
                 const feedback = feedbackFindings[finding.key];
-                const statusColors = { red: { bg: 'rgba(220,38,38,0.08)', color: '#DC2626' }, amber: { bg: 'rgba(180,83,9,0.08)', color: '#B45309' }, green: { bg: 'rgba(14,110,82,0.08)', color: '#0E6E52' }, blue: { bg: 'rgba(26,93,168,0.08)', color: '#1A5DA8' } };
-                const colors = statusColors[finding.statusColor] || statusColors.blue;
+
                 if (isDismissed) {
                   return (
                     <div key={finding.key} className="v6Scenario__findingCard v6Scenario__findingCard--dismissed">
-                      <div className="v6Scenario__findingCardMain" style={{ padding: '10px 14px' }}>
-                        <span className="v6Scenario__findingDismissedText">{finding.title} — <em>dismissed</em></span>
-                        <button type="button" className="v6Scenario__findingUndoBtn" onClick={(e) => { e.stopPropagation(); undoDismissFinding(finding.key); }}>Undo</button>
+                      <div className="v6Scenario__findingCardMain">
+                        <div className="v6Scenario__findingCardLeft">
+                          <span className="v6Scenario__findingDismissedText">
+                            {finding.title}
+                          </span>
+                        </div>
+                        <div className="v6Scenario__findingCardRight">
+                          <DotCountdownRing startTime={dismissedFindings[finding.key]} />
+                          <button
+                            type="button"
+                            className="v6Scenario__findingUndoBtn"
+                            onClick={(e) => { e.stopPropagation(); undoDismissFinding(finding.key); }}>
+                            Undo
+                          </button>
+                        </div>
                       </div>
                     </div>
                   );
                 }
+
                 return (
-                  <div
-                    key={finding.key}
-                    className={`v6Scenario__findingCard${isExpanded ? ' v6Scenario__findingCard--expanded' : ''}`}
-                    onClick={() => toggleFinding(finding.key)}>
+                  <div key={finding.key} className={`v6Scenario__findingCard${isExpanded ? ' v6Scenario__findingCard--expanded' : ''}`} onClick={() => toggleFinding(finding.key)}>
                     <div className="v6Scenario__findingCardMain">
                       <div className="v6Scenario__findingCardLeft">
                         <div className="v6Scenario__findingHeader">
-                          <span className="v6Scenario__statusPill" style={{ background: colors.bg, color: colors.color }}>{finding.status}</span>
+                          <StatusPill status={finding.status} color={finding.statusColor} />
                           <span className="v6Scenario__findingTitle">{finding.title}</span>
                         </div>
                       </div>
                       <div className="v6Scenario__findingCardRight">
+                        {finding.widget && finding.widget.type === 'status' && (
+                          <div className="v6Scenario__findingWidget">
+                            <span className="v6Scenario__fwDot" style={{ background: finding.widget.color }} />
+                            <span className="v6Scenario__fwLabel">{finding.widget.label}</span>
+                          </div>
+                        )}
+                        {finding.widget && finding.widget.type === 'spark' && (
+                          <div className="v6Scenario__findingWidget">
+                            <svg viewBox="0 0 60 20" className="v6Scenario__fwSpark">
+                              <defs>
+                                <pattern id={`spark-stripe-sc-${finding.key}`} width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                                  <line x1="0" y1="0" x2="0" y2="4" stroke={finding.widget.color} strokeWidth="1" opacity="0.35" />
+                                </pattern>
+                              </defs>
+                              <path d="M0,4 L15,6 L30,8 L45,12 L60,18 L60,20 L0,20 Z" fill={`url(#spark-stripe-sc-${finding.key})`} />
+                              <polyline points="0,4 15,6 30,8 45,12 60,18" fill="none" stroke={finding.widget.color} strokeWidth="1.5" strokeLinecap="round" />
+                            </svg>
+                            <span className="v6Scenario__fwSubLabel">{finding.widget.label}</span>
+                          </div>
+                        )}
+                        {finding.widget && finding.widget.type === 'bignum' && (
+                          <div className="v6Scenario__findingWidget">
+                            <span className="v6Scenario__fwBignum">{finding.widget.value}</span>
+                            {finding.widget.delta && (
+                              <span className="v6Scenario__fwDelta" style={{ color: finding.widget.deltaColor }}>{finding.widget.delta}</span>
+                            )}
+                            {finding.widget.sub && (
+                              <span className="v6Scenario__fwSubLabel">{finding.widget.sub}</span>
+                            )}
+                          </div>
+                        )}
                         <OuiIcon type="arrowDown" size="s" className={`v6Scenario__findingChevron${isExpanded ? ' v6Scenario__findingChevron--expanded' : ''}`} />
                       </div>
                     </div>
-                    {isExpanded && finding.actions && finding.actions.length > 0 && (
+                    <div className={`v6Scenario__findingActions__side${isExpanded ? ' v6Scenario__findingActions__side--visible' : ''}`}>
+                      {isExpanded && (
+                        <>
+                          <button
+                            type="button"
+                            className={`v6Scenario__findingSideBtn${feedback === 'up' ? ' v6Scenario__findingSideBtn--active' : ''}`}
+                            aria-label="Helpful"
+                            onClick={(e) => { e.stopPropagation(); setFeedback(finding.key, 'up'); }}>
+                            <OuiIcon type="thumbsUp" size="s" />
+                          </button>
+                          <button
+                            type="button"
+                            className={`v6Scenario__findingSideBtn${feedback === 'down' ? ' v6Scenario__findingSideBtn--active' : ''}`}
+                            aria-label="Not helpful"
+                            onClick={(e) => { e.stopPropagation(); setFeedback(finding.key, 'down'); }}>
+                            <OuiIcon type="thumbsDown" size="s" />
+                          </button>
+                        </>
+                      )}
+                      <button
+                        type="button"
+                        className="v6Scenario__findingSideBtn"
+                        aria-label="Dismiss"
+                        onClick={(e) => { e.stopPropagation(); dismissFinding(finding.key); }}>
+                        <OuiIcon type="cross" size="s" />
+                      </button>
+                    </div>
+                    {isExpanded && (
                       <div className="v6Scenario__findingCardBody">
-                        <div className="v6Scenario__findingActions">
-                          {finding.actions.map((action) => (
-                            <button key={action.key} type="button" className="v6Scenario__findingAction" onClick={(e) => e.stopPropagation()}>
-                              {action.label}
-                            </button>
-                          ))}
-                        </div>
+                        <FindingEvidence scenario={scenario} findingKey={finding.key} />
+                        {finding.actions && finding.actions.length > 0 && (
+                          <div className="v6Scenario__findingActions">
+                            {finding.actions.map((action) => (
+                              <button
+                                key={action.key}
+                                type="button"
+                                className="v6Scenario__findingAction"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (onStartThread) onStartThread(action.label);
+                                }}>
+                                {action.label}
+                              </button>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -1486,7 +1563,7 @@ export const EmptySessionPageV6 = ({
 
           {/* Input */}
           <div className="v6Scenario__inputArea">
-            <SurroundShimmer hide={isSingleColumn}>
+            <SurroundShimmer hide={false}>
               <div className="emptySessionPage__inputField">
                 <textarea
                   className="v6Scenario__textarea"

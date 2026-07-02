@@ -14,12 +14,15 @@
 // ============================================================
 
 .overviewHomePage {
+  --widget-font-base: 10.5px;
+  --widget-min-w: calc(var(--widget-font-base) * 12.5);
   padding: 0;
   overflow-y: auto;
   height: 100%;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  container-type: inline-size;
 }
 
 .overviewHomePage__section {
@@ -370,8 +373,20 @@
 // ─── Widget grid ──────────────────────────────────────────────
 .overviewHomePage__widgetGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(max(var(--widget-min-w, 131px), calc((100% - 16px) / 3)), 1fr));
   gap: 8px;
+}
+
+@container (max-width: 420px) {
+  .overviewHomePage__widgetGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@container (max-width: 280px) {
+  .overviewHomePage__widgetGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 

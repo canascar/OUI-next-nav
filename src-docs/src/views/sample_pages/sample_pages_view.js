@@ -1639,7 +1639,7 @@ export const SessionPagesView = ({ variant } = {}) => {
   const isV8Variant = variant === 'v8';
   const navExpandRef = useRef(null);
 
-  const EmptyPage = isV6Variant ? EmptySessionPageV6 : isV5Variant ? EmptySessionPageV5 : variant === 'v4' ? EmptySessionPageV3 : variant === 'v3' ? EmptySessionPageV3 : variant === 'v2' ? EmptySessionPageV2 : EmptySessionPageV6;
+  const EmptyPage = isV6Variant ? EmptySessionPageV6 : isV5Variant ? EmptySessionPageV5 : variant === 'v4' ? EmptySessionPageV3 : variant === 'v3' ? EmptySessionPageV3 : variant === 'v2' ? EmptySessionPageV2 : EmptySessionPage;
   // Prevent page scroll when this full-screen view is mounted
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -1719,6 +1719,23 @@ export const SessionPagesView = ({ variant } = {}) => {
 
   /** Plus_Button: navigate to empty session, or create one if none exists */
   const handleCreateSession = useCallback(() => {
+    if (isV7Variant) {
+      setSessionState((prev) => {
+        const newId = `overview-home-${Date.now()}`;
+        const newSession = {
+          ...OVERVIEW_HOME_SESSION,
+          id: newId,
+          createdAt: Date.now(),
+        };
+        return {
+          ...prev,
+          sessions: [...prev.sessions, newSession],
+          activeSessionId: newId,
+        };
+      });
+      setActiveView('session');
+      return;
+    }
     setSessionState((prev) => {
       // If the active session is already empty, just stay on it
       const active = prev.sessions.find((s) => s.id === prev.activeSessionId);
@@ -1734,7 +1751,7 @@ export const SessionPagesView = ({ variant } = {}) => {
       return createSession(prev);
     });
     setActiveView('session');
-  }, []);
+  }, [isV7Variant]);
 
   /** Sessions_Button: show the session list */
   const handleBrowseSessions = useCallback(() => {
@@ -1938,10 +1955,11 @@ export const SessionPagesView = ({ variant } = {}) => {
 
     return (
       <SessionContainer
+        key={variant ? activeSession.id : undefined}
         session={activeSession}
         onUpdateSession={handleUpdateSession}
         onOpenCanvasPage={handleOpenCanvasPage}
-        onGoBack={handleCreateSession}
+        onGoBack={variant ? handleCreateSession : undefined}
       />
     );
   };
@@ -1949,7 +1967,7 @@ export const SessionPagesView = ({ variant } = {}) => {
   return (
     <div
       className={`samplePagesWrapper${
-        isSessionView ? ' samplePagesWrapper--noPattern' : ''
+        isSessionView && variant && !(activeSession && activeSession.threadKey === 'overview-home') ? ' samplePagesWrapper--noPattern' : ''
       }`}
       style={{
         display: 'flex',

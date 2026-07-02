@@ -58,6 +58,7 @@ export const ThreadPanel = forwardRef(
     const [sharedWith, setSharedWith] = useState([]);
     const [isEditing, setIsEditing] = useState(false);
     const [editValue, setEditValue] = useState('');
+    const [isGreeting, setIsGreeting] = useState(false);
 
     const handleNavigate = (pageKey, navTitle) => {
       if (onViewAction) {
@@ -95,6 +96,7 @@ export const ThreadPanel = forwardRef(
         className={`threadPanel${isAnimating ? ' threadPanel--animating' : ''}`}
         style={{ width }}>
         {/* Header */}
+        {!isGreeting && (
         <div className="threadPanel__header">
           <div className="threadPanel__headerLeft">
             <OuiIcon type="chatLeft" size="m" />
@@ -185,6 +187,7 @@ export const ThreadPanel = forwardRef(
             </OuiToolTip>
           </div>
         </div>
+        )}
 
         {/* Content */}
         <div className="threadPanel__content">
@@ -198,6 +201,7 @@ export const ThreadPanel = forwardRef(
               pendingThread ? pendingThread.sourcePageTitle : undefined
             }
             onNavigate={handleNavigate}
+            onGreetingStateChange={setIsGreeting}
           />
         </div>
 
