@@ -332,6 +332,10 @@ export const PagePanel = ({
                 }}
               />
             ) : undefined}
+            firstActionLabel={activeTab.pageKey === 'overview-home' ? 'Edit widgets' : 'Settings'}
+            onFirstAction={activeTab.pageKey === 'overview-home' ? () => {
+              window.dispatchEvent(new CustomEvent('overview-home-edit-toggle'));
+            } : undefined}
           />
         )}
         <div className="pagePanel__canvasContent">

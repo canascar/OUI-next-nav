@@ -86,19 +86,7 @@ const THREADS = {
       {
         role: 'assistant',
         content:
-          'Hey John,\n\n**Active incident** — checkout-agent is looping. Immediate action needed.\n\n244 of 247 services healthy. Connection pool exhaustion detected on 3 of 4 pods.',
-      },
-      {
-        role: 'assistant',
-        content:
-          'Here\'s what I found:\n\n1. **checkout-agent is looping** — 1,994 retries in the last 6 minutes\n2. **Root cause identified** — order-db pool at 98%, handler returns 200 on empty\n3. **Three fixes available** — cap retries, raise pool limit, fix 200-on-empty response\n\nWould you like me to investigate further or apply one of the fixes?',
-        attachments: [
-          {
-            type: 'link-preview',
-            title: 'checkout-agent retry loop alert',
-            description: 'Triggered 6 minutes ago. 1,994 retries detected. Connection pool exhaustion on order-db.',
-          },
-        ],
+          '## Hey John,\n\n**Active incident** — checkout-agent is looping. Immediate action needed.\n\n244 of 247 services healthy. Connection pool exhaustion detected on 3 of 4 pods.',
       },
     ],
   },
@@ -658,8 +646,18 @@ const parseContent = (content) => {
   while (i < lines.length) {
     const line = lines[i];
 
-    // Bold header
-    if (line.startsWith('**') && line.endsWith('**')) {
+    // Heading (## )
+    if (line.startsWith('## ')) {
+      elements.push(
+        <p
+          key={key++}
+          style={{ margin: '0 0 4px', fontSize: 20, fontWeight: 700 }}>
+          {line.slice(3)}
+        </p>
+      );
+      i++;
+      // Bold header
+    } else if (line.startsWith('**') && line.endsWith('**')) {
       elements.push(
         <p
           key={key++}
@@ -1138,6 +1136,7 @@ const AssistantMessage = ({
   mascotEyeColor,
   isLastAssistant,
   isTyping,
+  largeGreeting,
 }) => {
   const allAttachments = attachments || (attachment ? [attachment] : []);
   const showMascot = isLastAssistant && !isTyping;
@@ -2018,6 +2017,11 @@ export const ThreadPage = ({
     if (!text) return;
     hasInteracted.current = true;
 
+    // Rename session on first user message for overview-home
+    if (threadKey === 'overview-home' && !messages.some((m) => m.role === 'user')) {
+      window.dispatchEvent(new CustomEvent('session-rename', { detail: { title: text.slice(0, 50) } }));
+    }
+
     // Add user message
     const userMsg = { role: 'user', author: 'You', content: text };
     setMessages((prev) => [...prev, userMsg]);
@@ -2435,6 +2439,7 @@ export const ThreadPage = ({
                     i === messages.findLastIndex((m) => m.role === 'assistant')
                   }
                   isTyping={isTyping}
+                  largeGreeting={msg.largeGreeting}
                 />
               );
             })}
@@ -2468,9 +2473,30 @@ export const ThreadPage = ({
                 return null;
               if (
                 effectiveScriptedKey !== 'latency-spike' &&
-                effectiveScriptedKey !== 'connection-timeout'
+                effectiveScriptedKey !== 'connection-timeout' &&
+                threadKey !== 'overview-home'
               )
                 return null;
+              // Overview-home suggestion
+              if (threadKey === 'overview-home' && messages.length > 0 && !messages.some((m) => m.role === 'user')) {
+                const suggestion = 'Investigate the checkout-agent loop';
+                return (
+                  <div className="threadPage__suggestedPrompts threadPage__suggestedPrompts--bottom">
+                    <OuiSmallButtonEmpty
+                      color="text"
+                      iconType="returnKey"
+                      iconSide="right"
+                      className="threadPage__suggestedPrompt"
+                      onClick={() => {
+                        setMessage(suggestion);
+                        hasInteracted.current = true;
+                        setTimeout(() => handleSend(suggestion), 0);
+                      }}>
+                      {suggestion}
+                    </OuiSmallButtonEmpty>
+                  </div>
+                );
+              }
               const done = completedScriptedIds;
               let prompts = [];
               if (effectiveScriptedKey === 'connection-timeout') {

@@ -1688,6 +1688,25 @@ export const SessionPagesView = ({ variant } = {}) => {
     return initializeSessionState();
   });
 
+  // Listen for session rename events (e.g. from overview-home first message)
+  useEffect(() => {
+    const handleRename = (e) => {
+      const { title } = e.detail || {};
+      if (!title) return;
+      setSessionState((prev) => {
+        if (!prev.activeSessionId) return prev;
+        return {
+          ...prev,
+          sessions: prev.sessions.map((s) =>
+            s.id === prev.activeSessionId ? { ...s, title } : s
+          ),
+        };
+      });
+    };
+    window.addEventListener('session-rename', handleRename);
+    return () => window.removeEventListener('session-rename', handleRename);
+  }, []);
+
   // Active view: 'session' (show active session) or 'session-list' (browse all sessions)
   const [activeView, setActiveView] = useState('session');
 

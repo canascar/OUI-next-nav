@@ -14,12 +14,12 @@
 // ============================================================
 
 .overviewHomePage {
-  padding: 24px;
+  padding: 0;
   overflow-y: auto;
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
 }
 
 .overviewHomePage__section {
