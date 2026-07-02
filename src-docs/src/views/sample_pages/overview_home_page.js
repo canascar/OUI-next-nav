@@ -221,6 +221,21 @@ export const OverviewHomePage = () => {
     return () => timers.forEach(clearTimeout);
   }, []);
 
+  // Listen for edit toggle from page panel header settings button
+  useEffect(() => {
+    const handleEditToggle = () => {
+      setIsEditMode((prev) => {
+        if (prev) {
+          setShowWidgetPicker(false);
+          setWidgetPickerSearch('');
+        }
+        return !prev;
+      });
+    };
+    window.addEventListener('overview-home-edit-toggle', handleEditToggle);
+    return () => window.removeEventListener('overview-home-edit-toggle', handleEditToggle);
+  }, []);
+
   // Listen for refresh event from page panel header
   useEffect(() => {
     const handleRefresh = () => {
@@ -413,26 +428,6 @@ export const OverviewHomePage = () => {
 
       {/* Widget grid */}
       <div className="overviewHomePage__section">
-        <div className="overviewHomePage__sectionHeader">
-          <span className="overviewHomePage__sectionTitle">Widgets</span>
-          {isEditMode ? (
-            <button
-              type="button"
-              className="overviewHomePage__doneBtn"
-              onClick={() => { setIsEditMode(false); setShowWidgetPicker(false); setWidgetPickerSearch(''); }}>
-              Done
-            </button>
-          ) : (
-            <OuiButtonIcon
-              iconType="pencil"
-              aria-label="Edit widgets"
-              color="text"
-              size="xs"
-              className="overviewHomePage__editBtn"
-              onClick={() => setIsEditMode(true)}
-            />
-          )}
-        </div>
         <div className={`overviewHomePage__widgetGrid${isEditMode ? ' overviewHomePage__widgetGrid--editing' : ''}`}>
           {widgetOrder.map((widgetId) => (
             <div

@@ -667,6 +667,12 @@
   margin-bottom: 8px;
 }
 
+.threadPage__suggestedPrompts--bottom {
+  margin-top: auto;
+  margin-bottom: 0;
+  padding-bottom: 8px;
+}
+
 .threadPage__suggestedPrompt {
   color: lightOrDarkTheme(#4A5568, #A0AEC0);
   border: 1px solid lightOrDarkTheme(#E2E8F0, rgba(255, 255, 255, 0.1));

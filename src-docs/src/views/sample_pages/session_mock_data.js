@@ -308,11 +308,11 @@ export const OVERVIEW_HOME_SESSION = {
   id: 'overview-home-session',
   threadKey: 'overview-home',
   pendingThread: null,
-  title: 'Morning Briefing',
+  title: 'New Session',
   summary:
     'Active incident — checkout-agent is looping. 244 of 247 services healthy.',
   threadPanelState: 'side-by-side',
-  threadPanelWidth: 35,
+  threadPanelWidth: 60,
   tabs: [
     { id: 'tab-overview-home', pageKey: 'overview-home', title: 'Overview' },
   ],
