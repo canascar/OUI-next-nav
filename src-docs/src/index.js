@@ -143,7 +143,7 @@ render(
             path="/sample-pages-v6"
             render={() => (
               <LinkWrapper>
-                <SessionPagesView variant="v6" />
+                <SessionPagesView key="v6-sp" variant="v6" />
               </LinkWrapper>
             )}
           />
@@ -151,7 +151,7 @@ render(
             path="/sample-pages-v5-scenario1"
             render={() => (
               <LinkWrapper>
-                <SessionPagesView variant="v5-scenario1" />
+                <SessionPagesView key="v5s1" variant="v5-scenario1" />
               </LinkWrapper>
             )}
           />
@@ -159,7 +159,7 @@ render(
             path="/sample-pages-v5-scenario2"
             render={() => (
               <LinkWrapper>
-                <SessionPagesView variant="v5-scenario2" />
+                <SessionPagesView key="v5s2" variant="v5-scenario2" />
               </LinkWrapper>
             )}
           />
@@ -167,7 +167,7 @@ render(
             path="/sample-pages-v5-scenario3"
             render={() => (
               <LinkWrapper>
-                <SessionPagesView variant="v5-scenario3" />
+                <SessionPagesView key="v5s3" variant="v5-scenario3" />
               </LinkWrapper>
             )}
           />
@@ -175,7 +175,7 @@ render(
             path="/sample-pages-v5-scenario4"
             render={() => (
               <LinkWrapper>
-                <SessionPagesView variant="v5-scenario4" />
+                <SessionPagesView key="v5s4" variant="v5-scenario4" />
               </LinkWrapper>
             )}
           />
@@ -183,7 +183,7 @@ render(
             path="/sample-pages-v5-scenario5"
             render={() => (
               <LinkWrapper>
-                <SessionPagesView variant="v5-scenario5" />
+                <SessionPagesView key="v5s5" variant="v5-scenario5" />
               </LinkWrapper>
             )}
           />
@@ -191,7 +191,7 @@ render(
             path="/sample-pages-v5"
             render={() => (
               <LinkWrapper>
-                <SessionPagesView variant="v5" />
+                <SessionPagesView key="v5" variant="v5" />
               </LinkWrapper>
             )}
           />
@@ -199,7 +199,7 @@ render(
             path="/sample-pages-v4"
             render={() => (
               <LinkWrapper>
-                <SessionPagesView variant="v4" />
+                <SessionPagesView key="v4" variant="v4" />
               </LinkWrapper>
             )}
           />
@@ -207,7 +207,7 @@ render(
             path="/sample-pages-v3"
             render={() => (
               <LinkWrapper>
-                <SessionPagesView variant="v3" />
+                <SessionPagesView key="v3" variant="v3" />
               </LinkWrapper>
             )}
           />
@@ -215,7 +215,7 @@ render(
             path="/sample-pages-v2"
             render={() => (
               <LinkWrapper>
-                <SessionPagesView variant="v2" />
+                <SessionPagesView key="v2" variant="v2" />
               </LinkWrapper>
             )}
           />
@@ -223,7 +223,7 @@ render(
             path="/sample-pages"
             render={() => (
               <LinkWrapper>
-                <SessionPagesView />
+                <SessionPagesView key="v1" />
               </LinkWrapper>
             )}
           />
