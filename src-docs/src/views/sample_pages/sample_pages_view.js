@@ -1710,6 +1710,88 @@ export const SessionPagesView = ({ variant } = {}) => {
   // Active view: 'session' (show active session) or 'session-list' (browse all sessions)
   const [activeView, setActiveView] = useState('session');
 
+  // Listen for "open a page in a fresh session" events from the home greeting
+  // Jump-to chips — mirrors the side-nav behavior: new session, page tab,
+  // chat minimized, and a full-width canvas.
+  useEffect(() => {
+    const handleOpenCanvasInNewSession = (e) => {
+      const { pageKey, title } = e.detail || {};
+      if (!pageKey) return;
+      setSessionState((prev) => {
+        const next = createSession(prev);
+        const newSessionId = next.activeSessionId;
+        const pageEntry = SOURCE_PAGE_MOCK[pageKey];
+        const displayTitle = title || (pageEntry ? pageEntry.title : pageKey);
+        const tab = {
+          id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+          pageKey,
+          title: displayTitle,
+        };
+        return updateSession(next, newSessionId, {
+          tabs: [tab],
+          activeTabId: tab.id,
+          threadPanelState: 'minimized',
+          title: displayTitle,
+        });
+      });
+      setActiveView('session');
+    };
+    window.addEventListener(
+      'open-canvas-in-new-session',
+      handleOpenCanvasInNewSession
+    );
+    return () =>
+      window.removeEventListener(
+        'open-canvas-in-new-session',
+        handleOpenCanvasInNewSession
+      );
+  }, []);
+
+  // Listen for "open a chat session" events from overview widgets (top services,
+  // dashboards) — creates a fresh session with a chat thread (side-by-side) plus
+  // the relevant canvas page.
+  useEffect(() => {
+    const handleOpenChatSession = (e) => {
+      const { pageKey, title, prompt } = e.detail || {};
+      if (!prompt) return;
+      setSessionState((prev) => {
+        const next = createSession(prev);
+        const newSessionId = next.activeSessionId;
+        const threadKey = `thread-${Date.now()}-${Math.random()
+          .toString(36)
+          .slice(2, 9)}`;
+        const pendingThread = {
+          key: threadKey,
+          messages: [{ role: 'user', author: 'You', content: prompt }],
+          sourcePageTitle: title || null,
+        };
+        const updates = {
+          threadKey,
+          pendingThread,
+          threadPanelState: 'side-by-side',
+          title: title || prompt.slice(0, 40),
+        };
+        if (pageKey) {
+          const pageEntry = SOURCE_PAGE_MOCK[pageKey];
+          const displayTitle = title || (pageEntry ? pageEntry.title : pageKey);
+          updates.tabs = [
+            {
+              id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+              pageKey,
+              title: displayTitle,
+            },
+          ];
+          updates.activeTabId = updates.tabs[0].id;
+        }
+        return updateSession(next, newSessionId, updates);
+      });
+      setActiveView('session');
+    };
+    window.addEventListener('open-chat-session', handleOpenChatSession);
+    return () =>
+      window.removeEventListener('open-chat-session', handleOpenChatSession);
+  }, []);
+
   // Derive active session from state
   const activeSession = sessionState.sessions.find(
     (s) => s.id === sessionState.activeSessionId

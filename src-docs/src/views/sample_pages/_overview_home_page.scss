@@ -373,19 +373,45 @@
 // ─── Widget grid ──────────────────────────────────────────────
 .overviewHomePage__widgetGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(max(var(--widget-min-w, 131px), calc((100% - 16px) / 3)), 1fr));
+  // Three equal columns that always fill the full width (minmax(0,1fr) keeps
+  // wide content from forcing tracks past the container).
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
 }
 
-@container (max-width: 420px) {
+// Medium overview (< 720px): two columns
+@container (max-width: 720px) {
   .overviewHomePage__widgetGrid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@container (max-width: 280px) {
+// Narrow overview (< 480px): stack every widget on its own row
+@container (max-width: 480px) {
   .overviewHomePage__widgetGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+// Widgets gracefully fade + rise in when their data loads (instead of popping)
+.overviewHomePage__widgetContentIn {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  animation: overviewWidgetContentIn 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes overviewWidgetContentIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 

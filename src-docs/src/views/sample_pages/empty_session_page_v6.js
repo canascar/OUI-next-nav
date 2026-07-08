@@ -15,6 +15,8 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
+  useMemo,
 } from 'react';
 
 import {
@@ -568,6 +570,71 @@ const MetricBox = ({ label, value, sub, color }) => (
   </div>
 );
 
+// Smoothly animates its content open/closed by measuring the content height.
+// Expand eases out (decelerates); collapse eases in (accelerates).
+const CollapsibleBody = ({ expanded, children }) => {
+  const outerRef = React.useRef(null);
+  const innerRef = React.useRef(null);
+  const didInit = React.useRef(false);
+
+  React.useLayoutEffect(() => {
+    const el = outerRef.current;
+    const inner = innerRef.current;
+    if (!el || !inner) return undefined;
+
+    // First render: set the resting state with no animation.
+    if (!didInit.current) {
+      didInit.current = true;
+      el.style.height = expanded ? 'auto' : '0px';
+      el.style.opacity = expanded ? '1' : '0';
+      return undefined;
+    }
+
+    const target = inner.offsetHeight;
+    let cleanup;
+
+    if (expanded) {
+      // Expand: 0 → measured height, ease-out.
+      el.style.transition = 'none';
+      el.style.height = '0px';
+      el.style.opacity = '0';
+      void el.offsetHeight; // force reflow so the start state is committed
+      el.style.transition = 'height 340ms ease-out, opacity 260ms ease-out 60ms';
+      el.style.opacity = '1';
+      el.style.height = `${target}px`;
+      const onEnd = (e) => {
+        if (e.propertyName !== 'height') return;
+        el.style.height = 'auto'; // let it grow with content afterwards
+        el.removeEventListener('transitionend', onEnd);
+      };
+      el.addEventListener('transitionend', onEnd);
+      cleanup = () => el.removeEventListener('transitionend', onEnd);
+    } else {
+      // Collapse: measured height → 0, ease-in.
+      el.style.transition = 'none';
+      el.style.height = `${target}px`;
+      void el.offsetHeight; // force reflow
+      el.style.transition = 'height 300ms ease-in, opacity 180ms ease-in';
+      el.style.opacity = '0';
+      el.style.height = '0px';
+    }
+
+    return cleanup;
+  }, [expanded]);
+
+  return (
+    <div
+      ref={outerRef}
+      className="v6Scenario__findingCardBodyWrap"
+      aria-hidden={!expanded}
+      style={{ overflow: 'hidden', height: 0, opacity: 0 }}>
+      <div ref={innerRef} className="v6Scenario__findingCardBodyInner">
+        {children}
+      </div>
+    </div>
+  );
+};
+
 const FindingEvidence = ({ scenario, findingKey }) => {
   const evidenceMap = {
     1: {
@@ -781,6 +848,7 @@ export const EmptySessionPageV6 = ({
   onStartThread,
   onOpenPage,
   onOpenPageInNewSession,
+  onJumpToPage,
   onSelectSession,
   onBrowseLibrary,
   onOpenMobileNav,
@@ -796,7 +864,7 @@ export const EmptySessionPageV6 = ({
 
   const [inputValue, setInputValue] = useState('');
   const [mascotExpression, setMascotExpression] = useState(undefined);
-  const [rightPanelWidth, setRightPanelWidth] = useState(50);
+  const [rightPanelWidth, setRightPanelWidth] = useState(40);
   const resizeRef = useRef(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [showWidgetPicker, setShowWidgetPicker] = useState(false);
@@ -816,6 +884,8 @@ export const EmptySessionPageV6 = ({
     });
     return initial;
   });
+  // Widgets stay idle (no loading shimmer) until the left panel has fully loaded.
+  const [widgetsArmed, setWidgetsArmed] = useState(false);
   const [dataVariant, setDataVariant] = useState(0);
   const [widgetOrder, setWidgetOrder] = useState([
     'connection-timeout',
@@ -832,24 +902,58 @@ export const EmptySessionPageV6 = ({
   const [summaryLoading, setSummaryLoading] = useState(true);
   const [findingsLoaded, setFindingsLoaded] = useState(0);
 
+  // Smoothly animate the findings container's height as cards load in, so the
+  // space between the summary and the input opens up gracefully.
+  const findingsRef = useRef(null);
+  const prevFindingsHeightRef = useRef(null);
+  useLayoutEffect(() => {
+    const el = findingsRef.current;
+    if (!el) return undefined;
+    el.style.height = 'auto';
+    const target = el.scrollHeight;
+    const prev = prevFindingsHeightRef.current;
+    prevFindingsHeightRef.current = target;
+    if (prev == null || prev === target) return undefined;
+    el.style.overflow = 'hidden';
+    el.style.height = `${prev}px`;
+    void el.offsetHeight; // force reflow so the transition runs
+    el.style.height = `${target}px`;
+    const timer = setTimeout(() => {
+      if (!el) return;
+      el.style.height = 'auto';
+      el.style.overflow = '';
+    }, 460);
+    return () => clearTimeout(timer);
+  }, [findingsLoaded, summaryLoading]);
+
   const scenarioData = SCENARIOS[scenario] || SCENARIOS[1];
+
+  // Shared agentic load schedule so widgets can start after the left side settles.
+  const loadSchedule = useMemo(() => {
+    const summaryDelay = isSingleColumn ? 600 : (1000 + Math.random() * 2000);
+    const findingCount = scenarioData.findings.length;
+    const findingDelays = [];
+    for (let i = 0; i < findingCount; i++) {
+      const findingGap = isSingleColumn ? (600 + Math.random() * 400) : (1000 + Math.random() * 1500);
+      findingDelays.push(summaryDelay + (isSingleColumn ? 1000 : 800) + (i * findingGap));
+    }
+    // Time at which the last finding has appeared (plus its entrance animation).
+    const leftDoneTime = (findingDelays.length ? Math.max(...findingDelays) : summaryDelay) + 440;
+    return { summaryDelay, findingDelays, leftDoneTime };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Staggered agentic loading: summary first, then findings one by one
   useEffect(() => {
-    const summaryDelay = isSingleColumn ? 600 : (1000 + Math.random() * 2000);
     const summaryTimer = setTimeout(() => {
       setSummaryLoading(false);
-    }, summaryDelay);
+    }, loadSchedule.summaryDelay);
 
-    const findingCount = scenarioData.findings.length;
-    const findingTimers = [];
-    for (let i = 0; i < findingCount; i++) {
-      const findingGap = isSingleColumn ? (600 + Math.random() * 400) : (1000 + Math.random() * 1500);
-      const delay = summaryDelay + (isSingleColumn ? 400 : 800) + (i * findingGap);
-      findingTimers.push(setTimeout(() => {
+    const findingTimers = loadSchedule.findingDelays.map((delay) =>
+      setTimeout(() => {
         setFindingsLoaded((prev) => prev + 1);
-      }, delay));
-    }
+      }, delay)
+    );
 
     return () => {
       clearTimeout(summaryTimer);
@@ -857,16 +961,25 @@ export const EmptySessionPageV6 = ({
     };
   }, []);
 
-  // Staggered initial load for widgets
+  // Widgets stay idle until the entire left panel has loaded, then begin their
+  // own shimmer-load sequence and reveal one by one.
   useEffect(() => {
     const ids = ['connection-timeout', 'recent-alerts', 'resource-utilization', 'saved-queries', 'dashboards', 'deployment-timeline'];
-    const timers = ids.map((id) => {
-      const delay = 1000 + Math.random() * 2000;
+    // Arm (start the loading shimmer) once the left side is fully loaded.
+    const armAt = loadSchedule.leftDoneTime + 400;
+    const armTimer = setTimeout(() => setWidgetsArmed(true), armAt);
+    // Hold the shimmer briefly so it reads as "loading", then reveal, staggered.
+    const revealBase = armAt + 700;
+    const timers = ids.map((id, i) => {
+      const delay = revealBase + (i * (280 + Math.random() * 320));
       return setTimeout(() => {
         setRefreshingWidgets((prev) => ({ ...prev, [id]: false }));
       }, delay);
     });
-    return () => timers.forEach(clearTimeout);
+    return () => {
+      clearTimeout(armTimer);
+      timers.forEach(clearTimeout);
+    };
   }, []);
 
   const toggleFinding = (key) => {
@@ -927,6 +1040,33 @@ export const EmptySessionPageV6 = ({
       return { ...prev, [key]: direction };
     });
   };
+
+  // Collapsible body for a finding card. Always rendered so it can smoothly
+  // animate open (ease-out) and closed (ease-in) via a measured height transition.
+  const renderFindingBody = (finding, isExpanded) => (
+    <CollapsibleBody expanded={isExpanded}>
+      <div className="v6Scenario__findingCardBody">
+        <FindingEvidence scenario={scenario} findingKey={finding.key} />
+        {finding.actions && finding.actions.length > 0 && (
+          <div className="v6Scenario__findingActions">
+            {finding.actions.map((action) => (
+              <button
+                key={action.key}
+                type="button"
+                className="v6Scenario__findingAction"
+                tabIndex={isExpanded ? 0 : -1}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (onStartThread) onStartThread(action.label);
+                }}>
+                {action.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </CollapsibleBody>
+  );
 
   const handleResizeMouseDown = useCallback((e) => {
     e.preventDefault();
@@ -1410,7 +1550,6 @@ export const EmptySessionPageV6 = ({
                 />
               </div>
             </OuiToolTip>
-            <StatusDot color={scenarioData.statusColor} />
           </div>
 
           {/* Greeting */}
@@ -1427,7 +1566,7 @@ export const EmptySessionPageV6 = ({
 
           {/* Inline findings (single-column layout) */}
           {isSingleColumn && !summaryLoading && (
-            <div className="v6Scenario__findings v6Scenario__findings--inline">
+            <div className="v6Scenario__findings v6Scenario__findings--inline" ref={findingsRef}>
               {scenarioData.findings.map((finding, findingIndex) => {
                 if (findingIndex >= findingsLoaded) return null;
                 if (removedFindings.has(finding.key)) return null;
@@ -1529,27 +1668,7 @@ export const EmptySessionPageV6 = ({
                         <OuiIcon type="cross" size="s" />
                       </button>
                     </div>
-                    {isExpanded && (
-                      <div className="v6Scenario__findingCardBody">
-                        <FindingEvidence scenario={scenario} findingKey={finding.key} />
-                        {finding.actions && finding.actions.length > 0 && (
-                          <div className="v6Scenario__findingActions">
-                            {finding.actions.map((action) => (
-                              <button
-                                key={action.key}
-                                type="button"
-                                className="v6Scenario__findingAction"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (onStartThread) onStartThread(action.label);
-                                }}>
-                                {action.label}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
+                    {renderFindingBody(finding, isExpanded)}
                   </div>
                 );
               })}
@@ -1643,7 +1762,10 @@ export const EmptySessionPageV6 = ({
                 key={item.pageKey}
                 type="button"
                 className="v6Scenario__jumpToChip"
-                onClick={() => onOpenPageInNewSession && onOpenPageInNewSession(item.pageKey, item.label)}>
+                onClick={() => {
+                  const open = onJumpToPage || onOpenPageInNewSession;
+                  if (open) open(item.pageKey, item.label);
+                }}>
                 <OuiIcon type={item.icon} size="s" />
                 <span>{item.label}</span>
               </button>
@@ -1879,27 +2001,7 @@ export const EmptySessionPageV6 = ({
                         <OuiIcon type="cross" size="s" />
                       </button>
                     </div>
-                    {isExpanded && (
-                      <div className="v6Scenario__findingCardBody">
-                        <FindingEvidence scenario={scenario} findingKey={finding.key} />
-                        {finding.actions && finding.actions.length > 0 && (
-                          <div className="v6Scenario__findingActions">
-                            {finding.actions.map((action) => (
-                              <button
-                                key={action.key}
-                                type="button"
-                                className="v6Scenario__findingAction"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (onStartThread) onStartThread(action.label);
-                                }}>
-                                {action.label}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
+                    {renderFindingBody(finding, isExpanded)}
                   </div>
                 );
               })}
@@ -2000,11 +2102,13 @@ export const EmptySessionPageV6 = ({
                     {refreshingWidgets[widgetId] ? (
                       <div style={{ position: 'relative', overflow: 'hidden', flex: 1 }}>
                         <div style={{ visibility: 'hidden' }}>{renderWidget(widgetId)}</div>
-                        <div style={{ position: 'absolute', inset: 0, borderRadius: 'inherit' }}>
-                          <div className="ouiInsightCard" style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-                            <ScanShimmerOverlay />
+                        {widgetsArmed && (
+                          <div style={{ position: 'absolute', inset: 0, borderRadius: 'inherit' }}>
+                            <div className="ouiInsightCard" style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+                              <ScanShimmerOverlay />
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </div>
                     ) : renderWidget(widgetId)}
                   </div>

@@ -2297,6 +2297,15 @@ export const ThreadPage = ({
           onOpenPageInNewSession={(pageKey, title) => {
             if (onNavigate) onNavigate(pageKey, title);
           }}
+          onJumpToPage={(pageKey, title) => {
+            // Home page jump-to: open a fresh session with the page in a full
+            // canvas and the chat minimized — mirrors the side-nav behavior.
+            window.dispatchEvent(
+              new CustomEvent('open-canvas-in-new-session', {
+                detail: { pageKey, title },
+              })
+            );
+          }}
           layout="single-column"
         />
       </div>

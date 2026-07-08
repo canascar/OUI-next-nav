@@ -19,13 +19,28 @@
   height: 100%;
   overflow-y: auto;
   background-color: transparent;
-  animation: v6ScenarioIn 600ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
-@keyframes v6ScenarioIn {
+// Left-column elements cascade in (Olly, text, input, jump-to pills) with a
+// gentle fade + rise, ahead of the warnings which load in a moment later.
+.v6Scenario__mascotRow,
+.v6Scenario__title,
+.v6Scenario__summary,
+.v6Scenario__inputArea,
+.v6Scenario__jumpTo {
+  animation: v6FadeInUp 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.v6Scenario__mascotRow { animation-delay: 60ms; }
+.v6Scenario__title { animation-delay: 130ms; }
+.v6Scenario__summary { animation-delay: 190ms; }
+.v6Scenario__inputArea { animation-delay: 260ms; }
+.v6Scenario__jumpTo { animation-delay: 330ms; }
+
+@keyframes v6FadeInUp {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -109,7 +124,7 @@
   gap: 10px;
   width: 100%;
   max-width: 480px;
-  padding-bottom: 4px;
+  padding-bottom: 0;
 }
 
 .v6Scenario__mascotWrap {
@@ -137,6 +152,8 @@
   width: 100%;
   max-width: 480px;
   padding-bottom: 4px;
+  // Pull the greeting up closer to the Olly avatar.
+  margin-top: -8px;
 }
 
 .v6Scenario__summary {
@@ -410,10 +427,30 @@
   padding-top: 8px;
 }
 
+// Findings container animates its height as cards load in (height is driven
+// explicitly from JS), so the space between the summary text and the input
+// opens up smoothly instead of snapping.
 .v6Scenario__findings {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  transition: height 440ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+// Each finding fades + scales in with a smooth ease.
+.v6Scenario__findingCard {
+  animation: v6FindingCardIn 440ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes v6FindingCardIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .v6Scenario__findingCard {
@@ -669,23 +706,19 @@
   }
 }
 
+// ─── Collapsible finding body ─────────────────────────────────
+// Height + opacity are animated in JS (measured height) so expand can ease
+// out and collapse can ease in. The wrapper just clips overflow while it moves.
+.v6Scenario__findingCardBodyWrap {
+  overflow: hidden;
+  will-change: height;
+}
+
 .v6Scenario__findingCardBody {
   margin-top: 8px;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  animation: v6FindingBodyIn 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-@keyframes v6FindingBodyIn {
-  from {
-    opacity: 0;
-    transform: translateY(-6px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
 }
 
 .v6Scenario__evidenceList {
@@ -1205,7 +1238,9 @@
 // ─── Widget grid ───────────────────────────────────────────────
 .v6Scenario__widgetGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(max(var(--widget-min-w, 131px), calc((100% - 16px) / 3)), 1fr));
+  // Default to a 2-column grid; widens to 3 columns (2 rows) once the panel
+  // is wide enough (see the min-width: 800px container query below).
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 
@@ -1215,12 +1250,13 @@
   min-height: 0;
   position: relative;
 
+  // Base (2-column) spans — cap wide widgets at 2 columns.
   &.v6Scenario__widget--span1 { grid-column: span 1; }
   &.v6Scenario__widget--span2 { grid-column: span 2; }
-  &.v6Scenario__widget--span3 { grid-column: span 3; }
-  &.v6Scenario__widget--span4 { grid-column: span 3; grid-row: span 2; }
-  &.v6Scenario__widget--span5 { grid-column: span 3; grid-row: span 2; }
-  &.v6Scenario__widget--span6 { grid-column: span 3; grid-row: span 2; }
+  &.v6Scenario__widget--span3 { grid-column: span 2; }
+  &.v6Scenario__widget--span4 { grid-column: span 2; grid-row: span 2; }
+  &.v6Scenario__widget--span5 { grid-column: span 2; grid-row: span 2; }
+  &.v6Scenario__widget--span6 { grid-column: span 2; grid-row: span 2; }
 
   .ouiInsightCard {
     width: 100%;
@@ -1369,19 +1405,27 @@
   margin-left: 10px;
 }
 
-// ─── Widget grid responsive collapse (container queries) ─────
-// When right column is narrow enough for only 2 columns, cap span at 2
-@container (max-width: 420px) {
+// ─── Widget grid responsive breakpoints (container queries) ─────
+// Wide panel (> 800px): 3 columns → 6 widgets lay out in two rows.
+@container (min-width: 800px) {
+  .v6Scenario__widgetGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .v6Scenario__widgetWrap {
-    &.v6Scenario__widget--span3 { grid-column: span 2; }
-    &.v6Scenario__widget--span4 { grid-column: span 2; grid-row: span 2; }
-    &.v6Scenario__widget--span5 { grid-column: span 2; grid-row: span 2; }
-    &.v6Scenario__widget--span6 { grid-column: span 2; grid-row: span 2; }
+    &.v6Scenario__widget--span3 { grid-column: span 3; }
+    &.v6Scenario__widget--span4 { grid-column: span 3; grid-row: span 2; }
+    &.v6Scenario__widget--span5 { grid-column: span 3; grid-row: span 2; }
+    &.v6Scenario__widget--span6 { grid-column: span 3; grid-row: span 2; }
   }
 }
 
-// When right column is narrow enough for only 1 column, everything is span 1
+// Narrow panel (<= 280px): single column, everything is span 1.
 @container (max-width: 280px) {
+  .v6Scenario__widgetGrid {
+    grid-template-columns: 1fr;
+  }
+
   .v6Scenario__widgetWrap {
     &.v6Scenario__widget--span2,
     &.v6Scenario__widget--span3,

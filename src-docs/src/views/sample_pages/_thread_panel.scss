@@ -33,6 +33,13 @@
   }
 }
 
+// Home page (greeting state) — flat left panel: no border or drop shadow.
+// Scoped via the greeting wrap, which only exists on the home page.
+.threadPanel:has(.threadPage__greetingWrap) {
+  border: none;
+  box-shadow: none;
+}
+
 // Inner content and header fade and hide on collapse
 .threadPanel__header,
 .threadPanel__content {
