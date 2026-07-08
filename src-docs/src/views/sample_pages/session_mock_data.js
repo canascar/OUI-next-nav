@@ -308,7 +308,10 @@ export const OVERVIEW_HOME_SESSION = {
   id: 'overview-home-session',
   threadKey: 'overview-home',
   pendingThread: null,
-  title: 'New Session',
+  // Landing screen, not a started session — excluded from the sessions list
+  // until the user begins a chat (see home-chat-started).
+  isHome: true,
+  title: 'Home',
   summary:
     'Active incident — checkout-agent is looping. Immediate action needed.',
   threadPanelState: 'side-by-side',

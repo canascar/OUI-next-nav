@@ -85,30 +85,6 @@ const SOURCE_PAGE_MOCK = {
 // The home greeting (EmptySessionPageV6) shows a randomly-chosen scenario. The
 // chat session's first message is built from the *same* scenario so its content
 // — greeting, summary, and expandable findings — matches what the user just saw.
-// Maps a home-greeting finding to the canvas page that best represents its
-// issue, so starting a conversation from a callout opens a relevant page.
-const FINDING_PAGE_MAP = {
-  // Scenario 1 — healthy morning
-  'resolved-anomalies': 'traces',
-  'warning-groundedness': 'metrics',
-  'info-routing': 'metrics',
-  // Scenario 2 — checkout-agent loop
-  'critical-loop': 'traces',
-  'critical-root-cause': 'traces',
-  'info-fixes': 'notebooks',
-  // Scenario 3 — billing-agent accuracy
-  'critical-billing': 'app-perf-services',
-  'warning-causes': 'notebooks',
-  'info-tradeoff': 'notebooks',
-  // Scenario 4 — tool-selection regression
-  'warning-tool-selection': 'metrics',
-  'resolved-infra': 'dashboards',
-  'info-next-steps': 'notebooks',
-  // Scenario 5 — recurring research-agent loop
-  'warning-pattern': 'traces',
-  'info-root-cause': 'notebooks',
-};
-
 const buildScenarioMessage = (scenarioId) => {
   const sc = SCENARIOS[scenarioId] || SCENARIOS[1];
   const summary = sc.summary
@@ -2168,9 +2144,12 @@ export const ThreadPage = ({
     if (!text) return;
     hasInteracted.current = true;
 
-    // Rename session on first user message for overview-home
+    // Rename session on first user message for overview-home, and promote the
+    // home into a chat session: expand the chat full-screen and drop the
+    // home-only Overview canvas tab.
     if (threadKey === 'overview-home' && !messages.some((m) => m.role === 'user')) {
       window.dispatchEvent(new CustomEvent('session-rename', { detail: { title: text.slice(0, 50) } }));
+      window.dispatchEvent(new CustomEvent('home-chat-started'));
     }
 
     // Add user message
@@ -2414,10 +2393,10 @@ export const ThreadPage = ({
             }, 350);
           }}
           onFindingAction={(finding, action) => {
-            // Start a NEW session scoped to just this callout: the finding card
-            // sits at the top for context, followed by the action the user took
-            // and an insights reply, alongside a related canvas page.
-            const pageKey = FINDING_PAGE_MAP[finding.key] || 'metrics';
+            // Start a NEW chat-only session scoped to just this callout: the
+            // finding card sits at the top for context, followed by the action
+            // the user took and an insights reply. No canvas tab — the chat
+            // expands and the canvas stays collapsed.
             const shortTitle =
               finding.title.length > 44
                 ? `${finding.title.slice(0, 44)}…`
@@ -2425,7 +2404,6 @@ export const ThreadPage = ({
             window.dispatchEvent(
               new CustomEvent('open-chat-session', {
                 detail: {
-                  pageKey,
                   sessionTitle: shortTitle,
                   prompt: action.label,
                   scenario: homeScenario,

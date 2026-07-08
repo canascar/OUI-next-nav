@@ -1707,6 +1707,35 @@ export const SessionPagesView = ({ variant } = {}) => {
     return () => window.removeEventListener('session-rename', handleRename);
   }, []);
 
+  // When a chat begins from the home greeting, promote the home into a chat
+  // session: expand the chat full-screen (canvas minimized) and remove the
+  // home-only "Overview" tab. The chat animates in from the home trigger.
+  useEffect(() => {
+    const handleHomeChatStarted = () => {
+      setSessionState((prev) => {
+        if (!prev.activeSessionId) return prev;
+        const active = prev.sessions.find((s) => s.id === prev.activeSessionId);
+        if (!active) return prev;
+        const tabs = active.tabs.filter((t) => t.pageKey !== 'overview-home');
+        const activeTabId = tabs.some((t) => t.id === active.activeTabId)
+          ? active.activeTabId
+          : tabs.length
+          ? tabs[tabs.length - 1].id
+          : null;
+        return updateSession(prev, prev.activeSessionId, {
+          // Promote the home landing into a real chat session.
+          isHome: false,
+          threadPanelState: 'full-screen',
+          tabs,
+          activeTabId,
+        });
+      });
+    };
+    window.addEventListener('home-chat-started', handleHomeChatStarted);
+    return () =>
+      window.removeEventListener('home-chat-started', handleHomeChatStarted);
+  }, []);
+
   // Active view: 'session' (show active session) or 'session-list' (browse all sessions)
   const [activeView, setActiveView] = useState('session');
 
@@ -1796,10 +1825,13 @@ export const SessionPagesView = ({ variant } = {}) => {
         const updates = {
           threadKey,
           pendingThread,
-          threadPanelState: 'side-by-side',
+          // Insight-callout chats (findings) are chat-only: expand the chat and
+          // collapse the canvas with no tab. Widget-launched chats keep their
+          // canvas page side-by-side.
+          threadPanelState: hasFindings ? 'full-screen' : 'side-by-side',
           title: sessionTitle || title || (prompt ? prompt.slice(0, 40) : 'New Session'),
         };
-        if (pageKey) {
+        if (pageKey && !hasFindings) {
           const pageEntry = SOURCE_PAGE_MOCK[pageKey];
           const displayTitle = title || (pageEntry ? pageEntry.title : pageKey);
           updates.tabs = [
@@ -1810,6 +1842,9 @@ export const SessionPagesView = ({ variant } = {}) => {
             },
           ];
           updates.activeTabId = updates.tabs[0].id;
+        } else {
+          updates.tabs = [];
+          updates.activeTabId = null;
         }
         return updateSession(next, newSessionId, updates);
       });
@@ -1968,9 +2003,11 @@ export const SessionPagesView = ({ variant } = {}) => {
 
   const renderMainContent = () => {
     if (activeView === 'session-list') {
-      // Filter out empty sessions (not yet "created")
+      // Filter out empty sessions (not yet "created") and the home landing,
+      // which only becomes a real session once the user starts a chat.
       const existingSessions = sessionState.sessions.filter(
-        (s) => s.threadKey || s.pendingThread || s.tabs.length > 0
+        (s) =>
+          !s.isHome && (s.threadKey || s.pendingThread || s.tabs.length > 0)
       );
       return (
         <SessionList
