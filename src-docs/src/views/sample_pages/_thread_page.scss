@@ -194,7 +194,7 @@
 .threadPage__bubble {
   max-width: 80%;
   padding: 8px 12px;
-  border-radius: 8px;
+  border-radius: 4px;
   font-size: 14px;
   line-height: 1.5;
 
@@ -204,7 +204,7 @@
 
   &--user {
     background-color: rgba($ouiColorDarkShade, 0.06);
-    border-radius: 8px 8px 2px 8px;
+    border-radius: 4px 4px 2px 4px;
   }
 
   &--assistant {
@@ -230,6 +230,15 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  margin-top: 12px;
+}
+
+// Scenario-backed findings reuse the home greeting's expandable cards
+// (.v6Scenario__findingCard); this wrapper just handles spacing/stacking.
+.threadPage__scenarioFindings {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   margin-top: 12px;
 }
 
@@ -276,7 +285,7 @@
 // Attachment card
 .threadPage__attachment {
   border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
+  border-radius: 4px;
   padding: 12px;
   margin-top: 8px;
   display: block;
@@ -896,7 +905,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  border: 1px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.3), rgba(#7B9CF5, 0.3));
+  border: 1px solid rgba($ouiColorPrimary, 0.15);
   border-radius: 10px;
   background-color: var(--nb-cell, $ouiFormBackgroundColor);
   overflow: visible;
@@ -904,9 +913,16 @@
     0 4px 16px rgba(59, 93, 214, 0.06),
     0 6px 22px rgba(0, 0, 0, 0.3)
   );
-  transition: box-shadow 300ms ease;
+  transition: box-shadow 300ms ease, border-color 220ms ease;
 
+  // Hover animates the border highlight to 25% ...
+  &:hover {
+    border-color: rgba($ouiColorPrimary, 0.25);
+  }
+
+  // ... and focus/active animates it up to 75%.
   &:focus-within {
+    border-color: rgba($ouiColorPrimary, 0.75);
     box-shadow: lightOrDarkTheme(
       0 6px 22px rgba(59, 93, 214, 0.14),
       0 8px 28px rgba(0, 0, 0, 0.5)
@@ -1240,7 +1256,46 @@ textarea.threadPage__textarea {
   border: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.08)) !important;
   box-shadow: none !important;
   background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.01), rgba(255, 255, 255, 0.02));
-  border-radius: 10px;
+  border-radius: 4px;
+}
+
+// ─── Canvas pages: tighter card radius + gaps (closer to the home widgets) ───
+// Minimize the radius on cards, panels, tables and visualizations. The panel
+// selector matches the OUI theme's own :not() chain (plus the page ancestor) so
+// it out-specifies the global `.ouiPanel { border-radius: 12px !important }`.
+.mockCanvasPage .ouiPanel:not(.ouiCheckableCard):not(.ouiCard--hasBetaBadge):not(.ouiSplitPanel),
+.dashboardPage__content .ouiPanel:not(.ouiCheckableCard):not(.ouiCard--hasBetaBadge):not(.ouiSplitPanel) {
+  border-radius: 4px !important; // sass-lint:disable-line no-important
+}
+
+.mockCanvasPage,
+.dashboardPage__content {
+  .ouiCard,
+  .ouiCodeBlock,
+  .ouiBasicTable,
+  .echChart {
+    border-radius: 4px !important; // sass-lint:disable-line no-important
+  }
+
+  // Tighten the gaps between cards from 16px (gutterMedium) / 24px (gutterLarge)
+  // down toward the ~8px used between the home widgets.
+  .ouiFlexGroup--gutterMedium,
+  .ouiFlexGroup--gutterLarge {
+    margin: -4px;
+
+    > .ouiFlexItem {
+      margin: 4px;
+    }
+  }
+
+  // Tighten the vertical spacers between rows of cards.
+  .ouiSpacer--m {
+    height: 8px;
+  }
+
+  .ouiSpacer--l {
+    height: 12px;
+  }
 }
 
 // ─── Typing indicator ────────────────────────────────────────

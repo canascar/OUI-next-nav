@@ -253,6 +253,10 @@
   flex-direction: column;
   gap: 8px;
   padding: 8px;
+  // Cap the height so enabling more sections scrolls instead of
+  // overflowing past the viewport. Header stays fixed above.
+  max-height: min(60vh, 460px);
+  overflow-y: auto;
 }
 
 .samplePagesLeftNav__threadPopoverFooter {
@@ -300,6 +304,16 @@
   color: $ouiTextColor;
 }
 
+// Section header label for grouped items in the "New session" popover.
+// Uses a theme-aware token so it stays legible in both light and dark modes.
+.samplePagesLeftNav__threadPopoverGroupLabel {
+  font-size: $ouiFontSizeXS;
+  font-weight: 600;
+  line-height: 18px;
+  color: $ouiColorMediumShade;
+  padding: 8px 8px 2px;
+}
+
 // Wrapper holds both the collapsed nav and the expanded panel
 .samplePagesLeftNav__wrapper {
   display: flex;
@@ -329,7 +343,7 @@
 .samplePagesLeftNav {
   width: 48px;
   min-width: 48px;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.45), rgba(27, 22, 42, 0.55)); // sass-lint:disable-line no-color-literals
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.45), rgba(20, 24, 32, 0.55)); // sass-lint:disable-line no-color-literals
   -webkit-backdrop-filter: blur(26px) saturate(175%);
   backdrop-filter: blur(26px) saturate(175%);
   border-right: 1px solid lightOrDarkTheme(#ececef, rgba(255, 255, 255, 0.08));
@@ -529,7 +543,7 @@
 .samplePagesLeftNav__expandedPanel {
   width: 320px;
   min-width: 320px;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.62), rgba(27, 22, 42, 0.55)); // sass-lint:disable-line no-color-literals
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.62), rgba(20, 24, 32, 0.55)); // sass-lint:disable-line no-color-literals
   backdrop-filter: blur(30px) saturate(185%);
   -webkit-backdrop-filter: blur(30px) saturate(185%);
   border-right: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.10));
@@ -834,7 +848,7 @@
   left: 60px;
   width: 320px;
   max-height: 400px;
-  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.62), rgba(27, 22, 42, 0.55)); // sass-lint:disable-line no-color-literals
+  background-color: lightOrDarkTheme(rgba(255, 255, 255, 0.62), rgba(20, 24, 32, 0.55)); // sass-lint:disable-line no-color-literals
   -webkit-backdrop-filter: blur(30px) saturate(185%);
   backdrop-filter: blur(30px) saturate(185%);
   border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.12)); // sass-lint:disable-line no-color-literals
@@ -871,15 +885,29 @@
 
 // Outer wrapper — Notebook dot-field background
 .samplePagesWrapper {
-  @include brandGradient;
-  @include brandGradientBlur;
   position: relative;
+  z-index: 0; // establish a stacking context for the ::before grid layer
+  background-color: var(--nb-canvas, $ouiPageBackgroundColor);
+
+  // Notebook grid decoration lives on a layer so it can fade in/out.
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    @include brandGradient;
+    @include brandGradientBlur;
+    opacity: 1;
+    transition: opacity 450ms ease;
+  }
 }
 
-// Interior session screen (chat + canvas) — remove the notebook grid pattern
-.samplePagesWrapper--noPattern {
-  background-image: none;
-  box-shadow: none;
+// Fade the notebook grid out for interior session screens (chat + canvas) and
+// once the home page transitions into an active chat.
+.samplePagesWrapper--noPattern::before,
+.samplePagesWrapper:has(.threadPage__chatEntering)::before {
+  opacity: 0;
 }
 
 .samplePagesContentPanel {

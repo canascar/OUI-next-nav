@@ -40,8 +40,8 @@ $ouiColorSuccess: #34d399;       // Green
 $ouiColorWarning: #fbbf24;       // Amber
 $ouiColorDanger: #f87171;        // Red
 
-// Shades — cool blue-slate ramp (harmonized, hue ~222)
-$ouiColorEmptyShade: #13161d;             // card surfaces
+// Shades — cool blue-slate ramp (harmonized, hue ~220, matched to the panel tone)
+$ouiColorEmptyShade: #151b26;             // card surfaces (aligned to panel rgb(24,31,44))
 $ouiColorLightestShade: #171b23;          // subtle backgrounds
 $ouiColorLightShade: #303748;             // borders
 $ouiColorMediumShade: rgba(250, 250, 250, 0.50); // Muted text
@@ -50,7 +50,7 @@ $ouiColorDarkestShade: #ffffff;           // Foreground text
 $ouiColorFullShade: #FFFFFF;              // Brightest foreground
 
 // Backgrounds
-$ouiPageBackgroundColor: #0c0e13;         // canvas
+$ouiPageBackgroundColor: #10151e;         // canvas (blue-slate, lifted so it reads less pitch-dark)
 $ouiColorHighlight: #191d26;              // elevated surface
 
 // Form input background — clean cool slate (harmonized, was muddy)

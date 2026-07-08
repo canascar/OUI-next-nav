@@ -198,45 +198,81 @@ const ScanShimmerOverlay = () => {
   useEffect(() => {
     const cv = canvasRef.current;
     if (!cv) return;
-    const init = () => {
+
+    // Field is rebuilt from the canvas's actual size so the shimmer fills the
+    // card to its edges regardless of width/height changes (resize-aware).
+    const field = { ctx: null, dots: [], w: 0, h: 0, span: 0, band: 0 };
+    const sp = 7;
+    const speed = 0.2; // sweep speed
+    const cycle = 1.35; // >1 leaves a brief calm gap between sweeps
+
+    const build = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const w = cv.clientWidth, h = cv.clientHeight;
+      const w = cv.clientWidth;
+      const h = cv.clientHeight;
       if (!w || !h) return;
       cv.width = Math.round(w * dpr);
       cv.height = Math.round(h * dpr);
       const ctx = cv.getContext('2d');
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const sp = 7;
       const cols = Math.max(1, Math.round((w - sp) / sp));
       const rows = Math.max(1, Math.round((h - sp) / sp));
-      const ox = (w - (cols - 1) * sp) / 2, oy = (h - (rows - 1) * sp) / 2;
+      const ox = (w - (cols - 1) * sp) / 2;
+      const oy = (h - (rows - 1) * sp) / 2;
       const dots = [];
       for (let j = 0; j < rows; j++)
         for (let i = 0; i < cols; i++)
-          dots.push({ x: ox + i * sp, y: oy + j * sp, gx: i, gy: j });
+          dots.push({ x: ox + i * sp, y: oy + j * sp });
+      field.ctx = ctx;
+      field.dots = dots;
+      field.w = w;
+      field.h = h;
+      field.span = w + h * 0.6;
+      field.band = sp * 3.6;
+    };
 
-      const tick = (now) => {
+    // Diagonal sweep across the tile so it reads as a graceful, sequential
+    // wave rather than a flat horizontal bar, plus a gentle per-dot twinkle.
+    const tick = (now) => {
+      const { ctx, dots, w, h, span, band } = field;
+      if (ctx) {
         if (!startRef.current) startRef.current = now;
         const t = (now - startRef.current) / 1000;
         ctx.clearRect(0, 0, w, h);
-        const p = (t * 0.33) % 1;
-        const lx = p * w;
+        const p = (t * speed) % cycle;
+        const lx = p * span;
         for (const d of dots) {
-          const dx = (d.x - lx) / (sp * 2.2);
-          const b = 0.03 + 0.97 * Math.exp(-dx * dx);
-          const a = (0.04 + 0.35 * b).toFixed(3);
-          const gray = Math.round(140 + 60 * b);
+          const proj = d.x + d.y * 0.6; // diagonal projection
+          const dx = (proj - lx) / band;
+          const wave = Math.exp(-dx * dx);
+          const tw = 0.5 + 0.5 * Math.sin(t * 1.5 + (d.x + d.y) * 0.055);
+          const b = 0.03 + 0.9 * wave * (0.72 + 0.28 * tw);
+          const a = (0.05 + 0.4 * b).toFixed(3);
+          const gray = Math.round(140 + 70 * b);
           ctx.beginPath();
-          ctx.arc(d.x, d.y, 0.6 + b * 1.4, 0, 6.2832);
-          ctx.fillStyle = `rgba(${gray},${gray},${Math.round(gray + 10)},${a})`;
+          ctx.arc(d.x, d.y, 0.6 + b * 1.5, 0, 6.2832);
+          ctx.fillStyle = `rgba(${gray},${gray},${Math.round(gray + 12)},${a})`;
           ctx.fill();
         }
-        rafRef.current = requestAnimationFrame(tick);
-      };
+      }
       rafRef.current = requestAnimationFrame(tick);
     };
-    setTimeout(init, 50);
-    return () => cancelAnimationFrame(rafRef.current);
+
+    let ro;
+    const startTimer = setTimeout(() => {
+      build();
+      if (typeof ResizeObserver !== 'undefined') {
+        ro = new ResizeObserver(build);
+        ro.observe(cv);
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    }, 50);
+
+    return () => {
+      clearTimeout(startTimer);
+      cancelAnimationFrame(rafRef.current);
+      if (ro) ro.disconnect();
+    };
   }, []);
 
   return (
@@ -257,7 +293,7 @@ const ScanShimmerOverlay = () => {
 
 // ─── Scenario data ─────────────────────────────────────────────────────────────
 
-const SCENARIOS = {
+export const SCENARIOS = {
   1: {
     statusColor: 'green',
     greeting: 'Good morning, John!',
@@ -284,7 +320,7 @@ const SCENARIOS = {
         status: 'Review',
         statusColor: 'blue',
         title: '38% of simple queries hitting the expensive model — costs up 18%',
-        widget: { type: 'bignum', value: '$410', delta: '↑18%', deltaColor: '#B5302E', sub: '/DAY' },
+        widget: { type: 'bignum', value: '$410', delta: '↑18%', deltaColor: 'var(--g-danger)', sub: '/DAY' },
         actions: [{ label: 'Open runbook', key: 'open-runbook' }],
       },
     ],
@@ -299,7 +335,7 @@ const SCENARIOS = {
         status: 'Critical',
         statusColor: 'red',
         title: 'checkout-agent is looping — 1,994 retries in the last 6 minutes',
-        widget: { type: 'bignum', value: '1,994', delta: 'retries', deltaColor: '#B5302E', sub: '6 MIN' },
+        widget: { type: 'bignum', value: '1,994', delta: 'retries', deltaColor: 'var(--g-danger)', sub: '6 MIN' },
         actions: [{ label: 'Investigate', key: 'investigate' }],
       },
       {
@@ -307,7 +343,7 @@ const SCENARIOS = {
         status: 'Critical',
         statusColor: 'red',
         title: 'Root cause: order-db pool at 98%, handler returns 200 on empty',
-        widget: { type: 'status', label: 'db 98%', color: '#B5302E' },
+        widget: { type: 'status', label: 'db 98%', color: 'var(--g-danger)' },
         actions: [{ label: 'View code', key: 'see-code' }, { label: 'View traces', key: 'open-trace' }],
       },
       {
@@ -333,7 +369,7 @@ const SCENARIOS = {
         status: 'Critical',
         statusColor: 'red',
         title: 'billing-agent accuracy dropped to 0.58 — customers are affected',
-        widget: { type: 'bignum', value: '0.58', delta: '↓0.23', deltaColor: '#B5302E', sub: 'SCORE' },
+        widget: { type: 'bignum', value: '0.58', delta: '↓0.23', deltaColor: 'var(--g-danger)', sub: 'SCORE' },
         actions: [{ label: 'Investigate', key: 'investigate' }],
       },
       {
@@ -364,7 +400,7 @@ const SCENARIOS = {
         status: 'Warning',
         statusColor: 'amber',
         title: 'Tool-selection accuracy dropped from 0.71 to 0.58 this week',
-        widget: { type: 'bignum', value: '0.58', delta: '↓18%', deltaColor: '#B5302E', sub: 'ACCURACY' },
+        widget: { type: 'bignum', value: '0.58', delta: '↓18%', deltaColor: 'var(--g-danger)', sub: 'ACCURACY' },
         actions: [{ label: 'Investigate', key: 'investigate' }],
       },
       {
@@ -421,7 +457,7 @@ const STATUS_COLORS = {
   purple: { color: '#7C3AED', bg: 'rgba(124, 58, 237, 0.10)' },
   gray: { color: '#6B7280', bg: 'rgba(107, 114, 128, 0.08)' },
   amber: { color: '#B45309', bg: 'rgba(180, 83, 9, 0.10)' },
-  red: { color: '#DC2626', bg: 'rgba(220, 38, 38, 0.10)' },
+  red: { color: 'var(--g-danger)', bg: 'var(--g-danger-soft)' },
   blue: { color: '#2563EB', bg: 'rgba(37, 99, 235, 0.10)' },
 };
 
@@ -571,11 +607,14 @@ const MetricBox = ({ label, value, sub, color }) => (
 );
 
 // Smoothly animates its content open/closed by measuring the content height.
-// Expand eases out (decelerates); collapse eases in (accelerates).
+// Expand eases out (decelerates); collapse eases in (accelerates). Uses the Web
+// Animations API for clean scheduling and cancels in-flight runs on rapid toggle,
+// with a compositor-friendly fade/slide on the content for a smoother reveal.
 const CollapsibleBody = ({ expanded, children }) => {
   const outerRef = React.useRef(null);
   const innerRef = React.useRef(null);
   const didInit = React.useRef(false);
+  const animsRef = React.useRef([]);
 
   React.useLayoutEffect(() => {
     const el = outerRef.current;
@@ -586,40 +625,56 @@ const CollapsibleBody = ({ expanded, children }) => {
     if (!didInit.current) {
       didInit.current = true;
       el.style.height = expanded ? 'auto' : '0px';
-      el.style.opacity = expanded ? '1' : '0';
+      inner.style.opacity = expanded ? '1' : '0';
+      inner.style.transform = expanded ? 'none' : 'translateY(-4px)';
       return undefined;
     }
 
-    const target = inner.offsetHeight;
-    let cleanup;
+    // Capture the current visual height first (so mid-animation toggles continue
+    // from where they are), then stop any running animations.
+    const from = el.getBoundingClientRect().height;
+    animsRef.current.forEach((a) => a.cancel());
+    animsRef.current = [];
 
-    if (expanded) {
-      // Expand: 0 → measured height, ease-out.
-      el.style.transition = 'none';
-      el.style.height = '0px';
-      el.style.opacity = '0';
-      void el.offsetHeight; // force reflow so the start state is committed
-      el.style.transition = 'height 340ms ease-out, opacity 260ms ease-out 60ms';
-      el.style.opacity = '1';
-      el.style.height = `${target}px`;
-      const onEnd = (e) => {
-        if (e.propertyName !== 'height') return;
-        el.style.height = 'auto'; // let it grow with content afterwards
-        el.removeEventListener('transitionend', onEnd);
-      };
-      el.addEventListener('transitionend', onEnd);
-      cleanup = () => el.removeEventListener('transitionend', onEnd);
-    } else {
-      // Collapse: measured height → 0, ease-in.
-      el.style.transition = 'none';
-      el.style.height = `${target}px`;
-      void el.offsetHeight; // force reflow
-      el.style.transition = 'height 300ms ease-in, opacity 180ms ease-in';
-      el.style.opacity = '0';
-      el.style.height = '0px';
-    }
+    const to = expanded ? inner.offsetHeight : 0;
 
-    return cleanup;
+    // Commit the resting end-state; the animations drive the visuals while running.
+    el.style.height = expanded ? 'auto' : '0px';
+    inner.style.opacity = expanded ? '1' : '0';
+    inner.style.transform = expanded ? 'none' : 'translateY(-4px)';
+
+    const heightEasing = expanded
+      ? 'cubic-bezier(0.22, 1, 0.36, 1)' // ease-out — quick, then settles gently
+      : 'cubic-bezier(0.4, 0, 1, 1)';    // ease-in — eases in, accelerates out
+    const duration = expanded ? 360 : 260;
+
+    const heightAnim = el.animate(
+      [{ height: `${from}px` }, { height: `${to}px` }],
+      { duration, easing: heightEasing, fill: 'backwards' }
+    );
+
+    const fadeAnim = inner.animate(
+      expanded
+        ? [
+            { opacity: 0, transform: 'translateY(-4px)' },
+            { opacity: 1, transform: 'translateY(0)' },
+          ]
+        : [
+            { opacity: 1, transform: 'translateY(0)' },
+            { opacity: 0, transform: 'translateY(-4px)' },
+          ],
+      {
+        duration: expanded ? 300 : 200,
+        easing: expanded ? 'cubic-bezier(0.22, 1, 0.36, 1)' : 'cubic-bezier(0.4, 0, 1, 1)',
+        fill: 'backwards',
+      }
+    );
+
+    animsRef.current = [heightAnim, fadeAnim];
+    const clear = () => { animsRef.current = []; };
+    heightAnim.addEventListener('finish', clear);
+
+    return () => heightAnim.removeEventListener('finish', clear);
   }, [expanded]);
 
   return (
@@ -627,8 +682,11 @@ const CollapsibleBody = ({ expanded, children }) => {
       ref={outerRef}
       className="v6Scenario__findingCardBodyWrap"
       aria-hidden={!expanded}
-      style={{ overflow: 'hidden', height: 0, opacity: 0 }}>
-      <div ref={innerRef} className="v6Scenario__findingCardBodyInner">
+      style={{ overflow: 'hidden', height: 0 }}>
+      <div
+        ref={innerRef}
+        className="v6Scenario__findingCardBodyInner"
+        style={{ opacity: 0, willChange: 'opacity, transform' }}>
         {children}
       </div>
     </div>
@@ -656,7 +714,7 @@ const FindingEvidence = ({ scenario, findingKey }) => {
               <MetricBox label="7 days ago" value="0.81" />
               <MetricBox label="3 days ago" value="0.78" />
               <MetricBox label="Today" value="0.74" color="#B45309" />
-              <MetricBox label="Alert at" value="0.70" color="#DC2626" />
+              <MetricBox label="Alert at" value="0.70" color="var(--g-danger)" />
             </div>
           </EvidenceCard>
           <p className="v6Scenario__evidenceText">At this rate, the alert will fire in ~2 days unless the trend reverses.</p>
@@ -668,7 +726,7 @@ const FindingEvidence = ({ scenario, findingKey }) => {
           <EvidenceCard>
             <div className="v6Scenario__metricRow">
               <MetricBox label="Simple intents" value="38%" sub="routed to GPT-4" color="#B45309" />
-              <MetricBox label="Daily cost" value="$410" sub="up from $347" color="#DC2626" />
+              <MetricBox label="Daily cost" value="$410" sub="up from $347" color="var(--g-danger)" />
             </div>
           </EvidenceCard>
           <p className="v6Scenario__evidenceText">These could route to the lighter model with no quality loss. The runbook has the routing rules.</p>
@@ -681,7 +739,7 @@ const FindingEvidence = ({ scenario, findingKey }) => {
           <p className="v6Scenario__evidenceText">checkout-agent has called <code>order-lookup</code> 1,994 times in 6 minutes. Each call returns 200 with an empty body, so the agent retries indefinitely.</p>
           <EvidenceCard>
             <div className="v6Scenario__metricRow">
-              <MetricBox label="Calls" value="1,994" color="#DC2626" />
+              <MetricBox label="Calls" value="1,994" color="var(--g-danger)" />
               <MetricBox label="Duration" value="6 min" />
               <MetricBox label="Status" value="200" sub="empty body" />
             </div>
@@ -721,8 +779,8 @@ const FindingEvidence = ({ scenario, findingKey }) => {
           <p className="v6Scenario__evidenceText">billing-agent&apos;s accuracy dropped sharply after today&apos;s 14:02 deploy:</p>
           <EvidenceCard>
             <div className="v6Scenario__metricRow">
-              <MetricBox label="Groundedness" value="0.58" sub="was 0.81" color="#DC2626" />
-              <MetricBox label="Citation match" value="0.31" sub="was 0.72" color="#DC2626" />
+              <MetricBox label="Groundedness" value="0.58" sub="was 0.81" color="var(--g-danger)" />
+              <MetricBox label="Citation match" value="0.31" sub="was 0.72" color="var(--g-danger)" />
             </div>
           </EvidenceCard>
           <p className="v6Scenario__evidenceText">The agent is giving customers billing answers that don&apos;t match source documents. 340 conversations affected so far.</p>
@@ -842,9 +900,134 @@ const FindingEvidence = ({ scenario, findingKey }) => {
   return content;
 };
 
+// ─── Finding widget (right-side status dot / sparkline / big number) ────────────
+// Extracted so the home greeting and the chat session render identical widgets.
+// `idPrefix` keeps SVG pattern ids unique when the same finding is rendered in
+// more than one place on the page.
+export const FindingWidget = ({ finding, idPrefix = 'sc' }) => {
+  const w = finding.widget;
+  if (!w) return null;
+
+  if (w.type === 'status') {
+    return (
+      <div className="v6Scenario__findingWidget">
+        <span className="v6Scenario__fwDot" style={{ background: w.color }} />
+        <span className="v6Scenario__fwLabel">{w.label}</span>
+      </div>
+    );
+  }
+
+  if (w.type === 'spark') {
+    const patternId = `spark-stripe-${idPrefix}-${finding.key}`;
+    return (
+      <div className="v6Scenario__findingWidget">
+        <svg viewBox="0 0 60 20" className="v6Scenario__fwSpark">
+          <defs>
+            <pattern id={patternId} width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <line x1="0" y1="0" x2="0" y2="4" stroke={w.color} strokeWidth="1" opacity="0.35" />
+            </pattern>
+          </defs>
+          <path d="M0,4 L15,6 L30,8 L45,12 L60,18 L60,20 L0,20 Z" fill={`url(#${patternId})`} />
+          <polyline points="0,4 15,6 30,8 45,12 60,18" fill="none" stroke={w.color} strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+        <span className="v6Scenario__fwSubLabel">{w.label}</span>
+      </div>
+    );
+  }
+
+  if (w.type === 'bignum') {
+    return (
+      <div className="v6Scenario__findingWidget">
+        <span className="v6Scenario__fwBignum">{w.value}</span>
+        {w.delta && (
+          <span className="v6Scenario__fwDelta" style={{ color: w.deltaColor }}>{w.delta}</span>
+        )}
+        {w.sub && <span className="v6Scenario__fwSubLabel">{w.sub}</span>}
+      </div>
+    );
+  }
+
+  return null;
+};
+
+// ─── Reusable expandable finding card ───────────────────────────────────────────
+// Self-contained (manages its own expand + feedback state) so it can be dropped
+// into the chat session and render the same warnings, with the same expand
+// behavior and evidence, as the home greeting.
+export const ScenarioFindingCard = ({ finding, scenario, idPrefix = 'sc', onAction }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [feedback, setFeedback] = useState(null);
+
+  return (
+    <div
+      className={`v6Scenario__findingCard${isExpanded ? ' v6Scenario__findingCard--expanded' : ''}`}
+      onClick={() => setIsExpanded((v) => !v)}>
+      <div className="v6Scenario__findingCardMain">
+        <div className="v6Scenario__findingCardLeft">
+          <div className="v6Scenario__findingHeader">
+            <StatusPill status={finding.status} color={finding.statusColor} />
+            <span className="v6Scenario__findingTitle">{finding.title}</span>
+          </div>
+        </div>
+        <div className="v6Scenario__findingCardRight">
+          <FindingWidget finding={finding} idPrefix={idPrefix} />
+          <OuiIcon
+            type="arrowDown"
+            size="s"
+            className={`v6Scenario__findingChevron${isExpanded ? ' v6Scenario__findingChevron--expanded' : ''}`}
+          />
+        </div>
+      </div>
+      <div className={`v6Scenario__findingActions__side${isExpanded ? ' v6Scenario__findingActions__side--visible' : ''}`}>
+        {isExpanded && (
+          <>
+            <button
+              type="button"
+              className={`v6Scenario__findingSideBtn${feedback === 'up' ? ' v6Scenario__findingSideBtn--active' : ''}`}
+              aria-label="Helpful"
+              onClick={(e) => { e.stopPropagation(); setFeedback((f) => (f === 'up' ? null : 'up')); }}>
+              <OuiIcon type="thumbsUp" size="s" />
+            </button>
+            <button
+              type="button"
+              className={`v6Scenario__findingSideBtn${feedback === 'down' ? ' v6Scenario__findingSideBtn--active' : ''}`}
+              aria-label="Not helpful"
+              onClick={(e) => { e.stopPropagation(); setFeedback((f) => (f === 'down' ? null : 'down')); }}>
+              <OuiIcon type="thumbsDown" size="s" />
+            </button>
+          </>
+        )}
+      </div>
+      <CollapsibleBody expanded={isExpanded}>
+        <div className="v6Scenario__findingCardBody">
+          <FindingEvidence scenario={scenario} findingKey={finding.key} />
+          {finding.actions && finding.actions.length > 0 && (
+            <div className="v6Scenario__findingActions">
+              {finding.actions.map((action) => (
+                <button
+                  key={action.key}
+                  type="button"
+                  className="v6Scenario__findingAction"
+                  tabIndex={isExpanded ? 0 : -1}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (onAction) onAction(action.label, action.key);
+                  }}>
+                  {action.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </CollapsibleBody>
+    </div>
+  );
+};
+
 // ─── Main component ────────────────────────────────────────────────────────────
 
 export const EmptySessionPageV6 = ({
+  scenario: scenarioProp,
   onStartThread,
   onOpenPage,
   onOpenPageInNewSession,
@@ -856,7 +1039,11 @@ export const EmptySessionPageV6 = ({
   sessions = [],
 }) => {
   const isSingleColumn = layout === 'single-column';
-  const [scenario] = useState(() => Math.floor(Math.random() * 5) + 1);
+  // Use the caller-provided scenario when present so the greeting matches the
+  // chat session that follows; otherwise pick one at random.
+  const [scenario] = useState(
+    () => scenarioProp || Math.floor(Math.random() * 5) + 1
+  );
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
   const mascotColor = isDark ? ['#FFFFFF', '#D9DEE5'] : ['#14558E', '#153A5A'];
@@ -1283,8 +1470,10 @@ export const EmptySessionPageV6 = ({
         );
       case 'resource-utilization': {
         const utilNum = parseInt(wd.utilization.value);
-        const utilColor = utilNum > 80 ? '#DC2626' : utilNum > 60 ? '#B45309' : '#1F9D6B';
-        const utilStroke = utilNum > 80 ? '#ef4444' : utilNum > 60 ? '#f59e0b' : '#34d399';
+        // Danger red, resolved per theme (SVG stroke/pattern attrs can't use var()).
+        const dangerRed = isDark ? '#f87171' : '#dc2626';
+        const utilColor = utilNum > 80 ? 'var(--g-danger)' : utilNum > 60 ? '#B45309' : '#1F9D6B';
+        const utilStroke = utilNum > 80 ? dangerRed : utilNum > 60 ? '#f59e0b' : '#34d399';
         return (
           <OuiInsightCard onClick={() => onOpenPageInNewSession && onOpenPageInNewSession('metrics', 'Metrics')}>
             <WidgetHeader title="Resource utilization" />
@@ -1420,7 +1609,7 @@ export const EmptySessionPageV6 = ({
         return (
           <OuiInsightCard>
             <WidgetHeader title="Active incidents" />
-            <span className="widgetCard__bigNumber" style={{ color: '#DC2626' }}>3</span>
+            <span className="widgetCard__bigNumber" style={{ color: 'var(--g-danger)' }}>3</span>
             <div className="widgetCard__rows">
               <div className="widgetCard__statusRow">
                 <span className="widgetCard__statusLabel">checkout-agent loop</span>
@@ -1607,37 +1796,7 @@ export const EmptySessionPageV6 = ({
                         </div>
                       </div>
                       <div className="v6Scenario__findingCardRight">
-                        {finding.widget && finding.widget.type === 'status' && (
-                          <div className="v6Scenario__findingWidget">
-                            <span className="v6Scenario__fwDot" style={{ background: finding.widget.color }} />
-                            <span className="v6Scenario__fwLabel">{finding.widget.label}</span>
-                          </div>
-                        )}
-                        {finding.widget && finding.widget.type === 'spark' && (
-                          <div className="v6Scenario__findingWidget">
-                            <svg viewBox="0 0 60 20" className="v6Scenario__fwSpark">
-                              <defs>
-                                <pattern id={`spark-stripe-sc-${finding.key}`} width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                                  <line x1="0" y1="0" x2="0" y2="4" stroke={finding.widget.color} strokeWidth="1" opacity="0.35" />
-                                </pattern>
-                              </defs>
-                              <path d="M0,4 L15,6 L30,8 L45,12 L60,18 L60,20 L0,20 Z" fill={`url(#spark-stripe-sc-${finding.key})`} />
-                              <polyline points="0,4 15,6 30,8 45,12 60,18" fill="none" stroke={finding.widget.color} strokeWidth="1.5" strokeLinecap="round" />
-                            </svg>
-                            <span className="v6Scenario__fwSubLabel">{finding.widget.label}</span>
-                          </div>
-                        )}
-                        {finding.widget && finding.widget.type === 'bignum' && (
-                          <div className="v6Scenario__findingWidget">
-                            <span className="v6Scenario__fwBignum">{finding.widget.value}</span>
-                            {finding.widget.delta && (
-                              <span className="v6Scenario__fwDelta" style={{ color: finding.widget.deltaColor }}>{finding.widget.delta}</span>
-                            )}
-                            {finding.widget.sub && (
-                              <span className="v6Scenario__fwSubLabel">{finding.widget.sub}</span>
-                            )}
-                          </div>
-                        )}
+                        <FindingWidget finding={finding} idPrefix="sc" />
                         <OuiIcon type="arrowDown" size="s" className={`v6Scenario__findingChevron${isExpanded ? ' v6Scenario__findingChevron--expanded' : ''}`} />
                       </div>
                     </div>

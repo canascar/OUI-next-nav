@@ -344,12 +344,36 @@ export const OverviewHomePage = () => {
             <WidgetHeader title="Recent alerts" />
             <div className="widgetCard__tableHeader"><span>ALERT</span><span>STATUS</span></div>
             <div className="widgetCard__rows">
-              {WIDGET_DATA.alerts.map((alert) => (
-                <div key={alert.name} className="widgetCard__statusRow" style={{ cursor: 'pointer' }}>
-                  <span className="widgetCard__statusLabel">{alert.name}</span>
-                  <span className={`widgetCard__statusBadge widgetCard__statusBadge--${alert.status === 'WARNING' ? 'warning' : 'critical'}`}>{alert.status}</span>
-                </div>
-              ))}
+              {WIDGET_DATA.alerts.map((alert) => {
+                const openAlertChat = () =>
+                  window.dispatchEvent(
+                    new CustomEvent('open-chat-session', {
+                      detail: {
+                        pageKey: 'alerts',
+                        title: `Alert: ${alert.name}`,
+                        prompt: `Investigate the ${alert.status.toLowerCase()} alert "${alert.name}" — what's triggering it and how do I resolve it?`,
+                      },
+                    })
+                  );
+                return (
+                  <div
+                    key={alert.name}
+                    className="widgetCard__statusRow"
+                    style={{ cursor: 'pointer' }}
+                    role="button"
+                    tabIndex={0}
+                    onClick={openAlertChat}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        openAlertChat();
+                      }
+                    }}>
+                    <span className="widgetCard__statusLabel">{alert.name}</span>
+                    <span className={`widgetCard__statusBadge widgetCard__statusBadge--${alert.status === 'WARNING' ? 'warning' : 'critical'}`}>{alert.status}</span>
+                  </div>
+                );
+              })}
             </div>
           </OuiInsightCard>
         );

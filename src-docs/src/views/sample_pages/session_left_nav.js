@@ -57,6 +57,31 @@ export const SessionLeftNav = ({
   const [isNavExpanded, setIsNavExpanded] = useState(false);
   const [isLogoHovered, setIsLogoHovered] = useState(false);
 
+  // The rendered content lags behind the collapse so the expanded panel stays
+  // mounted while the rail narrows — you see it clip away, then swap to icons.
+  const [renderExpandedContent, setRenderExpandedContent] = useState(false);
+  const collapseSwapTimer = useRef(null);
+
+  useEffect(() => {
+    if (collapseSwapTimer.current) {
+      clearTimeout(collapseSwapTimer.current);
+      collapseSwapTimer.current = null;
+    }
+    if (isNavExpanded) {
+      // Reveal the expanded panel right away; the clip widens to show it.
+      setRenderExpandedContent(true);
+    } else {
+      // Keep it mounted through the width transition, then swap to the rail.
+      collapseSwapTimer.current = setTimeout(() => {
+        setRenderExpandedContent(false);
+        collapseSwapTimer.current = null;
+      }, 240);
+    }
+    return () => {
+      if (collapseSwapTimer.current) clearTimeout(collapseSwapTimer.current);
+    };
+  }, [isNavExpanded]);
+
   // Expose expand trigger to parent
   useEffect(() => {
     if (expandRef) {
@@ -135,12 +160,11 @@ export const SessionLeftNav = ({
     ...START_GROUPS.flatMap((g) => g.children),
   ];
 
-  // Enabled individual items (keys) — all on by default
+  // Enabled individual items (keys). Agent monitoring and Application
+  // performance groups are off by default (toggle them on via Customize).
   const [enabledStartItems, setEnabledStartItems] = useState(
     () => new Set([
       'alerts', 'dashboards', 'logs', 'metrics', 'topology-map',
-      'agent-traces', 'agent-spans',
-      'app-traces', 'app-services', 'app-slos',
     ])
   );
   const [customizePopoverOpen, setCustomizePopoverOpen] = useState(false);
@@ -592,7 +616,7 @@ export const SessionLeftNav = ({
                     ))}
                     {VISIBLE_GROUPS.map((group) => (
                       <React.Fragment key={group.key}>
-                        <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--g-ink-mute, #888)', padding: '8px 0 2px' }}>
+                        <div className="samplePagesLeftNav__threadPopoverGroupLabel">
                           {group.label}
                         </div>
                         {group.children.map((item) => (
@@ -886,7 +910,7 @@ export const SessionLeftNav = ({
             ? ' sessionLeftNav__clip--expanded'
             : ' sessionLeftNav__clip--collapsed'
         }`}>
-        {isNavExpanded ? renderExpandedNav() : renderCollapsedNav()}
+        {renderExpandedContent ? renderExpandedNav() : renderCollapsedNav()}
       </div>
     </div>
   );

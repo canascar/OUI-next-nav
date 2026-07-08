@@ -23,6 +23,18 @@
 .discoverPage__queryTextarea textarea {
   font-family: $ouiCodeFontFamily;
   font-size: $ouiFontSizeS;
+  // Animated border highlight — matches the chat/home composer inputs.
+  // Rest 15% → hover 25% → focus/active 75%.
+  border-color: rgba($ouiColorPrimary, 0.15) !important; // sass-lint:disable-line no-important
+  transition: border-color 220ms ease, box-shadow 200ms ease !important; // sass-lint:disable-line no-important
+
+  &:hover {
+    border-color: rgba($ouiColorPrimary, 0.25) !important; // sass-lint:disable-line no-important
+  }
+
+  &:focus {
+    border-color: rgba($ouiColorPrimary, 0.75) !important; // sass-lint:disable-line no-important
+  }
 }
 
 // Tab bar with actions

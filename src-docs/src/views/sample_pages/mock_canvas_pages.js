@@ -46,47 +46,81 @@ const ScanShimmerOverlay = () => {
   useEffect(() => {
     const cv = canvasRef.current;
     if (!cv) return;
-    const init = () => {
+
+    // Field is rebuilt from the canvas's actual size so the shimmer fills the
+    // card to its edges regardless of width/height changes (resize-aware).
+    const field = { ctx: null, dots: [], w: 0, h: 0, span: 0, band: 0 };
+    const sp = 7;
+    const speed = 0.2; // sweep speed
+    const cycle = 1.35; // >1 leaves a brief calm gap between sweeps
+
+    const build = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const w = cv.clientWidth,
-        h = cv.clientHeight;
+      const w = cv.clientWidth;
+      const h = cv.clientHeight;
       if (!w || !h) return;
       cv.width = Math.round(w * dpr);
       cv.height = Math.round(h * dpr);
       const ctx = cv.getContext('2d');
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const sp = 9;
       const cols = Math.max(1, Math.round((w - sp) / sp));
       const rows = Math.max(1, Math.round((h - sp) / sp));
-      const ox = (w - (cols - 1) * sp) / 2,
-        oy = (h - (rows - 1) * sp) / 2;
+      const ox = (w - (cols - 1) * sp) / 2;
+      const oy = (h - (rows - 1) * sp) / 2;
       const dots = [];
       for (let j = 0; j < rows; j++)
         for (let i = 0; i < cols; i++)
           dots.push({ x: ox + i * sp, y: oy + j * sp });
+      field.ctx = ctx;
+      field.dots = dots;
+      field.w = w;
+      field.h = h;
+      field.span = w + h * 0.6;
+      field.band = sp * 3.6;
+    };
 
-      const tick = (now) => {
+    // Diagonal sweep across the tile so it reads as a graceful, sequential
+    // wave rather than a flat horizontal bar, plus a gentle per-dot twinkle.
+    const tick = (now) => {
+      const { ctx, dots, w, h, span, band } = field;
+      if (ctx) {
         if (!startRef.current) startRef.current = now;
         const t = (now - startRef.current) / 1000;
         ctx.clearRect(0, 0, w, h);
-        const p = (t * 0.33) % 1;
-        const lx = p * w;
+        const p = (t * speed) % cycle;
+        const lx = p * span;
         for (const d of dots) {
-          const dx = (d.x - lx) / (sp * 2.2);
-          const b = 0.03 + 0.97 * Math.exp(-dx * dx);
-          const a = (0.04 + 0.35 * b).toFixed(3);
-          const gray = Math.round(140 + 60 * b);
+          const proj = d.x + d.y * 0.6; // diagonal projection
+          const dx = (proj - lx) / band;
+          const wave = Math.exp(-dx * dx);
+          const tw = 0.5 + 0.5 * Math.sin(t * 1.5 + (d.x + d.y) * 0.055);
+          const b = 0.03 + 0.9 * wave * (0.72 + 0.28 * tw);
+          const a = (0.05 + 0.4 * b).toFixed(3);
+          const gray = Math.round(140 + 70 * b);
           ctx.beginPath();
-          ctx.arc(d.x, d.y, 0.6 + b * 1.4, 0, 6.2832);
-          ctx.fillStyle = `rgba(${gray},${gray},${Math.round(gray + 10)},${a})`;
+          ctx.arc(d.x, d.y, 0.6 + b * 1.5, 0, 6.2832);
+          ctx.fillStyle = `rgba(${gray},${gray},${Math.round(gray + 12)},${a})`;
           ctx.fill();
         }
-        rafRef.current = requestAnimationFrame(tick);
-      };
+      }
       rafRef.current = requestAnimationFrame(tick);
     };
-    setTimeout(init, 50);
-    return () => cancelAnimationFrame(rafRef.current);
+
+    let ro;
+    const startTimer = setTimeout(() => {
+      build();
+      if (typeof ResizeObserver !== 'undefined') {
+        ro = new ResizeObserver(build);
+        ro.observe(cv);
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    }, 50);
+
+    return () => {
+      clearTimeout(startTimer);
+      cancelAnimationFrame(rafRef.current);
+      if (ro) ro.disconnect();
+    };
   }, []);
 
   return (

@@ -906,14 +906,14 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  border: 1px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.3), rgba(#93B4FC, 0.3));
+  border: 1px solid rgba($ouiColorPrimary, 0.15);
   border-radius: 10px;
   background-color: var(--nb-cell, $ouiFormBackgroundColor);
   box-shadow: lightOrDarkTheme(
     0 4px 16px rgba(75, 110, 245, 0.06),
     0 6px 22px rgba(0, 0, 0, 0.3)
   );
-  transition: box-shadow 300ms ease;
+  transition: box-shadow 300ms ease, border-color 220ms ease;
   overflow: visible;
 
   // Subtle shimmer border — soft color shift
@@ -944,7 +944,12 @@
     z-index: 0;
   }
 
+  &:hover {
+    border-color: rgba($ouiColorPrimary, 0.25);
+  }
+
   &:focus-within {
+    border-color: rgba($ouiColorPrimary, 0.75);
     box-shadow: lightOrDarkTheme(
       0 6px 22px rgba(75, 110, 245, 0.14),
       0 8px 28px rgba(0, 0, 0, 0.5)

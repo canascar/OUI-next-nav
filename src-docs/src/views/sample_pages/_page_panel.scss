@@ -103,7 +103,7 @@
   padding: $ouiSizeS 12px;
   cursor: pointer;
   white-space: nowrap;
-  border-radius: 10px;
+  border-radius: 6px;
   height: 34px;
   border: 1px solid transparent;
   transition: background-color 150ms ease-in-out, border-color 150ms ease-in-out;
@@ -209,7 +209,7 @@
   font-size: $ouiFontSizeXS;
   color: $ouiTextColor;
   cursor: pointer;
-  border-radius: $ouiBorderRadius;
+  border-radius: 6px;
   transition: background-color 120ms ease;
 
   &:hover {
@@ -244,7 +244,8 @@
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-bottom: 8px;
+  // No extra bottom padding — the canvas content's 16px handles all sides evenly.
+  padding-bottom: 0;
   animation: pagePanelFadeIn 400ms ease-out both;
 }
 

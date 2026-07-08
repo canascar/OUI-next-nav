@@ -47,7 +47,11 @@ import { Mascot } from '../../../../olly-mascot/Mascot';
 import { OuiAgenticSpinner } from '../../../../src/components/headless/agentic_spinner';
 import { ThemeContext } from '../../components/with_theme';
 import { OllyIdle } from './olly_idle';
-import { EmptySessionPageV6 } from './empty_session_page_v6';
+import {
+  EmptySessionPageV6,
+  SCENARIOS,
+  ScenarioFindingCard,
+} from './empty_session_page_v6';
 import {
   Chart,
   Settings,
@@ -78,23 +82,30 @@ const SOURCE_PAGE_MOCK = {
   discover: { component: LogsPageMock, title: 'Discover' },
 };
 
+// The home greeting (EmptySessionPageV6) shows a randomly-chosen scenario. The
+// chat session's first message is built from the *same* scenario so its content
+// — greeting, summary, and expandable findings — matches what the user just saw.
+const buildScenarioMessage = (scenarioId) => {
+  const sc = SCENARIOS[scenarioId] || SCENARIOS[1];
+  const summary = sc.summary
+    .replace(/<strong>/g, '**')
+    .replace(/<\/strong>/g, '**')
+    .replace(/<[^>]+>/g, '');
+  return {
+    role: 'assistant',
+    content: `## ${sc.greeting}\n\n${summary}`,
+    scenario: scenarioId,
+    findings: sc.findings,
+  };
+};
+
 const THREADS = {
   'overview-home': {
     title: 'Morning briefing',
     staggered: true,
     messages: [],
-    staggeredMessages: [
-      {
-        role: 'assistant',
-        content:
-          '## Hey John,\n\n**Active incident** — checkout-agent is looping. Immediate action needed.',
-        findings: [
-          { key: 'critical-loop', status: 'Critical', statusColor: 'red', title: 'checkout-agent is looping — 1,994 retries in the last 6 minutes' },
-          { key: 'critical-root-cause', status: 'Critical', statusColor: 'red', title: 'Root cause: order-db pool at 98%, handler returns 200 on empty' },
-          { key: 'info-fixes', status: 'Review', statusColor: 'blue', title: 'Three fixes available: cap retries, raise pool, fix 200-on-empty' },
-        ],
-      },
-    ],
+    // Overridden at runtime with the scenario shown on the home greeting.
+    staggeredMessages: [buildScenarioMessage(1)],
   },
   'latency-spike': {
     title: 'Latency spike investigation',
@@ -1144,6 +1155,8 @@ const AssistantMessage = ({
   isTyping,
   largeGreeting,
   findings,
+  scenario,
+  onFindingAction,
 }) => {
   const allAttachments = attachments || (attachment ? [attachment] : []);
   const showMascot = isLastAssistant && !isTyping;
@@ -1188,18 +1201,36 @@ const AssistantMessage = ({
               renderSingleAttachment(att, idx, onViewAsPage)
             )}
             {findings && findings.length > 0 && (
-              <div className="threadPage__inlineFindings">
-                {findings.map((finding) => {
-                  const statusColors = { red: { bg: 'rgba(220,38,38,0.08)', color: '#DC2626' }, amber: { bg: 'rgba(180,83,9,0.08)', color: '#B45309' }, green: { bg: 'rgba(14,110,82,0.08)', color: '#0E6E52' }, blue: { bg: 'rgba(26,93,168,0.08)', color: '#1A5DA8' } };
-                  const colors = statusColors[finding.statusColor] || statusColors.blue;
-                  return (
-                    <div key={finding.key} className="threadPage__inlineFinding">
-                      <span className="threadPage__inlineFindingPill" style={{ background: colors.bg, color: colors.color }}>{finding.status}</span>
-                      <span className="threadPage__inlineFindingTitle">{finding.title}</span>
-                    </div>
-                  );
-                })}
-              </div>
+              scenario != null ? (
+                // Scenario-backed findings render the same expandable warning
+                // cards as the home greeting (widget + evidence + actions).
+                <div className="threadPage__scenarioFindings">
+                  {findings.map((finding) => (
+                    <ScenarioFindingCard
+                      key={finding.key}
+                      finding={finding}
+                      scenario={scenario}
+                      idPrefix="chat"
+                      onAction={(label) => {
+                        if (onFindingAction) onFindingAction(label);
+                      }}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="threadPage__inlineFindings">
+                  {findings.map((finding) => {
+                    const statusColors = { red: { bg: 'var(--g-danger-soft)', color: 'var(--g-danger)' }, amber: { bg: 'rgba(180,83,9,0.08)', color: '#B45309' }, green: { bg: 'rgba(14,110,82,0.08)', color: '#0E6E52' }, blue: { bg: 'rgba(26,93,168,0.08)', color: '#1A5DA8' } };
+                    const colors = statusColors[finding.statusColor] || statusColors.blue;
+                    return (
+                      <div key={finding.key} className="threadPage__inlineFinding">
+                        <span className="threadPage__inlineFindingPill" style={{ background: colors.bg, color: colors.color }}>{finding.status}</span>
+                        <span className="threadPage__inlineFindingTitle">{finding.title}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )
             )}
             <div className="threadPage__feedback">
               <OuiButtonIcon
@@ -1689,6 +1720,9 @@ export const ThreadPage = ({
   const [mascotExpression, setMascotExpression] = useState(undefined);
   const [greetingExiting, setGreetingExiting] = useState(false);
   const [greetingDone, setGreetingDone] = useState(false);
+  // Scenario shown on the home greeting; shared with the first chat message so
+  // both stay in sync (the greeting picks one at random otherwise).
+  const [homeScenario] = useState(() => Math.floor(Math.random() * 5) + 1);
 
   const isOverviewHome = threadKey === 'overview-home';
   useEffect(() => {
@@ -1853,17 +1887,21 @@ export const ThreadPage = ({
     streamTimers.current.forEach(clearTimeout);
     streamTimers.current = [];
 
-    // Staggered loading for threads that opt in (e.g. overview-home)
-    if (!pendingMessages && thread.staggered && thread.staggeredMessages) {
+    // Staggered loading for threads that opt in (e.g. overview-home). For the
+    // home overview, build the message from the same scenario the greeting shows.
+    const staggeredMessages = isOverviewHome
+      ? [buildScenarioMessage(homeScenario)]
+      : thread.staggeredMessages;
+    if (!pendingMessages && thread.staggered && staggeredMessages) {
       setMessages([]);
       setIsTyping(true);
       // Mascot thinks for 2.5s, then messages appear
       const thinkDelay = 2500;
-      thread.staggeredMessages.forEach((msg, i) => {
+      staggeredMessages.forEach((msg, i) => {
         const delay = thinkDelay + i * 1800;
         streamTimers.current.push(setTimeout(() => {
           setMessages((prev) => [...prev, msg]);
-          if (i < thread.staggeredMessages.length - 1) {
+          if (i < staggeredMessages.length - 1) {
             setIsTyping(true);
           } else {
             setIsTyping(false);
@@ -2030,6 +2068,8 @@ export const ThreadPage = ({
     pendingMessages,
     sourcePage,
     sourcePageTitle,
+    isOverviewHome,
+    homeScenario,
   ]);
 
   // Clean up timers on unmount
@@ -2283,6 +2323,7 @@ export const ThreadPage = ({
     return (
       <div className={`threadPage__greetingWrap${greetingExiting ? ' threadPage__greetingWrap--exiting' : ''}`}>
         <EmptySessionPageV6
+          scenario={homeScenario}
           onStartThread={(text) => {
             pendingSendRef.current = text;
             setGreetingExiting(true);
@@ -2503,6 +2544,8 @@ export const ThreadPage = ({
                   attachment={msg.attachment}
                   attachments={msg.attachments}
                   findings={msg.findings}
+                  scenario={msg.scenario}
+                  onFindingAction={(label) => handleSend(label)}
                   onViewAsPage={handleViewAsPage}
                   mascotColor={mascotColor}
                   mascotEyeColor={mascotEyeColor}
@@ -2514,7 +2557,10 @@ export const ThreadPage = ({
                 />
               );
             })}
-            {isTyping && (
+            {isTyping && !messages.some((m) => m.role === 'tasks' && !m.collapsed) && (
+              // While steps are loading (an uncollapsed task list is present) Olly
+              // stays hidden — the step tracker is the loading indicator. Once the
+              // steps complete, the streaming assistant message pops Olly back in.
               <div className="threadPage__message threadPage__message--assistant">
                 <div className="threadPage__assistantStreamRow">
                   <div className="threadPage__responseMascot threadPage__responseMascot--pulsing">
