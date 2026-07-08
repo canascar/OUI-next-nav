@@ -306,6 +306,8 @@ export const SCENARIOS = {
         title: 'Two anomalies flagged overnight — both recovered on their own',
         widget: { type: 'status', label: 'recovered', color: '#0E6E52' },
         actions: [{ label: 'View details', key: 'see-queries' }],
+        insight:
+          "Both anomalies self-recovered before hitting any alert threshold — search-tool from a 03:14 cold start (back in 40s) and triage-routing from a brief 04:22 drift. No customer impact and nothing to action; I'll keep watching in case the pattern repeats.",
       },
       {
         key: 'warning-groundedness',
@@ -314,6 +316,8 @@ export const SCENARIOS = {
         title: 'Groundedness drifting toward alert threshold (0.74, alerts at 0.70)',
         widget: { type: 'spark', label: '0.74', color: '#8A5A00' },
         actions: [{ label: 'See trend', key: 'see-trend' }, { label: 'Adjust threshold', key: 'adjust-threshold' }],
+        insight:
+          'Groundedness has slid from 0.81 to 0.74 over the past week and is trending toward the 0.70 alert line — roughly two days out at the current rate. The decline tracks with recent retrieval changes; tightening the retrieval filter or refreshing the index should pull it back before the alert fires.',
       },
       {
         key: 'info-routing',
@@ -322,6 +326,8 @@ export const SCENARIOS = {
         title: '38% of simple queries hitting the expensive model — costs up 18%',
         widget: { type: 'bignum', value: '$410', delta: '↑18%', deltaColor: 'var(--g-danger)', sub: '/DAY' },
         actions: [{ label: 'Open runbook', key: 'open-runbook' }],
+        insight:
+          'About 38% of simple queries are being routed to the expensive model, pushing daily cost to $410 (up 18% from $347). These could route to the lighter model with no measurable quality loss — the runbook has the exact routing rules to apply.',
       },
     ],
   },
@@ -337,6 +343,8 @@ export const SCENARIOS = {
         title: 'checkout-agent is looping — 1,994 retries in the last 6 minutes',
         widget: { type: 'bignum', value: '1,994', delta: 'retries', deltaColor: 'var(--g-danger)', sub: '6 MIN' },
         actions: [{ label: 'Investigate', key: 'investigate' }],
+        insight:
+          'checkout-agent has retried order-lookup 1,994 times in 6 minutes because the call returns 200 with an empty body, which the agent reads as "try again." Customer checkout is degraded and the loop is still active — capping retries will stop the bleeding immediately while we fix the root cause.',
       },
       {
         key: 'critical-root-cause',
@@ -345,6 +353,8 @@ export const SCENARIOS = {
         title: 'Root cause: order-db pool at 98%, handler returns 200 on empty',
         widget: { type: 'status', label: 'db 98%', color: 'var(--g-danger)' },
         actions: [{ label: 'View code', key: 'see-code' }, { label: 'View traces', key: 'open-trace' }],
+        insight:
+          'The trace runs from checkout-agent down to order-db at 98% pool utilization, and handler.go:88 returns 200 on an empty result instead of a 404. Raising the pool relieves the pressure, but the durable fix is correcting the 200-on-empty response so the agent stops retrying.',
       },
       {
         key: 'info-fixes',
@@ -356,6 +366,8 @@ export const SCENARIOS = {
           { label: 'Page oncall', key: 'page-oncall' },
           { label: 'Open notebook', key: 'open-notebook' },
         ],
+        insight:
+          "There are three fixes, fastest to most durable: cap retries (runtime config, stops it now), raise the db pool (infra, prevents exhaustion under load), and fix the 200-on-empty handler (code, removes the trigger). I'd apply the retry cap immediately and schedule the handler fix.",
       },
     ],
   },
@@ -371,6 +383,8 @@ export const SCENARIOS = {
         title: 'billing-agent accuracy dropped to 0.58 — customers are affected',
         widget: { type: 'bignum', value: '0.58', delta: '↓0.23', deltaColor: 'var(--g-danger)', sub: 'SCORE' },
         actions: [{ label: 'Investigate', key: 'investigate' }],
+        insight:
+          'billing-agent accuracy fell to 0.58 (down 0.23) right after today\'s 14:02 deploy, and 340 customer conversations are already affected. Groundedness dropped to 0.58 and citation match to 0.31 — the sharp, deploy-aligned drop points to a change in that release rather than gradual drift.',
       },
       {
         key: 'warning-causes',
@@ -379,6 +393,8 @@ export const SCENARIOS = {
         title: 'Two possible causes — prompt change vs stale index (52% / 48% likely)',
         widget: { type: 'status', label: '52 / 48', color: '#8A5A00' },
         actions: [{ label: 'Compare', key: 'open-notebook' }],
+        insight:
+          "I've narrowed it to two causes: the 14:02 prompt change (52% likely) which removed citation instructions, or a stale retrieval index (48%) that hasn't refreshed in 26 hours. The timing favors the prompt change, but neither is conclusive without your input.",
       },
       {
         key: 'info-tradeoff',
@@ -387,6 +403,8 @@ export const SCENARIOS = {
         title: 'Rollback the prompt (fast, loses tuning) or reindex (20 min offline)',
         widget: { type: 'status', label: '2 options', color: '#1A5DA8' },
         actions: [{ label: 'Rollback now', key: 'rollback' }, { label: 'Page owner', key: 'page-owner' }],
+        insight:
+          'Two paths forward: roll back the prompt (fast, but loses today\'s tuning work) or reindex the docs (~20 min offline, but preserves the new prompt). Either resolves it if it\'s the actual cause — the trade-off is speed versus keeping the tuning, and only you can weigh that.',
       },
     ],
   },
@@ -402,6 +420,8 @@ export const SCENARIOS = {
         title: 'Tool-selection accuracy dropped from 0.71 to 0.58 this week',
         widget: { type: 'bignum', value: '0.58', delta: '↓18%', deltaColor: 'var(--g-danger)', sub: 'ACCURACY' },
         actions: [{ label: 'Investigate', key: 'investigate' }],
+        insight:
+          'Tool-selection accuracy dropped from 0.71 to 0.58 this week while every infrastructure signal stayed clean — so this is a quality regression, not an outage. The timing lines up with Tuesday\'s prompt deploy, which is the first place I\'d look.',
       },
       {
         key: 'resolved-infra',
@@ -418,6 +438,8 @@ export const SCENARIOS = {
         title: 'Likely correlated with Tuesday\'s prompt deploy — read-only analysis ready',
         widget: { type: 'status', label: 'ready', color: '#1A5DA8' },
         actions: [{ label: 'Run analysis', key: 'run-investigation' }],
+        insight:
+          "This most likely correlates with Tuesday's prompt deploy. A read-only analysis comparing pre- and post-deploy tool-selection traces is ready to run — it won't touch production and should confirm whether the deploy is responsible.",
       },
     ],
   },
@@ -433,6 +455,8 @@ export const SCENARIOS = {
         title: 'research-agent retry loop triggered again — same pattern as last 4 times',
         widget: { type: 'spark', label: '5th', color: '#8A5A00' },
         actions: [{ label: 'See pattern', key: 'see-pattern' }],
+        insight:
+          'research-agent has hit this exact retry loop 5 times in 30 days: it calls web-fetch, the upstream returns 200 with an empty body, and the agent reads that as "not done yet" and retries. It\'s the identical signature as the last four incidents — each was patched individually, never at the root.',
       },
       {
         key: 'info-root-cause',
@@ -444,6 +468,8 @@ export const SCENARIOS = {
           { label: 'File issue', key: 'file-issue' },
           { label: 'Open notebook', key: 'open-notebook' },
         ],
+        insight:
+          "The durable fix is upstream: the data team's endpoint should return 404 on a miss instead of 200. As a stopgap, treating an empty 200 as terminal in client.ts:40 would break the loop now. This is the 5th symptomatic patch — filing an issue with the data team is what stops the recurrence.",
       },
     ],
   },
@@ -954,7 +980,13 @@ export const FindingWidget = ({ finding, idPrefix = 'sc' }) => {
 // Self-contained (manages its own expand + feedback state) so it can be dropped
 // into the chat session and render the same warnings, with the same expand
 // behavior and evidence, as the home greeting.
-export const ScenarioFindingCard = ({ finding, scenario, idPrefix = 'sc', onAction }) => {
+export const ScenarioFindingCard = ({
+  finding,
+  scenario,
+  idPrefix = 'sc',
+  onAction,
+  showFeedback = true,
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
@@ -978,26 +1010,28 @@ export const ScenarioFindingCard = ({ finding, scenario, idPrefix = 'sc', onActi
           />
         </div>
       </div>
-      <div className={`v6Scenario__findingActions__side${isExpanded ? ' v6Scenario__findingActions__side--visible' : ''}`}>
-        {isExpanded && (
-          <>
-            <button
-              type="button"
-              className={`v6Scenario__findingSideBtn${feedback === 'up' ? ' v6Scenario__findingSideBtn--active' : ''}`}
-              aria-label="Helpful"
-              onClick={(e) => { e.stopPropagation(); setFeedback((f) => (f === 'up' ? null : 'up')); }}>
-              <OuiIcon type="thumbsUp" size="s" />
-            </button>
-            <button
-              type="button"
-              className={`v6Scenario__findingSideBtn${feedback === 'down' ? ' v6Scenario__findingSideBtn--active' : ''}`}
-              aria-label="Not helpful"
-              onClick={(e) => { e.stopPropagation(); setFeedback((f) => (f === 'down' ? null : 'down')); }}>
-              <OuiIcon type="thumbsDown" size="s" />
-            </button>
-          </>
-        )}
-      </div>
+      {showFeedback && (
+        <div className={`v6Scenario__findingActions__side${isExpanded ? ' v6Scenario__findingActions__side--visible' : ''}`}>
+          {isExpanded && (
+            <>
+              <button
+                type="button"
+                className={`v6Scenario__findingSideBtn${feedback === 'up' ? ' v6Scenario__findingSideBtn--active' : ''}`}
+                aria-label="Helpful"
+                onClick={(e) => { e.stopPropagation(); setFeedback((f) => (f === 'up' ? null : 'up')); }}>
+                <OuiIcon type="thumbsUp" size="s" />
+              </button>
+              <button
+                type="button"
+                className={`v6Scenario__findingSideBtn${feedback === 'down' ? ' v6Scenario__findingSideBtn--active' : ''}`}
+                aria-label="Not helpful"
+                onClick={(e) => { e.stopPropagation(); setFeedback((f) => (f === 'down' ? null : 'down')); }}>
+                <OuiIcon type="thumbsDown" size="s" />
+              </button>
+            </>
+          )}
+        </div>
+      )}
       <CollapsibleBody expanded={isExpanded}>
         <div className="v6Scenario__findingCardBody">
           <FindingEvidence scenario={scenario} findingKey={finding.key} />
@@ -1029,6 +1063,7 @@ export const ScenarioFindingCard = ({ finding, scenario, idPrefix = 'sc', onActi
 export const EmptySessionPageV6 = ({
   scenario: scenarioProp,
   onStartThread,
+  onFindingAction,
   onOpenPage,
   onOpenPageInNewSession,
   onJumpToPage,
@@ -1244,7 +1279,11 @@ export const EmptySessionPageV6 = ({
                 tabIndex={isExpanded ? 0 : -1}
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (onStartThread) onStartThread(action.label);
+                  // Starting from a callout opens a new session scoped to just
+                  // this finding (with a related canvas page). Fall back to a
+                  // plain thread if no finding-action handler is wired.
+                  if (onFindingAction) onFindingAction(finding, action);
+                  else if (onStartThread) onStartThread(action.label);
                 }}>
                 {action.label}
               </button>

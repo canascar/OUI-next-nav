@@ -1752,24 +1752,52 @@ export const SessionPagesView = ({ variant } = {}) => {
   // the relevant canvas page.
   useEffect(() => {
     const handleOpenChatSession = (e) => {
-      const { pageKey, title, prompt } = e.detail || {};
-      if (!prompt) return;
+      const {
+        pageKey,
+        title,
+        prompt,
+        scenario,
+        findings,
+        insight,
+        sessionTitle,
+      } = e.detail || {};
+      const hasFindings = Array.isArray(findings) && findings.length > 0;
+      if (!prompt && !hasFindings) return;
       setSessionState((prev) => {
         const next = createSession(prev);
         const newSessionId = next.activeSessionId;
         const threadKey = `thread-${Date.now()}-${Math.random()
           .toString(36)
           .slice(2, 9)}`;
+        // Seed the chat. When findings are provided (starting from a home
+        // callout), scope the conversation to just that callout: the finding
+        // card sits on top for context, then the action the user took, then an
+        // insights reply from the assistant.
+        const messages = [];
+        if (hasFindings) {
+          messages.push({
+            role: 'assistant',
+            content: '',
+            scenario,
+            findings,
+          });
+        }
+        if (prompt) {
+          messages.push({ role: 'user', author: 'You', content: prompt });
+        }
+        if (insight) {
+          messages.push({ role: 'assistant', content: insight });
+        }
         const pendingThread = {
           key: threadKey,
-          messages: [{ role: 'user', author: 'You', content: prompt }],
+          messages,
           sourcePageTitle: title || null,
         };
         const updates = {
           threadKey,
           pendingThread,
           threadPanelState: 'side-by-side',
-          title: title || prompt.slice(0, 40),
+          title: sessionTitle || title || (prompt ? prompt.slice(0, 40) : 'New Session'),
         };
         if (pageKey) {
           const pageEntry = SOURCE_PAGE_MOCK[pageKey];

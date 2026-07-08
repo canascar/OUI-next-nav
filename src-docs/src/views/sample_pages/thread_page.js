@@ -85,6 +85,30 @@ const SOURCE_PAGE_MOCK = {
 // The home greeting (EmptySessionPageV6) shows a randomly-chosen scenario. The
 // chat session's first message is built from the *same* scenario so its content
 // — greeting, summary, and expandable findings — matches what the user just saw.
+// Maps a home-greeting finding to the canvas page that best represents its
+// issue, so starting a conversation from a callout opens a relevant page.
+const FINDING_PAGE_MAP = {
+  // Scenario 1 — healthy morning
+  'resolved-anomalies': 'traces',
+  'warning-groundedness': 'metrics',
+  'info-routing': 'metrics',
+  // Scenario 2 — checkout-agent loop
+  'critical-loop': 'traces',
+  'critical-root-cause': 'traces',
+  'info-fixes': 'notebooks',
+  // Scenario 3 — billing-agent accuracy
+  'critical-billing': 'app-perf-services',
+  'warning-causes': 'notebooks',
+  'info-tradeoff': 'notebooks',
+  // Scenario 4 — tool-selection regression
+  'warning-tool-selection': 'metrics',
+  'resolved-infra': 'dashboards',
+  'info-next-steps': 'notebooks',
+  // Scenario 5 — recurring research-agent loop
+  'warning-pattern': 'traces',
+  'info-root-cause': 'notebooks',
+};
+
 const buildScenarioMessage = (scenarioId) => {
   const sc = SCENARIOS[scenarioId] || SCENARIOS[1];
   const summary = sc.summary
@@ -617,8 +641,11 @@ primary_conninfo = 'host=primary port=5432 user=replicator'`,
 };
 
 // Renders a single user prompt bubble (right-aligned, light background)
-const UserMessage = ({ author: _author, content, attachment }) => (
-  <div className="threadPage__message threadPage__message--user">
+const UserMessage = ({ author: _author, content, attachment, enter }) => (
+  <div
+    className={`threadPage__message threadPage__message--user${
+      enter ? ' threadPage__message--enter' : ''
+    }`}>
     <div className="threadPage__bubble threadPage__bubble--user">
       <OuiText size="s">
         <p>{content}</p>
@@ -1157,6 +1184,7 @@ const AssistantMessage = ({
   findings,
   scenario,
   onFindingAction,
+  enter,
 }) => {
   const allAttachments = attachments || (attachment ? [attachment] : []);
   const showMascot = isLastAssistant && !isTyping;
@@ -1168,7 +1196,10 @@ const AssistantMessage = ({
   const streamingExpression = !content ? 'blink' : 'dot';
 
   return (
-    <div className="threadPage__message threadPage__message--assistant">
+    <div
+      className={`threadPage__message threadPage__message--assistant${
+        enter ? ' threadPage__message--enter' : ''
+      }`}>
       {streaming ? (
         // While streaming: Olly on left, text on right (row)
         <div className="threadPage__assistantStreamRow">
@@ -1211,6 +1242,7 @@ const AssistantMessage = ({
                       finding={finding}
                       scenario={scenario}
                       idPrefix="chat"
+                      showFeedback={false}
                       onAction={(label) => {
                         if (onFindingAction) onFindingAction(label);
                       }}
@@ -1232,20 +1264,25 @@ const AssistantMessage = ({
                 </div>
               )
             )}
-            <div className="threadPage__feedback">
-              <OuiButtonIcon
-                iconType="thumbsUp"
-                aria-label="Helpful"
-                size="xs"
-                color="text"
-              />
-              <OuiButtonIcon
-                iconType="thumbsDown"
-                aria-label="Not helpful"
-                size="xs"
-                color="text"
-              />
-            </div>
+            {/* Hide message-level feedback on finding-context cards (findings
+                with no text) so the callout reads as context, not a rateable
+                answer. */}
+            {(content || !(findings && findings.length > 0)) && (
+              <div className="threadPage__feedback">
+                <OuiButtonIcon
+                  iconType="thumbsUp"
+                  aria-label="Helpful"
+                  size="xs"
+                  color="text"
+                />
+                <OuiButtonIcon
+                  iconType="thumbsDown"
+                  aria-label="Not helpful"
+                  size="xs"
+                  color="text"
+                />
+              </div>
+            )}
           </div>
           {showMascot && content && (
             <div className="threadPage__responseMascot">
@@ -1862,8 +1899,18 @@ export const ThreadPage = ({
   // Reset messages and canvas when switching threads
   useEffect(() => {
     const msgs = pendingMessages || thread.messages;
+    // A session started from a home callout leads with a finding-only assistant
+    // message. We reveal it (and the follow-up) with an Olly typing animation so
+    // the finding reads like a response rather than appearing all at once.
+    const isFindingScoped = !!(
+      pendingMessages &&
+      pendingMessages[0] &&
+      pendingMessages[0].role === 'assistant' &&
+      pendingMessages[0].findings &&
+      pendingMessages[0].findings.length
+    );
     if (pendingMessages) {
-      setMessages(pendingMessages);
+      setMessages(isFindingScoped ? [] : pendingMessages);
     } else {
       setMessages(thread.messages);
     }
@@ -1886,6 +1933,37 @@ export const ThreadPage = ({
     setIsCanvasOpen(false);
     streamTimers.current.forEach(clearTimeout);
     streamTimers.current = [];
+
+    // Finding-scoped session: the finding (context) and the user's prompt fade
+    // in together with the UI, then Olly thinks and the insight response
+    // animates in below.
+    if (isFindingScoped) {
+      const [findingMsg, actionMsg, insightMsg] = pendingMessages;
+      const scrollToEnd = () => {
+        if (feedRef.current) {
+          setTimeout(() => {
+            if (feedRef.current)
+              feedRef.current.scrollTop = feedRef.current.scrollHeight;
+          }, 50);
+        }
+      };
+      // Finding + user prompt appear together, fading in with the UI.
+      const initial = [{ ...findingMsg, _enter: true }];
+      if (actionMsg) initial.push({ ...actionMsg, _enter: true });
+      setMessages(initial);
+      scrollToEnd();
+      // Olly thinks, then the response animates in below.
+      if (insightMsg) {
+        setIsTyping(true);
+        streamTimers.current.push(
+          setTimeout(() => {
+            setIsTyping(false);
+            setMessages([...initial, { ...insightMsg, _enter: true }]);
+            scrollToEnd();
+          }, 1500)
+        );
+      }
+    }
 
     // Staggered loading for threads that opt in (e.g. overview-home). For the
     // home overview, build the message from the same scenario the greeting shows.
@@ -2335,6 +2413,28 @@ export const ThreadPage = ({
               }
             }, 350);
           }}
+          onFindingAction={(finding, action) => {
+            // Start a NEW session scoped to just this callout: the finding card
+            // sits at the top for context, followed by the action the user took
+            // and an insights reply, alongside a related canvas page.
+            const pageKey = FINDING_PAGE_MAP[finding.key] || 'metrics';
+            const shortTitle =
+              finding.title.length > 44
+                ? `${finding.title.slice(0, 44)}…`
+                : finding.title;
+            window.dispatchEvent(
+              new CustomEvent('open-chat-session', {
+                detail: {
+                  pageKey,
+                  sessionTitle: shortTitle,
+                  prompt: action.label,
+                  scenario: homeScenario,
+                  findings: [finding],
+                  insight: finding.insight,
+                },
+              })
+            );
+          }}
           onOpenPageInNewSession={(pageKey, title) => {
             if (onNavigate) onNavigate(pageKey, title);
           }}
@@ -2513,6 +2613,7 @@ export const ThreadPage = ({
                     author={msg.author}
                     content={msg.content}
                     attachment={msg.attachment}
+                    enter={msg._enter}
                   />
                 );
               }
@@ -2554,6 +2655,7 @@ export const ThreadPage = ({
                   }
                   isTyping={isTyping}
                   largeGreeting={msg.largeGreeting}
+                  enter={msg._enter}
                 />
               );
             })}
