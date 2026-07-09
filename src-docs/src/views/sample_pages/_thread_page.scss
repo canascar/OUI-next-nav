@@ -923,7 +923,7 @@
   display: flex;
   flex-direction: column;
   border: 1px solid rgba($ouiColorPrimary, 0.15);
-  border-radius: 10px;
+  border-radius: 8px;
   background-color: var(--nb-cell, $ouiFormBackgroundColor);
   overflow: visible;
   box-shadow: lightOrDarkTheme(
@@ -970,7 +970,7 @@
 textarea.threadPage__textarea {
   padding-bottom: 36px;
   padding-top: 12px;
-  border-radius: 10px !important;
+  border-radius: 8px !important;
   border: none !important;
   background-color: transparent !important;
   background-image: none !important;

@@ -20,9 +20,14 @@
   padding: 4px 12px 8px;
 }
 
-.discoverPage__queryTextarea textarea {
+// The className lands on the <textarea> itself (OuiTextArea), so target it
+// directly rather than as a descendant.
+.discoverPage__queryTextarea {
   font-family: $ouiCodeFontFamily;
   font-size: $ouiFontSizeS;
+  // Remove OUI's form-control underline (the inner bottom border) — the rounded
+  // border is the only frame we want here.
+  background-image: none !important; // sass-lint:disable-line no-important
   // Animated border highlight — matches the chat/home composer inputs.
   // Rest 15% → hover 25% → focus/active 75%.
   border-color: rgba($ouiColorPrimary, 0.15) !important; // sass-lint:disable-line no-important

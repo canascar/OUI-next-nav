@@ -1736,6 +1736,25 @@ export const SessionPagesView = ({ variant } = {}) => {
       window.removeEventListener('home-chat-started', handleHomeChatStarted);
   }, []);
 
+  // Promote a landing (the home, or a page opened from the nav / jump-to pills)
+  // into a real session once the user actually initializes a chat in it.
+  useEffect(() => {
+    const handleChatStarted = () => {
+      setSessionState((prev) => {
+        if (!prev.activeSessionId) return prev;
+        const active = prev.sessions.find((s) => s.id === prev.activeSessionId);
+        if (!active || (!active.isLanding && !active.isHome)) return prev;
+        return updateSession(prev, prev.activeSessionId, {
+          isLanding: false,
+          isHome: false,
+        });
+      });
+    };
+    window.addEventListener('session-chat-started', handleChatStarted);
+    return () =>
+      window.removeEventListener('session-chat-started', handleChatStarted);
+  }, []);
+
   // Active view: 'session' (show active session) or 'session-list' (browse all sessions)
   const [activeView, setActiveView] = useState('session');
 
@@ -1761,6 +1780,8 @@ export const SessionPagesView = ({ variant } = {}) => {
           activeTabId: tab.id,
           threadPanelState: 'minimized',
           title: displayTitle,
+          // Just viewing a page — not a started session until a chat begins.
+          isLanding: true,
         });
       });
       setActiveView('session');
@@ -1809,6 +1830,9 @@ export const SessionPagesView = ({ variant } = {}) => {
             content: '',
             scenario,
             findings,
+            // The action was already taken from the home callout, so show this
+            // finding expanded and without a (repeat) call to action.
+            expandFindings: true,
           });
         }
         if (prompt) {
@@ -2003,11 +2027,14 @@ export const SessionPagesView = ({ variant } = {}) => {
 
   const renderMainContent = () => {
     if (activeView === 'session-list') {
-      // Filter out empty sessions (not yet "created") and the home landing,
-      // which only becomes a real session once the user starts a chat.
+      // Filter out empty sessions (not yet "created") and landings (the home,
+      // or a page opened from the nav) — these only become real sessions once
+      // the user starts a chat.
       const existingSessions = sessionState.sessions.filter(
         (s) =>
-          !s.isHome && (s.threadKey || s.pendingThread || s.tabs.length > 0)
+          !s.isHome &&
+          !s.isLanding &&
+          (s.threadKey || s.pendingThread || s.tabs.length > 0)
       );
       return (
         <SessionList
@@ -2145,11 +2172,17 @@ export const SessionPagesView = ({ variant } = {}) => {
         <SessionLeftNav
           sessionCount={
             sessionState.sessions.filter(
-              (s) => s.threadKey || s.pendingThread || s.tabs.length > 0
+              (s) =>
+                !s.isHome &&
+                !s.isLanding &&
+                (s.threadKey || s.pendingThread || s.tabs.length > 0)
             ).length
           }
           sessions={sessionState.sessions.filter(
-            (s) => s.threadKey || s.pendingThread || s.tabs.length > 0
+            (s) =>
+              !s.isHome &&
+              !s.isLanding &&
+              (s.threadKey || s.pendingThread || s.tabs.length > 0)
           )}
           onCreateSession={handleCreateSession}
           onBrowseSessions={handleBrowseSessions}
@@ -2171,12 +2204,23 @@ export const SessionPagesView = ({ variant } = {}) => {
                 activeTabId: tab.id,
                 threadPanelState: 'minimized',
                 title,
+                // Just viewing a page — not a started session until a chat begins.
+                isLanding: true,
               });
             });
             setActiveView('session');
           }}
           activeView={activeView}
           activeSessionId={sessionState.activeSessionId}
+          activePageKey={
+            activeView === 'session' && activeSession
+              ? (
+                  activeSession.tabs.find(
+                    (t) => t.id === activeSession.activeTabId
+                  ) || {}
+                ).pageKey || null
+              : null
+          }
           isEmptySession={isEmptySession}
           expandRef={navExpandRef}
         />

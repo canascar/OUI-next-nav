@@ -15,8 +15,10 @@ $ouiFormControlHeight: $ouiSizeXXL !default;
 $ouiFormControlCompressedHeight: $ouiSizeXL !default;
 $ouiFormControlPadding: $ouiSizeM !default;
 $ouiFormControlCompressedPadding: $ouiSizeS !default;
-$ouiFormControlBorderRadius: $ouiBorderRadius !default;
-$ouiFormControlCompressedBorderRadius: 12px !default;
+// Medium border-radius for inputs (down from the 12px base) so form controls
+// match the medium rounding used on buttons.
+$ouiFormControlBorderRadius: 8px !default;
+$ouiFormControlCompressedBorderRadius: 8px !default;
 
 $ouiRadioSize: $ouiSize !default;
 $ouiCheckBoxSize: $ouiSize !default;

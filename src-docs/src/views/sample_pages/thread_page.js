@@ -1160,6 +1160,7 @@ const AssistantMessage = ({
   findings,
   scenario,
   onFindingAction,
+  expandFindings,
   enter,
 }) => {
   const allAttachments = attachments || (attachment ? [attachment] : []);
@@ -1219,6 +1220,8 @@ const AssistantMessage = ({
                       scenario={scenario}
                       idPrefix="chat"
                       showFeedback={false}
+                      initialExpanded={expandFindings}
+                      hideActions={expandFindings}
                       onAction={(label) => {
                         if (onFindingAction) onFindingAction(label);
                       }}
@@ -1928,16 +1931,40 @@ export const ThreadPage = ({
       if (actionMsg) initial.push({ ...actionMsg, _enter: true });
       setMessages(initial);
       scrollToEnd();
-      // Olly thinks, then the response animates in below.
-      if (insightMsg) {
-        setIsTyping(true);
-        streamTimers.current.push(
-          setTimeout(() => {
-            setIsTyping(false);
-            setMessages([...initial, { ...insightMsg, _enter: true }]);
-            scrollToEnd();
-          }, 1500)
-        );
+      // Show only the Olly loader (a streaming assistant bubble with no text
+      // yet — not the secondary spinner), then type the insight in word by word.
+      if (insightMsg && insightMsg.content) {
+        const full = insightMsg.content;
+        const showOlly = setTimeout(() => {
+          setMessages((prev) => [
+            ...prev,
+            { role: 'assistant', content: '', streaming: true, _enter: true },
+          ]);
+          scrollToEnd();
+          const startStream = setTimeout(() => {
+            const tokens = full.split(/(\s+)/);
+            let built = '';
+            tokens.forEach((token, i) => {
+              const t = setTimeout(() => {
+                built += token;
+                setMessages((prev) => {
+                  const updated = [...prev];
+                  updated[updated.length - 1] = {
+                    role: 'assistant',
+                    content: built,
+                    streaming: i < tokens.length - 1,
+                    _enter: true,
+                  };
+                  return updated;
+                });
+                scrollToEnd();
+              }, i * 28);
+              streamTimers.current.push(t);
+            });
+          }, 900);
+          streamTimers.current.push(startStream);
+        }, 450);
+        streamTimers.current.push(showOlly);
       }
     }
 
@@ -2144,12 +2171,16 @@ export const ThreadPage = ({
     if (!text) return;
     hasInteracted.current = true;
 
-    // Rename session on first user message for overview-home, and promote the
-    // home into a chat session: expand the chat full-screen and drop the
-    // home-only Overview canvas tab.
-    if (threadKey === 'overview-home' && !messages.some((m) => m.role === 'user')) {
-      window.dispatchEvent(new CustomEvent('session-rename', { detail: { title: text.slice(0, 50) } }));
-      window.dispatchEvent(new CustomEvent('home-chat-started'));
+    // Initializing a chat is what promotes a landing into a real session — the
+    // home greeting, or a page opened from the nav / jump-to pills (which open
+    // a canvas without starting a session).
+    if (!messages.some((m) => m.role === 'user')) {
+      window.dispatchEvent(new CustomEvent('session-chat-started'));
+      // The home additionally expands full-screen and drops its Overview tab.
+      if (threadKey === 'overview-home') {
+        window.dispatchEvent(new CustomEvent('session-rename', { detail: { title: text.slice(0, 50) } }));
+        window.dispatchEvent(new CustomEvent('home-chat-started'));
+      }
     }
 
     // Add user message
@@ -2624,6 +2655,7 @@ export const ThreadPage = ({
                   attachments={msg.attachments}
                   findings={msg.findings}
                   scenario={msg.scenario}
+                  expandFindings={msg.expandFindings}
                   onFindingAction={(label) => handleSend(label)}
                   onViewAsPage={handleViewAsPage}
                   mascotColor={mascotColor}

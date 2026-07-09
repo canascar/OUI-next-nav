@@ -986,8 +986,10 @@ export const ScenarioFindingCard = ({
   idPrefix = 'sc',
   onAction,
   showFeedback = true,
+  initialExpanded = false,
+  hideActions = false,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(initialExpanded);
   const [feedback, setFeedback] = useState(null);
 
   return (
@@ -1035,7 +1037,7 @@ export const ScenarioFindingCard = ({
       <CollapsibleBody expanded={isExpanded}>
         <div className="v6Scenario__findingCardBody">
           <FindingEvidence scenario={scenario} findingKey={finding.key} />
-          {finding.actions && finding.actions.length > 0 && (
+          {!hideActions && finding.actions && finding.actions.length > 0 && (
             <div className="v6Scenario__findingActions">
               {finding.actions.map((action) => (
                 <button

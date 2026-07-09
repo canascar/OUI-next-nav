@@ -19,8 +19,9 @@ $ouiButtonColorDisabled: tintOrShade($ouiColorPrimary, 60%, 60%) !default;
 $ouiButtonColorDisabledText: makeDisabledContrastColor($ouiButtonColorDisabled) !default;
 $ouiButtonColorGhostDisabled: lightOrDarkTheme($ouiColorDarkShade, $ouiColorLightShade) !default;
 
-// Glass Theme: Pill buttons — full border-radius
-$ouiButtonBorderRadius: 999px !default;
+// Medium border-radius for buttons (and icon buttons) — a moderate, cohesive
+// rounding rather than full pills.
+$ouiButtonBorderRadius: 8px !default;
 
 // Add transition support
 // sass-lint:disable indentation

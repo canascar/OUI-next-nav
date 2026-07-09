@@ -41,6 +41,7 @@ export const SessionLeftNav = ({
   sessions = [],
   activeView,
   activeSessionId,
+  activePageKey,
   isEmptySession,
   disableActions = false,
   expandRef,
@@ -261,7 +262,7 @@ export const SessionLeftNav = ({
             </div>
           </OuiPopover>
           <OuiButtonIcon
-            iconType="menuLeft"
+            iconType="dockedLeft"
             aria-label="Collapse navigation"
             color="text"
             display="empty"
@@ -279,7 +280,8 @@ export const SessionLeftNav = ({
             <button
               type="button"
               className={`sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--main${
-                activeView === 'session' && isEmptySession
+                activeView === 'session' &&
+                (isEmptySession || activePageKey === 'overview-home')
                   ? ' sessionLeftNav__navItemExpanded--active'
                   : ''
               }`}
@@ -288,7 +290,16 @@ export const SessionLeftNav = ({
                 onCreateSession();
               }}>
               <div className="sessionLeftNav__navItemIconWrap">
-                <OuiIcon type="plusInCircle" size="m" />
+                <OuiIcon
+                  type="plusInCircle"
+                  size="m"
+                  color={
+                    activeView === 'session' &&
+                    (isEmptySession || activePageKey === 'overview-home')
+                      ? 'primary'
+                      : undefined
+                  }
+                />
               </div>
               <span className="sessionLeftNav__navItemExpandedLabel">
                 New session
@@ -312,44 +323,54 @@ export const SessionLeftNav = ({
           </div>
           {expandedSections['new-session'] && (
           <div className="sessionLeftNav__sectionChildren">
-            {NEW_SESSION_ITEMS.map((item) => (
-              <button
-                key={item.key}
-                type="button"
-                className="sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--child"
-                onClick={() => {
-                  setIsNavExpanded(false);
-                  if (onOpenPage) onOpenPage(item.page, item.title);
-                }}>
-                <div className="sessionLeftNav__navItemIconWrap">
-                  <OuiIcon type={item.icon} size="m" />
-                </div>
-                <span className="sessionLeftNav__navItemExpandedLabel">
-                  {item.label}
-                </span>
-              </button>
-            ))}
+            {NEW_SESSION_ITEMS.map((item) => {
+              const isActive = activePageKey != null && item.page === activePageKey;
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  className={`sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--child${
+                    isActive ? ' sessionLeftNav__navItemExpanded--active' : ''
+                  }`}
+                  onClick={() => {
+                    setIsNavExpanded(false);
+                    if (onOpenPage) onOpenPage(item.page, item.title);
+                  }}>
+                  <div className="sessionLeftNav__navItemIconWrap">
+                    <OuiIcon type={item.icon} size="m" color={isActive ? 'primary' : undefined} />
+                  </div>
+                  <span className="sessionLeftNav__navItemExpandedLabel">
+                    {item.label}
+                  </span>
+                </button>
+              );
+            })}
             {/* Group sections */}
             {VISIBLE_GROUPS.map((group) => (
               <div key={group.key} className="sessionLeftNav__groupSection">
                 <span className="sessionLeftNav__sectionSubtitle">{group.label}</span>
-                {group.children.map((item) => (
-                  <button
-                    key={item.key}
-                    type="button"
-                    className="sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--child"
-                    onClick={() => {
-                      setIsNavExpanded(false);
-                      if (onOpenPage) onOpenPage(item.page, item.title);
-                    }}>
-                    <div className="sessionLeftNav__navItemIconWrap">
-                      <OuiIcon type={item.icon} size="m" />
-                    </div>
-                    <span className="sessionLeftNav__navItemExpandedLabel">
-                      {item.label}
-                    </span>
-                  </button>
-                ))}
+                {group.children.map((item) => {
+                  const isActive = activePageKey != null && item.page === activePageKey;
+                  return (
+                    <button
+                      key={item.key}
+                      type="button"
+                      className={`sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--child${
+                        isActive ? ' sessionLeftNav__navItemExpanded--active' : ''
+                      }`}
+                      onClick={() => {
+                        setIsNavExpanded(false);
+                        if (onOpenPage) onOpenPage(item.page, item.title);
+                      }}>
+                      <div className="sessionLeftNav__navItemIconWrap">
+                        <OuiIcon type={item.icon} size="m" color={isActive ? 'primary' : undefined} />
+                      </div>
+                      <span className="sessionLeftNav__navItemExpandedLabel">
+                        {item.label}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             ))}
           </div>
@@ -547,7 +568,7 @@ export const SessionLeftNav = ({
           onClick={() => setIsNavExpanded(true)}>
           {isLogoHovered ? (
             <div className="sessionLeftNav__expandIconWrap">
-              <OuiIcon type="menuRight" size="m" aria-hidden="true" />
+              <OuiIcon type="dockedLeft" size="m" aria-hidden="true" />
             </div>
           ) : (
             <OuiIcon type="logoOpenSearch" size="l" aria-hidden="true" />
@@ -574,13 +595,19 @@ export const SessionLeftNav = ({
               button={
                 <OuiButtonIcon
                   className={`sessionLeftNav__actionButton${
-                    activeView === 'session' && isEmptySession
+                    activeView === 'session' &&
+                    (isEmptySession || activePageKey === 'overview-home')
                       ? ' sessionLeftNav__actionButton--active'
                       : ''
                   }`}
                   iconType="plusInCircle"
                   aria-label="New session"
-                  color="text"
+                  color={
+                    activeView === 'session' &&
+                    (isEmptySession || activePageKey === 'overview-home')
+                      ? 'primary'
+                      : 'text'
+                  }
                   display="empty"
                   onClick={onCreateSession}
                 />
@@ -646,13 +673,19 @@ export const SessionLeftNav = ({
           <OuiToolTip content="New session" position="right">
             <OuiButtonIcon
               className={`sessionLeftNav__actionButton${
-                activeView === 'session' && isEmptySession
+                activeView === 'session' &&
+                (isEmptySession || activePageKey === 'overview-home')
                   ? ' sessionLeftNav__actionButton--active'
                   : ''
               }`}
               iconType="plusInCircle"
               aria-label="New session"
-              color="text"
+              color={
+                activeView === 'session' &&
+                (isEmptySession || activePageKey === 'overview-home')
+                  ? 'primary'
+                  : 'text'
+              }
               display="empty"
               onClick={onCreateSession}
             />
@@ -663,34 +696,44 @@ export const SessionLeftNav = ({
         {!disableActions && (
           <div className="sessionLeftNav__shortcutIcons">
             <div className="sessionLeftNav__divider sessionLeftNav__divider--edge" />
-            {NEW_SESSION_ITEMS.map((item) => (
-              <OuiToolTip key={item.key} content={item.label} position="right">
-                <OuiButtonIcon
-                  className="sessionLeftNav__actionButton"
-                  iconType={item.icon}
-                  aria-label={item.label}
-                  color="text"
-                  display="empty"
-                  onClick={() => { if (onOpenPage) onOpenPage(item.page, item.title); }}
-                />
-              </OuiToolTip>
-            ))}
+            {NEW_SESSION_ITEMS.map((item) => {
+              const isActive = activePageKey != null && item.page === activePageKey;
+              return (
+                <OuiToolTip key={item.key} content={item.label} position="right">
+                  <OuiButtonIcon
+                    className={`sessionLeftNav__actionButton${
+                      isActive ? ' sessionLeftNav__actionButton--active' : ''
+                    }`}
+                    iconType={item.icon}
+                    aria-label={item.label}
+                    color={isActive ? 'primary' : 'text'}
+                    display="empty"
+                    onClick={() => { if (onOpenPage) onOpenPage(item.page, item.title); }}
+                  />
+                </OuiToolTip>
+              );
+            })}
             {/* Visible group items as icons */}
             {VISIBLE_GROUPS.map((group, groupIdx) => (
               <React.Fragment key={group.key}>
                 <div className="sessionLeftNav__divider" />
-                {group.children.map((item) => (
-                  <OuiToolTip key={item.key} content={item.label} position="right">
-                    <OuiButtonIcon
-                      className="sessionLeftNav__actionButton"
-                      iconType={item.icon}
-                      aria-label={item.label}
-                      color="text"
-                      display="empty"
-                      onClick={() => { if (onOpenPage) onOpenPage(item.page, item.title); }}
-                    />
-                  </OuiToolTip>
-                ))}
+                {group.children.map((item) => {
+                  const isActive = activePageKey != null && item.page === activePageKey;
+                  return (
+                    <OuiToolTip key={item.key} content={item.label} position="right">
+                      <OuiButtonIcon
+                        className={`sessionLeftNav__actionButton${
+                          isActive ? ' sessionLeftNav__actionButton--active' : ''
+                        }`}
+                        iconType={item.icon}
+                        aria-label={item.label}
+                        color={isActive ? 'primary' : 'text'}
+                        display="empty"
+                        onClick={() => { if (onOpenPage) onOpenPage(item.page, item.title); }}
+                      />
+                    </OuiToolTip>
+                  );
+                })}
               </React.Fragment>
             ))}
             <div className="sessionLeftNav__divider sessionLeftNav__divider--edge" />
@@ -721,7 +764,7 @@ export const SessionLeftNav = ({
                     }`}
                     iconType="navTicketing"
                     aria-label="All sessions"
-                    color="text"
+                    color={activeView === 'session-list' ? 'primary' : 'text'}
                     display="empty"
                     onClick={onBrowseSessions}
                   />
