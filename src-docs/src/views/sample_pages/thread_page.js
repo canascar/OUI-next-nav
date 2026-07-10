@@ -18,6 +18,7 @@ import React, {
 } from 'react';
 
 import {
+  OuiButton,
   OuiButtonIcon,
   OuiCodeBlock,
   OuiContextMenuPanel,
@@ -2587,30 +2588,21 @@ export const ThreadPage = ({
                 />
                 <h3 className="threadPage__emptyTitle">{emptyChatTitle}</h3>
                 <div className="threadPage__emptySuggestions">
-                  <button
-                    type="button"
-                    className="threadPage__emptySuggestion"
-                    onClick={() => {
-                      setMessage('Summarize this page');
-                    }}>
+                  <OuiButton
+                    size="s"
+                    onClick={() => setMessage('Summarize this page')}>
                     Summarize this page
-                  </button>
-                  <button
-                    type="button"
-                    className="threadPage__emptySuggestion"
-                    onClick={() => {
-                      setMessage('Find anomalies');
-                    }}>
+                  </OuiButton>
+                  <OuiButton
+                    size="s"
+                    onClick={() => setMessage('Find anomalies')}>
                     Find anomalies
-                  </button>
-                  <button
-                    type="button"
-                    className="threadPage__emptySuggestion"
-                    onClick={() => {
-                      setMessage('Explain the data');
-                    }}>
+                  </OuiButton>
+                  <OuiButton
+                    size="s"
+                    onClick={() => setMessage('Explain the data')}>
                     Explain the data
-                  </button>
+                  </OuiButton>
                 </div>
               </div>
             )}

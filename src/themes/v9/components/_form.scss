@@ -148,13 +148,17 @@
   border-radius: $ouiFormControlCompressedBorderRadius !important;
 }
 
-// Inside groups, inputs get no radius (group clips them)
+// Inside groups, inputs get no radius (group clips them) and no inner
+// border — the group container provides the single outer border, so the
+// input's own border would otherwise draw dividers next to prepend/append.
 .ouiFormControlLayout--group .ouiFieldText,
 .ouiFormControlLayout--group .ouiFieldSearch,
 .ouiFormControlLayout--group .ouiFieldNumber,
 .ouiFormControlLayout--group .ouiFieldPassword,
 .ouiFormControlLayout--group .ouiSelect {
   border-radius: 0 !important;
+  border: none !important;
+  background-image: none !important; // no gradient underline
 }
 // sass-lint:enable no-important
 
@@ -216,13 +220,14 @@
 
 .ouiFormControlLayout--group:hover,
 .ouiFormControlLayout--group:focus-within {
+  border-color: rgba($ouiColorPrimary, 0.25) !important; // 25% on hover
   box-shadow: 0 4px 12px lightOrDarkTheme(rgba(99, 102, 241, 0.12), rgba(0, 0, 0, 0.25)) !important;
   transform: translateY(-1px) !important;
 }
 
 .ouiFormControlLayout--group:focus-within {
   background-color: $ouiFormBackgroundColor !important;
-  border-color: $ouiColorPrimary !important;
+  border-color: rgba($ouiColorPrimary, 0.75) !important; // 75% on focus
 }
 
 // Remove shadow from nested panels to prevent overlap
@@ -381,11 +386,12 @@
   transform: translateY(0) !important;
 }
 
-// Outline buttons hover - subtle lift with soft shadow
+// Outline buttons hover - subtle lift with soft shadow (matches outline icon
+// buttons: neutral, lowered shadow and a 1px lift).
 .ouiButton:not(.ouiButton--fill):not(.ouiButton-isDisabled):hover,
 .ouiButton:not(.ouiButton--fill):not(.ouiButton-isDisabled):focus {
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15) !important;
-  transform: translateY(-2px) !important;
+  box-shadow: 0 3px 8px rgba(15, 15, 15, 0.08) !important;
+  transform: translateY(-1px) !important;
 }
 
 .ouiButton:not(.ouiButton--fill):not(.ouiButton-isDisabled):active {
@@ -438,23 +444,26 @@
   background-color: $ouiFormBackgroundColor !important;
 }
 
+// Consistent border highlight for all inputs: 25% primary on hover.
 .ouiFieldText:hover,
 .ouiFieldSearch:hover,
 .ouiFieldNumber:hover,
 .ouiFieldPassword:hover,
 .ouiSelect:hover,
 .ouiTextArea:hover {
-  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(99, 102, 241, 0.12), rgba(0, 0, 0, 0.25)) !important;
+  border-color: rgba($ouiColorPrimary, 0.25) !important;
+  box-shadow: inset 0 0 0 1px rgba($ouiColorPrimary, 0.25) !important;
 }
 
+// ...and 75% primary on active/focus.
 .ouiFieldText:focus,
 .ouiFieldSearch:focus,
 .ouiFieldNumber:focus,
 .ouiFieldPassword:focus,
 .ouiSelect:focus,
 .ouiTextArea:focus {
-  border-color: $ouiColorPrimary !important;
-  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(99, 102, 241, 0.12), rgba(0, 0, 0, 0.25)) !important;
+  border-color: rgba($ouiColorPrimary, 0.75) !important;
+  box-shadow: inset 0 0 0 1px rgba($ouiColorPrimary, 0.75) !important;
 }
 
 // Thread/session textareas — remove inner border on focus (outer layout handles it)
@@ -472,8 +481,10 @@
 .ouiFormControlLayout--group .ouiFieldNumber:focus,
 .ouiFormControlLayout--group .ouiFieldPassword:focus,
 .ouiFormControlLayout--group .ouiSelect:focus {
+  border: none !important;
   border-color: transparent !important;
   box-shadow: none !important;
+  background-image: none !important; // kill the inner bottom-border gradient on focus
 }
 
 // All textareas inside a form layout — remove inner border on focus to avoid double border
@@ -489,7 +500,8 @@
 .ouiFieldPassword:active,
 .ouiSelect:active,
 .ouiTextArea:active {
-  box-shadow: 0 4px 12px lightOrDarkTheme(rgba(99, 102, 241, 0.12), rgba(0, 0, 0, 0.25)) !important;
+  border-color: rgba($ouiColorPrimary, 0.75) !important;
+  box-shadow: inset 0 0 0 1px rgba($ouiColorPrimary, 0.75) !important;
 }
 // sass-lint:enable no-important, no-color-literals
 
@@ -552,12 +564,13 @@
 
   &:hover,
   &:focus-within {
+    border-color: rgba($ouiColorPrimary, 0.25) !important; // 25% on hover
     transform: translateY(-1px) !important;
     box-shadow: 0 4px 12px lightOrDarkTheme(rgba(99, 102, 241, 0.12), rgba(0, 0, 0, 0.25)) !important;
   }
 
   &:focus-within {
-    border-color: $ouiColorPrimary !important;
+    border-color: rgba($ouiColorPrimary, 0.75) !important; // 75% on focus
   }
 }
 // sass-lint:enable no-important

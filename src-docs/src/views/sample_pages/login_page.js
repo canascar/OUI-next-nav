@@ -43,11 +43,13 @@ export const LoginPage = ({ onLogin }) => {
     onLogin();
   };
 
-  // Glass theme tokens
+  // Glass theme tokens — derive from the theme card surface token
+  // (--ouiColorEmptyShade / --g-surface) so the panel tracks dark-mode
+  // color updates, while keeping the frosted-glass translucency.
   const bgColor = isDark ? '#0d0818' : '#f8f7fc';
   const panelBg = isDark
-    ? 'rgba(26, 23, 33, 0.55)'
-    : 'rgba(255, 255, 255, 0.62)';
+    ? 'color-mix(in srgb, var(--ouiColorEmptyShade, #151b26) 72%, transparent)'
+    : 'color-mix(in srgb, var(--ouiColorEmptyShade, #ffffff) 68%, transparent)';
   const borderColor = isDark
     ? 'rgba(255, 255, 255, 0.10)'
     : 'rgba(255, 255, 255, 0.9)';

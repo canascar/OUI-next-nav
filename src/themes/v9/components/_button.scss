@@ -27,9 +27,10 @@
   background-color: lightOrDarkTheme($ouiColorPrimary, $ouiColorFullShade) !important;
   border-color: lightOrDarkTheme($ouiColorPrimary, $ouiColorFullShade) !important;
   color: lightOrDarkTheme(#fff, $ouiColorEmptyShade) !important;
+  // Subtle resting shadow (lowered), with a restrained bump on hover.
   box-shadow: lightOrDarkTheme(
-    #{0 8px 22px -10px $ouiColorPrimary},
-    #{0 8px 22px -10px rgba(255, 255, 255, 0.35)}
+    (0 2px 6px -3px rgba($ouiColorPrimary, 0.5)),
+    (0 2px 6px -3px rgba(255, 255, 255, 0.22))
   ) !important;
 
   .ouiButton__text,
@@ -41,6 +42,10 @@
   &:focus {
     background-color: lightOrDarkTheme(lighten($ouiColorPrimary, 5%), darken($ouiColorFullShade, 6%)) !important;
     border-color: lightOrDarkTheme(lighten($ouiColorPrimary, 5%), darken($ouiColorFullShade, 6%)) !important;
+    box-shadow: lightOrDarkTheme(
+      (0 4px 10px -4px rgba($ouiColorPrimary, 0.55)),
+      (0 4px 10px -4px rgba(255, 255, 255, 0.26))
+    ) !important;
   }
 
   &:active {
@@ -143,12 +148,15 @@
 
   &:hover,
   &:focus {
+    // Clearer hover: neutral background fill (like the chat pills) + lift
+    background-color: lightOrDarkTheme(rgba(120, 120, 165, 0.08), rgba(255, 255, 255, 0.08)) !important;
     border-color: lightOrDarkTheme(#e0e0e4, #2e3037) !important;
     transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px rgba(15, 15, 15, 0.06), 0 24px 48px rgba(15, 15, 15, 0.06) !important;
+    box-shadow: 0 3px 8px rgba(15, 15, 15, 0.08) !important;
   }
 
   &:active {
+    background-color: lightOrDarkTheme(rgba(120, 120, 165, 0.12), rgba(255, 255, 255, 0.12)) !important;
     transform: translateY(0) !important;
     box-shadow: 0 1px 2px rgba(15, 15, 15, 0.04) !important;
   }
@@ -245,12 +253,15 @@
   &:hover,
   &:focus,
   &:focus-within {
+    // Clearer hover: neutral background fill (like the chat pills) + lift
+    background-color: lightOrDarkTheme(rgba(120, 120, 165, 0.08), rgba(255, 255, 255, 0.08)) !important;
     border-color: lightOrDarkTheme(#e0e0e4, #2e3037) !important;
     transform: translateY(-1px) !important;
-    box-shadow: 0 4px 12px rgba(15, 15, 15, 0.06), 0 24px 48px rgba(15, 15, 15, 0.06) !important;
+    box-shadow: 0 3px 8px rgba(15, 15, 15, 0.08) !important;
   }
 
   &:active {
+    background-color: lightOrDarkTheme(rgba(120, 120, 165, 0.12), rgba(255, 255, 255, 0.12)) !important;
     transform: translateY(0) !important;
     box-shadow: 0 1px 2px rgba(15, 15, 15, 0.04) !important;
   }
@@ -258,7 +269,11 @@
 
 // Icon buttons — filled style
 .ouiButtonIcon--fill:not(.ouiButtonIcon-isDisabled) {
-  box-shadow: 0 8px 22px -10px $ouiColorPrimary !important;
+  // Subtle resting shadow (lowered), with a restrained bump on hover.
+  box-shadow: lightOrDarkTheme(
+    (0 2px 6px -3px rgba($ouiColorPrimary, 0.5)),
+    (0 2px 6px -3px rgba(255, 255, 255, 0.22))
+  ) !important;
   transition: transform 180ms cubic-bezier(.2, .7, .2, 1),
               box-shadow 180ms cubic-bezier(.2, .7, .2, 1),
               background-color 120ms ease !important;
@@ -267,6 +282,10 @@
   &:focus,
   &:focus-within {
     transform: translateY(-1px) !important;
+    box-shadow: lightOrDarkTheme(
+      (0 4px 10px -4px rgba($ouiColorPrimary, 0.55)),
+      (0 4px 10px -4px rgba(255, 255, 255, 0.26))
+    ) !important;
   }
 
   &:active {
