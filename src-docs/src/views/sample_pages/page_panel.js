@@ -65,6 +65,7 @@ const TabBar = ({
   onTabSelect,
   onTabClose,
   onAddTab,
+  onReorderTabs,
   onExpandChat,
   aiButtonHighlight,
   aiButtonMessage,
@@ -73,6 +74,106 @@ const TabBar = ({
   const tabListRef = useRef(null);
   const [isListOpen, setIsListOpen] = useState(false);
   const [tabFade, setTabFade] = useState(''); // '', 'right', 'left', 'both'
+  // Pointer-based drag-to-reorder (browser-style): the dragged tab follows the
+  // cursor and neighbors slide aside to open the gap. Native HTML5 DnD is
+  // avoided because hiding its ghost / toggling pointer-events is unreliable.
+  const dragRef = useRef(null); // mutable: { index, startX, slotWidth, active, targetIndex }
+  const [drag, setDrag] = useState(null); // render state: { index, dx, targetIndex, slotWidth }
+  const tabsRef = useRef(tabs);
+  const onReorderRef = useRef(onReorderTabs);
+  const onSelectRef = useRef(onTabSelect);
+  tabsRef.current = tabs;
+  onReorderRef.current = onReorderTabs;
+  onSelectRef.current = onTabSelect;
+
+  const handleDragMove = useCallback((e) => {
+    const d = dragRef.current;
+    if (!d) return;
+    let dx = e.clientX - d.startX;
+    if (!d.active) {
+      // Small threshold so a plain click still selects rather than dragging.
+      if (Math.abs(dx) < 4) return;
+      d.active = true;
+      document.body.style.userSelect = 'none';
+    }
+    const n = tabsRef.current.length;
+    const maxRight = (n - 1 - d.index) * d.slotWidth;
+    const maxLeft = -d.index * d.slotWidth;
+    dx = Math.max(maxLeft, Math.min(maxRight, dx));
+    const targetIndex = d.slotWidth
+      ? d.index + Math.round(dx / d.slotWidth)
+      : d.index;
+    d.targetIndex = targetIndex;
+    setDrag({ index: d.index, dx, targetIndex, slotWidth: d.slotWidth });
+  }, []);
+
+  const handleDragEnd = useCallback(() => {
+    window.removeEventListener('mousemove', handleDragMove);
+    window.removeEventListener('mouseup', handleDragEnd);
+    document.body.style.userSelect = '';
+    const d = dragRef.current;
+    dragRef.current = null;
+    if (d && d.active) {
+      const to = d.targetIndex;
+      if (to != null && to !== d.index && onReorderRef.current) {
+        const next = [...tabsRef.current];
+        const [moved] = next.splice(d.index, 1);
+        next.splice(to, 0, moved);
+        onReorderRef.current(next);
+      }
+    } else if (d && onSelectRef.current) {
+      // No movement — treat as a click and select the tab.
+      const tab = tabsRef.current[d.index];
+      if (tab) onSelectRef.current(tab.id);
+    }
+    setDrag(null);
+  }, [handleDragMove]);
+
+  const handleTabMouseDown = useCallback(
+    (e, index) => {
+      if (e.button !== 0) return;
+      if (e.target.closest && e.target.closest('.pagePanel__tabClose')) return;
+      const list = tabListRef.current;
+      const tabEls = list ? list.querySelectorAll('.pagePanel__tab') : null;
+      let slotWidth = 0;
+      if (tabEls && tabEls[index]) {
+        const rect = tabEls[index].getBoundingClientRect();
+        const sib = tabEls[index + 1] || tabEls[index - 1];
+        slotWidth = sib
+          ? Math.abs(sib.getBoundingClientRect().left - rect.left)
+          : rect.width;
+      }
+      dragRef.current = {
+        index,
+        startX: e.clientX,
+        slotWidth,
+        active: false,
+        targetIndex: index,
+      };
+      window.addEventListener('mousemove', handleDragMove);
+      window.addEventListener('mouseup', handleDragEnd);
+    },
+    [handleDragMove, handleDragEnd]
+  );
+
+  // Clean up window listeners if we unmount mid-drag.
+  useEffect(
+    () => () => {
+      window.removeEventListener('mousemove', handleDragMove);
+      window.removeEventListener('mouseup', handleDragEnd);
+    },
+    [handleDragMove, handleDragEnd]
+  );
+
+  // Per-tab horizontal offset during a drag.
+  const getTabTransform = (i) => {
+    if (!drag) return 0;
+    if (i === drag.index) return drag.dx; // dragged tab follows the cursor
+    const { index: di, targetIndex: ti, slotWidth } = drag;
+    if (ti > di && i > di && i <= ti) return -slotWidth;
+    if (ti < di && i < di && i >= ti) return slotWidth;
+    return 0;
+  };
 
   // Check tab list scroll state
   const updateTabFade = useCallback(() => {
@@ -129,7 +230,7 @@ const TabBar = ({
       <div
         className={`pagePanel__tabList${
           tabFade ? ` pagePanel__tabList--fade-${tabFade}` : ''
-        }`}
+        }${drag ? ' pagePanel__tabList--reordering' : ''}`}
         role="tablist"
         aria-label="Open pages"
         ref={tabListRef}
@@ -146,8 +247,17 @@ const TabBar = ({
                 tabIndex={isActive ? 0 : -1}
                 className={`pagePanel__tab${
                   isActive ? ' pagePanel__tab--active' : ''
-                }`}
-                onClick={() => onTabSelect(tab.id)}
+                }${drag && drag.index === index ? ' pagePanel__tab--dragging' : ''}`}
+                style={{
+                  transform: getTabTransform(index)
+                    ? `translateX(${getTabTransform(index)}px)`
+                    : undefined,
+                  // The dragged tab tracks the cursor 1:1 (no transition);
+                  // neighbors keep their CSS transition for the slide.
+                  transition:
+                    drag && drag.index === index ? 'none' : undefined,
+                }}
+                onMouseDown={(e) => handleTabMouseDown(e, index)}
                 onKeyDown={(e) => handleKeyDown(e, tab.id, index)}>
                 <OuiIcon
                   type={PAGE_TAB_ICONS[tab.pageKey] || 'folderClosed'}
@@ -260,6 +370,7 @@ export const PagePanel = ({
   onTabSelect,
   onTabClose,
   onAddTab,
+  onReorderTabs,
   onSelectPage,
   onOpenCanvasPage,
   onExpandChat,
@@ -359,6 +470,7 @@ export const PagePanel = ({
         onTabSelect={onTabSelect}
         onTabClose={onTabClose}
         onAddTab={onAddTab}
+        onReorderTabs={onReorderTabs}
         onExpandChat={onExpandChat}
       />
       <div

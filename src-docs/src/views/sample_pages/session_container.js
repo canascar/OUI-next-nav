@@ -268,6 +268,13 @@ export const SessionContainer = ({
     });
   }, [session.tabs, onUpdateSession]);
 
+  const handleReorderTabs = useCallback(
+    (nextTabs) => {
+      onUpdateSession({ tabs: nextTabs });
+    },
+    [onUpdateSession]
+  );
+
   const handleViewAction = useCallback(
     (pageKey, title) => {
       onOpenCanvasPage(pageKey, title);
@@ -383,6 +390,7 @@ export const SessionContainer = ({
             onTabSelect={handleTabSelect}
             onTabClose={handleTabClose}
             onAddTab={handleAddTab}
+            onReorderTabs={handleReorderTabs}
             onSelectPage={handleSelectPage}
             onOpenCanvasPage={onOpenCanvasPage}
             onExpandChat={isMinimized ? handleExpandChat : undefined}

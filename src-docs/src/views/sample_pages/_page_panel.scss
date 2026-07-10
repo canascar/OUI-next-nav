@@ -106,7 +106,8 @@
   border-radius: 6px;
   height: 34px;
   border: 1px solid transparent;
-  transition: background-color 150ms ease-in-out, border-color 150ms ease-in-out;
+  transition: background-color 150ms ease-in-out, border-color 150ms ease-in-out,
+    transform 200ms cubic-bezier(0.2, 0.7, 0.2, 1);
   flex-shrink: 0;
   outline: none;
 
@@ -139,6 +140,22 @@
       border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.4), rgba($ouiColorPrimary, 0.5));
     }
   }
+
+  // Drag-to-reorder: the dragged tab stays visible and glides to its target
+  // slot (lifted above the others), while neighbors slide aside to make room.
+  &--dragging {
+    z-index: 2;
+    pointer-events: none; // let dragover reach the tabs underneath
+    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.08), rgba($ouiColorPrimary, 0.16));
+    border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.4), rgba($ouiColorPrimary, 0.5));
+    box-shadow: 0 6px 18px lightOrDarkTheme(rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0.5));
+    cursor: grabbing;
+  }
+}
+
+// While reordering, drop the separators so the sliding tabs stay aligned.
+.pagePanel__tabList--reordering .pagePanel__tabSeparator {
+  opacity: 0;
 }
 
 // Tab title text
