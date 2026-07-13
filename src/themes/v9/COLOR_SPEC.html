@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<!--
+  V9 "Glass" Theme — Visual Color Specification
+  SPDX-License-Identifier: Apache-2.0
+
+  Auto-authored companion to COLOR_SPEC.md. Values are taken directly from:
+    - Light: src/themes/v9/global_styling/variables/_colors.scss
+    - Dark:  src/themes/v9/v9_colors_dark.scss
+    - Semantic tokens: src/themes/v9/components/_index.scss
+
+  Open this file directly in a browser. No build step or assets required.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>V9 Glass Theme — Color Spec</title>
+  <style>
+    :root {
+      --page-bg: #eeedf4;
+      --panel: #ffffff;
+      --text: #0a0a0a;
+      --muted: rgba(10, 10, 10, 0.55);
+      --hairline: rgba(10, 10, 10, 0.10);
+      --shadow: 0 2px 12px rgba(0, 60, 120, 0.08), 0 1px 4px rgba(0, 60, 120, 0.05);
+    }
+    body.theme-dark {
+      --page-bg: #10151e;
+      --panel: #151b26;
+      --text: #fafafa;
+      --muted: rgba(250, 250, 250, 0.55);
+      --hairline: rgba(255, 255, 255, 0.10);
+      --shadow: 0 2px 12px rgba(0, 0, 0, 0.4), 0 1px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--page-bg);
+      color: var(--text);
+      transition: background 200ms ease, color 200ms ease;
+      line-height: 1.5;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(24px) saturate(160%);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+      background: color-mix(in srgb, var(--page-bg) 78%, transparent);
+      border-bottom: 1px solid var(--hairline);
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    header h1 { font-size: 18px; margin: 0; letter-spacing: -0.01em; }
+    header p { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); }
+
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--hairline);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+    .toggle:hover { border-color: color-mix(in srgb, var(--text) 25%, transparent); }
+
+    main { max-width: 1080px; margin: 0 auto; padding: 32px; }
+
+    section { margin-bottom: 40px; }
+    section > h2 {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin: 0 0 4px;
+    }
+    section > .desc { margin: 0 0 16px; font-size: 13px; color: var(--muted); max-width: 720px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 14px;
+    }
+
+    .row {
+      background: var(--panel);
+      border: 1px solid var(--hairline);
+      border-radius: 12px;
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+    }
+    .row .token { font-family: "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace; font-size: 12.5px; font-weight: 600; word-break: break-all; }
+    .row .note { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+
+    .pair { display: flex; gap: 10px; margin-top: 10px; }
+    .chipwrap { flex: 1; min-width: 0; }
+    .chiplabel { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 4px; }
+    .chip {
+      height: 54px;
+      border-radius: 8px;
+      border: 1px solid var(--hairline);
+      display: flex;
+      align-items: flex-end;
+      padding: 6px 8px;
+      font-family: "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace;
+      font-size: 10.5px;
+      font-weight: 600;
+      overflow: hidden;
+    }
+    .chip.checker {
+      background-image:
+        linear-gradient(45deg, rgba(128,128,128,0.25) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(128,128,128,0.25) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(128,128,128,0.25) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(128,128,128,0.25) 75%);
+      background-size: 12px 12px;
+      background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+    }
+    .chip .val { padding: 1px 5px; border-radius: 4px; background: rgba(0,0,0,0.35); color: #fff; white-space: nowrap; }
+    .chip.computed { align-items: center; justify-content: center; color: var(--muted); font-style: italic; background: var(--page-bg); }
+
+    /* Visualization palette — compact strip */
+    .visgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+    .viscell { border-radius: 10px; overflow: hidden; border: 1px solid var(--hairline); box-shadow: var(--shadow); }
+    .visswatch { height: 40px; display: flex; }
+    .visswatch > div { flex: 1; }
+    .viscell .meta { padding: 6px 8px; background: var(--panel); }
+    .viscell .meta .token { font-family: ui-monospace, monospace; font-size: 11px; font-weight: 600; }
+    .viscell .meta .hex { font-family: ui-monospace, monospace; font-size: 10px; color: var(--muted); }
+
+    footer { color: var(--muted); font-size: 12px; padding: 24px 32px 48px; text-align: center; }
+    a { color: inherit; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>V9 "Glass" Theme — Color Specification</h1>
+      <p>Light &amp; Dark tokens, straight from the theme source. Toggle flips this page's chrome; every swatch always shows both.</p>
+    </div>
+    <button class="toggle" id="themeToggle" type="button">🌙 Dark preview</button>
+  </header>
+  <main id="app"></main>
+  <footer>
+    Generated from <code>_colors.scss</code>, <code>v9_colors_dark.scss</code>, and <code>_index.scss</code>.
+    See <code>COLOR_SPEC.md</code> and <code>DARK_COLOR_TUNING.md</code> for rationale.
+  </footer>
+  <script id="specdata" type="application/json"></script>
+  <script>
+    // ── Token data ─────────────────────────────────────────────
+    // Each row: [token, lightValue, darkValue, note]
+    // Use null for a value that is "computed" at build time (no fixed hex),
+    // or "=X" style notes. Values mirror the SCSS source exactly.
+    const SECTIONS = [
+      {
+        title: 'Theme-independent constants',
+        desc: 'Identical in both themes.',
+        rows: [
+          ['$ouiColorGhost', '#FFFFFF', '#FFFFFF', 'Always white'],
+          ['$ouiColorInk', '#0a0a0a', '#0a0a0a', 'Always near-black'],
+        ],
+      },
+      {
+        title: 'Core / accent',
+        desc: 'Primary drives buttons, focus, links; accent mirrors primary.',
+        rows: [
+          ['$ouiColorPrimary', '#4B6EF5', '#93b4fc', 'blue-indigo → cornflower blue'],
+          ['$ouiColorAccent', '#4B6EF5', '#93b4fc', 'same as primary'],
+          ['$ouiColorSecondary', '#10b981', '#34d399', 'green (success family)'],
+        ],
+      },
+      {
+        title: 'Status',
+        desc: 'Deliberately desaturated in light; brightened in dark.',
+        rows: [
+          ['$ouiColorSuccess', '#10b981', '#34d399', 'green'],
+          ['$ouiColorWarning', '#d97706', '#fbbf24', 'amber'],
+          ['$ouiColorDanger', '#dc2626', '#f87171', 'red'],
+        ],
+      },
+      {
+        title: 'Shades — ink ramp',
+        desc: 'Surface and text ramp. Light goes white→black; dark goes slate→white.',
+        rows: [
+          ['$ouiColorEmptyShade', '#ffffff', '#151b26', 'Card surfaces'],
+          ['$ouiColorLightestShade', '#fbfbf9', '#171b23', 'Subtle backgrounds'],
+          ['$ouiColorLightShade', '#ececef', '#303748', 'Borders'],
+          ['$ouiColorMediumShade', 'rgba(10, 10, 10, 0.46)', 'rgba(250, 250, 250, 0.50)', 'Muted text'],
+          ['$ouiColorDarkShade', '#0a0a0a', '#fafafa', 'Body text'],
+          ['$ouiColorDarkestShade', '#000000', '#ffffff', 'Titles / foreground'],
+          ['$ouiColorFullShade', '#000000', '#FFFFFF', 'Brightest foreground'],
+        ],
+      },
+      {
+        title: 'Backgrounds & surfaces',
+        desc: 'Canvas, elevated surfaces, and form-input fill.',
+        rows: [
+          ['$ouiPageBackgroundColor', '#eeedf4', '#10151e', 'Canvas'],
+          ['$ouiColorHighlight', '#f7f7f5', '#191d26', 'Elevated / muted surface'],
+          ['$ouiFormBackgroundColor', '#ffffff', '#1c212b', 'Form input background (light = empty shade)'],
+          ['$ouiBackgroundElevated', null, '#191d26', 'Dark only'],
+        ],
+      },
+      {
+        title: 'Text & links',
+        desc: 'Foreground text roles and link color. Some are computed for contrast.',
+        rows: [
+          ['$ouiTextColor', '#0a0a0a', '#fafafa', 'Body text (= dark shade)'],
+          ['$ouiTitleColor', '#000000', '#FFFFFF', 'Titles (= darkest shade)'],
+          ['$ouiTextSubduedColor', 'rgba(10, 10, 10, 0.46)', 'rgba(250, 250, 250, 0.50)', 'Subdued text'],
+          ['$ouiLinkColor', '#3B5ED6', '#8ab0ff', 'Links'],
+          ['$ouiColorDisabled', null, '#171b23', 'Light = tint(text,70%); dark = lightest shade'],
+          ['$ouiColorDisabledText', null, 'rgba(250, 250, 250, 0.32)', 'Light = computed'],
+          ['$ouiColorPrimaryText', null, null, 'computed — makeHighContrastColor(primary)'],
+          ['$ouiColorDangerText', null, null, 'computed — makeHighContrastColor(danger)'],
+        ],
+      },
+      {
+        title: 'Borders & shadows',
+        desc: 'Light derives from the shade ramp; dark defines these explicitly.',
+        rows: [
+          ['$ouiBorderColor', null, '#282e3a', 'Dark explicit; light from shade ramp'],
+          ['$ouiBorderElevated', null, '#282e3a', 'Dark only'],
+          ['$ouiShadowColor', null, 'rgba(0, 0, 0, 0.30)', 'Base shadow tint'],
+          ['$ouiShadowColorLarge', null, 'rgba(0, 0, 0, 0.40)', 'Large shadow tint'],
+        ],
+      },
+      {
+        title: 'Charts',
+        rows: [
+          ['$ouiColorChartLines', null, '#303748', 'Light = shade(lightest,3%); dark = light shade'],
+          ['$ouiColorChartBand', '#fbfbf9', null, 'Light = lightest shade; dark = computed tint'],
+        ],
+      },
+      {
+        title: 'Code block syntax palette (dark)',
+        desc: 'Dark defines an explicit syntax palette; light derives from the vis palette.',
+        rows: [
+          ['$ouiCodeBlockBackgroundColor', '#fbfbf9', '#171b23', 'Editor surface'],
+          ['$ouiCodeBlockCommentColor', null, 'rgba(250, 250, 250, 0.32)', 'Comments (light = vis10)'],
+          ['$ouiCodeBlockStringColor', null, '#fbbf24', 'Strings — amber'],
+          ['$ouiCodeBlockNameColor', null, '#93b4fc', 'Names'],
+          ['$ouiCodeBlockNumberColor', null, '#34d399', 'Numerics — green'],
+          ['$ouiCodeBlockKeywordColor', null, '#82a0f8', 'Keywords'],
+          ['$ouiCodeBlockTypeColor', null, '#93b4fc', 'Types'],
+          ['$ouiCodeBlockTitleColor', null, '#fafafa', 'Titles'],
+        ],
+      },
+      {
+        title: 'Semantic "glass" tokens — surfaces (--g-*)',
+        desc: 'Runtime CSS custom properties. Surface tokens resolve per active theme.',
+        rows: [
+          ['--g-bg', '#eeedf4', '#10151e', '= page background'],
+          ['--g-surface', '#ffffff', '#151b26', '= empty shade'],
+          ['--g-surface-muted', '#f7f7f5', '#191d26', 'lightOrDark(#f7f7f5, highlight)'],
+          ['--g-surface-subtle', '#fbfbf9', '#171b23', '= lightest shade'],
+          ['--g-surface-border', '#ececef', '#303748', '= light shade'],
+          ['--g-surface-border-strong', '#e0e0e4', '#282e3a', 'lightOrDark(#e0e0e4, border)'],
+        ],
+      },
+      {
+        title: 'Semantic "glass" tokens — frosted glass (fixed)',
+        desc: 'Fixed, light-oriented literals used for the frosted-glass panels.',
+        rows: [
+          ['--g-glass', 'rgba(255, 255, 255, 0.62)', 'rgba(255, 255, 255, 0.62)', 'Fixed'],
+          ['--g-glass-hi', 'rgba(255, 255, 255, 0.85)', 'rgba(255, 255, 255, 0.85)', 'Fixed'],
+          ['--g-glass-border', 'rgba(255, 255, 255, 0.90)', 'rgba(255, 255, 255, 0.90)', 'Fixed'],
+        ],
+      },
+      {
+        title: 'Semantic "glass" tokens — accent & status (fixed helpers)',
+        desc: 'Accent soft/tint/ring helpers are fixed indigo regardless of theme.',
+        rows: [
+          ['--g-accent', '#4B6EF5', '#93b4fc', '= primary'],
+          ['--g-accent-bright', '#4f46e5', '#4f46e5', 'Fixed'],
+          ['--g-accent-soft', 'rgba(99, 102, 241, 0.10)', 'rgba(99, 102, 241, 0.10)', 'Fixed'],
+          ['--g-accent-tint', 'rgba(99, 102, 241, 0.18)', 'rgba(99, 102, 241, 0.18)', 'Fixed'],
+          ['--g-accent-ring', 'rgba(99, 102, 241, 0.22)', 'rgba(99, 102, 241, 0.22)', 'Fixed'],
+          ['--g-success-soft', 'rgba(16, 185, 129, 0.10)', 'rgba(16, 185, 129, 0.10)', 'Fixed'],
+          ['--g-warn-soft', 'rgba(217, 119, 6, 0.10)', 'rgba(217, 119, 6, 0.10)', 'Fixed'],
+          ['--g-danger-soft', 'rgba(220, 38, 38, 0.10)', 'rgba(220, 38, 38, 0.10)', 'Fixed'],
+          ['--g-info', '#0284c7', '#0284c7', 'Fixed'],
+        ],
+      },
+      {
+        title: 'Logo',
+        rows: [
+          ['--ouiLogoPrimary', '#075985', '#0284C7', 'OpenSearch mark primary'],
+          ['--ouiLogoSecondary', '#082F49', '#BAE6FD', 'OpenSearch mark secondary'],
+        ],
+      },
+    ];
+
+    // Visualization palette — shared by both themes.
+    const VIS = [
+      ['$ouiColorVis0', '#54B399', '#6DCCB1'], ['$ouiColorVis1', '#6092C0', '#79AAD9'],
+      ['$ouiColorVis2', '#D36086', '#EE789D'], ['$ouiColorVis3', '#9170B8', '#A987D1'],
+      ['$ouiColorVis4', '#CA8EAE', '#E4A6C7'], ['$ouiColorVis5', '#D6BF57', '#F1D86F'],
+      ['$ouiColorVis6', '#B9A888', '#D2C0A0'], ['$ouiColorVis7', '#DA8B45', '#F5A35C'],
+      ['$ouiColorVis8', '#AA6556', '#C47C6C'], ['$ouiColorVis9', '#E7664C', '#FF7E62'],
+      ['$ouiColorVis10', '#9C9DA0', '#9C9DA0'], ['$ouiColorVis11', '#D74987', '#D74987'],
+      ['$ouiColorVis12', '#0D70CA', '#0D70CA'], ['$ouiColorVis13', '#0C8967', '#0C8967'],
+      ['$ouiColorVis14', '#6E28C3', '#6E28C3'], ['$ouiColorVis15', '#D76813', '#D76813'],
+    ];
+
+    // ── Rendering ──────────────────────────────────────────────
+    function chip(value) {
+      if (value == null) return '<div class="chip computed">computed</div>';
+      const cls = /rgba?\(/.test(value) ? 'chip checker' : 'chip';
+      return `<div class="${cls}" style="background:${value}"><span class="val">${value}</span></div>`;
+    }
+
+    function renderSection(sec) {
+      const rows = sec.rows.map((r) => {
+        const [token, light, dark, note] = r;
+        return `<div class="row">
+          <div class="token">${token}</div>
+          ${note ? `<div class="note">${note}</div>` : ''}
+          <div class="pair">
+            <div class="chipwrap"><div class="chiplabel">Light</div>${chip(light)}</div>
+            <div class="chipwrap"><div class="chiplabel">Dark</div>${chip(dark)}</div>
+          </div>
+        </div>`;
+      }).join('');
+      return `<section>
+        <h2>${sec.title}</h2>
+        ${sec.desc ? `<p class="desc">${sec.desc}</p>` : ''}
+        <div class="grid">${rows}</div>
+      </section>`;
+    }
+
+    function renderVis() {
+      const cells = VIS.map(([token, graphic, behind]) => `
+        <div class="viscell">
+          <div class="visswatch">
+            <div style="background:${graphic}" title="graphic"></div>
+            <div style="background:${behind}" title="behindText"></div>
+          </div>
+          <div class="meta">
+            <div class="token">${token}</div>
+            <div class="hex">${graphic} · ${behind}</div>
+          </div>
+        </div>`).join('');
+      return `<section>
+        <h2>Visualization palette (color-blind safe)</h2>
+        <p class="desc">Shared by both themes. Left = <code>graphic</code>, right = <code>behindText</code>.</p>
+        <div class="visgrid">${cells}</div>
+      </section>`;
+    }
+
+    document.getElementById('app').innerHTML =
+      SECTIONS.map(renderSection).join('') + renderVis();
+
+    // ── Theme toggle ───────────────────────────────────────────
+    const btn = document.getElementById('themeToggle');
+    btn.addEventListener('click', () => {
+      const dark = document.body.classList.toggle('theme-dark');
+      btn.textContent = dark ? '☀️ Light preview' : '🌙 Dark preview';
+    });
+  </script>
+</body>
+</html>
