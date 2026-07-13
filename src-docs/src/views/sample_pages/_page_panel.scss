@@ -314,6 +314,13 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding: 16px;
+
+  // Match the space below the page title to the space above it. The 48px
+  // header centers the title with ~13px beneath it, so the overview content
+  // drops its own top padding to keep the gap symmetric.
+  &:has(> .overviewHomePage) {
+    padding-top: 0;
+  }
 }
 
 // Override detailPageHeader inside pagePanel — no border, 16px lr padding

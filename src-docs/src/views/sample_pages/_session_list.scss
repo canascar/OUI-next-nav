@@ -92,15 +92,6 @@
     outline: none;
     box-shadow: 0 0 0 2px $ouiFocusRingColor;
   }
-
-  // Active session highlight
-  &--active {
-    border-color: lightOrDarkTheme(rgba(99, 102, 241, 0.5), rgba(165, 180, 252, 0.4));
-
-    &:hover {
-      background: lightOrDarkTheme(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.07));
-    }
-  }
 }
 
 // Icon area

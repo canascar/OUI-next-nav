@@ -42,13 +42,11 @@ function formatSessionTime(timestamp) {
  *
  * Props:
  * @param {import('./session_models').Session[]} sessions - All sessions
- * @param {string} activeSessionId - Currently active session ID
  * @param {(sessionId: string) => void} onSelectSession - Callback when a session is selected
  * @param {() => void} onCreateSession - Callback to create a new session
  */
 export const SessionList = ({
   sessions = [],
-  activeSessionId,
   onSelectSession,
   onCreateSession,
 }) => {
@@ -140,21 +138,15 @@ export const SessionList = ({
             </div>
           ) : (
             filteredSessions.map((session, index) => {
-              const isActive = session.id === activeSessionId;
               return (
                 <button
                   key={session.id}
-                  className={`sessionList__card${
-                    isActive ? ' sessionList__card--active' : ''
-                  }`}
+                  className="sessionList__card"
                   onClick={() => onSelectSession(session.id)}
                   onMouseEnter={() => handleItemHover(index)}
                   onMouseDown={() => handleItemMouseDown(index)}
                   onMouseUp={() => handleItemMouseUp(index)}
-                  aria-label={`${isActive ? 'Active session: ' : ''}${
-                    session.title
-                  }`}
-                  aria-current={isActive ? 'true' : undefined}>
+                  aria-label={session.title}>
                   <div className="sessionList__cardContent">
                     <span className="sessionList__cardTitle">
                       {session.title}

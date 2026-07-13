@@ -2039,7 +2039,6 @@ export const SessionPagesView = ({ variant } = {}) => {
       return (
         <SessionList
           sessions={existingSessions}
-          activeSessionId={sessionState.activeSessionId}
           onSelectSession={handleSelectSession}
           onCreateSession={handleCreateSession}
         />

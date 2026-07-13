@@ -13,16 +13,60 @@
 // Overview Home Page — merged insights + widgets canvas page
 // ============================================================
 
+// Registered so the top/bottom scroll-fades can transition smoothly
+// (plain mask-image gradients don't interpolate on their own).
+@property --overview-fade-top {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+@property --overview-fade-bottom {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
 .overviewHomePage {
   --widget-font-base: 10.5px;
   --widget-min-w: calc(var(--widget-font-base) * 12.5);
   padding: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   height: 100%;
   display: flex;
   flex-direction: column;
   gap: 16px;
   container-type: inline-size;
+
+  // Hide the scrollbar so the soft faded edges read cleanly.
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  // Soft fade at whichever edge has more content beyond it. Each stop is
+  // driven by a registered custom property (toggled by the fade modifiers)
+  // so the fade eases in and out on scroll.
+  --overview-fade-top: 0px;
+  --overview-fade-bottom: 0px;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    #000 var(--overview-fade-top),
+    #000 calc(100% - var(--overview-fade-bottom)),
+    transparent 100%
+  );
+  transition: --overview-fade-top 150ms ease, --overview-fade-bottom 150ms ease;
+
+  &--fadeTop {
+    --overview-fade-top: 24px;
+  }
+
+  &--fadeBottom {
+    --overview-fade-bottom: 24px;
+  }
 }
 
 .overviewHomePage__section {

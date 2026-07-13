@@ -9,7 +9,7 @@
  * GitHub history for details.
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { OuiButtonIcon, OuiIcon, OuiInsightCard } from '../../../../src/components';
 import { OuiAgenticSpinner } from '../../../../src/components/headless/agentic_spinner';
 
@@ -315,6 +315,34 @@ export const OverviewHomePage = () => {
     return () => timers.forEach(clearTimeout);
   }, []);
 
+  // Fade the top/bottom edges of the scroll area so content dissolves at the
+  // seams instead of hard-cutting. Top fades once scrolled down; bottom fades
+  // while there's more content below.
+  const overviewRef = useRef(null);
+  const [fadeTop, setFadeTop] = useState(false);
+  const [fadeBottom, setFadeBottom] = useState(false);
+  const updateFades = useCallback(() => {
+    const el = overviewRef.current;
+    if (!el) return;
+    const { scrollTop, scrollHeight, clientHeight } = el;
+    setFadeTop(scrollTop > 1);
+    setFadeBottom(scrollTop + clientHeight < scrollHeight - 1);
+  }, []);
+
+  // Recompute whenever content that changes the scroll height settles.
+  useEffect(() => {
+    updateFades();
+  }, [updateFades, findingsLoaded, isEditMode, showWidgetPicker, widgetPickerSearch, widgetOrder, refreshingWidgets, expandedFindings]);
+
+  // Recompute on container resize (grid reflow, panel resize).
+  useEffect(() => {
+    const el = overviewRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return undefined;
+    const ro = new ResizeObserver(() => updateFades());
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [updateFades]);
+
   const utilNum = parseInt(WIDGET_DATA.utilization.value);
   const utilColor = utilNum > 80 ? '#DC2626' : utilNum > 60 ? '#B45309' : '#1F9D6B';
   const utilStroke = utilNum > 80 ? '#ef4444' : utilNum > 60 ? '#f59e0b' : '#34d399';
@@ -509,7 +537,10 @@ export const OverviewHomePage = () => {
   };
 
   return (
-    <div className="overviewHomePage">
+    <div
+      ref={overviewRef}
+      onScroll={updateFades}
+      className={`overviewHomePage${fadeTop ? ' overviewHomePage--fadeTop' : ''}${fadeBottom ? ' overviewHomePage--fadeBottom' : ''}`}>
       {/* Widget grid */}
       <div className="overviewHomePage__section">
         <div className={`overviewHomePage__widgetGrid${isEditMode ? ' overviewHomePage__widgetGrid--editing' : ''}`}>
