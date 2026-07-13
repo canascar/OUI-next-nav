@@ -564,10 +564,49 @@ const DotCountdownRing = ({ startTime }) => {
 // ─── Jump-to chips ─────────────────────────────────────────────────────────────
 
 const JUMP_TO_ITEMS = [
+  { label: 'Alerts', pageKey: 'alerts', icon: 'navAlerting' },
+  { label: 'Dashboards', pageKey: 'dashboards', icon: 'navDashboards' },
   { label: 'Logs', pageKey: 'logs', icon: 'navDiscover' },
   { label: 'Metrics', pageKey: 'metrics', icon: 'visArea' },
-  { label: 'Dashboards', pageKey: 'dashboards', icon: 'navDashboards' },
-  { label: 'Alerts', pageKey: 'alerts', icon: 'navAlerting' },
+];
+
+// Pages surfaced in the "More" popover under the Jump-to pills — everything
+// that isn't already shown as a pill above, grouped like the left-nav menu.
+const JUMP_TO_MORE_GROUPS = [
+  {
+    key: 'general',
+    label: null,
+    items: [
+      { label: 'Topology map', pageKey: 'app-map', icon: 'navAiFlow' },
+    ],
+  },
+  {
+    key: 'agent-monitoring',
+    label: 'Agent monitoring',
+    items: [
+      { label: 'Traces', pageKey: 'app-traces', icon: 'visTable' },
+      { label: 'Spans', pageKey: 'agent-spans', icon: 'visTagCloud' },
+    ],
+  },
+  {
+    key: 'app-perf',
+    label: 'Application performance',
+    items: [
+      { label: 'Traces', pageKey: 'traces', icon: 'apmTrace' },
+      { label: 'Services', pageKey: 'app-perf-services', icon: 'navServices' },
+      { label: 'SLOs', pageKey: 'app-services', icon: 'visGauge' },
+    ],
+  },
+  {
+    key: 'more',
+    label: 'More',
+    items: [
+      { label: 'Notebooks', pageKey: 'notebooks', icon: 'document' },
+      { label: 'Anomaly Detection', pageKey: 'anomaly-dashboard', icon: 'anomalyDetection' },
+      { label: 'Forecasting', pageKey: 'forecasters', icon: 'visLine' },
+      { label: 'Alerting', pageKey: 'alerts-detail', icon: 'navAlerting' },
+    ],
+  },
 ];
 
 const PAGE_BROWSER_ITEMS = [
@@ -1096,6 +1135,7 @@ export const EmptySessionPageV6 = ({
   const [isAttachMenuOpen, setIsAttachMenuOpen] = useState(false);
   const [showPageBrowser, setShowPageBrowser] = useState(false);
   const [pageBrowserSearch, setPageBrowserSearch] = useState('');
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
   const [expandedFindings, setExpandedFindings] = useState(() => new Set());
   const [dismissedFindings, setDismissedFindings] = useState({});
   const [removedFindings, setRemovedFindings] = useState(() => new Set());
@@ -1970,14 +2010,50 @@ export const EmptySessionPageV6 = ({
                 <span>{item.label}</span>
               </button>
             ))}
-            <OuiToolTip content="More" position="top">
-              <button
-                type="button"
-                className="v6Scenario__jumpToChip v6Scenario__jumpToChip--round"
-                onClick={() => setShowPageBrowser(true)}>
-                <OuiIcon type="plusInCircle" size="s" />
-              </button>
-            </OuiToolTip>
+            <OuiPopover
+              anchorPosition="upRight"
+              panelPaddingSize="none"
+              isOpen={moreMenuOpen}
+              closePopover={() => setMoreMenuOpen(false)}
+              button={
+                <OuiToolTip content="More pages" position="top">
+                  <button
+                    type="button"
+                    className={`v6Scenario__jumpToChip v6Scenario__jumpToChip--round${
+                      moreMenuOpen ? ' v6Scenario__jumpToChip--active' : ''
+                    }`}
+                    aria-label="More pages"
+                    onClick={() => setMoreMenuOpen((open) => !open)}>
+                    <OuiIcon type="boxesHorizontal" size="s" />
+                  </button>
+                </OuiToolTip>
+              }>
+              <div className="v6Scenario__morePagesMenu">
+                {JUMP_TO_MORE_GROUPS.map((group) => (
+                  <div key={group.key} className="v6Scenario__morePagesGroup">
+                    {group.label && (
+                      <div className="v6Scenario__morePagesGroupLabel">
+                        {group.label}
+                      </div>
+                    )}
+                    {group.items.map((item) => (
+                      <button
+                        key={`${group.key}-${item.pageKey}-${item.label}`}
+                        type="button"
+                        className="v6Scenario__morePagesItem"
+                        onClick={() => {
+                          const open = onJumpToPage || onOpenPageInNewSession;
+                          if (open) open(item.pageKey, item.label);
+                          setMoreMenuOpen(false);
+                        }}>
+                        <OuiIcon type={item.icon} size="m" />
+                        <span>{item.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </OuiPopover>
           </div>
         </div>
 

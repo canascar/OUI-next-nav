@@ -83,11 +83,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 12px 0 16px;
+  // Uniform ~16px inset on all sides. Left is a bare icon (padding = glyph
+  // inset), while the right controls are icon buttons with ~8px of internal
+  // padding, so the right padding is 8px less to land the glyphs at the same
+  // 16px inset as the left icon and the top/bottom breathing room.
+  padding: 0 8px 0 16px;
   border-bottom: 1px solid $ouiBorderColor;
   flex-shrink: 0;
   height: 48px;
-  margin-right: -8px;
 }
 
 .threadPanel__headerLeft {

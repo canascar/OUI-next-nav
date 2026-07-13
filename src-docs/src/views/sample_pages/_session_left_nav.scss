@@ -84,13 +84,27 @@
   gap: 4px;
 }
 
-// Divider in collapsed shortcut icons — matches group subtitle height.
-// Light mode line is kept visible but a touch lighter than before.
+// Divider in collapsed shortcut icons.
+// The line is drawn via ::after so it takes ZERO layout height — otherwise
+// each 1px rule would push the collapsed icons down relative to the expanded
+// items (which have no rules), causing a slight vertical shift when toggling.
+// With no layout height, the margins alone define the rhythm and match the
+// expanded state's 16px section spacing (margin 6 + flex gap 4 = 16).
 .sessionLeftNav__shortcutIcons .sessionLeftNav__divider {
   width: 50%;
-  height: 0px;
-  border-top: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.11), $ouiBorderColor);
+  height: 0;
+  border-top: 0;
   margin: 10px 0;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -1px;
+    border-top: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.11), $ouiBorderColor);
+  }
 }
 
 .sessionLeftNav__shortcutIcons .sessionLeftNav__divider--edge {
@@ -421,6 +435,7 @@
   line-height: 18px;
   color: $ouiColorMediumShade;
   padding: 4px 8px 2px;
+  margin-bottom: 1px; // breathing room between section header and its items
   text-transform: none;
   letter-spacing: 0;
 }
@@ -467,11 +482,17 @@
   }
 }
 
-// Group section within children
+// Group section within children.
+// Match the collapsed rail's grouping: clear vertical separation before each
+// group (the collapsed rail uses dividers with ~14px on each side) and a
+// consistent 4px rhythm between items (same as the primary items above).
 .sessionLeftNav__groupSection {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
+  // Adds to the parent's 4px flex gap for ~16px of separation before each
+  // group — the same section spacing used elsewhere in the expanded nav.
+  margin-top: 12px;
 }
 
 // Footer (expanded) — row layout at bottom

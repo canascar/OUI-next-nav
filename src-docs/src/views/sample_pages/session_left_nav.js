@@ -415,7 +415,7 @@ export const SessionLeftNav = ({
             </button>
           </div>
           {expandedSections['all-sessions'] && (
-            <div className="sessionLeftNav__sectionChildren" style={{ marginTop: 0 }}>
+            <div className="sessionLeftNav__sectionChildren" style={{ marginTop: 1 }}>
               {sessions.slice(0, 5).map((session) => (
                 <button
                   key={session.id}
