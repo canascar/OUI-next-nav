@@ -283,6 +283,12 @@ export const SessionContainer = ({
     onUpdateSession(updates);
   }, [threadPanelState, session.tabs, onUpdateSession, triggerAnimation]);
 
+  /** Minimize the chat pane — canvas takes full width, Olly pill appears. */
+  const handleMinimize = useCallback(() => {
+    triggerAnimation();
+    onUpdateSession({ threadPanelState: 'minimized' });
+  }, [onUpdateSession, triggerAnimation]);
+
   const handleReorderTabs = useCallback(
     (nextTabs) => {
       onUpdateSession({ tabs: nextTabs });
@@ -351,6 +357,25 @@ export const SessionContainer = ({
   const isPanelOpen = !isFullScreen;
   const tabCount = session.tabs.length;
 
+  // Derive the display title for the chat header.
+  // Priority: session.title (if real) > session.summary > null
+  const displayTitle = (() => {
+    if (session.title && session.title !== 'Home' && session.title !== 'New Session') {
+      return session.title;
+    }
+    if (session.summary) {
+      return session.summary;
+    }
+    return null;
+  })();
+  const showTopbarTitle = isFullScreen && !!displayTitle;
+
+  // isHome for header: if session.isHome is true, the user hasn't started
+  // chatting yet. Title/share/actions are hidden, only toggle shows.
+  // Once the user sends a message, isHome flips to false via the
+  // home-chat-started event and the title appears.
+  const isHomeIdle = !!session.isHome;
+
   return (
     <div
       className={`sessionContainer${
@@ -367,26 +392,7 @@ export const SessionContainer = ({
         </button>
       )}
 
-      {/* Topbar — lives outside the panels, so it never scrolls with content.
-          One control: the Views trigger. */}
-      <div className="sessionContainer__topbar">
-        <div className="sessionContainer__topbarActions">
-          {/* The one and only way to open or close the panel from outside it.
-              Label is just "Views" when nothing is open — the count only
-              appears once there's something to count. */}
-          <button
-            type="button"
-            className={`sessionContainer__viewsTrigger${
-              isPanelOpen ? '' : ' sessionContainer__viewsTrigger--closed'
-            }`}
-            aria-expanded={isPanelOpen}
-            title={isPanelOpen ? 'Close views' : 'Open views'}
-            onClick={handleTogglePanel}>
-            <OuiIcon type="dockedRight" size="s" />
-            <span>{tabCount > 0 ? `Views · ${tabCount}` : 'Views'}</span>
-          </button>
-        </div>
-      </div>
+      {/* Topbar removed — title now lives inside the ThreadPanel header */}
 
       <div className="sessionContainer__panels">
         {/* Left: Chat panel */}
@@ -399,6 +405,13 @@ export const SessionContainer = ({
           onViewAction={handleViewAction}
           width={leftWidth}
           isAnimating={isAnimating}
+          title={displayTitle}
+          titleGenerating={session.titleGenerating}
+          showHeader={true}
+          isHome={isHomeIdle}
+          isPanelOpen={isPanelOpen}
+          onTogglePanel={handleTogglePanel}
+          onMinimize={handleMinimize}
         />
 
         {/* Resize handle — only in side-by-side */}

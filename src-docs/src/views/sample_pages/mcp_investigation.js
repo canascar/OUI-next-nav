@@ -47,6 +47,7 @@ import {
   JUMP_TO_ITEMS,
   JUMP_TO_MORE_GROUPS,
 } from './empty_session_page_v6';
+import { JUMP_TO_MORE_LABEL } from './jump_to_constants';
 
 // ---------------------------------------------------------------------------
 // Pacing
@@ -973,17 +974,16 @@ export const McpHomeGreeting = ({
             isOpen={moreMenuOpen}
             closePopover={() => setMoreMenuOpen(false)}
             button={
-              <OuiToolTip content="More pages" position="top">
-                <button
-                  type="button"
-                  className={`v6Scenario__jumpToChip v6Scenario__jumpToChip--round${
-                    moreMenuOpen ? ' v6Scenario__jumpToChip--active' : ''
-                  }`}
-                  aria-label="More pages"
-                  onClick={() => setMoreMenuOpen((open) => !open)}>
-                  <OuiIcon type="plusInCircle" size="s" />
-                </button>
-              </OuiToolTip>
+              <button
+                type="button"
+                className={`v6Scenario__jumpToChip${
+                  moreMenuOpen ? ' v6Scenario__jumpToChip--active' : ''
+                }`}
+                aria-label={JUMP_TO_MORE_LABEL}
+                onClick={() => setMoreMenuOpen((open) => !open)}>
+                <OuiIcon type="plus" size="s" />
+                <span>{JUMP_TO_MORE_LABEL}</span>
+              </button>
             }>
             <div className="v6Scenario__morePagesMenu">
               {MCP_JUMP_TO_MORE_GROUPS.map((group) => (

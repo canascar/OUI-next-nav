@@ -20,7 +20,7 @@
   flex: 1;
   min-width: 0;
   overflow: hidden;
-  padding: 0 14px 14px 0;
+  padding: 7px 7px 7px 0;
   height: 100%;
   position: relative;
   background-color: transparent;
@@ -33,7 +33,7 @@
   flex: 1;
   min-height: 0;
   min-width: 0;
-  gap: 10px;
+  gap: 7px;
 }
 
 // Remove gap when chat pane is minimized so page panel reaches the left edge
@@ -41,60 +41,7 @@
   gap: 0;
 }
 
-// ─── Topbar ───────────────────────────────────────────────────
-// Outside every scroll container by construction. One control: Views.
-.sessionContainer__topbar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex: none;
-  height: 44px;
-  padding: 0 $ouiSizeS;
-}
-
-.sessionContainer__topbarActions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex: none;
-}
-
-// The single open/close affordance for the views panel. Neutral while open;
-// a quiet blue when closed so it reads as "something is here". No pulse,
-// no badge — the live count carries the information.
-.sessionContainer__viewsTrigger {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 26px;
-  padding: 0 10px;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  background-color: transparent;
-  color: $ouiColorDarkShade;
-  font-size: $ouiFontSizeXS;
-  font-weight: $ouiFontWeightSemiBold;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: background-color 150ms ease, border-color 150ms ease,
-    color 150ms ease;
-
-  &:hover {
-    background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.08));
-    color: $ouiTextColor;
-  }
-
-  &--closed {
-    color: $ouiColorPrimaryText;
-    border-color: rgba($ouiColorPrimary, 0.4);
-    background-color: rgba($ouiColorPrimary, 0.08);
-
-    &:hover {
-      color: $ouiColorPrimaryText;
-      background-color: rgba($ouiColorPrimary, 0.14);
-    }
-  }
-}
+// ─── Topbar (removed — title now lives inside ThreadPanel header) ────────────
 
 // Collapsed panel keeps no width and no chrome — the topbar trigger is the
 // only way back, so nothing is left behind to click.

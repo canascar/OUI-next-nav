@@ -32,6 +32,7 @@ import {
 import { OuiAgenticSpinner } from '../../../../src/components/headless/agentic_spinner';
 import { Mascot } from '../../../../olly-mascot/Mascot';
 import { ThemeContext } from '../../components/with_theme';
+import { JUMP_TO_MORE_LABEL } from './jump_to_constants';
 
 // ─── SurroundShimmer (copied from v3) ──────────────────────────────────────────
 
@@ -2881,17 +2882,16 @@ export const EmptySessionPageV6 = ({
               isOpen={moreMenuOpen}
               closePopover={() => setMoreMenuOpen(false)}
               button={
-                <OuiToolTip content="More pages" position="top">
-                  <button
-                    type="button"
-                    className={`v6Scenario__jumpToChip v6Scenario__jumpToChip--round${
-                      moreMenuOpen ? ' v6Scenario__jumpToChip--active' : ''
-                    }`}
-                    aria-label="More pages"
-                    onClick={() => setMoreMenuOpen((open) => !open)}>
-                    <OuiIcon type="boxesHorizontal" size="s" />
-                  </button>
-                </OuiToolTip>
+                <button
+                  type="button"
+                  className={`v6Scenario__jumpToChip${
+                    moreMenuOpen ? ' v6Scenario__jumpToChip--active' : ''
+                  }`}
+                  aria-label={JUMP_TO_MORE_LABEL}
+                  onClick={() => setMoreMenuOpen((open) => !open)}>
+                  <OuiIcon type="plus" size="s" />
+                  <span>{JUMP_TO_MORE_LABEL}</span>
+                </button>
               }>
               <div className="v6Scenario__morePagesMenu">
                 {JUMP_TO_MORE_GROUPS.map((group) => (

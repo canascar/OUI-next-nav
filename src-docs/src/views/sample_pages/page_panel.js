@@ -200,12 +200,12 @@ const TabBar = ({
 
   return (
     <div className="pagePanel__tabBar">
-      {/* Collapse chevron — closes the panel; tabs and active tab are kept */}
+      {/* Close panel button — the single way to collapse the panel */}
       {onCollapsePanel && (
-        <OuiToolTip content="Collapse views" position="bottom">
+        <OuiToolTip content="Close panel" position="bottom">
           <OuiButtonIcon
-            iconType="arrowRight"
-            aria-label="Collapse views"
+            iconType="dockedRight"
+            aria-label="Close panel"
             size="s"
             color="text"
             display="empty"

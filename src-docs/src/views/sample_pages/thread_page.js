@@ -2615,6 +2615,7 @@ export const ThreadPage = ({
             setGreetingExiting(true);
             setTimeout(() => {
               setGreetingDone(true);
+              window.dispatchEvent(new CustomEvent('session-chat-started'));
               startInvestigation(beats);
             }, 350);
           }}
