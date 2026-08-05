@@ -22,6 +22,7 @@ import { SamplePagesLeftNav } from './sample_pages_left_nav';
 import { DetailPagePanel } from './detail_page_panel';
 import { ServicePage } from './service_page';
 import { LogsPage } from './logs_page';
+import { NewPplLogsPage } from './new_ppl_logs_page';
 import { MetricsPage } from './metrics_page';
 import { ThreadPage } from './thread_page';
 import { AlertsPage } from './alerts_page';
@@ -138,6 +139,18 @@ const renderPage = (
         <OuiErrorBoundary>
           <LogsPage
             selectedItem={selectedItem}
+            onContinueAsThread={onContinueAsThread}
+            isPanelOpen={isPanelOpen}
+            onTogglePanel={onTogglePanel}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
+          />
+        </OuiErrorBoundary>
+      );
+    case 'new-ppl-logs':
+      return (
+        <OuiErrorBoundary>
+          <NewPplLogsPage
             onContinueAsThread={onContinueAsThread}
             isPanelOpen={isPanelOpen}
             onTogglePanel={onTogglePanel}
@@ -1077,17 +1090,24 @@ export const SamplePagesView = () => {
 
   // Pages that should open within a session tab instead of as standalone pages
   const SESSION_TAB_PAGES = new Set([
-    'alerts', 'dashboards', 'logs', 'metrics', 'topology-map',
-    'agent-monitoring-traces', 'agent-monitoring-spans',
-    'app-perf-traces', 'app-perf-services',
+    'alerts',
+    'dashboards',
+    'logs',
+    'metrics',
+    'topology-map',
+    'agent-monitoring-traces',
+    'agent-monitoring-spans',
+    'app-perf-traces',
+    'app-perf-services',
   ]);
 
   // Map nav keys to their correct page keys (some nav items show list/empty variants)
   const NAV_TO_PAGE_KEY = {
-    'alerts': 'alerts-list',
-    'dashboards': 'dashboards-list',
-    'logs': 'discover-log',
-    'metrics': 'discover-metric',
+    alerts: 'alerts-list',
+    dashboards: 'dashboards-list',
+    logs: 'discover-log',
+    'new-ppl-logs': 'new-ppl-log',
+    metrics: 'discover-metric',
     'topology-map': 'app-map',
   };
 

@@ -1,0 +1,456 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+// ─── Source Picker ──────────────────────────────────────────────────────────
+
+.newPplLogs__sourcePicker {
+  position: relative;
+}
+
+.newPplLogs__sourceButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: $ouiBorderThin;
+  border-radius: $ouiBorderRadius;
+  background: $ouiColorEmptyShade;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: $ouiFontSizeXS;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+
+  &:hover {
+    border-color: $ouiColorPrimary;
+  }
+
+  &:focus {
+    border-color: $ouiColorPrimary;
+    box-shadow: 0 0 0 2px rgba($ouiColorPrimary, 0.1);
+    outline: none;
+  }
+}
+
+.newPplLogs__sourceLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.newPplLogs__sourceType {
+  font-weight: 600;
+  color: $ouiTextColor;
+}
+
+.newPplLogs__sourceName {
+  color: $ouiColorMediumShade;
+}
+
+.newPplLogs__sourceLang {
+  padding: 1px 6px;
+  border-radius: $ouiBorderRadiusSmall;
+  background: rgba($ouiColorPrimary, 0.08);
+  color: $ouiColorPrimary;
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.newPplLogs__sourceDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 280px;
+  background: $ouiColorEmptyShade;
+  border: $ouiBorderThin;
+  border-radius: $ouiBorderRadius;
+  box-shadow: 0 4px 12px rgba(15, 15, 15, 0.06), 0 24px 48px rgba(15, 15, 15, 0.06);
+  z-index: 100;
+  padding: 8px 0;
+  animation: newPplDropdownIn 150ms ease;
+}
+
+@keyframes newPplDropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.newPplLogs__sourceDropdownSection {
+  padding: 4px 8px;
+}
+
+.newPplLogs__sourceDropdownDivider {
+  height: 1px;
+  background: $ouiBorderColor;
+  margin: 6px 0;
+}
+
+.newPplLogs__sourceDropdownItem {
+  display: block;
+  width: 100%;
+  padding: 7px 12px;
+  border: none;
+  background: none;
+  text-align: left;
+  font-family: inherit;
+  font-size: $ouiFontSizeXS;
+  color: $ouiTextColor;
+  border-radius: $ouiBorderRadiusSmall;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+
+  &:hover {
+    background: $ouiColorLightestShade;
+  }
+
+  &--active {
+    background: rgba($ouiColorPrimary, 0.08);
+    color: $ouiColorPrimary;
+    font-weight: 600;
+  }
+}
+
+.newPplLogs__sourceDropdownLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: $ouiColorMediumShade;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 4px 12px 6px;
+}
+
+.newPplLogs__sourceDropdownHint {
+  font-size: 11px;
+  color: $ouiColorMediumShade;
+  padding: 4px 12px 0;
+  font-style: italic;
+}
+
+.newPplLogs__languageChips {
+  display: flex;
+  gap: 4px;
+  padding: 0 12px;
+}
+
+.newPplLogs__languageChip {
+  padding: 3px 10px;
+  border: $ouiBorderThin;
+  border-radius: 999px;
+  background: $ouiColorEmptyShade;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  color: $ouiColorMediumShade;
+  cursor: pointer;
+  transition: all 150ms ease;
+
+  &:hover {
+    border-color: $ouiColorPrimary;
+    color: $ouiColorPrimary;
+  }
+
+  &--active {
+    background: $ouiColorPrimary;
+    border-color: $ouiColorPrimary;
+    color: #fff;
+  }
+}
+
+// ─── Query Bar ──────────────────────────────────────────────────────────────
+
+.newPplLogs__queryBar {
+  padding: 8px 12px;
+  border-bottom: $ouiBorderThin;
+}
+
+.newPplLogs__queryBarHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.newPplLogs__modeToggle {
+  display: flex;
+  align-items: center;
+  border: $ouiBorderThin;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.newPplLogs__modeBtn {
+  padding: 5px 14px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: $ouiFontSizeXS;
+  font-weight: 600;
+  color: $ouiColorMediumShade;
+  cursor: pointer;
+  transition: all 150ms ease;
+
+  &:hover {
+    color: $ouiTextColor;
+  }
+
+  &--active {
+    background: $ouiColorPrimary;
+    color: #fff;
+  }
+}
+
+.newPplLogs__queryActions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.newPplLogs__generateBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border: none;
+  border-radius: 999px;
+  background: rgba($ouiColorPrimary, 0.08);
+  color: $ouiColorPrimary;
+  font-family: inherit;
+  font-size: $ouiFontSizeXS;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 150ms ease, transform 180ms cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  &:hover {
+    background: rgba($ouiColorPrimary, 0.14);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.newPplLogs__queryDivider {
+  color: $ouiBorderColor;
+  font-size: 16px;
+  margin: 0 2px;
+}
+
+// ─── AI Prompt Input ────────────────────────────────────────────────────────
+
+.newPplLogs__aiPromptWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid $ouiColorPrimary;
+  border-radius: $ouiFormControlBorderRadius;
+  background: $ouiColorEmptyShade;
+  box-shadow: 0 0 0 3px rgba($ouiColorPrimary, 0.08);
+  margin-bottom: 8px;
+  animation: newPplPromptIn 200ms ease;
+}
+
+@keyframes newPplPromptIn {
+  from {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 60px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+  }
+}
+
+.newPplLogs__aiPromptInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: $ouiFontSizeS;
+  color: $ouiTextColor;
+  background: transparent;
+
+  &::placeholder {
+    color: $ouiColorMediumShade;
+  }
+}
+
+.newPplLogs__aiPromptEsc {
+  font-size: 10px;
+  font-weight: 600;
+  color: $ouiColorMediumShade;
+  padding: 2px 5px;
+  border: $ouiBorderThin;
+  border-radius: 3px;
+}
+
+.newPplLogs__aiPromptSubmit {
+  padding: 5px 14px;
+  border: none;
+  border-radius: 999px;
+  background: $ouiColorPrimary;
+  color: #fff;
+  font-family: inherit;
+  font-size: $ouiFontSizeXS;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 180ms cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+}
+
+// ─── Generated Query Banner ─────────────────────────────────────────────────
+
+.newPplLogs__generatedBanner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba($ouiColorPrimary, 0.04);
+  border: 1px solid rgba($ouiColorPrimary, 0.12);
+  border-radius: $ouiBorderRadiusSmall;
+  margin-bottom: 8px;
+}
+
+.newPplLogs__generatedLabel {
+  flex: 1;
+  font-size: $ouiFontSizeXS;
+  color: $ouiColorPrimary;
+  font-weight: 500;
+}
+
+// ─── Explanation Cards ──────────────────────────────────────────────────────
+
+.newPplLogs__explanations {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.newPplLogs__explanation {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: $ouiBorderRadiusSmall;
+  font-size: $ouiFontSizeXS;
+
+  &--grounded {
+    background: rgba($ouiColorSuccess, 0.06);
+    border-left: 3px solid $ouiColorSuccess;
+  }
+
+  &--assumed {
+    background: rgba($ouiColorWarning, 0.06);
+    border-left: 3px solid $ouiColorWarning;
+  }
+}
+
+.newPplLogs__explanationType {
+  font-weight: 700;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  min-width: 60px;
+
+  .newPplLogs__explanation--grounded & {
+    color: $ouiColorSuccess;
+  }
+
+  .newPplLogs__explanation--assumed & {
+    color: $ouiColorWarning;
+  }
+}
+
+.newPplLogs__explanationField {
+  font-family: $ouiCodeFontFamily;
+  font-weight: 600;
+  color: $ouiTextColor;
+}
+
+.newPplLogs__explanationReasoning {
+  color: $ouiColorMediumShade;
+}
+
+// ─── Code Editor ────────────────────────────────────────────────────────────
+
+.newPplLogs__codeEditor {
+  position: relative;
+}
+
+.newPplLogs__codeTextarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: $ouiBorderThin;
+  border-radius: $ouiFormControlBorderRadius;
+  font-family: $ouiCodeFontFamily;
+  font-size: $ouiFontSizeS;
+  color: $ouiTextColor;
+  background: $ouiColorEmptyShade;
+  resize: none;
+  outline: none;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+
+  &:focus {
+    border-color: $ouiColorPrimary;
+    box-shadow: 0 0 0 2px rgba($ouiColorPrimary, 0.1);
+  }
+
+  &::placeholder {
+    color: $ouiColorMediumShade;
+  }
+}
+
+// ─── Builder Strip ──────────────────────────────────────────────────────────
+
+.newPplLogs__builderStrip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.newPplLogs__builderChip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  border: 1px dashed $ouiBorderColor;
+  border-radius: 999px;
+  background: none;
+  font-family: inherit;
+  font-size: $ouiFontSizeXS;
+  font-weight: 500;
+  color: $ouiColorMediumShade;
+  cursor: pointer;
+  transition: border-color 150ms ease, color 150ms ease;
+
+  &:hover {
+    border-color: $ouiColorPrimary;
+    color: $ouiColorPrimary;
+  }
+}

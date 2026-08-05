@@ -70,6 +70,7 @@ const NAV_ITEMS = [
     group: 'essentials',
   },
   { key: 'logs', label: 'Logs', icon: 'navDiscover', group: 'essentials' },
+  { key: 'new-ppl-logs', label: 'Logs (new PPL)', icon: 'navDiscover', group: 'essentials' },
   { key: 'metrics', label: 'Metrics', icon: 'visArea', group: 'essentials' },
   {
     key: 'topology-map',

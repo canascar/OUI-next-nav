@@ -121,6 +121,7 @@ export const SessionLeftNav = ({
     { key: 'alerts', label: 'Alerts', icon: 'navAlerting', page: 'alerts-list', title: 'Alerts' },
     { key: 'dashboards', label: 'Dashboards', icon: 'navDashboards', page: 'dashboards-list', title: 'Dashboards' },
     { key: 'logs', label: 'Logs', icon: 'navDiscover', page: 'discover-log', title: 'Logs' },
+    { key: 'new-ppl-logs', label: 'Logs (new PPL)', icon: 'navDiscover', page: 'new-ppl-log', title: 'Logs (new PPL)' },
     { key: 'metrics', label: 'Metrics', icon: 'visArea', page: 'discover-metric', title: 'Metrics' },
     { key: 'topology-map', label: 'Topology map', icon: 'navAiFlow', page: 'app-map', title: 'Topology Map' },
   ];
@@ -165,7 +166,7 @@ export const SessionLeftNav = ({
   // performance groups are off by default (toggle them on via Customize).
   const [enabledStartItems, setEnabledStartItems] = useState(
     () => new Set([
-      'alerts', 'dashboards', 'logs', 'metrics', 'topology-map',
+      'alerts', 'dashboards', 'logs', 'new-ppl-logs', 'metrics', 'topology-map',
     ])
   );
   const [customizePopoverOpen, setCustomizePopoverOpen] = useState(false);

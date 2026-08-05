@@ -36,6 +36,7 @@ import {
   OuiTitle,
 } from '../../../../src/components';
 import { LogsPageBody, LogsPage } from './logs_page';
+import { NewPplLogsPage } from './new_ppl_logs_page';
 
 // Dot-matrix scan shimmer (same as home page widgets)
 const ScanShimmerOverlay = () => {
@@ -581,6 +582,13 @@ export const LogsPageMock = ({ onQueryExecute }) => (
 export const EmptyDiscoverPageMock = ({ onQueryExecute }) => (
   <div className="mockCanvasPage mockCanvasPage--fullBody">
     <LogsPage selectedItem={null} hideAskAi onQueryExecute={onQueryExecute} />
+  </div>
+);
+
+// New PPL logs page — integrated AI query generation, source picker, code/builder toggle
+export const NewPplLogsPageMock = ({ onQueryExecute }) => (
+  <div className="mockCanvasPage mockCanvasPage--fullBody">
+    <NewPplLogsPage hideAskAi onQueryExecute={onQueryExecute} />
   </div>
 );
 
