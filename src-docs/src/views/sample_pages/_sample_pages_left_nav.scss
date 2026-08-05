@@ -920,7 +920,7 @@
   animation: contentPanelFadeIn 500ms ease-out both;
 
   // No border-radius when onboarding welcome is showing
-  &:has(.onboardWizard__intro) {
+  &:has(.onboardWelcome) {
     border-radius: 0;
     border: none;
     box-shadow: none;

@@ -1,137 +1,221 @@
-// Onboarding Wizard — 8-step split-panel layout for OpenSearch Observability
-// sass-lint:disable no-color-literals
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
 
-.onboardWizard {
+// Onboarding — Welcome (route default) and Setup. Built on the shared --g-*
+// tokens so the flow reads as the same product as everything after it.
+
+// ---------------------------------------------------------------------------
+// Route shell — nav + view + pinned Ask-AI bar
+// ---------------------------------------------------------------------------
+
+.onboardShell {
+  display: flex;
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+}
+
+.onboardShell__main {
+  flex: 1;
+  min-width: 0;
   display: flex;
-  background: transparent;
-  border-radius: 0;
-  transition: opacity 500ms cubic-bezier(0.4, 0, 0.2, 1), transform 500ms cubic-bezier(0.4, 0, 0.2, 1);
-
-  &--exiting {
-    opacity: 0;
-    transform: translateY(-12px);
-    pointer-events: none;
-  }
-
-  > * {
-    position: relative;
-    z-index: 1;
-  }
+  overflow: hidden;
 }
 
-// ─────────────────────────────────────────────
-// INTRO SCREEN
-// ─────────────────────────────────────────────
-
-// Outer wrapper — Notebook dot-field
-.onboardWizard__outerWrapper {
-  @include brandGradient;
-  @include brandGradientBlur;
+.onboardShell__panel {
+  flex: 1;
+  min-width: 0;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 
-  > * {
-    position: relative;
-    z-index: 1;
+.onboardShell__view {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+// The Ask-AI bar stays pinned at the bottom of this route as everywhere else.
+.onboardShell__ask {
+  flex: none;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: var(--g-space-3) var(--g-space-5) var(--g-space-5);
+}
+
+// ---------------------------------------------------------------------------
+// VIEW 1 — Welcome
+// ---------------------------------------------------------------------------
+
+.onboardWelcome {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.85fr) minmax(420px, 1fr);
+  gap: var(--g-space-7);
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: var(--g-space-7) var(--g-space-7) var(--g-space-6);
+  animation: onboardFadeUp var(--g-dur-slow) var(--g-ease-out) both;
+
+  @media (max-width: 1080px) {
+    grid-template-columns: 1fr;
+    gap: var(--g-space-5);
+    justify-items: center;
   }
 }
 
-.onboardWizard__introWrapper {
-  @include brandGradient;
-  @include brandGradientBlur;
-  position: relative;
-
-  > * {
-    position: relative;
-    z-index: 1;
-  }
-}
-
-.onboardWizard__intro {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+.onboardWelcome__logoCol {
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: wizardIntroFadeIn 600ms cubic-bezier(0.4, 0, 0.2, 1) both;
-  transition: opacity 500ms cubic-bezier(0.4, 0, 0.2, 1), transform 500ms cubic-bezier(0.4, 0, 0.2, 1);
-
-  &--exiting {
-    opacity: 0;
-    transform: scale(0.98);
-    pointer-events: none;
-  }
 }
 
-@keyframes wizardIntroFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.onboardWizard__introContent {
-  text-align: center;
-  max-width: 480px;
-  padding: 40px;
-}
-
-// Purple glow behind 3D logo
-.onboardWizard__logoGlow {
+// Subtle drop shadow under the mark, not a glow behind it.
+.onboardWelcome__logoShadow {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  filter: drop-shadow(0 18px 32px rgba(0, 0, 0, 0.22));
 
-  &::before {
+  &::after {
     content: '';
     position: absolute;
-    width: 450px;
-    height: 450px;
+    left: 18%;
+    right: 18%;
+    bottom: 4%;
+    height: 18px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(160, 140, 200, 0.22), transparent 70%);
-    filter: blur(40px);
+    background: radial-gradient(
+      ellipse at center,
+      rgba(0, 0, 0, 0.22),
+      transparent 72%
+    );
     pointer-events: none;
-    z-index: 0;
-  }
-
-  > * {
-    position: relative;
-    z-index: 1;
   }
 }
 
-.onboardWizard__introCta {
+.onboardWelcome__col {
+  width: 100%;
+  max-width: 520px;
+}
+
+.onboardWelcome__title {
+  font-family: var(--oui-font-display, var(--g-font-sans));
+  font-size: var(--g-text-hero);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--g-ink-bright);
+  margin: 0 0 var(--g-space-3);
+}
+
+.onboardWelcome__ready {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--g-text-lg);
+  color: var(--g-ink-soft);
+  margin: 0 0 var(--g-space-6);
+
+  .ouiIcon {
+    flex: none;
+    color: var(--g-success);
+  }
+}
+
+// Environment card ----------------------------------------------------------
+
+.onboardWelcome__envCard {
+  padding: var(--g-space-5);
+  background: var(--g-surface);
+  border: 1px solid var(--g-surface-border);
+  border-radius: var(--g-radius-xl);
+  box-shadow: var(--g-shadow-widget);
+}
+
+.onboardWelcome__envLabel {
+  text-align: center;
+  font-size: var(--g-text-sm);
+  color: var(--g-ink-mute);
+  margin-bottom: var(--g-space-5);
+}
+
+.onboardWelcome__envGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--g-space-4) var(--g-space-3);
+
+  @media (max-width: 640px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.onboardWelcome__envTile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  text-align: center;
+}
+
+.onboardWelcome__envIcon {
+  color: var(--g-accent-bright);
+  margin-bottom: 2px;
+}
+
+.onboardWelcome__envStat {
+  font-size: var(--g-text-body);
+  font-weight: 600;
+  color: var(--g-ink-bright);
+  font-variant-numeric: tabular-nums;
+}
+
+.onboardWelcome__envSub {
+  font-size: var(--g-text-meta);
+  color: var(--g-ink-mute);
+}
+
+// CTA stack -----------------------------------------------------------------
+
+.onboardWelcome__ctas {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--g-space-3);
+  width: 100%;
+  max-width: 340px;
+  margin: var(--g-space-6) auto 0;
+}
+
+.onboardWelcome__primary,
+.onboardWelcome__secondary {
   display: inline-flex;
   align-items: center;
-  padding: 12px 32px;
-  border: none;
-  border-radius: 24px;
-  background: $ouiColorPrimary;
-  color: $ouiColorEmptyShade;
-  font-size: $ouiFontSize;
-  font-family: inherit;
-  font-weight: 500;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 11px var(--g-space-5);
+  border-radius: var(--g-radius-md);
+  font-size: var(--g-text-ui);
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1),
-              transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color var(--g-dur-fast) var(--g-ease-std),
+    border-color var(--g-dur-fast) var(--g-ease-std),
+    transform var(--g-dur-fast) var(--g-ease-out);
 
   &:hover {
-    background: lighten($ouiColorPrimary, 8%);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba($ouiColorPrimary, 0.25);
+    transform: translateY(-1px);
   }
 
   &:active {
@@ -139,752 +223,462 @@
   }
 }
 
-// Skip onboarding link
-.onboardWizard__skipLink {
-  display: inline-flex;
-  align-items: center;
-  background: none;
-  border: none;
-  padding: 6px 12px;
-  font-size: $ouiFontSizeS;
-  font-family: inherit;
-  color: $ouiColorMediumShade;
-  cursor: pointer;
-  transition: color 150ms ease;
+.onboardWelcome__primary {
+  border: 1px solid var(--g-accent-bright);
+  background: var(--g-accent-bright);
+  color: #fff;
 
   &:hover {
-    color: $ouiColorPrimary;
-  }
-
-  &--fixed {
-    position: absolute;
-    bottom: 48px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 10;
-    padding: 6px 18px;
-    border-radius: 18px;
-    background: lightOrDarkTheme(rgba(99, 102, 241, 0.04), rgba(99, 102, 241, 0.06));
-    backdrop-filter: blur(24px) saturate(160%);
-    -webkit-backdrop-filter: blur(24px) saturate(160%);
-    border: 1px solid lightOrDarkTheme(rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.2));
-    box-shadow: lightOrDarkTheme(
-      #{0 4px 12px rgba(15, 15, 15, 0.06), 0 24px 48px rgba(15, 15, 15, 0.06)},
-      #{0 4px 12px rgba(0, 0, 0, 0.4), 0 24px 48px rgba(0, 0, 0, 0.4)}
-    );
+    background: var(--g-accent);
   }
 }
 
-// ─────────────────────────────────────────────
-// LEFT PANEL
-// ─────────────────────────────────────────────
-
-.onboardWizard__left {
-  flex: 1 1 50%;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  padding: 40px 32px;
-  overflow: hidden;
+.onboardWelcome__secondary {
+  border: 1px solid var(--g-surface-border-strong);
   background: transparent;
+  color: var(--g-ink-bright);
+
+  &:hover {
+    background: var(--g-surface-muted);
+    border-color: var(--g-accent-dim);
+  }
 }
 
-// Remove content panel styling when onboarding wizard is active
-.samplePagesContentPanel:has(.onboardWizard),
-.samplePagesContentPanel:has(.onboardWizard__intro) {
-  border-radius: 0;
+.onboardWelcome__sample {
+  align-self: center;
   border: none;
-  box-shadow: none;
-  background-color: transparent;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-}
-
-.onboardWizard__leftPanel {
-  width: 100%;
-  max-width: 520px;
-  max-height: 70vh;
   background: transparent;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  padding: 24px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  padding: 4px 0;
+  font-size: var(--g-text-sm);
+  font-weight: 600;
+  color: var(--g-accent-bright);
+  cursor: pointer;
 
-  .threadPage__body {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
+  &:hover {
+    text-decoration: underline;
   }
 
-  .threadPage__conversationCol {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
-  }
-
-  .threadPage__feed {
-    flex: 1;
-    overflow-y: auto;
-    min-height: 0;
-  }
-}
-
-// Inline confirmation (used inside thread-style messages)
-.onboardWizard__confirmInline {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-// ─── Assistant message with avatar ──────────────────────────
-.onboardWizard__assistantRow {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-}
-
-.onboardWizard__assistantAvatar {
-  flex-shrink: 0;
-  padding-top: 2px;
-
-  &--popIn {
-    animation: onboardAvatarPopIn 400ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  }
-
-  &--pulsing {
-    animation: onboardAvatarPopIn 400ms cubic-bezier(0.34, 1.56, 0.64, 1) both,
-               onboardAvatarPulse 1s ease-in-out 400ms infinite;
-  }
-}
-
-@keyframes onboardAvatarPopIn {
-  0% {
-    opacity: 0;
-    transform: scale(0);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes onboardAvatarPulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.12); opacity: 0.7; }
-}
-
-// Blinking cursor while streaming
-.onboardWizard__typeCursor {
-  display: inline-block;
-  width: 2px;
-  height: 0.9em;
-  margin-left: 2px;
-  background-color: $ouiColorPrimary;
-  vertical-align: text-bottom;
-  border-radius: 1px;
-  animation: onboardTypeCursor 600ms step-end infinite;
-}
-
-@keyframes onboardTypeCursor {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-// Options reveal — sequenced chip animation
-.onboardWizard__optionsReveal {
-  animation: onboardOptionsIn 400ms cubic-bezier(0.2, 0.7, 0.2, 1) 300ms both;
-
-  &--inline {
-    margin-top: 12px;
-
-    .onboardWizard__chips {
-      flex-direction: row;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-  }
-
-  .onboardWizard__chips .onboardWizard__chip {
-    opacity: 0;
-    transform: translateY(6px);
-    animation: onboardChipIn 350ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
-
-    &:nth-child(1) { animation-delay: 400ms; }
-    &:nth-child(2) { animation-delay: 550ms; }
-    &:nth-child(3) { animation-delay: 700ms; }
-    &:nth-child(4) { animation-delay: 850ms; }
-  }
-}
-
-@keyframes onboardOptionsIn {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes onboardChipIn {
-  from {
-    opacity: 0;
-    transform: translateY(6px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-// ─────────────────────────────────────────────
-// RIGHT PANEL
-// ─────────────────────────────────────────────
-
-.onboardWizard__right {
-  flex: 1 1 50%;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  padding: 40px 32px 0;
-  overflow: hidden;
-  background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.02), rgba(10, 37, 69, 0.25));
-  border-left: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.08), rgba(250, 250, 250, 0.08));
-}
-
-.onboardWizard__rightPanel {
-  width: 100%;
-  max-width: 520px;
-  max-height: 70vh;
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  padding: 24px;
-  overflow-y: auto;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 450ms cubic-bezier(0.4, 0, 0.2, 1), transform 450ms cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
-
-
-  &--fadeIn {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-// ─────────────────────────────────────────────
-// STEP INDICATOR & TIMELINE
-// ─────────────────────────────────────────────
-
-.onboardWizard__stepIndicator {
-  padding: 4px 0 12px;
-  border-bottom: 1px solid lightOrDarkTheme(rgba(10, 10, 10, 0.1), rgba(250, 250, 250, 0.1));
-}
-
-.onboardWizard__timeline {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 0 8px;
-}
-
-.onboardWizard__timelineDot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: none;
-  padding: 0;
-  cursor: default;
-  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1), background-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
-
-  &--done {
-    background: $ouiColorSuccess;
-    cursor: pointer;
+  &--busy {
+    color: var(--g-ink-soft);
+    cursor: default;
 
     &:hover {
-      transform: scale(1.3);
+      text-decoration: none;
     }
   }
-
-  &--current {
-    background: $ouiColorPrimary;
-    box-shadow: 0 0 0 3px rgba($ouiColorPrimary, 0.2);
-  }
-
-  &--inactive {
-    background: lightOrDarkTheme(rgba(0, 0, 0, 0.2), $ouiBorderColor);
-  }
 }
 
-// ─────────────────────────────────────────────
-// QUESTION AREA
-// ─────────────────────────────────────────────
-
-.onboardWizard__question {
-  padding: 12px 16px;
-  background: $ouiColorEmptyShade;
-  border-radius: $ouiBorderRadius;
-  border: 1px solid $ouiBorderColor;
-}
-
-// ─────────────────────────────────────────────
-// CHIP OPTIONS
-// ─────────────────────────────────────────────
-
-.onboardWizard__chips {
-  display: flex;
+// Progress reports on the link itself, one beat at a time.
+.onboardWelcome__sampleBeats {
+  display: inline-flex;
   flex-wrap: wrap;
-  gap: 8px;
-  justify-content: flex-start;
+  justify-content: center;
+  gap: 4px 10px;
+  font-weight: 500;
+}
 
-  // When chips have descriptions, stack them vertically
-  &:has(.onboardWizard__chipDescription) {
-    flex-direction: column;
-    align-items: flex-start;
+.onboardWelcome__sampleBeat {
+  animation: onboardFadeUp var(--g-dur-normal) var(--g-ease-out) both;
+
+  &:not(:first-child) {
+    color: var(--g-success);
+    font-family: var(--g-font-mono);
+    font-size: var(--g-text-meta);
   }
 }
 
-.onboardWizard__chip {
+// ---------------------------------------------------------------------------
+// VIEW 2 — Setup
+// ---------------------------------------------------------------------------
+
+.onboardSetup {
+  display: grid;
+  grid-template-columns: 400px minmax(0, 1fr);
+  gap: var(--g-space-6);
+  align-items: start;
+  min-height: 100%;
+  padding: var(--g-space-7) var(--g-space-6) var(--g-space-5);
+  animation: onboardFadeUp var(--g-dur-slow) var(--g-ease-out) both;
+
+  @media (max-width: 1080px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.onboardSetup__wizard {
+  min-width: 0;
+}
+
+.onboardSetup__eyebrow {
+  font-family: var(--g-font-mono);
+  font-size: var(--g-text-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--g-ink-mute);
+  margin-bottom: var(--g-space-2);
+}
+
+.onboardSetup__title {
+  display: inline-block;
+  font-size: var(--g-text-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--g-ink-bright);
+  margin: 0 0 var(--g-space-4);
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--g-accent-bright);
+}
+
+.onboardSetup__prose {
+  font-size: var(--g-text-body);
+  line-height: 1.55;
+  color: var(--g-ink-soft);
+  margin: 0 0 var(--g-space-5);
+}
+
+.onboardSetup__steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--g-space-3);
+}
+
+.onboardSetup__done {
+  margin-top: var(--g-space-5);
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: var(--g-text-ui);
+  font-weight: 600;
+  color: var(--g-accent-bright);
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Step cards ----------------------------------------------------------------
+
+.onboardStep {
+  padding: var(--g-space-4);
+  background: var(--g-surface);
+  border: 1px solid var(--g-surface-border);
+  border-radius: var(--g-radius-lg);
+  box-shadow: var(--g-shadow-surface);
+  animation: onboardFadeUp var(--g-dur-normal) var(--g-ease-out) both;
+
+  &--resolved {
+    background: var(--g-surface-muted);
+    box-shadow: none;
+  }
+}
+
+.onboardStep__eyebrow {
+  font-family: var(--g-font-mono);
+  font-size: var(--g-text-xs);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--g-ink-mute);
+  margin-bottom: 4px;
+}
+
+.onboardStep__title {
+  font-size: var(--g-text-body);
+  font-weight: 600;
+  color: var(--g-ink-bright);
+}
+
+.onboardStep__resolvedRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--g-space-3);
+}
+
+.onboardStep__status {
   display: inline-flex;
   align-items: center;
-  flex-direction: column;
-  padding: 6px 16px;
-  border-radius: 20px;
-  border: 1px solid $ouiBorderColor;
-  background: $ouiColorEmptyShade;
-  font-size: $ouiFontSizeS;
-  font-family: inherit;
-  cursor: pointer;
-  transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1),
-              border-color 250ms cubic-bezier(0.4, 0, 0.2, 1),
-              transform 300ms cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1),
-              color 200ms cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 250ms cubic-bezier(0.4, 0, 0.2, 1);
-  text-align: left;
-  align-items: flex-start;
-
-  &:has(.onboardWizard__chipDescription) {
-    padding: 10px 16px;
-    border-radius: $ouiBorderRadius;
-  }
-
-  &:hover:not(:disabled) {
-    border-color: $ouiColorPrimary;
-    background: rgba($ouiColorPrimary, 0.12);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba($ouiColorPrimary, 0.12);
-  }
-
-  &--selected {
-    background: $ouiColorDarkestShade;
-    color: $ouiColorEmptyShade;
-    border-color: $ouiColorDarkestShade;
-
-    &:hover:not(:disabled) {
-      background: $ouiColorDarkestShade;
-      border-color: $ouiColorDarkestShade;
-      transform: none;
-      box-shadow: none;
-    }
-  }
-
-  &--confirm {
-    background: transparent;
-    color: $ouiColorPrimary;
-    border: 1px solid rgba($ouiColorPrimary, 0.4);
-
-    &:hover:not(:disabled) {
-      background: rgba($ouiColorPrimary, 0.06);
-      border-color: $ouiColorPrimary;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba($ouiColorPrimary, 0.15);
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  }
-
-  &--empty {
-    background: transparent;
-    color: $ouiColorPrimary;
-    border: 1px solid rgba($ouiColorPrimary, 0.4);
-
-    &:hover:not(:disabled) {
-      background: rgba($ouiColorPrimary, 0.06);
-      border-color: $ouiColorPrimary;
-    }
-
-    &.onboardWizard__chip--selected {
-      background: rgba($ouiColorPrimary, 0.1);
-      color: $ouiColorPrimary;
-      border-color: $ouiColorPrimary;
-
-      &:hover:not(:disabled) {
-        background: rgba($ouiColorPrimary, 0.12);
-        border-color: $ouiColorPrimary;
-      }
-    }
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: default;
-  }
-}
-
-.onboardWizard__chipDescription {
-  font-size: $ouiFontSizeXS;
-  opacity: 0.8;
-  font-weight: 400;
-  margin-top: 2px;
-  text-align: left;
-}
-// ─────────────────────────────────────────────
-// MULTI-SELECT (Step 5: Transformations)
-// ─────────────────────────────────────────────
-
-.onboardWizard__multiSelect {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.onboardWizard__multiOption {
-  padding: 12px 16px;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  background: $ouiColorEmptyShade;
-}
-
-.onboardWizard__multiDesc {
-  padding-left: 24px;
-  margin-top: 4px;
-}
-
-.onboardWizard__multiActions {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding-top: 4px;
-}
-
-.onboardWizard__skipLink {
-  background: none;
-  border: none;
-  color: $ouiTextSubduedColor;
-  font-size: $ouiFontSizeS;
-  font-family: inherit;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-
-  &:hover:not(:disabled) {
-    color: $ouiTextColor;
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-}
-
-// ─────────────────────────────────────────────
-// PROCESSING INDICATOR
-// ─────────────────────────────────────────────
-
-.onboardWizard__processing {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 0;
-}
-
-// ─────────────────────────────────────────────
-// PROGRESS DOTS (timeline between question and confirmation)
-// ─────────────────────────────────────────────
-
-.onboardWizard__progressDots {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 8px 0;
   gap: 4px;
-}
+  flex: none;
+  font-size: var(--g-text-xs);
+  font-weight: 600;
+  border-radius: var(--g-radius-pill);
+  padding: 2px 9px;
 
-.onboardWizard__dotLine {
-  width: 2px;
-  height: 20px;
-  background: $ouiColorPrimary;
-  border-radius: 1px;
-  opacity: 0.4;
-}
+  &--connected {
+    color: var(--g-success);
+    background: var(--g-success-soft);
+  }
 
-.onboardWizard__dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: $ouiBorderColor;
-  transition: background-color 350ms cubic-bezier(0.4, 0, 0.2, 1);
-
-  &--done {
-    background: $ouiColorSuccess;
+  &--skipped {
+    color: var(--g-ink-mute);
+    background: var(--g-ink-ghost);
   }
 }
 
-// ─────────────────────────────────────────────
-// CONFIRMATION CARD
-// ─────────────────────────────────────────────
+.onboardStep__oneClick {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 6px 0 var(--g-space-4);
+  font-size: var(--g-text-sm);
+  color: var(--g-success);
 
-.onboardWizard__confirmation {
-  padding: 12px 16px;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  background: $ouiColorEmptyShade;
+  .ouiIcon {
+    flex: none;
+  }
 }
 
-.onboardWizard__confirmIcon {
+.onboardStep__selectLabel {
+  display: block;
+  margin-bottom: 4px;
+  font-size: var(--g-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--g-ink-mute);
+}
+
+.onboardStep__disclosure {
   display: flex;
   align-items: center;
   gap: 6px;
-  margin-bottom: 6px;
-}
-
-// ─────────────────────────────────────────────
-// NEXT BUTTON
-// ─────────────────────────────────────────────
-
-.onboardWizard__nextBtn {
-  display: inline-flex;
-  align-items: center;
-  padding: 8px 20px;
+  width: 100%;
+  margin-top: var(--g-space-3);
+  padding: 7px 0;
   border: none;
-  border-radius: $ouiBorderRadius;
-  background: $ouiColorPrimary;
-  color: $ouiColorEmptyShade;
-  font-size: $ouiFontSizeS;
-  font-family: inherit;
-  font-weight: 500;
+  border-top: 1px solid var(--g-hairline);
+  background: transparent;
+  font-size: var(--g-text-sm);
+  color: var(--g-ink-soft);
   cursor: pointer;
-  transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
 
   &:hover {
-    background: darken($ouiColorPrimary, 8%);
+    color: var(--g-ink-bright);
   }
 }
 
-// ─────────────────────────────────────────────
-// INPUT AREA (bottom of left panel)
-// ─────────────────────────────────────────────
-
-.onboardWizard__inputArea {
-  margin-top: auto;
-  padding-top: 16px;
+.onboardStep__caret {
+  flex: none;
+  width: 10px;
+  color: var(--g-ink-mute);
 }
 
-.onboardWizard__inputPlaceholder {
-  padding: 10px 14px;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  background: $ouiColorEmptyShade;
+.onboardStep__tag {
+  margin-left: auto;
+  flex: none;
+  font-family: var(--g-font-mono);
+  font-size: var(--g-text-micro);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--g-ink-mute);
+  background: var(--g-ink-ghost);
+  border-radius: var(--g-radius-pill);
+  padding: 2px 8px;
 }
 
-// ─────────────────────────────────────────────
-// FOOTER
-// ─────────────────────────────────────────────
-
-.onboardWizard__finishLaterWrapper {
-  display: flex;
-  justify-content: center;
-  padding: 16px 0;
-}
-
-.onboardWizard__finishLater {
-  background: lightOrDarkTheme(rgba(255, 255, 255, 0.45), rgba(27, 22, 42, 0.55));
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.08));
-  box-shadow: lightOrDarkTheme(
-    #{0 4px 12px rgba(15, 15, 15, 0.06), 0 24px 48px rgba(15, 15, 15, 0.06)},
-    #{0 4px 12px rgba(0, 0, 0, 0.4), 0 24px 48px rgba(0, 0, 0, 0.4)}
-  );
-  border-radius: 18px;
-  padding: 6px 16px;
-  color: $ouiTextSubduedColor;
-  font-size: $ouiFontSizeXS;
-  font-family: inherit;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  transition: color 150ms ease, background-color 150ms ease;
-
-  &:hover {
-    color: $ouiTextColor;
-    background: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(27, 22, 42, 0.7));
-  }
-}
-
-// ─────────────────────────────────────────────
-// RIGHT PANEL CONTENT — SHARED
-// ─────────────────────────────────────────────
-
-.onboardWizard__rightContent {
-  animation: wizardContentFadeIn 500ms cubic-bezier(0.4, 0, 0.2, 1) both;
-}
-
-@keyframes wizardContentFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.onboardWizard__rightHeader {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-// ─────────────────────────────────────────────
-// GETTING STARTED — Checklist (Step 1a)
-// ─────────────────────────────────────────────
-
-.onboardWizard__checklist {
+.onboardStep__installs {
+  margin: 0 0 var(--g-space-2);
+  padding-left: 20px;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 4px;
+  font-size: var(--g-text-sm);
+  color: var(--g-ink-soft);
+  line-height: 1.45;
+  animation: onboardFadeUp var(--g-dur-fast) var(--g-ease-out) both;
 }
 
-.onboardWizard__checklistItem {
+.onboardStep__actions {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 16px 20px;
-  border: none;
-  border-radius: 0;
-  background: transparent;
-  border-bottom: 1px solid transparent;
-  border-image: linear-gradient(
-    to right,
-    transparent,
-    $ouiBorderColor 20%,
-    $ouiBorderColor 80%,
-    transparent
-  ) 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--g-space-3);
+  margin-top: var(--g-space-4);
+  padding-top: var(--g-space-3);
+  border-top: 1px solid var(--g-hairline);
+}
 
-  &:last-child {
-    border-bottom: none;
-    border-image: none;
+// ---------------------------------------------------------------------------
+// Live estate preview
+// ---------------------------------------------------------------------------
+
+.onboardEstate {
+  position: relative;
+  min-height: 420px;
+  padding: var(--g-space-6);
+  background: var(--g-surface-muted);
+  border: 1px solid var(--g-surface-border);
+  border-radius: var(--g-radius-2xl);
+  overflow: hidden;
+}
+
+.onboardEstate__glow {
+  position: absolute;
+  top: -28%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120%;
+  aspect-ratio: 1;
+  background: radial-gradient(
+    circle at center,
+    var(--g-accent-soft),
+    transparent 62%
+  );
+  pointer-events: none;
+}
+
+.onboardEstate__inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--g-space-5);
+  height: 100%;
+}
+
+.onboardEstate__card {
+  padding: var(--g-space-4);
+  background: var(--g-surface);
+  border: 1px solid var(--g-surface-border);
+  border-radius: var(--g-radius-lg);
+  box-shadow: var(--g-shadow-widget);
+}
+
+.onboardEstate__cardHead {
+  display: flex;
+  align-items: center;
+  gap: var(--g-space-3);
+}
+
+.onboardEstate__bolt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--g-radius-sm);
+  color: var(--g-accent-bright);
+  background: var(--g-accent-soft);
+}
+
+.onboardEstate__cardText {
+  flex: 1;
+  min-width: 0;
+}
+
+.onboardEstate__cardTitle {
+  font-size: var(--g-text-body);
+  font-weight: 600;
+  color: var(--g-ink-bright);
+}
+
+.onboardEstate__cardSubtitle {
+  font-family: var(--g-font-mono);
+  font-size: var(--g-text-meta);
+  color: var(--g-ink-mute);
+}
+
+.onboardEstate__live {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  font-size: var(--g-text-xs);
+  font-weight: 600;
+  color: var(--g-success);
+  background: var(--g-success-soft);
+  border-radius: var(--g-radius-pill);
+  padding: 3px 10px;
+}
+
+.onboardEstate__liveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--g-success);
+  animation: onboardPulse 1.8s var(--g-ease-std) infinite;
+}
+
+.onboardEstate__sparkWrap {
+  margin-top: var(--g-space-3);
+  height: 56px;
+  color: var(--g-success);
+}
+
+.onboardEstate__spark {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+// Tile row ------------------------------------------------------------------
+
+.onboardEstate__tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--g-space-3);
+}
+
+.onboardEstate__tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: var(--g-space-4) var(--g-space-3);
+  background: var(--g-surface);
+  border: 1px solid var(--g-surface-border);
+  border-radius: var(--g-radius-lg);
+  color: var(--g-ink-soft);
+  transition: border-color var(--g-dur-normal) var(--g-ease-out),
+    color var(--g-dur-normal) var(--g-ease-out);
+
+  &--done {
+    border-color: var(--g-success);
+    color: var(--g-ink-bright);
   }
 }
 
-.onboardWizard__checklistCircle {
-  flex-shrink: 0;
+.onboardEstate__tileLabel {
+  font-size: var(--g-text-sm);
+  font-weight: 600;
+}
+
+.onboardEstate__tileBadge {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  border: 2px solid $ouiBorderColor;
-  margin-top: 2px;
+  color: #fff;
+  background: var(--g-success);
+  animation: onboardPop var(--g-dur-normal) var(--g-ease-out) both;
 }
 
-.onboardWizard__checklistText {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
+.onboardEstate__escape {
+  margin: auto 0 0 auto;
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: var(--g-text-sm);
+  font-weight: 600;
+  color: var(--g-accent-bright);
+  cursor: pointer;
 
-// ─────────────────────────────────────────────
-// Card Grid (legacy, kept for reference)
-// ─────────────────────────────────────────────
-
-.onboardWizard__cardGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 16px;
-}
-
-.onboardWizard__previewCard {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 24px 16px;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  background: $ouiColorEmptyShade;
-  transition: border-color 300ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1), transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
-
-  &--active {
-    border-color: $ouiColorPrimary;
-    box-shadow: 0 0 0 2px rgba($ouiColorPrimary, 0.15), 0 4px 12px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
+  &:hover {
+    text-decoration: underline;
   }
 }
 
-// ─────────────────────────────────────────────
-// ENVIRONMENT — Grid (Step 2)
-// ─────────────────────────────────────────────
+// ---------------------------------------------------------------------------
+// Motion
+// ---------------------------------------------------------------------------
 
-.onboardWizard__envGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-}
-
-.onboardWizard__envCard {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 20px 12px 14px;
-  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.12));
-  border-radius: $ouiBorderRadius;
-  background: lightOrDarkTheme(rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.06));
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-  text-align: center;
-  transition: border-color 300ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1), transform 350ms cubic-bezier(0.16, 1, 0.3, 1), background-color 300ms ease;
-
-  &--staggerIn {
-    animation: envCardFadeIn 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
-  }
-
-  &--selected {
-    border-color: $ouiColorPrimary;
-    box-shadow: 0 0 0 1px $ouiColorPrimary, 0 4px 12px rgba($ouiColorPrimary, 0.15);
-    background: lightOrDarkTheme(rgba(255, 255, 255, 0.7), rgba($ouiColorPrimary, 0.12));
-    transform: scale(1.03);
-    transition: border-color 300ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1), transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  &:hover:not(&--selected) {
-    transform: translateY(-2px);
-    background: lightOrDarkTheme(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.1));
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-  }
-}
-
-@keyframes envCardFadeIn {
+@keyframes onboardFadeUp {
   from {
     opacity: 0;
     transform: translateY(8px);
@@ -895,686 +689,25 @@
   }
 }
 
-.onboardWizard__envBadge {
-  display: inline-block;
-  padding: 2px 8px;
-  font-size: 10px;
-  font-weight: 600;
-  background: $ouiColorLightestShade;
-  border-radius: 10px;
-  color: $ouiTextSubduedColor;
-}
-
-.onboardWizard__envSignals {
-  display: flex;
-  gap: 8px;
-  margin-top: 4px;
-}
-
-.onboardWizard__envSignal {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  font-size: 11px;
-  color: $ouiTextSubduedColor;
-  text-transform: capitalize;
-}
-
-.onboardWizard__envDetail {
-  padding: 16px;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  background: $ouiColorLightestShade;
-
-  &--fadeIn {
-    animation: envDetailFadeIn 450ms cubic-bezier(0.4, 0, 0.2, 1) 100ms both;
+@keyframes onboardPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.82);
   }
 }
 
-@keyframes envDetailFadeIn {
+@keyframes onboardPop {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: scale(0.4);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: scale(1);
   }
-}
-
-.onboardWizard__envDetailList {
-  list-style: disc;
-  padding-left: 20px;
-  margin: 4px 0;
-  font-size: $ouiFontSizeXS;
-  color: $ouiTextSubduedColor;
-
-  li {
-    margin-bottom: 2px;
-  }
-}
-
-// ─────────────────────────────────────────────
-// EKS DISCOVERY — Auto-detection panel
-// ─────────────────────────────────────────────
-
-.onboardWizard__eksScanning {
-  padding: 24px;
-  text-align: center;
-}
-
-.onboardWizard__eksScanRow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-}
-
-.onboardWizard__eksScanProgress {
-  margin-top: 16px;
-  height: 4px;
-  background: $ouiColorLightestShade;
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.onboardWizard__eksScanProgressBar {
-  height: 100%;
-  width: 60%;
-  background: linear-gradient(90deg, $ouiColorPrimary, $ouiColorAccent);
-  border-radius: 2px;
-  animation: eksScanPulse 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-}
-
-@keyframes eksScanPulse {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(200%); }
-}
-
-.onboardWizard__eksResults {
-  padding: 0;
-}
-
-.onboardWizard__eksResultSummary {
-  padding: 16px;
-  background: rgba($ouiColorSuccess, 0.06);
-  border: 1px solid rgba($ouiColorSuccess, 0.2);
-  border-radius: $ouiBorderRadius;
-}
-
-.onboardWizard__eksResultBadge {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.onboardWizard__eksClusterList {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.onboardWizard__eksClusterCard {
-  padding: 14px 16px;
-  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.12));
-  border-radius: $ouiBorderRadius;
-  background: lightOrDarkTheme(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.05));
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-  transition: border-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.onboardWizard__eksClusterHeader {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.onboardWizard__eksClusterServices {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid $ouiColorLightestShade;
-}
-
-.onboardWizard__eksClusterLive {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-// ─────────────────────────────────────────────
-// COLLECTOR SETUP — Code Block (Step 3)
-// ─────────────────────────────────────────────
-
-.onboardWizard__codeBlock {
-  position: relative;
-  background: $ouiColorDarkestShade;
-  border-radius: $ouiBorderRadius;
-  padding: 16px;
-  overflow-x: auto;
-}
-
-.onboardWizard__code {
-  display: block;
-  white-space: pre-wrap;
-  word-break: break-all;
-  font-size: $ouiFontSizeXS;
-  background: transparent !important; // sass-lint:disable-line no-important
-  color: $ouiColorEmptyShade !important; // sass-lint:disable-line no-important
-  border: none !important; // sass-lint:disable-line no-important
-  padding: 0 !important; // sass-lint:disable-line no-important
-}
-
-.onboardWizard__copyBtn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: $ouiBorderRadius;
-  background: rgba(255, 255, 255, 0.1);
-  color: $ouiColorEmptyShade;
-  font-size: 11px;
-  font-family: inherit;
-  cursor: pointer;
-  transition: background 150ms ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
-}
-
-.onboardWizard__verifiedStatus {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  border: 1px solid $ouiColorSuccess;
-  border-radius: $ouiBorderRadius;
-  background: rgba($ouiColorSuccess, 0.06);
-}
-
-// ─────────────────────────────────────────────
-// TELEMETRY STORAGE — Recommendation (Step 1d)
-// ─────────────────────────────────────────────
-
-.onboardWizard__storageCard {
-  padding: 20px;
-  border: 2px solid $ouiColorPrimary;
-  border-radius: $ouiBorderRadius;
-  background: rgba($ouiColorPrimary, 0.03);
-  transition: border-color 350ms cubic-bezier(0.4, 0, 0.2, 1), background-color 350ms cubic-bezier(0.4, 0, 0.2, 1);
-
-  &--confirmed {
-    border-color: $ouiColorSuccess;
-    background: rgba($ouiColorSuccess, 0.03);
-  }
-}
-
-.onboardWizard__storageCardHeader {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.onboardWizard__storageBadge {
-  display: inline-block;
-  padding: 2px 8px;
-  font-size: 10px;
-  font-weight: 600;
-  background: rgba($ouiColorPrimary, 0.1);
-  color: $ouiColorPrimary;
-  border-radius: 10px;
-  margin-left: 8px;
-}
-
-.onboardWizard__storageSpecs {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 12px 16px;
-  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.12));
-  border-radius: $ouiBorderRadius;
-  background: lightOrDarkTheme(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.05));
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-}
-
-.onboardWizard__storageSpecRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.onboardWizard__storageAlt {
-  padding: 12px 16px;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  background: $ouiColorLightestShade;
-}
-
-.onboardWizard__storageCustomize {
-  padding: 16px;
-  border: 1px solid $ouiColorPrimary;
-  border-radius: $ouiBorderRadius;
-  background: rgba($ouiColorPrimary, 0.03);
-}
-
-.onboardWizard__storageExisting {
-  padding: 16px;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  background: $ouiColorEmptyShade;
-}
-
-.onboardWizard__storageExistingList {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.onboardWizard__storageExistingItem {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  background: $ouiColorLightestShade;
-  cursor: pointer;
-  transition: border-color 250ms cubic-bezier(0.4, 0, 0.2, 1), background-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:hover {
-    border-color: $ouiColorPrimary;
-    background: rgba($ouiColorPrimary, 0.04);
-  }
-}
-
-// ─────────────────────────────────────────────
-// DATA SOURCES — Provider Grid (Step 4)
-// ─────────────────────────────────────────────
-
-.onboardWizard__providerGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 12px;
-}
-
-.onboardWizard__providerCard {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: 20px 12px 14px;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  background: $ouiColorEmptyShade;
-  text-align: center;
-  transition: border-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
-
-  &--selected {
-    border-color: $ouiColorPrimary;
-    box-shadow: 0 0 0 1px $ouiColorPrimary;
-  }
-}
-
-.onboardWizard__providerIcon {
-  margin-bottom: 4px;
-}
-
-.onboardWizard__connectedBadge {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  padding: 2px 8px;
-  font-size: 10px;
-  font-weight: 600;
-  background: $ouiColorSuccess;
-  color: $ouiColorEmptyShade;
-  border-radius: 10px;
-}
-
-.onboardWizard__liveIndicator {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: $ouiColorSuccess;
-}
-
-.onboardWizard__liveDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: $ouiColorSuccess;
-  animation: onboardWizardPulse 1.5s infinite;
-}
-
-@keyframes onboardWizardPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-// LIVE INGEST panel (shared between Step 4 and Step 7)
-.onboardWizard__ingestPanel {
-  padding: 16px;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  background: $ouiColorLightestShade;
-}
-
-.onboardWizard__ingestHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.onboardWizard__ingestRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 0;
-  border-bottom: 1px solid $ouiBorderColor;
-
-  &:last-child {
-    border-bottom: none;
-  }
-}
-
-.onboardWizard__ingestLabel {
-  width: 60px;
-  font-size: $ouiFontSizeXS;
-  font-weight: 600;
-  color: $ouiTextSubduedColor;
-  text-transform: uppercase;
-}
-
-.onboardWizard__ingestRate {
-  width: 70px;
-  font-size: $ouiFontSizeXS;
-  font-weight: 500;
-}
-
-.onboardWizard__sparkline {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.onboardWizard__sparkDot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-}
-
-// ─────────────────────────────────────────────
-// TRANSFORMATIONS — Before/After (Step 5)
-// ─────────────────────────────────────────────
-
-.onboardWizard__transformCompare {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.onboardWizard__transformBlock {
-  display: flex;
-  flex-direction: column;
-}
-
-.onboardWizard__logPreview {
-  background: $ouiColorLightestShade;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  padding: 12px;
-  font-size: 11px;
-  font-family: monospace;
-  white-space: pre-wrap;
-  word-break: break-all;
-  overflow-x: auto;
-  max-height: 240px;
-  overflow-y: auto;
-  margin: 0;
-}
-
-.onboardWizard__pipelineStatus {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  background: $ouiColorEmptyShade;
-}
-
-// ─────────────────────────────────────────────
-// SUMMARY (Step 6)
-// ─────────────────────────────────────────────
-
-.onboardWizard__summaryList {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.onboardWizard__summaryRow {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 12px 16px;
-  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.12));
-  border-radius: $ouiBorderRadius;
-  background: lightOrDarkTheme(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.05));
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-}
-
-.onboardWizard__estimatedResources {
-  padding: 16px;
-  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.12));
-  border-radius: $ouiBorderRadius;
-  background: lightOrDarkTheme(rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.04));
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-}
-
-.onboardWizard__resourceGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.onboardWizard__resourceItem {
-  text-align: center;
-}
-
-// ─────────────────────────────────────────────
-// LIVE COUNTERS (Step 7)
-// ─────────────────────────────────────────────
-
-.onboardWizard__liveCounters {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.onboardWizard__counterRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px;
-  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
-  border-radius: $ouiBorderRadius;
-  background: lightOrDarkTheme(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.05));
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-
-  &--withChart {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 4px;
-    padding: 20px 20px 12px;
-  }
-}
-
-.onboardWizard__counterMeta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.onboardWizard__counterChart {
-  width: 100%;
-  height: 80px;
-  margin-top: 8px;
-  color: $ouiTextColor;
-}
-
-.onboardWizard__areaChart {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.onboardWizard__counterIcon {
-  flex-shrink: 0;
-  opacity: 0.7;
-}
-
-.onboardWizard__counterInfo {
-  flex: 1;
-}
-
-.onboardWizard__counterValue {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.onboardWizard__counterNumber {
-  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
-  font-size: 26px;
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: -0.5px;
-}
-
-.onboardWizard__counterRate {
-  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-  padding: 2px 6px;
-  border-radius: 3px;
-  background: lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.06));
-}
-
-.onboardWizard__counterDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  animation: onboardWizardPulse 1.5s infinite;
-}
-
-.onboardWizard__collectionHealth {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  border: 1px solid lightOrDarkTheme(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
-  border-radius: $ouiBorderRadius;
-  background: lightOrDarkTheme(rgba(255, 255, 255, 0.35), rgba($ouiColorSuccess, 0.06));
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-  font-family: 'IBM Plex Mono', $ouiCodeFontFamily;
-  font-size: 12px;
-  letter-spacing: 0.2px;
-}
-
-// ─────────────────────────────────────────────
-// COMPLETION DASHBOARD (Step 8)
-// ─────────────────────────────────────────────
-
-.onboardWizard__completionStatus {
-  display: flex;
-  align-items: center;
-}
-
-.onboardWizard__healthBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
-  border-radius: 12px;
-  background: rgba($ouiColorSuccess, 0.1);
-  color: $ouiColorSuccess;
-  font-size: $ouiFontSizeS;
-  font-weight: 500;
-}
-
-.onboardWizard__completionStats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-
-.onboardWizard__completionStat {
-  padding: 16px;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  background: $ouiColorEmptyShade;
-  text-align: center;
-}
-
-.onboardWizard__quickLinks {
-  padding: 16px;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  background: $ouiColorLightestShade;
-}
-
-.onboardWizard__quickLinkRow {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.onboardWizard__quickLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 12px;
-  border: 1px solid $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
-  background: $ouiColorEmptyShade;
-  font-family: inherit;
-  cursor: pointer;
-  transition: border-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
-
-  &:hover {
-    border-color: $ouiColorPrimary;
-  }
-}
-
-// ─────────────────────────────────────────────
-// INFO PLACEHOLDER (fallback)
-// ─────────────────────────────────────────────
-
-.onboardWizard__infoPlaceholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
-  border: 1px dashed $ouiBorderColor;
-  border-radius: $ouiBorderRadius;
 }
