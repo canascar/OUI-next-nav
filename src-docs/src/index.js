@@ -229,10 +229,18 @@ render(
             )}
           />
           <Route
-            path="/sample-pages"
+            path="/sample-page-previous"
             render={() => (
               <LinkWrapper>
                 <SessionPagesView key="v7" variant="v7" />
+              </LinkWrapper>
+            )}
+          />
+          <Route
+            path="/sample-pages"
+            render={() => (
+              <LinkWrapper>
+                <SessionPagesView key="mcp" variant="mcp-investigation" />
               </LinkWrapper>
             )}
           />

@@ -85,6 +85,7 @@ import {
   ERROR_RATE_SPIKE_SESSION,
   DNS_TIMEOUT_SESSION,
   OVERVIEW_HOME_SESSION,
+  MCP_INVESTIGATION_SESSION,
 } from './session_mock_data';
 
 const renderPage = (
@@ -1652,14 +1653,28 @@ function initializeSessionState() {
 export const SessionPagesView = ({ variant } = {}) => {
   // Parse v5 scenario variants (e.g., 'v5-scenario3' → scenario 3)
   const v5ScenarioMatch = variant && variant.match(/^v5-scenario(\d+)$/);
-  const v5ScenarioNumber = v5ScenarioMatch ? parseInt(v5ScenarioMatch[1], 10) : null;
+  const v5ScenarioNumber = v5ScenarioMatch
+    ? parseInt(v5ScenarioMatch[1], 10)
+    : null;
   const isV5Variant = variant === 'v5' || v5ScenarioNumber != null;
   const isV6Variant = variant === 'v6' || variant === 'v8';
-  const isV7Variant = variant === 'v7';
+  const isMcpVariant = variant === 'mcp-investigation';
+  // The MCP home reuses the v7 session machinery (home landing → chat session).
+  const isV7Variant = variant === 'v7' || isMcpVariant;
   const isV8Variant = variant === 'v8';
   const navExpandRef = useRef(null);
 
-  const EmptyPage = isV6Variant ? EmptySessionPageV6 : isV5Variant ? EmptySessionPageV5 : variant === 'v4' ? EmptySessionPageV3 : variant === 'v3' ? EmptySessionPageV3 : variant === 'v2' ? EmptySessionPageV2 : EmptySessionPage;
+  const EmptyPage = isV6Variant
+    ? EmptySessionPageV6
+    : isV5Variant
+    ? EmptySessionPageV5
+    : variant === 'v4'
+    ? EmptySessionPageV3
+    : variant === 'v3'
+    ? EmptySessionPageV3
+    : variant === 'v2'
+    ? EmptySessionPageV2
+    : EmptySessionPage;
   // Prevent page scroll when this full-screen view is mounted
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -1693,6 +1708,18 @@ export const SessionPagesView = ({ variant } = {}) => {
 
   // Session state: sessions array + activeSessionId
   const [sessionState, setSessionState] = useState(() => {
+    if (isMcpVariant) {
+      return {
+        sessions: [
+          MCP_INVESTIGATION_SESSION,
+          LATENCY_SPIKE_SESSION,
+          ERROR_RATE_SPIKE_SESSION,
+          DNS_TIMEOUT_SESSION,
+        ],
+        activeSessionId: MCP_INVESTIGATION_SESSION.id,
+        version: 1,
+      };
+    }
     if (isV7Variant) {
       return {
         sessions: [
@@ -1910,9 +1937,12 @@ export const SessionPagesView = ({ variant } = {}) => {
   const handleCreateSession = useCallback(() => {
     if (isV7Variant) {
       setSessionState((prev) => {
-        const newId = `overview-home-${Date.now()}`;
+        const base = isMcpVariant
+          ? MCP_INVESTIGATION_SESSION
+          : OVERVIEW_HOME_SESSION;
+        const newId = `${base.id}-${Date.now()}`;
         const newSession = {
-          ...OVERVIEW_HOME_SESSION,
+          ...base,
           id: newId,
           createdAt: Date.now(),
         };
@@ -1940,7 +1970,7 @@ export const SessionPagesView = ({ variant } = {}) => {
       return createSession(prev);
     });
     setActiveView('session');
-  }, [isV7Variant]);
+  }, [isV7Variant, isMcpVariant]);
 
   /** Sessions_Button: show the session list */
   const handleBrowseSessions = useCallback(() => {
