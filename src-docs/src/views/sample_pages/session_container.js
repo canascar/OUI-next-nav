@@ -17,23 +17,22 @@ import React, {
   useContext,
 } from 'react';
 
-import {
-  OuiButtonIcon,
-  OuiIcon,
-  OuiOllyChatPill,
-  OuiPopover,
-  OuiToolTip,
-} from '../../../../src/components';
+import { OuiIcon, OuiOllyChatPill } from '../../../../src/components';
 import { ThreadPanel } from './thread_panel';
 import { ResizeHandle } from './resize_handle';
-import { PagePanel, PAGE_TAB_ICONS } from './page_panel';
+import { PagePanel } from './page_panel';
 import { Mascot } from '../../../../olly-mascot/Mascot';
 import { ThemeContext } from '../../components/with_theme';
 
+const makeTabId = () =>
+  `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+
 /**
- * SessionContainer — Two side-by-side panels, each with their own header.
- * Left: Chat panel (ThreadPanel) with its own header bar.
- * Right: Page panel (PagePanel) with its own tab bar.
+ * SessionContainer — One shell topbar above two panels.
+ * Topbar: breadcrumb on the left, Share + the single Views trigger on the right.
+ * The topbar and the left nav rail never scroll — they sit outside the panels,
+ * and only panel content scrolls.
+ * Left: Chat panel (ThreadPanel). Right: Page panel (PagePanel) with its tabs.
  */
 export const SessionContainer = ({
   session,
@@ -45,7 +44,6 @@ export const SessionContainer = ({
   const threadPanelRef = useRef(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isEntering, setIsEntering] = useState(true);
-  const [isCollapsedListOpen, setIsCollapsedListOpen] = useState(false);
   const [aiButtonHighlight, setAiButtonHighlight] = useState(false);
   const [pendingAiResponse, setPendingAiResponse] = useState(null);
   const [aiPopoverVisible, setAiPopoverVisible] = useState(false);
@@ -226,14 +224,6 @@ export const SessionContainer = ({
     [onUpdateSession]
   );
 
-  const handleSizeChange = useCallback(
-    (newState) => {
-      triggerAnimation();
-      onUpdateSession({ threadPanelState: newState });
-    },
-    [onUpdateSession, triggerAnimation]
-  );
-
   const handleTabSelect = useCallback(
     (tabId) => {
       onUpdateSession({ activeTabId: tabId });
@@ -243,30 +233,55 @@ export const SessionContainer = ({
 
   const handleTabClose = useCallback(
     (tabId) => {
+      const closedIndex = session.tabs.findIndex((tab) => tab.id === tabId);
       const updatedTabs = session.tabs.filter((tab) => tab.id !== tabId);
       const updates = { tabs: updatedTabs };
       if (session.activeTabId === tabId) {
-        updates.activeTabId =
-          updatedTabs.length > 0
-            ? updatedTabs[updatedTabs.length - 1].id
-            : null;
+        if (updatedTabs.length === 0) {
+          // Last tab gone — the panel closes with it.
+          updates.activeTabId = null;
+          updates.threadPanelState = 'full-screen';
+          triggerAnimation();
+        } else {
+          // Activate the left neighbor (the first tab has no left neighbor,
+          // so it hands off to what slid into its place).
+          const neighborIndex = Math.max(0, closedIndex - 1);
+          updates.activeTabId = updatedTabs[neighborIndex].id;
+        }
       }
       onUpdateSession(updates);
     },
-    [session.tabs, session.activeTabId, onUpdateSession]
+    [session.tabs, session.activeTabId, onUpdateSession, triggerAnimation]
   );
 
   const handleAddTab = useCallback(() => {
-    const newTab = {
-      id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-      pageKey: 'new-tab',
-      title: 'New Tab',
-    };
+    const newTab = { id: makeTabId(), pageKey: 'new-tab', title: 'New Tab' };
     onUpdateSession({
       tabs: [...session.tabs, newTab],
       activeTabId: newTab.id,
     });
   }, [session.tabs, onUpdateSession]);
+
+  /**
+   * The panel's one open/close affordance, shared by the header trigger and the
+   * in-panel collapse chevron. Tabs and the active tab are never touched, so
+   * state survives a collapse/reopen round trip untouched.
+   */
+  const handleTogglePanel = useCallback(() => {
+    triggerAnimation();
+    if (threadPanelState !== 'full-screen') {
+      onUpdateSession({ threadPanelState: 'full-screen' });
+      return;
+    }
+    const updates = { threadPanelState: 'side-by-side' };
+    if (session.tabs.length === 0) {
+      // Nothing to come back to — open on a fresh New Tab.
+      const newTab = { id: makeTabId(), pageKey: 'new-tab', title: 'New Tab' };
+      updates.tabs = [newTab];
+      updates.activeTabId = newTab.id;
+    }
+    onUpdateSession(updates);
+  }, [threadPanelState, session.tabs, onUpdateSession, triggerAnimation]);
 
   const handleReorderTabs = useCallback(
     (nextTabs) => {
@@ -314,9 +329,9 @@ export const SessionContainer = ({
   const showPill = isMinimized;
 
   // Calculate explicit widths for both panes
-  // Left pane: 0% when minimized, threadPanelWidth% when side-by-side, ~100% when full-screen
-  // Right pane: gets the rest
-  const COLLAPSED_WIDTH = 52; // px for collapsed strip
+  // Left pane: 0% when minimized, threadPanelWidth% when side-by-side, 100% when
+  // the panel is collapsed. The collapsed panel takes no width at all — the
+  // header trigger is its only affordance, so no rail is left behind.
   let leftWidth;
   let rightStyle;
 
@@ -324,12 +339,17 @@ export const SessionContainer = ({
     leftWidth = '0px';
     rightStyle = { flex: 1 };
   } else if (isFullScreen) {
-    leftWidth = `calc(100% - ${COLLAPSED_WIDTH}px - 10px)`;
-    rightStyle = { width: `${COLLAPSED_WIDTH}px`, flex: 'none' };
+    leftWidth = '100%';
+    rightStyle = { width: '0px', flex: 'none' };
   } else {
     leftWidth = `${threadPanelWidth}%`;
     rightStyle = { flex: 1 };
   }
+
+  // Panel "open" means the tabs are visible. Collapsing it hands the width to
+  // the chat (full-screen) without disturbing tabs or the active tab.
+  const isPanelOpen = !isFullScreen;
+  const tabCount = session.tabs.length;
 
   return (
     <div
@@ -346,191 +366,134 @@ export const SessionContainer = ({
           <OuiIcon type="arrowLeft" size="m" />
         </button>
       )}
-      {/* Left: Chat panel */}
-      <ThreadPanel
-        ref={threadPanelRef}
-        sizeState={threadPanelState}
-        onSizeChange={handleSizeChange}
-        threadKey={session.threadKey}
-        pendingThread={session.pendingThread}
-        pendingInputValue={session.pendingInputValue}
-        onViewAction={handleViewAction}
-        width={leftWidth}
-        title={session.title}
-        isAnimating={isAnimating}
-        sessionSummary={session.summary}
-        sessionTabs={session.tabs}
-        onRename={(newTitle) => onUpdateSession({ title: newTitle })}
-      />
 
-      {/* Resize handle — only in side-by-side */}
-      {isSideBySide && (
-        <ResizeHandle
-          onResize={handleResize}
-          onResizeEnd={handleResizeCommit}
-          isActive={isSideBySide}
+      {/* Topbar — lives outside the panels, so it never scrolls with content.
+          One control: the Views trigger. */}
+      <div className="sessionContainer__topbar">
+        <div className="sessionContainer__topbarActions">
+          {/* The one and only way to open or close the panel from outside it.
+              Label is just "Views" when nothing is open — the count only
+              appears once there's something to count. */}
+          <button
+            type="button"
+            className={`sessionContainer__viewsTrigger${
+              isPanelOpen ? '' : ' sessionContainer__viewsTrigger--closed'
+            }`}
+            aria-expanded={isPanelOpen}
+            title={isPanelOpen ? 'Close views' : 'Open views'}
+            onClick={handleTogglePanel}>
+            <OuiIcon type="dockedRight" size="s" />
+            <span>{tabCount > 0 ? `Views · ${tabCount}` : 'Views'}</span>
+          </button>
+        </div>
+      </div>
+
+      <div className="sessionContainer__panels">
+        {/* Left: Chat panel */}
+        <ThreadPanel
+          ref={threadPanelRef}
+          sizeState={threadPanelState}
+          threadKey={session.threadKey}
+          pendingThread={session.pendingThread}
+          pendingInputValue={session.pendingInputValue}
+          onViewAction={handleViewAction}
+          width={leftWidth}
+          isAnimating={isAnimating}
         />
-      )}
 
-      {/* Right: Page panel */}
-      <div
-        className={`sessionContainer__pagePanelWrap${
-          isAnimating ? ' sessionContainer__pagePanelWrap--animating' : ''
-        }`}
-        style={rightStyle}>
-        <div
-          style={{
-            display: isFullScreen ? 'none' : 'flex',
-            width: '100%',
-            height: '100%',
-          }}>
-          <PagePanel
-            tabs={session.tabs}
-            activeTabId={session.activeTabId}
-            onTabSelect={handleTabSelect}
-            onTabClose={handleTabClose}
-            onAddTab={handleAddTab}
-            onReorderTabs={handleReorderTabs}
-            onSelectPage={handleSelectPage}
-            onOpenCanvasPage={onOpenCanvasPage}
-            onExpandChat={isMinimized ? handleExpandChat : undefined}
-            aiButtonHighlight={aiButtonHighlight}
-            aiButtonMessage={aiPopoverVisible ? aiPopoverText : null}
-            onDismissAiPopover={handleDismissAiPopover}
-            onQueryExecute={handleQueryExecute}
+        {/* Resize handle — only in side-by-side */}
+        {isSideBySide && (
+          <ResizeHandle
+            onResize={handleResize}
+            onResizeEnd={handleResizeCommit}
+            isActive={isSideBySide}
           />
-        </div>
+        )}
+
+        {/* Right: Page panel */}
         <div
-          className="sessionContainer__collapsedPanel"
-          style={{ display: isFullScreen ? 'flex' : 'none' }}>
-          <div className="sessionContainer__collapsedTabs">
-            <OuiToolTip
-              content={isCollapsedListOpen ? '' : 'View tabs'}
-              position="left"
-              delay="regular">
-              <OuiPopover
-                button={
-                  <OuiButtonIcon
-                    iconType="list"
-                    aria-label="View tabs"
-                    size="s"
-                    color="text"
-                    display="empty"
-                    isDisabled={session.tabs.length === 0}
-                    onClick={() => setIsCollapsedListOpen((open) => !open)}
-                  />
-                }
-                isOpen={isCollapsedListOpen}
-                closePopover={() => setIsCollapsedListOpen(false)}
-                anchorPosition="downRight"
-                panelPaddingSize="s">
-                <div className="pagePanel__tabListPopover">
-                  {session.tabs.map((tab) => (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      className={`pagePanel__tabListItem${
-                        tab.id === session.activeTabId
-                          ? ' pagePanel__tabListItem--active'
-                          : ''
-                      }`}
-                      onClick={() => {
-                        handleTabSelect(tab.id);
-                        handleSizeChange('side-by-side');
-                        setIsCollapsedListOpen(false);
-                      }}>
-                      {tab.title}
-                    </button>
-                  ))}
-                </div>
-              </OuiPopover>
-            </OuiToolTip>
-            {session.tabs.map((tab) => (
-              <OuiToolTip key={tab.id} content={tab.title} position="left">
-                <OuiButtonIcon
-                  iconType={PAGE_TAB_ICONS[tab.pageKey] || 'folderClosed'}
-                  aria-label={tab.title}
-                  size="s"
-                  color="text"
-                  display="empty"
-                  onClick={() => {
-                    handleTabSelect(tab.id);
-                    handleSizeChange('side-by-side');
-                  }}
-                />
-              </OuiToolTip>
-            ))}
-            <OuiToolTip content="Add new tab" position="left">
-              <OuiButtonIcon
-                iconType="plus"
-                aria-label="Add new tab"
-                size="s"
-                color="text"
-                display="empty"
-                onClick={() => {
-                  handleAddTab();
-                  handleSizeChange('side-by-side');
-                }}
-              />
-            </OuiToolTip>
-          </div>
-        </div>
-        {/* Olly chat pill — rendered inside page panel wrap for positioning */}
-        {showPill && (
-          <div className="sessionContainer__ollyChatPill">
-            <OuiOllyChatPill
-              avatar={
-                <Mascot
-                  size={28}
-                  idle
-                  bob={false}
-                  follow={false}
-                  color={mascotColor}
-                  eyeColor={mascotEyeColor}
-                />
-              }
-              avatarHover={
-                <Mascot
-                  size={28}
-                  expression="happy"
-                  idle={false}
-                  bob={false}
-                  follow={false}
-                  color={mascotColor}
-                  eyeColor={mascotEyeColor}
-                />
-              }
-              avatarFocused={
-                <Mascot
-                  size={28}
-                  expression="blink"
-                  idle={false}
-                  bob={false}
-                  follow={false}
-                  color={mascotColor}
-                  eyeColor={mascotEyeColor}
-                />
-              }
-              message={
-                aiButtonHighlight && aiPopoverVisible && aiPopoverText
-                  ? aiPopoverText
-                  : undefined
-              }
-              quickReplies={
-                aiButtonHighlight && aiPopoverVisible && aiPopoverText
-                  ? [
-                      { label: 'Yes, investigate', primary: true },
-                      { label: 'Show me the data' },
-                    ]
-                  : undefined
-              }
-              isHighlighted={aiButtonHighlight}
-              onDismiss={handleDismissAiPopover}
-              onSubmit={(val) => handleExpandChat(val)}
-              onActivate={(val) => handleExpandChat(val)}
+          className={`sessionContainer__pagePanelWrap${
+            isAnimating ? ' sessionContainer__pagePanelWrap--animating' : ''
+          }${
+            isFullScreen ? ' sessionContainer__pagePanelWrap--collapsed' : ''
+          }`}
+          style={rightStyle}>
+          <div
+            style={{
+              display: isFullScreen ? 'none' : 'flex',
+              width: '100%',
+              height: '100%',
+            }}>
+            <PagePanel
+              tabs={session.tabs}
+              activeTabId={session.activeTabId}
+              onTabSelect={handleTabSelect}
+              onTabClose={handleTabClose}
+              onAddTab={handleAddTab}
+              onReorderTabs={handleReorderTabs}
+              onSelectPage={handleSelectPage}
+              onOpenCanvasPage={onOpenCanvasPage}
+              onCollapsePanel={handleTogglePanel}
+              onQueryExecute={handleQueryExecute}
             />
           </div>
-        )}
+          {/* Olly chat pill — rendered inside page panel wrap for positioning */}
+          {showPill && (
+            <div className="sessionContainer__ollyChatPill">
+              <OuiOllyChatPill
+                avatar={
+                  <Mascot
+                    size={28}
+                    idle
+                    bob={false}
+                    follow={false}
+                    color={mascotColor}
+                    eyeColor={mascotEyeColor}
+                  />
+                }
+                avatarHover={
+                  <Mascot
+                    size={28}
+                    expression="happy"
+                    idle={false}
+                    bob={false}
+                    follow={false}
+                    color={mascotColor}
+                    eyeColor={mascotEyeColor}
+                  />
+                }
+                avatarFocused={
+                  <Mascot
+                    size={28}
+                    expression="blink"
+                    idle={false}
+                    bob={false}
+                    follow={false}
+                    color={mascotColor}
+                    eyeColor={mascotEyeColor}
+                  />
+                }
+                message={
+                  aiButtonHighlight && aiPopoverVisible && aiPopoverText
+                    ? aiPopoverText
+                    : undefined
+                }
+                quickReplies={
+                  aiButtonHighlight && aiPopoverVisible && aiPopoverText
+                    ? [
+                        { label: 'Yes, investigate', primary: true },
+                        { label: 'Show me the data' },
+                      ]
+                    : undefined
+                }
+                isHighlighted={aiButtonHighlight}
+                onDismiss={handleDismissAiPopover}
+                onSubmit={(val) => handleExpandChat(val)}
+                onActivate={(val) => handleExpandChat(val)}
+              />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

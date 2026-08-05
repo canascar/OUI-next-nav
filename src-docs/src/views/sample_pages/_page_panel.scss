@@ -46,48 +46,21 @@
   }
 }
 
-// Scrollable tab list container
+// Tab list — never wraps and never scrolls horizontally. Overflowing tabs
+// shrink; the ☰ dropdown at the far right is how you reach any of them.
 .pagePanel__tabList {
   display: flex;
   flex-direction: row;
   flex: 1;
   min-width: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: hidden;
+  flex-wrap: nowrap;
   align-items: center;
   gap: $ouiSizeS;
-
-  // Hide scrollbar completely
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  // Fade right edge only (scrolled to start)
-  &--fade-right {
-    -webkit-mask-image: linear-gradient(to right, black calc(100% - 32px), transparent);
-    mask-image: linear-gradient(to right, black calc(100% - 32px), transparent);
-  }
-
-  // Fade left edge only (scrolled to end)
-  &--fade-left {
-    -webkit-mask-image: linear-gradient(to right, transparent, black 32px);
-    mask-image: linear-gradient(to right, transparent, black 32px);
-  }
-
-  // Fade both edges (scrolled in the middle)
-  &--fade-both {
-    -webkit-mask-image: linear-gradient(to right, transparent, black 32px, black calc(100% - 32px), transparent);
-    mask-image: linear-gradient(to right, transparent, black 32px, black calc(100% - 32px), transparent);
-  }
 }
-// Separator between tabs
-.pagePanel__tabSeparator {
-  width: 1px;
-  height: 16px;
-  background-color: $ouiColorLightShade;
+
+// Collapse chevron — closes the panel, keeping every tab
+.pagePanel__collapseButton {
   flex-shrink: 0;
 }
 
@@ -108,7 +81,9 @@
   border: 1px solid transparent;
   transition: background-color 150ms ease-in-out, border-color 150ms ease-in-out,
     transform 200ms cubic-bezier(0.2, 0.7, 0.2, 1);
-  flex-shrink: 0;
+  // Tabs give up width rather than pushing the bar into a scroll.
+  flex: 0 1 auto;
+  min-width: 0;
   outline: none;
 
   &:hover {
@@ -153,26 +128,28 @@
   }
 }
 
-// While reordering, drop the separators so the sliding tabs stay aligned.
-.pagePanel__tabList--reordering .pagePanel__tabSeparator {
-  opacity: 0;
-}
-
 // Tab title text
 .pagePanel__tabTitle {
   font-size: $ouiFontSizeXS;
   color: $ouiTextColor;
   max-width: 140px;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-// Close button wrapper — visible only on active tab
+// The type icon holds its size while the title absorbs the squeeze.
+.pagePanel__tab > .ouiIcon {
+  flex: none;
+}
+
+// Close button — present on every tab, not just the active one
 .pagePanel__tabClose {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: none;
   margin-left: 0;
   border: none;
   background: none;
@@ -217,7 +194,9 @@
 }
 
 .pagePanel__tabListItem {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   width: 100%;
   padding: $ouiSizeS $ouiSizeM;
   border: none;
@@ -333,34 +312,6 @@
 .pagePanel .detailPageHeader__actions {
   border-bottom: none;
   padding-right: 16px;
-}
-
-// AI button in tab bar (when chat minimized)
-.pagePanel__aiButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 48px;
-  padding: 0;
-  height: 100%;
-  border-right: 1px solid $ouiBorderColor;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  position: relative;
-
-  &--highlight {
-    animation: aiButtonPulse 1.5s ease-in-out infinite;
-  }
-}
-
-@keyframes aiButtonPulse {
-  0%, 100% {
-    background-color: transparent;
-  }
-  50% {
-    background-color: rgba($ouiColorPrimary, 0.1);
-  }
 }
 
 // Floating AI popover below the generate icon
