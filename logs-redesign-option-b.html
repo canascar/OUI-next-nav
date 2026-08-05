@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logs Redesign — Option B: Integrated Search Bar</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Space Grotesk', ui-monospace, 'SF Mono', monospace;
+  --indigo: #6366f1;
+  --indigo-soft: rgba(99,102,241,0.08);
+  --indigo-glow: rgba(99,102,241,0.18);
+  --green: #10b981;
+  --amber: #d97706;
+  --red: #dc2626;
+  --bg-canvas: #f8f7fc;
+  --bg-surface: #ffffff;
+  --border: #ececef;
+  --text: #0a0a0a;
+  --text-muted: rgba(10,10,10,0.46);
+  --text-faint: rgba(10,10,10,0.32);
+  --shadow-sm: 0 1px 2px rgba(15,15,15,0.04), 0 8px 24px rgba(15,15,15,0.04);
+  --radius: 12px;
+  --radius-sm: 6px;
+  --radius-pill: 999px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: var(--font-sans); font-size: 14px; color: var(--text);
+  background-color: var(--bg-canvas);
+  background-image:
+    radial-gradient(ellipse 40% 35% at 0% 0%, hsl(245,80%,90%,0.55), transparent 60%),
+    radial-gradient(ellipse 35% 30% at 100% 8%, hsl(215,90%,92%,0.45), transparent 60%),
+    radial-gradient(ellipse 35% 30% at 100% 100%, hsl(260,80%,92%,0.45), transparent 60%),
+    radial-gradient(ellipse 35% 30% at 5% 100%, hsl(230,80%,92%,0.40), transparent 60%);
+  background-attachment: fixed;
+}
+button { font-family: inherit; font-size: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+.app { display: flex; height: 100vh; min-width: 1100px; }
+.appnav {
+  width: 52px; min-width: 52px;
+  background: rgba(255,255,255,0.62);
+  backdrop-filter: blur(24px) saturate(160%);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 16px 0; gap: 8px;
+}
+.nav-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-muted); font-size: 16px; transition: background 150ms;
+}
+.nav-icon:hover { background: rgba(0,0,0,0.05); }
+.nav-icon.active { background: var(--indigo-soft); color: var(--indigo); }
+.nav-logo { width: 32px; height: 32px; margin-bottom: 12px; }
+.main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.topbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 20px; border-bottom: 1px solid var(--border);
+  background: var(--bg-surface);
+}
+.topbar-title { font-weight: 700; font-size: 16px; }
+.topbar .spacer { flex: 1; }
+.date-picker {
+  display: flex; align-items: center; gap: 8px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 8px 14px; font-size: 13px; font-weight: 500; background: var(--bg-surface);
+}
+.date-picker svg { width: 14px; height: 14px; color: var(--text-muted); }
+.btn-refresh {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--indigo); color: #fff; font-weight: 600;
+  border-radius: var(--radius-pill); padding: 8px 18px; font-size: 13px;
+  box-shadow: 0 8px 22px -10px var(--indigo);
+  transition: transform 180ms cubic-bezier(.2,.7,.2,1), box-shadow 180ms;
+}
+.btn-refresh:hover { transform: translateY(-1px); }
+.btn-refresh:active { transform: translateY(0); box-shadow: none; }
+.query-area { padding: 16px 20px 12px; background: var(--bg-surface); border-bottom: 1px solid var(--border); }
+.query-card {
+  border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
+  background: var(--bg-surface); box-shadow: var(--shadow-sm);
+  transition: border-color 200ms, box-shadow 200ms;
+}
+.query-card:focus-within { border-color: var(--indigo); box-shadow: 0 0 0 3px var(--indigo-soft), var(--shadow-sm); }
+.query-card-input { display: flex; align-items: center; gap: 10px; padding: 14px 18px; }
+.query-mode-icon { font-size: 18px; color: var(--indigo); width: 28px; display: flex; align-items: center; justify-content: center; }
+.query-textarea {
+  flex: 1; border: none; outline: none; font-size: 14px; font-family: var(--font-sans);
+  color: var(--text); resize: none; min-height: 22px; max-height: 80px;
+}
+.query-textarea::placeholder { color: var(--text-faint); }
+.query-textarea.code-font { font-family: var(--font-mono); font-size: 13px; }
+.query-submit-btn {
+  background: var(--indigo); color: #fff; border-radius: var(--radius-pill);
+  padding: 7px 16px; font-size: 12px; font-weight: 600;
+  transition: transform 180ms cubic-bezier(.2,.7,.2,1);
+}
+.query-submit-btn:hover { transform: translateY(-1px); }
+.query-card-controls {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 18px 10px; border-top: 1px solid rgba(0,0,0,0.04); background: rgba(0,0,0,0.015);
+}
+.qc-label { font-size: 11px; font-weight: 600; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.4px; margin-right: 4px; }
+.mode-chip {
+  padding: 4px 12px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 600;
+  color: var(--text-muted); background: transparent; border: 1px solid transparent;
+  transition: all 150ms; display: flex; align-items: center; gap: 5px;
+}
+.mode-chip:hover { background: rgba(0,0,0,0.04); }
+.mode-chip.active { background: var(--bg-surface); border-color: var(--border); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.mode-chip.active.ai-chip { color: var(--indigo); }
+.mode-chip .chip-sparkle { font-size: 12px; }
+.qc-divider { width: 1px; height: 18px; background: var(--border); margin: 0 8px; }
+.view-chip {
+  padding: 4px 10px; border-radius: var(--radius-pill); font-size: 11px; font-weight: 600;
+  color: var(--text-faint); background: transparent; transition: all 150ms;
+}
+.view-chip:hover { color: var(--text-muted); background: rgba(0,0,0,0.03); }
+.view-chip.active { background: var(--indigo); color: #fff; }
+.qc-spacer { flex: 1; }
+.datasource-compact {
+  display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500;
+  color: var(--text-muted); padding: 4px 10px; border-radius: var(--radius-pill);
+  border: 1px solid var(--border); transition: border-color 150ms;
+}
+.datasource-compact:hover { border-color: var(--indigo); color: var(--indigo); }
+.datasource-compact .ds-ic { color: var(--indigo); }
+.ai-response {
+  display: none; margin-top: 10px; padding: 12px 16px;
+  background: var(--indigo-soft); border: 1px solid rgba(99,102,241,0.12);
+  border-radius: var(--radius); font-size: 13px;
+}
+.ai-response.visible { display: block; }
+.ai-response .ai-label { font-weight: 700; color: var(--indigo); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.ai-response .ai-query {
+  font-family: var(--font-mono); font-size: 12px; color: var(--text);
+  background: var(--bg-surface); border-radius: var(--radius-sm); padding: 8px 12px; border: 1px solid var(--border);
+}
+.ai-response .ai-actions { margin-top: 8px; display: flex; gap: 8px; }
+.ai-response .ai-action-btn {
+  font-size: 11px; font-weight: 600; color: var(--indigo); padding: 4px 10px;
+  border-radius: var(--radius-pill); border: 1px solid rgba(99,102,241,0.2); transition: background 150ms;
+}
+.ai-response .ai-action-btn:hover { background: rgba(99,102,241,0.08); }
+.builder-strip { display: none; align-items: center; gap: 8px; margin-top: 10px; }
+.builder-strip.visible { display: flex; }
+.builder-chip {
+  display: flex; align-items: center; gap: 6px;
+  border: 1px dashed var(--border); border-radius: var(--radius-pill);
+  padding: 6px 14px; font-size: 12px; font-weight: 500; color: var(--text-muted);
+  transition: border-color 150ms, color 150ms;
+}
+.builder-chip:hover { border-color: var(--indigo); color: var(--indigo); }
+.action-row { display: flex; align-items: center; gap: 6px; padding: 8px 20px 0; }
+.action-link {
+  font-size: 12px; color: var(--text-muted); font-weight: 500;
+  padding: 5px 10px; border-radius: var(--radius-sm); transition: color 150ms, background 150ms;
+}
+.action-link:hover { color: var(--text); background: rgba(0,0,0,0.03); }
+.content { flex: 1; display: flex; min-height: 0; padding: 12px 20px 16px; gap: 0; }
+.fields-panel {
+  width: 230px; min-width: 230px; background: var(--bg-surface);
+  border: 1px solid var(--border); border-radius: var(--radius) 0 0 var(--radius);
+  border-right: none; display: flex; flex-direction: column;
+}
+.fields-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 10px; font-weight: 700; font-size: 14px; }
+.fields-search {
+  margin: 0 12px 10px; display: flex; align-items: center; gap: 8px;
+  border: 1px solid var(--border); border-radius: 10px; padding: 7px 10px; font-size: 12px; color: var(--text-faint);
+}
+.fields-scroll { flex: 1; overflow-y: auto; padding: 0 0 12px; }
+.field-group-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); padding: 10px 16px 4px; }
+.field-item { display: flex; align-items: center; gap: 8px; padding: 5px 16px; font-size: 12px; font-family: var(--font-mono); color: var(--text); cursor: default; }
+.field-item:hover { background: rgba(0,0,0,0.02); }
+.field-badge { width: 18px; height: 18px; border-radius: 4px; font-size: 9px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.field-badge.t { background: #e3f0fb; color: #3b7dc4; }
+.field-badge.n { background: #e6f5ef; color: #2c8a67; }
+.field-badge.d { background: #f3ecfa; color: #8b5bbf; }
+.field-badge.o { background: #fdf0e5; color: #c07826; }
+.results-panel { flex: 1; background: var(--bg-surface); border: 1px solid var(--border); border-radius: 0 var(--radius) var(--radius) 0; display: flex; flex-direction: column; min-width: 0; }
+.results-tabs { display: flex; align-items: center; gap: 4px; padding: 4px 16px 0; border-bottom: 1px solid var(--border); }
+.results-tab { padding: 10px 14px; font-size: 13px; font-weight: 500; color: var(--text-muted); border-bottom: 2px solid transparent; }
+.results-tab:hover { color: var(--text); }
+.results-tab.active { color: var(--indigo); border-bottom-color: var(--indigo); font-weight: 600; }
+.results-toolbar { display: flex; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--border); font-size: 13px; }
+.results-toolbar .hits b { font-weight: 700; }
+.results-toolbar .ms { color: var(--text-muted); }
+.results-toolbar .spacer { flex: 1; }
+.toolbar-btn { font-size: 12px; font-weight: 600; color: var(--text-muted); padding: 5px 10px; border-radius: var(--radius-sm); }
+.toolbar-btn:hover { background: rgba(0,0,0,0.03); color: var(--text); }
+.log-table-wrap { flex: 1; overflow: auto; min-height: 0; }
+table.logs { width: 100%; border-collapse: collapse; }
+table.logs th {
+  position: sticky; top: 0; background: var(--bg-surface); text-align: left;
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;
+  padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text-muted); z-index: 5;
+}
+table.logs td { padding: 8px 12px; border-bottom: 1px solid rgba(0,0,0,0.03); font-family: var(--font-mono); font-size: 12px; vertical-align: top; }
+table.logs tr:hover td { background: rgba(99,102,241,0.02); }
+.sev-badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-pill); }
+.sev-badge.info { background: rgba(16,185,129,0.1); color: var(--green); }
+.sev-badge.warn { background: rgba(217,119,6,0.1); color: var(--amber); }
+.sev-badge.err { background: rgba(220,38,38,0.1); color: var(--red); }
+.demo-label { position: fixed; bottom: 16px; right: 20px; background: var(--text); color: #fff; font-size: 11px; font-weight: 600; padding: 8px 14px; border-radius: var(--radius-pill); opacity: 0.85; }
+</style>
+</head>
+<body>
+<div class="app">
+  <nav class="appnav">
+    <svg class="nav-logo" viewBox="0 0 32 32"><path d="M4 22c8 2 16-2 22-12 2 6 1 13-5 17S8 30 4 22z" fill="#6366f1"/><path d="M28 10C20 8 12 12 6 22 4 16 5 9 11 5s15-1 17 5z" fill="#a5b4fc"/></svg>
+    <button class="nav-icon">&#x1F3E0;</button>
+    <button class="nav-icon">&#x1F50D;</button>
+    <button class="nav-icon active">&#x1F4CB;</button>
+    <button class="nav-icon">&#x1F4CA;</button>
+    <button class="nav-icon">&#x1F5FA;</button>
+    <button class="nav-icon">&#x2699;</button>
+  </nav>
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-title">Discover &#x203A; Logs</span>
+      <div class="spacer"></div>
+      <div class="date-picker">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Last 15 minutes
+        <span style="color:var(--text-faint)">&#x25BE;</span>
+      </div>
+      <button class="btn-refresh">&#x21BB; Refresh</button>
+    </div>
+    <div class="query-area">
+      <div class="query-card" id="queryCard">
+        <div class="query-card-input">
+          <span class="query-mode-icon" id="modeIcon">&#x2728;</span>
+          <textarea class="query-textarea" id="queryTextarea" rows="1" placeholder="What errors occurred in my kubernetes pods in the last hour?"></textarea>
+          <button class="query-submit-btn" id="submitBtn">Ask AI</button>
+        </div>
+        <div class="query-card-controls">
+          <span class="qc-label">Mode</span>
+          <button class="mode-chip active ai-chip" data-mode="ai"><span class="chip-sparkle">&#x2728;</span> AI</button>
+          <button class="mode-chip" data-mode="ppl">PPL</button>
+          <button class="mode-chip" data-mode="sql">SQL</button>
+          <button class="mode-chip" data-mode="dql">DQL</button>
+          <span class="qc-divider" id="viewDivider" style="display:none;"></span>
+          <span class="qc-label" id="viewLabel" style="display:none;">View</span>
+          <button class="view-chip active" data-view="code" id="viewCode" style="display:none;">Code</button>
+          <button class="view-chip" data-view="builder" id="viewBuilder" style="display:none;">Builder</button>
+          <span class="qc-spacer"></span>
+          <button class="datasource-compact">
+            <span class="ds-ic">&#x2601;</span>
+            opensearch_dashboards_sample_data_logs
+            <span style="color:var(--text-faint);font-size:10px">&#x25BE;</span>
+          </button>
+        </div>
+      </div>
+      <div class="ai-response visible" id="aiResponse">
+        <div class="ai-label">Generated PPL Query</div>
+        <div class="ai-query">source = opensearch_dashboards_sample_data_logs | where severity = "ERROR" AND kubernetes.pod.name IS NOT NULL | sort @timestamp desc</div>
+        <div class="ai-actions">
+          <button class="ai-action-btn">Edit query</button>
+          <button class="ai-action-btn">Explain</button>
+          <button class="ai-action-btn">Refine</button>
+        </div>
+      </div>
+      <div class="builder-strip" id="builderStrip">
+        <button class="builder-chip">+ Where</button>
+        <button class="builder-chip">+ Aggregation</button>
+        <button class="builder-chip">+ Group by</button>
+        <button class="builder-chip">+ Sort</button>
+      </div>
+    </div>
+    <div class="action-row">
+      <button class="action-link">Recent queries</button>
+      <button class="action-link">Saved queries</button>
+      <button class="action-link">Explore logs</button>
+      <button class="action-link">Import data</button>
+    </div>
+    <div class="content">
+      <aside class="fields-panel">
+        <div class="fields-head">Fields</div>
+        <div class="fields-search">&#x1F50D; Search fields...</div>
+        <div class="fields-scroll">
+          <div class="field-group-title">Selected</div>
+          <div class="field-item"><span class="field-badge t">t</span> body</div>
+          <div class="field-item"><span class="field-badge t">t</span> severity</div>
+          <div class="field-group-title">Discovered</div>
+          <div class="field-item"><span class="field-badge d">@</span> @timestamp</div>
+          <div class="field-item"><span class="field-badge t">t</span> app</div>
+          <div class="field-item"><span class="field-badge t">t</span> host</div>
+          <div class="field-item"><span class="field-badge o">&#x25CE;</span> kubernetes</div>
+          <div class="field-item"><span class="field-badge o">&#x25CE;</span> http</div>
+          <div class="field-item"><span class="field-badge n">#</span> severityNumber</div>
+          <div class="field-item"><span class="field-badge t">t</span> traceId</div>
+          <div class="field-item"><span class="field-badge t">t</span> spanId</div>
+          <div class="field-item"><span class="field-badge o">&#x25CE;</span> network</div>
+          <div class="field-item"><span class="field-badge o">&#x25CE;</span> error</div>
+          <div class="field-item"><span class="field-badge o">&#x25CE;</span> lambda</div>
+          <div class="field-item"><span class="field-badge t">t</span> log_level</div>
+        </div>
+      </aside>
+      <section class="results-panel">
+        <div class="results-tabs">
+          <button class="results-tab active">Logs</button>
+          <button class="results-tab">Patterns</button>
+          <button class="results-tab">Statistics</button>
+          <button class="results-tab">Visualization</button>
+        </div>
+        <div class="results-toolbar">
+          <span class="hits"><b>10</b> of <b>10</b> hits <span class="ms">&#xB7; 373 ms</span></span>
+          <div class="spacer"></div>
+          <button class="toolbar-btn">Export</button>
+          <button class="toolbar-btn">Add to dashboard</button>
+        </div>
+        <div class="log-table-wrap">
+          <table class="logs">
+            <thead><tr><th>Time</th><th>Severity</th><th>Body</th></tr></thead>
+            <tbody id="logBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+<div class="demo-label">Option B &#x2014; Integrated Search Bar</div>
+<script>
+const ROWS = [
+  { t: "Jul 9, 2026 @ 03:15:37.800", sev: "WARN", body: "Retry attempt 1/3 for batch delivery" },
+  { t: "Jul 9, 2026 @ 03:15:32.000", sev: "INFO", body: "Starting container health check" },
+  { t: "Jul 9, 2026 @ 03:15:33.500", sev: "INFO", body: "Processed 1,247 log events in batch" },
+  { t: "Jul 9, 2026 @ 03:15:40.500", sev: "INFO", body: "Memory usage: 256MB / 512MB (50%)" },
+  { t: "Jul 9, 2026 @ 03:15:35.100", sev: "INFO", body: "Connection pool refreshed: 5 active connections" },
+  { t: "Jul 9, 2026 @ 03:15:43.700", sev: "INFO", body: "Certificate rotation scheduled in 48h" },
+  { t: "Jul 9, 2026 @ 03:15:42.100", sev: "INFO", body: "New pod detected in namespace: monitoring-agent-9f8e7d" },
+  { t: "Jul 9, 2026 @ 03:15:36.200", sev: "INFO", body: "Flushing buffer: 3,891 bytes to destination" },
+  { t: "Jul 9, 2026 @ 03:15:45.300", sev: "INFO", body: "Healthcheck passed: all endpoints responding" },
+  { t: "Jul 9, 2026 @ 03:15:39.000", sev: "INFO", body: "Batch delivery successful after retry" }
+];
+function sevClass(s) { return s === "WARN" ? "warn" : s === "ERROR" ? "err" : "info"; }
+const tbody = document.getElementById("logBody");
+ROWS.forEach(row => {
+  const tr = document.createElement("tr");
+  tr.innerHTML = '<td style="white-space:nowrap;color:var(--text-muted)">' + row.t + '</td><td><span class="sev-badge ' + sevClass(row.sev) + '">' + row.sev + '</span></td><td>' + row.body + '</td>';
+  tbody.appendChild(tr);
+});
+const modeChips = document.querySelectorAll('.mode-chip');
+const viewDivider = document.getElementById('viewDivider');
+const viewLabel = document.getElementById('viewLabel');
+const viewCode = document.getElementById('viewCode');
+const viewBuilder = document.getElementById('viewBuilder');
+const queryTextarea = document.getElementById('queryTextarea');
+const modeIcon = document.getElementById('modeIcon');
+const submitBtn = document.getElementById('submitBtn');
+const aiResponse = document.getElementById('aiResponse');
+const builderStrip = document.getElementById('builderStrip');
+let currentMode = 'ai';
+let currentView = 'code';
+function updateUI() {
+  modeChips.forEach(function(c) {
+    c.classList.toggle('active', c.dataset.mode === currentMode);
+    c.classList.toggle('ai-chip', c.dataset.mode === 'ai' && currentMode === 'ai');
+  });
+  const showView = currentMode !== 'ai';
+  viewDivider.style.display = showView ? '' : 'none';
+  viewLabel.style.display = showView ? '' : 'none';
+  viewCode.style.display = showView ? '' : 'none';
+  viewBuilder.style.display = showView ? '' : 'none';
+  if (currentMode === 'ai') {
+    modeIcon.textContent = '\u2728';
+    modeIcon.style.color = 'var(--indigo)';
+    queryTextarea.classList.remove('code-font');
+    queryTextarea.placeholder = "What errors occurred in my kubernetes pods in the last hour?";
+    submitBtn.textContent = 'Ask AI';
+    aiResponse.classList.add('visible');
+    builderStrip.classList.remove('visible');
+  } else {
+    modeIcon.textContent = currentMode === 'ppl' ? '>' : currentMode === 'sql' ? '\u03BB' : '?';
+    modeIcon.style.color = 'var(--text-muted)';
+    queryTextarea.classList.add('code-font');
+    submitBtn.textContent = 'Run';
+    aiResponse.classList.remove('visible');
+    if (currentMode === 'ppl') queryTextarea.placeholder = 'source = logs | where severity = "ERROR" | sort @timestamp desc';
+    else if (currentMode === 'sql') queryTextarea.placeholder = "SELECT * FROM logs WHERE severity = 'ERROR' ORDER BY @timestamp DESC";
+    else queryTextarea.placeholder = "Search using DQL syntax...";
+    if (currentView === 'builder') { builderStrip.classList.add('visible'); }
+    else { builderStrip.classList.remove('visible'); }
+  }
+}
+modeChips.forEach(function(chip) {
+  chip.addEventListener('click', function() { currentMode = chip.dataset.mode; updateUI(); });
+});
+[viewCode, viewBuilder].forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    currentView = btn.dataset.view;
+    viewCode.classList.toggle('active', currentView === 'code');
+    viewBuilder.classList.toggle('active', currentView === 'builder');
+    updateUI();
+  });
+});
+updateUI();
+</script>
+</body>
+</html>

@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Option A Refined — Unified Top Bar</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --mono: 'Space Grotesk', ui-monospace, monospace;
+  --ink: #0a0a0a;
+  --ink-mute: rgba(10,10,10,0.46);
+  --ink-fade: rgba(10,10,10,0.24);
+  --surface: #ffffff;
+  --border: #ececef;
+  --page-bg: #f8f7fc;
+  --accent: #6366f1;
+  --accent-soft: rgba(99,102,241,0.08);
+  --accent-hover: rgba(99,102,241,0.12);
+  --shadow-sm: 0 1px 2px rgba(15,15,15,0.04), 0 4px 12px rgba(15,15,15,0.04);
+  --radius: 12px;
+  --radius-sm: 6px;
+  --pill: 999px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font);
+  background: var(--page-bg);
+  color: var(--ink);
+  padding: 32px 24px;
+  min-height: 100vh;
+}
+</style>
+</head>
+<body>
+<style>
+/* ============ Layout ============ */
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--ink-mute);
+  margin: 48px 0 8px;
+}
+.section-label:first-child { margin-top: 0; }
+.section-desc {
+  font-size: 13px;
+  color: var(--ink-mute);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.frame {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+}
+
+/* ============ App Shell ============ */
+.app {
+  display: flex;
+  height: 500px;
+}
+.sidenav {
+  width: 44px;
+  min-width: 44px;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0;
+  gap: 8px;
+}
+.sidenav-icon {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink-mute);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.sidenav-icon:hover { background: rgba(0,0,0,0.04); }
+.sidenav-icon.active { background: var(--accent-soft); color: var(--accent); }
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+</style>
+<style>
+/* ============ THE TOP BAR ============ */
+/*
+  Layout zones (left to right):
+  [Chat Title + Session Actions] | [Canvas Tabs + Tab Actions] | [Views Toggle]
+  
+  The | is a visual divider. 
+  Chat title zone is flexible (shrinks).
+  Canvas tabs zone is flexible (grows).
+  Views toggle is fixed width.
+*/
+.topbar {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 8px 0 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  gap: 0;
+  flex-shrink: 0;
+}
+
+/* --- Zone 1: Chat title + session actions --- */
+.zone-chat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  flex-shrink: 1;
+}
+.chat-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 280px;
+  line-height: 1;
+}
+.chat-title.empty {
+  color: var(--ink-fade);
+  font-weight: 500;
+}
+.chat-title.generating {
+  background: linear-gradient(90deg, var(--ink) 0%, var(--ink-fade) 50%, var(--ink) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Session action buttons (small, muted) */
+.session-actions {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-left: 4px;
+}
+
+/* --- Divider --- */
+.bar-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 10px;
+  flex-shrink: 0;
+}
+
+/* --- Zone 2: Canvas tabs + tab actions --- */
+.zone-canvas {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+.canvas-tabs-scroll {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  overflow: hidden;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Individual canvas tab */
+.ctab {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: var(--pill);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-mute);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.12s;
+  max-width: 160px;
+  overflow: hidden;
+}
+.ctab:hover {
+  background: rgba(0,0,0,0.04);
+  color: var(--ink);
+}
+.ctab.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+.ctab .tab-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ctab .tab-close {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+.ctab:hover .tab-close { opacity: 0.5; }
+.ctab .tab-close:hover { opacity: 1; background: rgba(0,0,0,0.08); }
+
+/* Tab actions: add, list */
+.tab-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+
+/* --- Zone 3: Views toggle --- */
+.zone-views {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+</style>
+<style>
+/* ============ Shared button styles ============ */
+.tb-btn {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink-mute);
+  cursor: pointer;
+  transition: all 0.12s;
+  flex-shrink: 0;
+  border: none;
+  background: none;
+  font-family: var(--font);
+}
+.tb-btn:hover {
+  background: rgba(0,0,0,0.05);
+  color: var(--ink);
+}
+.tb-btn.accent:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* Views pill button */
+.views-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: var(--pill);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-mute);
+  cursor: pointer;
+  border: 1px solid var(--border);
+  transition: all 0.15s;
+  white-space: nowrap;
+  background: none;
+  font-family: var(--font);
+}
+.views-pill:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.views-pill.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.views-pill .vpill-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.views-pill .vpill-icon {
+  display: flex; align-items: center;
+}
+
+/* ============ Content panels ============ */
+.content-area {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+.chat-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.canvas-pane {
+  width: 380px;
+  min-width: 320px;
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+}
+.chat-body {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+.chat-input-wrap {
+  padding: 10px 14px 14px;
+}
+.chat-input-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface);
+  transition: border-color 0.15s;
+}
+.chat-input-box:focus-within { border-color: var(--accent); }
+.chat-input-box input {
+  flex: 1; border: none; outline: none;
+  font-size: 13px; font-family: var(--font);
+  background: transparent; color: var(--ink);
+}
+.chat-input-box input::placeholder { color: var(--ink-fade); }
+.send-circle {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.canvas-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-mute);
+  gap: 10px;
+  padding: 24px;
+}
+.canvas-body .canvas-logo {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: var(--accent);
+}
+.canvas-body p { font-size: 12px; color: var(--ink-fade); text-align: center; }
+
+/* Message bubbles */
+.msg-row { margin-bottom: 14px; }
+.msg-bubble {
+  display: inline-block;
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.msg-row.user { text-align: right; }
+.msg-row.user .msg-bubble {
+  background: var(--accent);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+.msg-row.ai .msg-bubble {
+  background: rgba(0,0,0,0.03);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 4px;
+}
+
+/* Welcome state */
+.welcome-block {
+  text-align: center;
+  padding: 48px 20px;
+}
+.welcome-block h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.welcome-block p {
+  font-size: 13px;
+  color: var(--ink-mute);
+}
+</style>
+
+<!-- ============================================================
+     STATE 1: HOME — No chat title, canvas open
+     ============================================================ -->
+<div class="section-label">State 1 — Home (no conversation yet, canvas panel open)</div>
+<div class="section-desc">
+  Chat title zone shows environment context or is empty. Session actions hidden (nothing to share yet).
+  Canvas tabs + Views toggle visible on right. Clean and minimal.
+</div>
+<div class="frame">
+  <div class="app">
+    <div class="sidenav">
+      <div class="sidenav-icon active">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="8" cy="8" r="6"/></svg>
+      </div>
+      <div class="sidenav-icon">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="10" height="10" rx="2"/></svg>
+      </div>
+    </div>
+    <div class="main">
+      <!-- TOP BAR -->
+      <div class="topbar">
+        <!-- Zone 1: Context only (no title yet) -->
+        <div class="zone-chat">
+          <span class="chat-title empty">PROD-WEB &middot; Last 30m</span>
+        </div>
+        <div class="bar-divider"></div>
+        <!-- Zone 2: Canvas tabs -->
+        <div class="zone-canvas">
+          <div class="canvas-tabs-scroll">
+            <div class="ctab active">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="1" width="9" height="9" rx="1.5"/></svg>
+              <span class="tab-label">New Tab</span>
+              <span class="tab-close">&times;</span>
+            </div>
+          </div>
+          <div class="tab-actions">
+            <button class="tb-btn accent" title="Add tab">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6.5 2v9M2 6.5h9"/></svg>
+            </button>
+            <button class="tb-btn" title="Tab list">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 3.5h9M2 6.5h9M2 9.5h9"/></svg>
+            </button>
+          </div>
+        </div>
+        <!-- Zone 3: Views toggle -->
+        <div class="zone-views">
+          <button class="views-pill active">
+            <span class="vpill-icon">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="2" width="10" height="8" rx="1.5"/><path d="M6 2v8"/></svg>
+            </span>
+            <span>1</span>
+          </button>
+        </div>
+      </div>
+      <!-- CONTENT -->
+      <div class="content-area">
+        <div class="chat-pane">
+          <div class="chat-body">
+            <div class="welcome-block">
+              <h3>Good afternoon.</h3>
+              <p>A couple of things need a look. Start with either.</p>
+            </div>
+          </div>
+          <div class="chat-input-wrap">
+            <div class="chat-input-box">
+              <input type="text" placeholder="Ask AI anything, or type to search a page">
+              <div class="send-circle">&#8593;</div>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-pane">
+          <div class="canvas-body">
+            <div class="canvas-logo">S</div>
+            <p>This canvas is waiting for<br>your visualizations</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     STATE 2: Chat active — title generating, canvas open
+     ============================================================ -->
+<div class="section-label">State 2 — Chat Active (title generating, canvas open)</div>
+<div class="section-desc">
+  Title appears with shimmer animation. Session actions (share, menu) appear beside it.
+  Canvas tabs remain on the right.
+</div>
+<div class="frame">
+  <div class="app">
+    <div class="sidenav">
+      <div class="sidenav-icon active">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="8" cy="8" r="6"/></svg>
+      </div>
+    </div>
+    <div class="main">
+      <div class="topbar">
+        <!-- Zone 1: Title + session actions -->
+        <div class="zone-chat">
+          <span class="chat-title generating">Investigate: p99 latency > 1.5s on checkout</span>
+          <div class="session-actions">
+            <button class="tb-btn" title="Share session">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 8.5v2a1 1 0 001 1h4a1 1 0 001-1v-2"/><path d="M6.5 2v6M4.5 4l2-2 2 2"/></svg>
+            </button>
+            <button class="tb-btn" title="Session actions">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="3" r="0.8" fill="currentColor"/><circle cx="6.5" cy="6.5" r="0.8" fill="currentColor"/><circle cx="6.5" cy="10" r="0.8" fill="currentColor"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="bar-divider"></div>
+        <!-- Zone 2: Canvas tabs -->
+        <div class="zone-canvas">
+          <div class="canvas-tabs-scroll">
+            <div class="ctab active">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="1" width="9" height="9" rx="1.5"/></svg>
+              <span class="tab-label">New Tab</span>
+              <span class="tab-close">&times;</span>
+            </div>
+          </div>
+          <div class="tab-actions">
+            <button class="tb-btn accent" title="Add tab">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6.5 2v9M2 6.5h9"/></svg>
+            </button>
+            <button class="tb-btn" title="Tab list">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 3.5h9M2 6.5h9M2 9.5h9"/></svg>
+            </button>
+          </div>
+        </div>
+        <!-- Zone 3: Views -->
+        <div class="zone-views">
+          <button class="views-pill active">
+            <span class="vpill-icon">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="2" width="10" height="8" rx="1.5"/><path d="M6 2v8"/></svg>
+            </span>
+            <span>1</span>
+          </button>
+        </div>
+      </div>
+      <!-- CONTENT -->
+      <div class="content-area">
+        <div class="chat-pane">
+          <div class="chat-body">
+            <div class="msg-row user"><div class="msg-bubble">Why is p99 latency above 1.5s on checkout (prod-web)?</div></div>
+            <div class="msg-row ai"><div class="msg-bubble">Picking this up. Here's the rule that fired and where it stands right now. The checkout-p99-latency-prod rule has been firing for 22 minutes, current P99 is 1.82s against a 1.5s threshold.</div></div>
+          </div>
+          <div class="chat-input-wrap">
+            <div class="chat-input-box">
+              <input type="text" placeholder="Ask anything. Type / for actions.">
+              <div class="send-circle">&#8593;</div>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-pane">
+          <div class="canvas-body">
+            <div class="canvas-logo">S</div>
+            <p>This canvas is waiting for<br>your visualizations</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     STATE 3: Chat active, multiple canvas tabs, canvas open
+     ============================================================ -->
+<div class="section-label">State 3 — Multiple canvas tabs (crowded bar stress test)</div>
+<div class="section-desc">
+  This shows the bar under pressure: a full title, session actions, 3 canvas tabs, tab actions, and views toggle.
+  The canvas tabs scroll/truncate gracefully. Everything stays on one line.
+</div>
+<div class="frame">
+  <div class="app">
+    <div class="sidenav">
+      <div class="sidenav-icon active">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="8" cy="8" r="6"/></svg>
+      </div>
+    </div>
+    <div class="main">
+      <div class="topbar">
+        <!-- Zone 1 -->
+        <div class="zone-chat">
+          <span class="chat-title">Investigate: p99 latency > 1.5s</span>
+          <div class="session-actions">
+            <button class="tb-btn" title="Share session">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 8.5v2a1 1 0 001 1h4a1 1 0 001-1v-2"/><path d="M6.5 2v6M4.5 4l2-2 2 2"/></svg>
+            </button>
+            <button class="tb-btn" title="Session actions">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="3" r="0.8" fill="currentColor"/><circle cx="6.5" cy="6.5" r="0.8" fill="currentColor"/><circle cx="6.5" cy="10" r="0.8" fill="currentColor"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="bar-divider"></div>
+        <!-- Zone 2: Multiple tabs -->
+        <div class="zone-canvas">
+          <div class="canvas-tabs-scroll">
+            <div class="ctab active">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="1" width="9" height="9" rx="1.5"/></svg>
+              <span class="tab-label">Latency P99</span>
+              <span class="tab-close">&times;</span>
+            </div>
+            <div class="ctab">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="1" width="9" height="9" rx="1.5"/></svg>
+              <span class="tab-label">Traces</span>
+              <span class="tab-close">&times;</span>
+            </div>
+            <div class="ctab">
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="1" width="9" height="9" rx="1.5"/></svg>
+              <span class="tab-label">Service Map</span>
+              <span class="tab-close">&times;</span>
+            </div>
+          </div>
+          <div class="tab-actions">
+            <button class="tb-btn accent" title="Add tab">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6.5 2v9M2 6.5h9"/></svg>
+            </button>
+            <button class="tb-btn" title="Tab list (3)">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 3.5h9M2 6.5h9M2 9.5h9"/></svg>
+            </button>
+          </div>
+        </div>
+        <!-- Zone 3 -->
+        <div class="zone-views">
+          <button class="views-pill active">
+            <span class="vpill-icon">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="2" width="10" height="8" rx="1.5"/><path d="M6 2v8"/></svg>
+            </span>
+            <span>3</span>
+          </button>
+        </div>
+      </div>
+      <!-- CONTENT -->
+      <div class="content-area">
+        <div class="chat-pane">
+          <div class="chat-body">
+            <div class="msg-row user"><div class="msg-bubble">Show me the latency breakdown by service</div></div>
+            <div class="msg-row ai"><div class="msg-bubble">Here's the P99 latency broken down by downstream service. The payment-gateway is the main contributor at 1.4s.</div></div>
+            <div class="msg-row user"><div class="msg-bubble">Open the service map too</div></div>
+            <div class="msg-row ai"><div class="msg-bubble">I've opened the service map in a new canvas tab. You can see checkout depends on 4 downstream services.</div></div>
+          </div>
+          <div class="chat-input-wrap">
+            <div class="chat-input-box">
+              <input type="text" placeholder="Ask anything. Type / for actions.">
+              <div class="send-circle">&#8593;</div>
+            </div>
+          </div>
+        </div>
+        <div class="canvas-pane">
+          <div class="canvas-body">
+            <div class="canvas-logo" style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);">
+              <svg width="20" height="20" fill="none" stroke="#16a34a" stroke-width="1.5"><polyline points="2,14 6,8 10,11 14,4 18,7"/></svg>
+            </div>
+            <p style="font-weight:500; color:var(--ink-mute);">Latency P99</p>
+            <p>Visualization loaded</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     STATE 4: Chat active, canvas COLLAPSED (panel hidden)
+     ============================================================ -->
+<div class="section-label">State 4 — Canvas collapsed (full-width chat)</div>
+<div class="section-desc">
+  When the canvas panel is collapsed, the right side simplifies dramatically.
+  Canvas tabs disappear (they're inside the closed panel). The views pill becomes the way to re-open.
+  Title + session actions get more room.
+</div>
+<div class="frame">
+  <div class="app">
+    <div class="sidenav">
+      <div class="sidenav-icon active">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="8" cy="8" r="6"/></svg>
+      </div>
+    </div>
+    <div class="main">
+      <div class="topbar">
+        <!-- Zone 1: Gets full space now -->
+        <div class="zone-chat" style="flex:1;">
+          <span class="chat-title">Investigate: p99 latency > 1.5s on checkout (prod-web)</span>
+          <div class="session-actions">
+            <button class="tb-btn" title="Share session">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 8.5v2a1 1 0 001 1h4a1 1 0 001-1v-2"/><path d="M6.5 2v6M4.5 4l2-2 2 2"/></svg>
+            </button>
+            <button class="tb-btn" title="Session actions">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="3" r="0.8" fill="currentColor"/><circle cx="6.5" cy="6.5" r="0.8" fill="currentColor"/><circle cx="6.5" cy="10" r="0.8" fill="currentColor"/></svg>
+            </button>
+          </div>
+        </div>
+        <!-- No divider, no canvas tabs when collapsed -->
+        <!-- Zone 3: Views pill (inactive = collapsed) -->
+        <div class="zone-views">
+          <button class="views-pill" title="Open canvas (3 tabs)">
+            <span class="vpill-icon">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="2" width="10" height="8" rx="1.5"/><path d="M6 2v8"/></svg>
+            </span>
+            <span>3</span>
+          </button>
+        </div>
+      </div>
+      <!-- Full-width chat -->
+      <div class="content-area">
+        <div class="chat-pane">
+          <div class="chat-body">
+            <div class="msg-row user"><div class="msg-bubble">Why is p99 latency above 1.5s on checkout (prod-web)?</div></div>
+            <div class="msg-row ai"><div class="msg-bubble">Picking this up. Here's the rule that fired and where it stands right now. The checkout-p99-latency-prod rule triggered 22 minutes ago. Current P99 is 1.82s against a 1.5s threshold. The rule evaluates every 1 minute and requires 3 consecutive breaches before firing.</div></div>
+            <div class="msg-row user"><div class="msg-bubble">What's causing it?</div></div>
+            <div class="msg-row ai"><div class="msg-bubble">Looking at the traces from the last 30 minutes, the payment-gateway downstream is the primary contributor. 78% of slow requests have payment-gateway latency above 800ms. This started around the same time a deployment was pushed to payment-gateway-v2.4.1.</div></div>
+          </div>
+          <div class="chat-input-wrap">
+            <div class="chat-input-box">
+              <input type="text" placeholder="Ask anything. Type / for actions.">
+              <div class="send-circle">&#8593;</div>
+            </div>
+          </div>
+        </div>
+        <!-- No canvas-pane when collapsed -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     STATE 5: Home, canvas COLLAPSED
+     ============================================================ -->
+<div class="section-label">State 5 — Home + canvas collapsed (simplest state)</div>
+<div class="section-desc">
+  The absolute simplest state. No title, no canvas tabs visible. Just the env context on the left and 
+  a views pill on the right to open the canvas when needed.
+</div>
+<div class="frame">
+  <div class="app" style="height:300px;">
+    <div class="sidenav">
+      <div class="sidenav-icon active">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="8" cy="8" r="6"/></svg>
+      </div>
+    </div>
+    <div class="main">
+      <div class="topbar">
+        <div class="zone-chat" style="flex:1;">
+          <span class="chat-title empty">PROD-WEB &middot; Last 30m</span>
+        </div>
+        <div class="zone-views">
+          <button class="views-pill" title="Open canvas">
+            <span class="vpill-icon">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="2" width="10" height="8" rx="1.5"/><path d="M6 2v8"/></svg>
+            </span>
+            <span>1</span>
+          </button>
+        </div>
+      </div>
+      <div class="content-area">
+        <div class="chat-pane">
+          <div class="chat-body">
+            <div class="welcome-block">
+              <h3>Good afternoon.</h3>
+              <p>A couple of things need a look.</p>
+            </div>
+          </div>
+          <div class="chat-input-wrap">
+            <div class="chat-input-box">
+              <input type="text" placeholder="Ask AI anything, or type to search a page">
+              <div class="send-circle">&#8593;</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     ANATOMY DIAGRAM
+     ============================================================ -->
+<div class="section-label">Anatomy — Zone Layout</div>
+<div class="section-desc">
+  The bar is divided into 3 logical zones separated by visual dividers.
+  Zone 2 (canvas) only appears when the canvas panel is open.
+</div>
+<div class="frame" style="padding:24px;">
+  <div style="display:flex; align-items:center; height:44px; border:2px dashed var(--border); border-radius:10px; padding:0 12px; gap:0; font-size:11px; font-family:var(--mono);">
+    <!-- Zone 1 -->
+    <div style="flex-shrink:1; min-width:0; display:flex; align-items:center; gap:6px; padding:6px 10px; background:rgba(99,102,241,0.05); border-radius:6px; border:1px dashed var(--accent);">
+      <span style="color:var(--accent); font-weight:600;">Zone 1</span>
+      <span style="color:var(--ink-mute);">Title</span>
+      <span style="color:var(--ink-fade);">|</span>
+      <span style="color:var(--ink-mute);">Share</span>
+      <span style="color:var(--ink-mute);">&#8943;</span>
+    </div>
+    <div style="width:1px; height:18px; background:var(--border); margin:0 8px;"></div>
+    <!-- Zone 2 -->
+    <div style="flex:1; min-width:0; display:flex; align-items:center; gap:6px; padding:6px 10px; background:rgba(16,185,129,0.05); border-radius:6px; border:1px dashed #10b981;">
+      <span style="color:#10b981; font-weight:600;">Zone 2</span>
+      <span style="color:var(--ink-mute);">Tab1</span>
+      <span style="color:var(--ink-mute);">Tab2</span>
+      <span style="color:var(--ink-mute);">Tab3</span>
+      <span style="color:var(--ink-fade);">|</span>
+      <span style="color:var(--ink-mute);">+</span>
+      <span style="color:var(--ink-mute);">&#9776;</span>
+    </div>
+    <div style="width:1px; height:18px; background:var(--border); margin:0 8px;"></div>
+    <!-- Zone 3 -->
+    <div style="flex-shrink:0; display:flex; align-items:center; gap:6px; padding:6px 10px; background:rgba(217,119,6,0.05); border-radius:6px; border:1px dashed #d97706;">
+      <span style="color:#d97706; font-weight:600;">Zone 3</span>
+      <span style="color:var(--ink-mute);">Views &#9638; N</span>
+    </div>
+  </div>
+  <div style="margin-top:16px; font-size:12px; color:var(--ink-mute); line-height:1.7;">
+    <strong>Zone 1 (Chat):</strong> Title (truncates with ellipsis) + Share button + Session menu (&#8943;)<br>
+    <strong>Zone 2 (Canvas):</strong> Tab pills (overflow hidden, scroll) + Add tab (+) + Tab list (&#9776;) — <em>hidden when canvas collapsed</em><br>
+    <strong>Zone 3 (Views):</strong> Panel icon + count pill — toggles canvas open/closed. Active state when panel is visible.
+  </div>
+</div>
+
+<!-- ============================================================
+     BEHAVIOR NOTES
+     ============================================================ -->
+<div class="section-label">Behavior Rules</div>
+<div class="frame" style="padding:24px;">
+  <div style="font-size:13px; line-height:1.8; color:var(--ink);">
+    <strong>Title lifecycle:</strong><br>
+    1. Home state &rarr; Zone 1 shows env context (muted, light weight)<br>
+    2. First user message sent &rarr; Zone 1 stays as env context<br>
+    3. AI responds &rarr; Title generates with shimmer animation, replaces env context<br>
+    4. Title settles &rarr; Static, truncated with ellipsis if too long<br>
+    <br>
+    <strong>Canvas panel toggle:</strong><br>
+    &bull; Panel open &rarr; Zones 1 + 2 + 3 all visible. Views pill shows "active" state.<br>
+    &bull; Panel closed &rarr; Zone 2 disappears entirely. Zone 1 gets more room. Views pill is "inactive" (border only).<br>
+    <br>
+    <strong>Session actions:</strong><br>
+    &bull; Only appear once a conversation has started (title exists)<br>
+    &bull; Share button: opens share dialog<br>
+    &bull; Menu (&#8943;): rename, duplicate, delete, export<br>
+    <br>
+    <strong>Tab overflow:</strong><br>
+    &bull; Tabs beyond available width are hidden behind the Tab List button (&#9776;)<br>
+    &bull; Tab List button shows a dropdown with all tabs for switching<br>
+    &bull; Active tab is always visible (scroll into view)<br>
+  </div>
+</div>
+
+<div style="height:48px;"></div>
+</body>
+</html>
