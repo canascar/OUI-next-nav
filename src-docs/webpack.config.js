@@ -89,7 +89,16 @@ const webpackConfig = {
             options: { babelrc: false, ...babelConfig },
           },
         ]),
-        exclude: [/node_modules/, /packages(\/|\\)react-datepicker/],
+        exclude: [
+          /node_modules/,
+          /packages(\/|\\)react-datepicker/,
+          // opensearch-datemath is a plain CommonJS module. Running it through
+          // babel-loader injects a core-js `import` (useBuiltIns: 'usage'),
+          // which makes webpack treat the file as a strict ES module and throw
+          // on its `module.exports =` assignment — blanking the whole bundle.
+          // Exclude it so it stays CommonJS (matches the react-datepicker case).
+          /packages(\/|\\)opensearch-datemath/,
+        ],
       },
       {
         test: /\.scss$/,
@@ -183,8 +192,10 @@ const webpackConfig = {
             }
           : undefined,
         client: {
-          // Disable overlay for runtime errors as they cause ResizeObservable to throw loop errors
-          overlay: { runtimeErrors: false },
+          // Disable overlay for runtime errors as they cause ResizeObservable to throw loop errors.
+          // Also hide the warnings overlay (e.g. the pre-existing @opensearch/datemath
+          // default-export warnings) so only build errors surface.
+          overlay: { runtimeErrors: false, warnings: false },
         },
       }
     : undefined,
