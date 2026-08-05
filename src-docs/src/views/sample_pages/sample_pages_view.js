@@ -110,7 +110,9 @@ const renderPage = (
           <EmptySessionPageV6
             onStartThread={(prompt) => {
               // Navigate to thread with just user prompt (no response yet)
-              const threadKey = `thread-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+              const threadKey = `thread-${Date.now()}-${Math.random()
+                .toString(36)
+                .slice(2, 9)}`;
               const messages = prompt
                 ? [{ role: 'user', author: 'You', content: prompt }]
                 : [];
@@ -583,7 +585,10 @@ export const SamplePagesView = () => {
         ...prev,
         tabs: [...prev.tabs, newTab],
         activeTabId: newTab.id,
-        threadPanelState: prev.threadPanelState === 'full-screen' ? 'side-by-side' : prev.threadPanelState,
+        threadPanelState:
+          prev.threadPanelState === 'full-screen'
+            ? 'side-by-side'
+            : prev.threadPanelState,
       };
     });
   }, []);
@@ -1327,7 +1332,9 @@ export const SamplePagesView = () => {
           setExpandAnim(null);
           skipPanelOpenRef.current = true;
           setActivePage('thread');
-          const threadKey = `thread-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+          const threadKey = `thread-${Date.now()}-${Math.random()
+            .toString(36)
+            .slice(2, 9)}`;
           if (createThreadRef.current) {
             const newKey = createThreadRef.current();
             setPendingThread({
@@ -1338,11 +1345,15 @@ export const SamplePagesView = () => {
             });
           }
           // Set up thread session for SessionContainer
-          const sourceTab = sourcePage ? {
-            id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-            pageKey: sourcePage,
-            title: displayTitle || sourcePage,
-          } : null;
+          const sourceTab = sourcePage
+            ? {
+                id: `tab-${Date.now()}-${Math.random()
+                  .toString(36)
+                  .slice(2, 9)}`,
+                pageKey: sourcePage,
+                title: displayTitle || sourcePage,
+              }
+            : null;
           setThreadSession({
             id: 'thread-session',
             threadKey,
@@ -1360,7 +1371,9 @@ export const SamplePagesView = () => {
         // Fallback: no animation
         skipPanelOpenRef.current = true;
         setActivePage('thread');
-        const threadKey = `thread-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+        const threadKey = `thread-${Date.now()}-${Math.random()
+          .toString(36)
+          .slice(2, 9)}`;
         if (createThreadRef.current) {
           const newKey = createThreadRef.current();
           setPendingThread({
@@ -1371,11 +1384,13 @@ export const SamplePagesView = () => {
           });
         }
         // Set up thread session for SessionContainer
-        const sourceTab = sourcePage ? {
-          id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-          pageKey: sourcePage,
-          title: displayTitle || sourcePage,
-        } : null;
+        const sourceTab = sourcePage
+          ? {
+              id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+              pageKey: sourcePage,
+              title: displayTitle || sourcePage,
+            }
+          : null;
         setThreadSession({
           id: 'thread-session',
           threadKey,
@@ -1489,7 +1504,9 @@ export const SamplePagesView = () => {
           display: 'flex',
         }}>
         <div
-          className={activePage === 'thread' ? undefined : 'samplePagesContentPanel'}
+          className={
+            activePage === 'thread' ? undefined : 'samplePagesContentPanel'
+          }
           style={{ flex: 1, minWidth: 0, position: 'relative' }}>
           {renderPage(
             activePage,
@@ -1900,7 +1917,10 @@ export const SessionPagesView = ({ variant } = {}) => {
           // collapse the canvas with no tab. Widget-launched chats keep their
           // canvas page side-by-side.
           threadPanelState: hasFindings ? 'full-screen' : 'side-by-side',
-          title: sessionTitle || title || (prompt ? prompt.slice(0, 40) : 'New Session'),
+          title:
+            sessionTitle ||
+            title ||
+            (prompt ? prompt.slice(0, 40) : 'New Session'),
         };
         if (pageKey && !hasFindings) {
           const pageEntry = SOURCE_PAGE_MOCK[pageKey];
@@ -2190,7 +2210,11 @@ export const SessionPagesView = ({ variant } = {}) => {
   return (
     <div
       className={`samplePagesWrapper${
-        isSessionView && variant && !(activeSession && activeSession.threadKey === 'overview-home') ? ' samplePagesWrapper--noPattern' : ''
+        isSessionView &&
+        variant &&
+        !(activeSession && activeSession.threadKey === 'overview-home')
+          ? ' samplePagesWrapper--noPattern'
+          : ''
       }`}
       style={{
         display: 'flex',
@@ -2200,7 +2224,7 @@ export const SessionPagesView = ({ variant } = {}) => {
         right: 0,
         bottom: 0,
       }}>
-      {(variant === 'v4' || isV5Variant) ? (
+      {variant === 'v4' || isV5Variant ? (
         <LeftNavV4
           activePage={activeView}
           activeSessionId={sessionState.activeSessionId}
@@ -2279,7 +2303,7 @@ export const SessionPagesView = ({ variant } = {}) => {
           flex: 1,
           overflow: 'hidden',
           display: 'flex',
-          paddingLeft: (variant === 'v4' || isV5Variant) ? 14 : 0,
+          paddingLeft: variant === 'v4' || isV5Variant ? 14 : 0,
         }}>
         {renderMainContent()}
       </div>
