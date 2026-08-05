@@ -143,6 +143,15 @@ export const GuidePageHeader: React.FunctionComponent<{}> = () => {
               Onboarding
             </OuiContextMenuItem>,
             <OuiContextMenuItem
+              key="first-run"
+              icon="empty"
+              onClick={() => {
+                setSamplePagesPopoverOpen(false);
+                window.location.hash = '/first-run?firstrun=1';
+              }}>
+              First run
+            </OuiContextMenuItem>,
+            <OuiContextMenuItem
               key="day-n"
               icon="empty"
               onClick={() => {

@@ -40,6 +40,7 @@ import { LoginPage } from './views/sample_pages/login_page';
 import { OnboardingWizardPage } from './views/sample_pages/onboarding_wizard_page';
 import { MarketingPage } from './views/sample_pages/marketing_page';
 import { FirstRunPage } from './views/sample_pages/first_run_page';
+import { FirstRunView } from './views/sample_pages/first_run_view';
 
 registerTheme('light', [themeLight]);
 registerTheme('dark', [themeDark]);
@@ -91,10 +92,18 @@ render(
             )}
           />
           <Route
-            path="/first-run"
+            path="/first-run-discovery"
             render={() => (
               <LinkWrapper>
                 <FirstRunPage />
+              </LinkWrapper>
+            )}
+          />
+          <Route
+            path="/first-run"
+            render={() => (
+              <LinkWrapper>
+                <FirstRunView />
               </LinkWrapper>
             )}
           />
