@@ -857,9 +857,8 @@ export const McpHomeGreeting = ({
   return (
     <div className="mcpHome">
       <div className="mcpHome__inner">
-        <div className="mcpHome__eyebrow">prod-web · last 30m</div>
 
-        {/* Olly, with a green dot for a healthy connection — the same mascot row
+        {/* Olly — the same mascot row
             Overview home opens with. */}
         <div className="v6Scenario__mascotRow mcpHome__mascotRow">
           <OuiToolTip content="Hi, I'm Olly" position="right">
@@ -889,7 +888,6 @@ export const McpHomeGreeting = ({
               />
             </div>
           </OuiToolTip>
-          <StatusDot color="green" />
         </div>
 
         <h1 className="mcpHome__title">Good afternoon.</h1>
