@@ -273,7 +273,7 @@ export const SessionContainer = ({
       onUpdateSession({ threadPanelState: 'full-screen' });
       return;
     }
-    const updates = { threadPanelState: 'side-by-side' };
+    const updates = { threadPanelState: 'side-by-side', threadPanelWidth: 34 };
     if (session.tabs.length === 0) {
       // Nothing to come back to — open on a fresh New Tab.
       const newTab = { id: makeTabId(), pageKey: 'new-tab', title: 'New Tab' };
