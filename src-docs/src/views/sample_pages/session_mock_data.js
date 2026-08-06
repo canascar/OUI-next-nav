@@ -297,6 +297,7 @@ export const DNS_TIMEOUT_SESSION = {
   tabs: [{ id: 'tab-logs-dns-1', pageKey: 'logs', title: 'DNS timeout logs' }],
   activeTabId: 'tab-logs-dns-1',
   createdAt: Date.now() - 10800000, // 3 hours ago
+  isRunning: true,
   hidden: true,
 };
 
