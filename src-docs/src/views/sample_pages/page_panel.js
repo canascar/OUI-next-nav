@@ -273,7 +273,7 @@ const TabBar = ({
 
         <OuiToolTip content="Add new tab" position="bottom">
           <OuiButtonIcon
-            iconType="plus"
+            iconType="cross"
             aria-label="Add new tab"
             size="xs"
             color="text"

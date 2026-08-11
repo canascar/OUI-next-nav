@@ -108,7 +108,7 @@
 .overviewHomePage__widgetGrid--editing .overviewHomePage__widgetWrap {
   position: relative;
   border: 2px dashed lightOrDarkTheme(rgba(91, 79, 207, 0.35), rgba(168, 156, 245, 0.30));
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: grab;
   animation: overviewWidgetJiggle 0.3s ease-in-out infinite alternate;
 
@@ -178,7 +178,7 @@
   gap: 6px;
   min-height: 120px;
   border: 2px dashed lightOrDarkTheme(rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.12));
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
   color: lightOrDarkTheme(rgba(0, 0, 0, 0.35), rgba(255, 255, 255, 0.35));
   font-size: 11px;
@@ -212,7 +212,7 @@
   align-items: center;
   gap: 6px;
   padding: 8px 12px;
-  border-radius: 5px;
+  border-radius: 8px;
   background: lightOrDarkTheme(rgba(0, 0, 0, 0.03), rgba(255, 255, 255, 0.06));
   border: 1px solid lightOrDarkTheme(rgba(0, 0, 0, 0.06), rgba(255, 255, 255, 0.08));
 }
@@ -262,7 +262,7 @@
   align-items: center;
   gap: 10px;
   padding: 8px 12px;
-  border-radius: 5px;
+  border-radius: 8px;
   border: none;
   background: none;
   cursor: pointer;
@@ -318,7 +318,7 @@
   flex-direction: column;
   gap: 0;
   padding: 10px 14px;
-  border-radius: 5px;
+  border-radius: 8px;
   background: lightOrDarkTheme(rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.03));
   border: 1px solid lightOrDarkTheme(rgba(120, 120, 165, 0.12), rgba(255, 255, 255, 0.06));
   cursor: pointer;
@@ -469,7 +469,7 @@
     width: 100%;
     flex: 1;
     padding: 12px 14px;
-    border-radius: 5px;
+    border-radius: 8px;
     display: flex;
     flex-direction: column;
     position: relative;

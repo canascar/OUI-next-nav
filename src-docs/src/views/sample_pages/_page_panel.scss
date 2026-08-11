@@ -69,6 +69,34 @@
   flex-shrink: 0;
   margin-left: 2px;
   margin-right: 8px;
+  transition: background-color 180ms ease, transform 180ms ease;
+
+  // Active state — chat is open. Blue tinted background.
+  &--active {
+    background-color: rgba($ouiColorPrimary, 0.10);
+    border-radius: 6px;
+
+    // Subtle breathe animation on hover — icon pulses gently
+    &:hover {
+      animation: chatTogglePulse 800ms cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+    }
+  }
+
+  // Inactive state — chat is closed. Plain icon, no highlight.
+  &:not(.pagePanel__chatToggle--active) {
+    color: $ouiTextColor;
+    opacity: 0.65;
+
+    &:hover {
+      opacity: 1;
+      transform: scale(1.1);
+    }
+  }
+}
+
+@keyframes chatTogglePulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.12); }
 }
 
 // ============================================================
@@ -100,9 +128,10 @@
     content: '';
     position: absolute;
     bottom: -1px;
-    left: 0;
-    right: 0;
-    height: 2px;
+    left: 10px;
+    right: 10px;
+    height: 3px;
+    border-radius: 1.5px;
     background-color: transparent;
     transition: background-color 120ms ease;
   }
@@ -127,16 +156,22 @@
     color: $ouiTextColor;
   }
 
-  // Active tab — ink text, medium weight, quiet underline
+  // Active tab — primary-colored text, medium weight, inset underline
   &--active {
-    color: $ouiTextColor;
+    color: $ouiColorPrimary;
 
     &::before {
       background-color: $ouiColorPrimary;
     }
 
     .pagePanel__tabTitle {
-      font-weight: $ouiFontWeightSemiBold;
+      font-weight: $ouiFontWeightMedium;
+      color: $ouiColorPrimary;
+    }
+
+    // Icon tints to match
+    > .ouiIcon {
+      color: $ouiColorPrimary;
     }
   }
 
@@ -157,12 +192,12 @@
 // Tab title text
 .pagePanel__tabTitle {
   font-size: $ouiFontSizeXS;
-  color: $ouiTextColor;
   max-width: 140px;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  letter-spacing: -0.1px;
 }
 
 // The type icon holds its size while the title absorbs the squeeze.
@@ -170,7 +205,7 @@
   flex: none;
 }
 
-// Close button — only visible on the active tab; hover state for feedback
+// Close button — only visible on the active tab; subdued color for balance
 .pagePanel__tabClose {
   display: none;
   align-items: center;
@@ -180,15 +215,20 @@
   border: none;
   background: none;
   padding: 0;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
-  border-radius: $ouiBorderRadius;
+  border-radius: 5px;
+  color: lightOrDarkTheme(rgba(10, 10, 10, 0.4), rgba(250, 250, 250, 0.4));
+  transition: color 120ms ease, background-color 120ms ease;
 
   .pagePanel__tab--active & {
     display: flex;
   }
 
   &:hover {
-    background-color: rgba($ouiColorDarkestShade, 0.1);
+    color: $ouiTextColor;
+    background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.08), rgba(255, 255, 255, 0.1));
   }
 }
 
@@ -212,9 +252,24 @@
 .pagePanel__addTabButton {
   flex-shrink: 0;
   opacity: 0.5;
+  transition: opacity 150ms ease, transform 200ms cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  // Rotate the cross icon 45° to render it as a plus with matching stroke weight
+  .ouiIcon {
+    transform: rotate(45deg);
+    transition: transform 200ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
 
   &:hover {
     opacity: 1;
+
+    .ouiIcon {
+      transform: rotate(135deg);
+    }
+  }
+
+  &:active {
+    transform: scale(0.9);
   }
 }
 

@@ -2342,7 +2342,8 @@ export const SessionPagesView = ({ variant } = {}) => {
                 aria-label="Close sessions"
                 color="text"
                 display="empty"
-                size="s"
+                size="xs"
+                className="sessionsPanel__close"
                 onClick={() => setSessionsPanelOpen(false)}
               />
             </div>
