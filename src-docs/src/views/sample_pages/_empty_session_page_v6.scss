@@ -851,7 +851,7 @@
   font-size: 12px;
   font-weight: 500;
   font-family: inherit;
-  color: lightOrDarkTheme(rgba(0, 0, 0, 0.62), rgba(255, 255, 255, 0.62));
+  color: $ouiColorDarkShade;
   background: lightOrDarkTheme(rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.04));
   border: 1px solid lightOrDarkTheme(rgba(120, 120, 165, 0.14), rgba(255, 255, 255, 0.08));
   cursor: pointer;

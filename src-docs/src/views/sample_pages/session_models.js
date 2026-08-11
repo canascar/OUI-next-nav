@@ -14,6 +14,7 @@ import {
   AlertListPageMock,
   LogsPageMock,
   EmptyDiscoverPageMock,
+  NewPplLogsPageMock,
   CorrelatedLogsDiscoverMock,
   AppMapPageMock,
   AppTracesPageMock,
@@ -110,6 +111,7 @@ export const SOURCE_PAGE_MOCK = {
   metrics: { component: ConnectionPoolPageMock, title: 'Metrics' },
   discover: { component: LogsPageMock, title: 'Discover' },
   'discover-log': { component: EmptyDiscoverPageMock, title: 'Discover (log)' },
+  'new-ppl-log': { component: NewPplLogsPageMock, title: 'Logs (new PPL)' },
   'discover-log-correlated': {
     component: CorrelatedLogsDiscoverMock,
     title: 'Correlated Logs',

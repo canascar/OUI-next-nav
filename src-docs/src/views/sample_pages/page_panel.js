@@ -19,7 +19,6 @@ import {
 import { SOURCE_PAGE_MOCK } from './session_models';
 import { DetailPageHeader } from './detail_page_header';
 import { NewTabPage } from './new_tab_page';
-import { OllyAvatar } from './olly_avatar';
 
 /**
  * Icon mapping for page keys.
@@ -36,6 +35,7 @@ export const PAGE_TAB_ICONS = {
   metrics: 'visLine',
   discover: 'navDiscover',
   'discover-log': 'navDiscover',
+  'new-ppl-log': 'navDiscover',
   'discover-log-correlated': 'navDiscover',
   'discover-metric': 'visArea',
   'app-map': 'navServiceMap',
@@ -50,7 +50,10 @@ export const PAGE_TAB_ICONS = {
 };
 
 /**
- * TabBar — Renders the horizontal tab bar with individual tabs and an add-tab button.
+ * TabBar — [collapse chevron] [tabs…] [＋] [spacer] [☰ list].
+ *
+ * The tab list never wraps or scrolls horizontally: the ☰ dropdown is the
+ * overflow story.
  *
  * @param {Object} props
  * @param {import('./session_models').PageTab[]} props.tabs - Open tabs
@@ -58,6 +61,7 @@ export const PAGE_TAB_ICONS = {
  * @param {(tabId: string) => void} props.onTabSelect - Tab selection handler
  * @param {(tabId: string) => void} props.onTabClose - Tab close handler
  * @param {() => void} props.onAddTab - Add new tab handler
+ * @param {() => void} props.onCollapsePanel - Closes the panel, keeping tab state
  */
 const TabBar = ({
   tabs,
@@ -66,14 +70,12 @@ const TabBar = ({
   onTabClose,
   onAddTab,
   onReorderTabs,
-  onExpandChat,
-  aiButtonHighlight,
-  aiButtonMessage,
-  onDismissAiPopover,
+  onCollapsePanel,
+  onToggleChat,
+  isChatOpen,
 }) => {
   const tabListRef = useRef(null);
   const [isListOpen, setIsListOpen] = useState(false);
-  const [tabFade, setTabFade] = useState(''); // '', 'right', 'left', 'both'
   // Pointer-based drag-to-reorder (browser-style): the dragged tab follows the
   // cursor and neighbors slide aside to open the gap. Native HTML5 DnD is
   // avoided because hiding its ghost / toggling pointer-events is unreliable.
@@ -175,28 +177,6 @@ const TabBar = ({
     return 0;
   };
 
-  // Check tab list scroll state
-  const updateTabFade = useCallback(() => {
-    const el = tabListRef.current;
-    if (!el) return;
-    const { scrollLeft, scrollWidth, clientWidth } = el;
-    const hasOverflow = scrollWidth > clientWidth + 2;
-    if (!hasOverflow) {
-      setTabFade('');
-      return;
-    }
-    const atStart = scrollLeft < 4;
-    const atEnd = scrollLeft + clientWidth >= scrollWidth - 4;
-    if (atStart && !atEnd) setTabFade('right');
-    else if (!atStart && atEnd) setTabFade('left');
-    else if (!atStart && !atEnd) setTabFade('both');
-    else setTabFade('');
-  }, []);
-
-  useEffect(() => {
-    updateTabFade();
-  }, [tabs, updateTabFade]);
-
   const handleKeyDown = (e, tabId, index) => {
     const tabElements = tabListRef.current?.querySelectorAll('[role="tab"]');
     if (!tabElements) return;
@@ -222,70 +202,80 @@ const TabBar = ({
 
   return (
     <div className="pagePanel__tabBar">
-      {onExpandChat && (
-        <div className="pagePanel__aiButton" onClick={onExpandChat}>
-          <OuiIcon type="chatLeft" size="m" />
-        </div>
+      {/* Chat bubble toggle — left of tabs */}
+      {onToggleChat && (
+        <OuiToolTip content={isChatOpen ? 'Hide chat' : 'Show chat'} position="bottom">
+          <OuiButtonIcon
+            iconType="editorComment"
+            aria-label={isChatOpen ? 'Hide chat' : 'Show chat'}
+            size="xs"
+            color={isChatOpen ? 'primary' : 'text'}
+            display="empty"
+            onClick={onToggleChat}
+            className={`pagePanel__chatToggle${isChatOpen ? ' pagePanel__chatToggle--active' : ''}`}
+          />
+        </OuiToolTip>
       )}
+
       <div
         className={`pagePanel__tabList${
-          tabFade ? ` pagePanel__tabList--fade-${tabFade}` : ''
-        }${drag ? ' pagePanel__tabList--reordering' : ''}`}
+          drag ? ' pagePanel__tabList--reordering' : ''
+        }`}
         role="tablist"
         aria-label="Open pages"
-        ref={tabListRef}
-        onScroll={updateTabFade}>
+        ref={tabListRef}>
         {tabs.map((tab, index) => {
           const isActive = tab.id === activeTabId;
           return (
-            <React.Fragment key={tab.id}>
-              {index > 0 && <div className="pagePanel__tabSeparator" />}
-              <div
-                role="tab"
-                aria-selected={isActive}
-                aria-label={tab.title}
-                tabIndex={isActive ? 0 : -1}
-                className={`pagePanel__tab${
-                  isActive ? ' pagePanel__tab--active' : ''
-                }${drag && drag.index === index ? ' pagePanel__tab--dragging' : ''}`}
-                style={{
-                  transform: getTabTransform(index)
-                    ? `translateX(${getTabTransform(index)}px)`
-                    : undefined,
-                  // The dragged tab tracks the cursor 1:1 (no transition);
-                  // neighbors keep their CSS transition for the slide.
-                  transition:
-                    drag && drag.index === index ? 'none' : undefined,
+            <div
+              key={tab.id}
+              role="tab"
+              aria-selected={isActive}
+              aria-label={tab.title}
+              tabIndex={isActive ? 0 : -1}
+              className={`pagePanel__tab${
+                isActive ? ' pagePanel__tab--active' : ''
+              }${
+                drag && drag.index === index ? ' pagePanel__tab--dragging' : ''
+              }`}
+              style={{
+                transform: getTabTransform(index)
+                  ? `translateX(${getTabTransform(index)}px)`
+                  : undefined,
+                // The dragged tab tracks the cursor 1:1 (no transition);
+                // neighbors keep their CSS transition for the slide.
+                transition: drag && drag.index === index ? 'none' : undefined,
+              }}
+              onMouseDown={(e) => handleTabMouseDown(e, index)}
+              onKeyDown={(e) => handleKeyDown(e, tab.id, index)}>
+              <OuiIcon
+                type={PAGE_TAB_ICONS[tab.pageKey] || 'folderClosed'}
+                size="s"
+              />
+              <span className="pagePanel__tabTitle">{tab.title}</span>
+              <button
+                className="pagePanel__tabClose"
+                aria-label={`Close ${tab.title}`}
+                title={`Close ${tab.title}`}
+                // Closing must not also select — the mousedown drag handler
+                // treats a plain click as a select, so stop it here too.
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onTabClose(tab.id);
                 }}
-                onMouseDown={(e) => handleTabMouseDown(e, index)}
-                onKeyDown={(e) => handleKeyDown(e, tab.id, index)}>
-                <OuiIcon
-                  type={PAGE_TAB_ICONS[tab.pageKey] || 'folderClosed'}
-                  size="s"
-                />
-                <span className="pagePanel__tabTitle">{tab.title}</span>
-                {isActive && (
-                  <button
-                    className="pagePanel__tabClose"
-                    aria-label={`Close ${tab.title}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onTabClose(tab.id);
-                    }}
-                    tabIndex={-1}>
-                    <OuiIcon type="cross" size="s" />
-                  </button>
-                )}
-              </div>
-            </React.Fragment>
+                tabIndex={-1}>
+                <OuiIcon type="cross" size="s" />
+              </button>
+            </div>
           );
         })}
-        {tabs.length > 0 && <div className="pagePanel__tabSeparator" />}
+
         <OuiToolTip content="Add new tab" position="bottom">
           <OuiButtonIcon
             iconType="plus"
             aria-label="Add new tab"
-            size="s"
+            size="xs"
             color="text"
             display="empty"
             onClick={onAddTab}
@@ -294,7 +284,7 @@ const TabBar = ({
         </OuiToolTip>
       </div>
 
-      {/* List icon — far right, shows popover with all tabs */}
+      {/* ☰ list — far right; the overflow story for a bar that never scrolls */}
       <div className="pagePanel__tabListAction">
         <OuiToolTip content={isListOpen ? '' : 'View tabs'} position="bottom">
           <OuiPopover
@@ -302,10 +292,9 @@ const TabBar = ({
               <OuiButtonIcon
                 iconType="list"
                 aria-label="View tabs"
-                size="s"
+                size="xs"
                 color="text"
                 display="empty"
-                isDisabled={tabs.length === 0}
                 onClick={() => setIsListOpen((open) => !open)}
               />
             }
@@ -327,7 +316,11 @@ const TabBar = ({
                     onTabSelect(tab.id);
                     setIsListOpen(false);
                   }}>
-                  {tab.title}
+                  <OuiIcon
+                    type={PAGE_TAB_ICONS[tab.pageKey] || 'folderClosed'}
+                    size="s"
+                  />
+                  <span>{tab.title}</span>
                 </button>
               ))}
               <button
@@ -344,6 +337,19 @@ const TabBar = ({
           </OuiPopover>
         </OuiToolTip>
       </div>
+
+      {/* ✕ Close canvas — Option F: the control lives inside the panel it affects */}
+      {onCollapsePanel && (
+        <OuiButtonIcon
+          iconType="cross"
+          aria-label="Close canvas"
+          size="xs"
+          color="text"
+          display="empty"
+          onClick={onCollapsePanel}
+          className="pagePanel__closeButton"
+        />
+      )}
     </div>
   );
 };
@@ -363,6 +369,7 @@ const TabBar = ({
  * @param {(tabId: string) => void} props.onTabClose - Tab close handler
  * @param {() => void} props.onAddTab - Add new tab handler
  * @param {(pageKey: string, title: string) => void} props.onSelectPage - Loads a page in the current active tab (from NewTabPage)
+ * @param {() => void} props.onCollapsePanel - Closes the panel from the tab bar chevron
  */
 export const PagePanel = ({
   tabs,
@@ -373,14 +380,12 @@ export const PagePanel = ({
   onReorderTabs,
   onSelectPage,
   onOpenCanvasPage,
-  onExpandChat,
-  aiButtonHighlight,
-  aiButtonMessage,
-  onDismissAiPopover,
+  onCollapsePanel,
   onQueryExecute,
+  onToggleChat,
+  isChatOpen,
 }) => {
   const activeTab = tabs.find((tab) => tab.id === activeTabId);
-  const [ollyHovered, setOllyHovered] = useState(false);
 
   /** Render the content for the active tab */
   const renderTabContent = () => {
@@ -410,6 +415,7 @@ export const PagePanel = ({
     // Pages that have their own header — skip DetailPageHeader
     const PAGES_WITH_OWN_HEADER = new Set([
       'discover-log',
+      'new-ppl-log',
       'discover-log-correlated',
       'discover-metric',
       'app-perf-services',
@@ -431,22 +437,36 @@ export const PagePanel = ({
           <DetailPageHeader
             title={activeTab.title}
             hideAskAi
-            headerControls={activeTab.pageKey === 'overview-home' ? (
-              <OuiButtonIcon
-                iconType="refresh"
-                aria-label="Refresh"
-                size="s"
-                color="text"
-                display="empty"
-                onClick={() => {
-                  window.dispatchEvent(new CustomEvent('overview-home-refresh'));
-                }}
-              />
-            ) : undefined}
-            firstActionLabel={activeTab.pageKey === 'overview-home' ? 'Edit widgets' : 'Settings'}
-            onFirstAction={activeTab.pageKey === 'overview-home' ? () => {
-              window.dispatchEvent(new CustomEvent('overview-home-edit-toggle'));
-            } : undefined}
+            headerControls={
+              activeTab.pageKey === 'overview-home' ? (
+                <OuiButtonIcon
+                  iconType="refresh"
+                  aria-label="Refresh"
+                  size="s"
+                  color="text"
+                  display="empty"
+                  onClick={() => {
+                    window.dispatchEvent(
+                      new CustomEvent('overview-home-refresh')
+                    );
+                  }}
+                />
+              ) : undefined
+            }
+            firstActionLabel={
+              activeTab.pageKey === 'overview-home'
+                ? 'Edit widgets'
+                : 'Settings'
+            }
+            onFirstAction={
+              activeTab.pageKey === 'overview-home'
+                ? () => {
+                    window.dispatchEvent(
+                      new CustomEvent('overview-home-edit-toggle')
+                    );
+                  }
+                : undefined
+            }
           />
         )}
         <div className="pagePanel__canvasContent">
@@ -471,7 +491,9 @@ export const PagePanel = ({
         onTabClose={onTabClose}
         onAddTab={onAddTab}
         onReorderTabs={onReorderTabs}
-        onExpandChat={onExpandChat}
+        onCollapsePanel={onCollapsePanel}
+        onToggleChat={onToggleChat}
+        isChatOpen={isChatOpen}
       />
       <div
         className="pagePanel__content"

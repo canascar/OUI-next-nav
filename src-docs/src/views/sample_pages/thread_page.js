@@ -54,6 +54,24 @@ import {
   ScenarioFindingCard,
 } from './empty_session_page_v6';
 import {
+  McpAppAttachment,
+  McpEvidenceLinks,
+  McpRecommendationCard,
+  McpAlertRuleOffer,
+  McpMemoryCard,
+  McpCaveatLine,
+  McpHomeGreeting,
+  MCP_INVESTIGATION_MESSAGES,
+  MCP_CAVEAT,
+  MCP_P99_FINDING,
+} from './mcp_investigation';
+import {
+  McpTokenAppAttachment,
+  TOKEN_INVESTIGATION_MESSAGES,
+  TOKEN_CONTEXT,
+  TOKEN_SPIKE_FINDING,
+} from './mcp_token_investigation';
+import {
   Chart,
   Settings,
   Axis,
@@ -107,6 +125,17 @@ const THREADS = {
     messages: [],
     // Overridden at runtime with the scenario shown on the home greeting.
     staggeredMessages: [buildScenarioMessage(1)],
+  },
+  'checkout-p99': {
+    title: 'p99 latency > 1.5s on checkout (prod-web)',
+    // Starts on the MCP home greeting; the Warning pill stages the beats.
+    messages: [],
+  },
+  'agent-token-spike': {
+    title: 'Agent token usage spiked — support-triage',
+    // Opened from the home findings row; the beats auto-play on arrival.
+    contextStrip: TOKEN_CONTEXT,
+    messages: [],
   },
   'latency-spike': {
     title: 'Latency spike investigation',
@@ -691,7 +720,9 @@ const parseContent = (content) => {
     } else if (line.startsWith('- ')) {
       const items = [];
       while (i < lines.length && lines[i].startsWith('- ')) {
-        items.push(<li key={key++}>{parseInlineBold(lines[i].slice(2), key)}</li>);
+        items.push(
+          <li key={key++}>{parseInlineBold(lines[i].slice(2), key)}</li>
+        );
         i++;
       }
       elements.push(<ul key={key++}>{items}</ul>);
@@ -1083,7 +1114,44 @@ const ItemCarouselAttachment = ({ title, items }) => {
 };
 
 // Helper to render a single attachment by type
-const renderSingleAttachment = (att, idx, onViewAsPage) => {
+const renderSingleAttachment = (att, idx, onViewAsPage, onOpenDiscover) => {
+  // MCP app cards — inline apps that make up the investigation journey.
+  if (att.type === 'mcp-app') {
+    return <McpAppAttachment key={idx} app={att.app} />;
+  }
+  // Second investigation's beats. Same card frame, different content.
+  if (att.type === 'token-app') {
+    return (
+      <McpTokenAppAttachment
+        key={idx}
+        app={att.app}
+        onOpenPage={onOpenDiscover}
+      />
+    );
+  }
+  // The ending components below are shared by both flows: each takes its
+  // content as `data`, and falls back to the checkout flow's when omitted.
+  if (att.type === 'mcp-evidence') {
+    return <McpEvidenceLinks key={idx} items={att.items} />;
+  }
+  if (att.type === 'mcp-recommendation') {
+    return <McpRecommendationCard key={idx} data={att.data} />;
+  }
+  if (att.type === 'mcp-alert-rule') {
+    return <McpAlertRuleOffer key={idx} data={att.data} />;
+  }
+  if (att.type === 'mcp-memory') {
+    return <McpMemoryCard key={idx} data={att.data} />;
+  }
+  if (att.type === 'mcp-caveat') {
+    return (
+      <McpCaveatLine
+        key={idx}
+        data={att.data}
+        onOpenDiscover={onOpenDiscover}
+      />
+    );
+  }
   if (att.type === 'link-preview') {
     return (
       <LinkPreviewAttachment
@@ -1153,6 +1221,7 @@ const AssistantMessage = ({
   attachment,
   attachments,
   onViewAsPage,
+  onOpenDiscover,
   mascotColor,
   mascotEyeColor,
   isLastAssistant,
@@ -1162,6 +1231,7 @@ const AssistantMessage = ({
   scenario,
   onFindingAction,
   expandFindings,
+  hideFeedback,
   enter,
 }) => {
   const allAttachments = attachments || (attachment ? [attachment] : []);
@@ -1207,10 +1277,11 @@ const AssistantMessage = ({
           <div className="threadPage__bubble threadPage__bubble--assistant">
             {content && <OuiText size="s">{parseContent(content)}</OuiText>}
             {allAttachments.map((att, idx) =>
-              renderSingleAttachment(att, idx, onViewAsPage)
+              renderSingleAttachment(att, idx, onViewAsPage, onOpenDiscover)
             )}
-            {findings && findings.length > 0 && (
-              scenario != null ? (
+            {findings &&
+              findings.length > 0 &&
+              (scenario != null ? (
                 // Scenario-backed findings render the same expandable warning
                 // cards as the home greeting (widget + evidence + actions).
                 <div className="threadPage__scenarioFindings">
@@ -1232,22 +1303,41 @@ const AssistantMessage = ({
               ) : (
                 <div className="threadPage__inlineFindings">
                   {findings.map((finding) => {
-                    const statusColors = { red: { bg: 'var(--g-danger-soft)', color: 'var(--g-danger)' }, amber: { bg: 'rgba(180,83,9,0.08)', color: '#B45309' }, green: { bg: 'rgba(14,110,82,0.08)', color: '#0E6E52' }, blue: { bg: 'rgba(26,93,168,0.08)', color: '#1A5DA8' } };
-                    const colors = statusColors[finding.statusColor] || statusColors.blue;
+                    const statusColors = {
+                      red: {
+                        bg: 'var(--g-danger-soft)',
+                        color: 'var(--g-danger)',
+                      },
+                      amber: { bg: 'rgba(180,83,9,0.08)', color: '#B45309' },
+                      green: { bg: 'rgba(14,110,82,0.08)', color: '#0E6E52' },
+                      blue: { bg: 'rgba(26,93,168,0.08)', color: '#1A5DA8' },
+                    };
+                    const colors =
+                      statusColors[finding.statusColor] || statusColors.blue;
                     return (
-                      <div key={finding.key} className="threadPage__inlineFinding">
-                        <span className="threadPage__inlineFindingPill" style={{ background: colors.bg, color: colors.color }}>{finding.status}</span>
-                        <span className="threadPage__inlineFindingTitle">{finding.title}</span>
+                      <div
+                        key={finding.key}
+                        className="threadPage__inlineFinding">
+                        <span
+                          className="threadPage__inlineFindingPill"
+                          style={{
+                            background: colors.bg,
+                            color: colors.color,
+                          }}>
+                          {finding.status}
+                        </span>
+                        <span className="threadPage__inlineFindingTitle">
+                          {finding.title}
+                        </span>
                       </div>
                     );
                   })}
                 </div>
-              )
-            )}
+              ))}
             {/* Hide message-level feedback on finding-context cards (findings
                 with no text) so the callout reads as context, not a rateable
                 answer. */}
-            {(content || !(findings && findings.length > 0)) && (
+            {!hideFeedback && (content || !(findings && findings.length > 0)) && (
               <div className="threadPage__feedback">
                 <OuiButtonIcon
                   iconType="thumbsUp"
@@ -1742,11 +1832,18 @@ export const ThreadPage = ({
   const [homeScenario] = useState(() => Math.floor(Math.random() * 5) + 1);
 
   const isOverviewHome = threadKey === 'overview-home';
+  const isMcpInvestigation = threadKey === 'checkout-p99';
+  const isTokenInvestigation = threadKey === 'agent-token-spike';
+  // Set when a home findings row starts an investigation that wants a context
+  // strip above the thread (the checkout flow doesn't).
+  const [activeContextStrip, setActiveContextStrip] = useState(null);
   useEffect(() => {
     if (onGreetingStateChange) {
-      onGreetingStateChange(isOverviewHome && !greetingDone);
+      onGreetingStateChange(
+        (isOverviewHome || isMcpInvestigation) && !greetingDone
+      );
     }
-  }, [isOverviewHome, greetingDone, onGreetingStateChange]);
+  }, [isOverviewHome, isMcpInvestigation, greetingDone, onGreetingStateChange]);
 
   const pendingSendRef = useRef(null);
   const sendRef = useRef(null);
@@ -1876,6 +1973,81 @@ export const ThreadPage = ({
     [canvasItems, onNavigate]
   );
 
+  // The drill-down links out to the classic product. Opens the requested page
+  // in the canvas (right side), which is otherwise closed; the checkout flow's
+  // correlated logs are the default when a chip names no page of its own.
+  const handleOpenDiscover = useCallback(
+    (pageKey, pageTitle) => {
+      if (onNavigate) {
+        onNavigate(
+          pageKey || MCP_CAVEAT.pageKey,
+          pageTitle || MCP_CAVEAT.pageTitle
+        );
+      }
+    },
+    [onNavigate]
+  );
+
+  // Stage an investigation into the thread one message at a time, so it reads as
+  // a single scrollable story. Each beat waits `delayBefore` before it arrives;
+  // the assistant "thinks" (Olly loader) in between. Both investigation flows
+  // play through this same function.
+  const startInvestigation = useCallback((beats) => {
+    const scrollToEnd = () => {
+      if (feedRef.current) {
+        setTimeout(() => {
+          if (feedRef.current)
+            feedRef.current.scrollTop = feedRef.current.scrollHeight;
+        }, 50);
+      }
+    };
+    hasInteracted.current = true;
+    let elapsed = 0;
+    beats.forEach((msg) => {
+      const isAssistant = msg.role === 'assistant';
+      // Show the Olly loader before each assistant beat, then reveal the beat.
+      if (isAssistant) {
+        const think = msg.delayBefore != null ? msg.delayBefore : 1600;
+        const loaderAt = elapsed;
+        streamTimers.current.push(
+          setTimeout(() => {
+            setIsTyping(true);
+            scrollToEnd();
+          }, loaderAt)
+        );
+        elapsed += think;
+        streamTimers.current.push(
+          setTimeout(() => {
+            setIsTyping(false);
+            setMessages((prev) => [...prev, { ...msg, _enter: true }]);
+            scrollToEnd();
+          }, elapsed)
+        );
+      } else {
+        streamTimers.current.push(
+          setTimeout(() => {
+            setMessages((prev) => [...prev, { ...msg, _enter: true }]);
+            scrollToEnd();
+          }, elapsed)
+        );
+        elapsed += 200;
+      }
+    });
+    // Turn off the thinking indicator after the final beat lands.
+    streamTimers.current.push(
+      setTimeout(() => setIsTyping(false), elapsed + 100)
+    );
+  }, []);
+
+  // The token-spike thread has no greeting of its own — it's opened from the
+  // home findings row, so its beats start playing as soon as it mounts.
+  const tokenPlayedRef = useRef(false);
+  useEffect(() => {
+    if (!isTokenInvestigation || tokenPlayedRef.current) return;
+    tokenPlayedRef.current = true;
+    startInvestigation(TOKEN_INVESTIGATION_MESSAGES);
+  }, [isTokenInvestigation, startInvestigation]);
+
   // Reset messages and canvas when switching threads
   useEffect(() => {
     const msgs = pendingMessages || thread.messages;
@@ -1981,20 +2153,25 @@ export const ThreadPage = ({
       const thinkDelay = 2500;
       staggeredMessages.forEach((msg, i) => {
         const delay = thinkDelay + i * 1800;
-        streamTimers.current.push(setTimeout(() => {
-          setMessages((prev) => [...prev, msg]);
-          if (i < staggeredMessages.length - 1) {
-            setIsTyping(true);
-          } else {
-            setIsTyping(false);
-            window.dispatchEvent(new CustomEvent('staggered-thread-complete'));
-          }
-          if (feedRef.current) {
-            setTimeout(() => {
-              if (feedRef.current) feedRef.current.scrollTop = feedRef.current.scrollHeight;
-            }, 50);
-          }
-        }, delay));
+        streamTimers.current.push(
+          setTimeout(() => {
+            setMessages((prev) => [...prev, msg]);
+            if (i < staggeredMessages.length - 1) {
+              setIsTyping(true);
+            } else {
+              setIsTyping(false);
+              window.dispatchEvent(
+                new CustomEvent('staggered-thread-complete')
+              );
+            }
+            if (feedRef.current) {
+              setTimeout(() => {
+                if (feedRef.current)
+                  feedRef.current.scrollTop = feedRef.current.scrollHeight;
+              }, 50);
+            }
+          }, delay)
+        );
       });
     }
     responseIndex.current = 0;
@@ -2179,7 +2356,11 @@ export const ThreadPage = ({
       window.dispatchEvent(new CustomEvent('session-chat-started'));
       // The home additionally expands full-screen and drops its Overview tab.
       if (threadKey === 'overview-home') {
-        window.dispatchEvent(new CustomEvent('session-rename', { detail: { title: text.slice(0, 50) } }));
+        window.dispatchEvent(
+          new CustomEvent('session-rename', {
+            detail: { title: text.slice(0, 50) },
+          })
+        );
         window.dispatchEvent(new CustomEvent('home-chat-started'));
       }
     }
@@ -2405,12 +2586,69 @@ export const ThreadPage = ({
     }
   };
 
+  // MCP investigation home: show the Warning-pill greeting until the user
+  // starts the investigation. The whole journey then streams into this thread.
+  const isMcpGreeting =
+    threadKey === 'checkout-p99' &&
+    !messages.some((m) => m.role === 'user') &&
+    !greetingDone;
+
+  if (isMcpGreeting) {
+    return (
+      <div
+        className={`threadPage__greetingWrap${
+          greetingExiting ? ' threadPage__greetingWrap--exiting' : ''
+        }`}>
+        <McpHomeGreeting
+          findings={[MCP_P99_FINDING, TOKEN_SPIKE_FINDING]}
+          onJumpToPage={handleOpenDiscover}
+          onSelectFinding={(finding) => {
+            // Each row opens its own investigation in this same thread. The two
+            // flows are staged by the same function; only the beats differ.
+            const beats =
+              finding.key === TOKEN_SPIKE_FINDING.key
+                ? TOKEN_INVESTIGATION_MESSAGES
+                : MCP_INVESTIGATION_MESSAGES;
+            setActiveContextStrip(
+              finding.key === TOKEN_SPIKE_FINDING.key ? TOKEN_CONTEXT : null
+            );
+            setGreetingExiting(true);
+            setTimeout(() => {
+              setGreetingDone(true);
+              window.dispatchEvent(new CustomEvent('session-chat-started'));
+              startInvestigation(beats);
+            }, 350);
+          }}
+          onSend={(text) => {
+            // Free-form ask: bypass the staged investigation and drop straight
+            // into the chat with the user's message.
+            pendingSendRef.current = text;
+            setGreetingExiting(true);
+            setTimeout(() => {
+              setGreetingDone(true);
+              if (pendingSendRef.current) {
+                handleSend(pendingSendRef.current);
+                pendingSendRef.current = null;
+              }
+            }, 350);
+          }}
+        />
+      </div>
+    );
+  }
+
   // Overview-home: show home greeting until user sends a message
-  const isOverviewHomeGreeting = threadKey === 'overview-home' && !messages.some((m) => m.role === 'user') && !greetingDone;
+  const isOverviewHomeGreeting =
+    threadKey === 'overview-home' &&
+    !messages.some((m) => m.role === 'user') &&
+    !greetingDone;
 
   if (isOverviewHomeGreeting) {
     return (
-      <div className={`threadPage__greetingWrap${greetingExiting ? ' threadPage__greetingWrap--exiting' : ''}`}>
+      <div
+        className={`threadPage__greetingWrap${
+          greetingExiting ? ' threadPage__greetingWrap--exiting' : ''
+        }`}>
         <EmptySessionPageV6
           scenario={homeScenario}
           onStartThread={(text) => {
@@ -2578,6 +2816,12 @@ export const ThreadPage = ({
               setShowScrollButton(distFromBottom > 100);
               setFeedScrolled(distFromBottom > 10);
             }}>
+            {/* Context strip — says where this investigation came from. */}
+            {(activeContextStrip || thread.contextStrip) && (
+              <div className="threadPage__contextStrip">
+                {activeContextStrip || thread.contextStrip}
+              </div>
+            )}
             {messages.length === 0 && !isTyping && (
               <div className="threadPage__emptyState">
                 <OllyIdle
@@ -2648,8 +2892,10 @@ export const ThreadPage = ({
                   findings={msg.findings}
                   scenario={msg.scenario}
                   expandFindings={msg.expandFindings}
+                  hideFeedback={msg.hideFeedback}
                   onFindingAction={(label) => handleSend(label)}
                   onViewAsPage={handleViewAsPage}
+                  onOpenDiscover={handleOpenDiscover}
                   mascotColor={mascotColor}
                   mascotEyeColor={mascotEyeColor}
                   isLastAssistant={
@@ -2661,29 +2907,36 @@ export const ThreadPage = ({
                 />
               );
             })}
-            {isTyping && !messages.some((m) => m.role === 'tasks' && !m.collapsed) && (
-              // While steps are loading (an uncollapsed task list is present) Olly
-              // stays hidden — the step tracker is the loading indicator. Once the
-              // steps complete, the streaming assistant message pops Olly back in.
-              <div className="threadPage__message threadPage__message--assistant">
-                <div className="threadPage__assistantStreamRow">
-                  <div className="threadPage__responseMascot threadPage__responseMascot--pulsing">
-                    <Mascot
-                      size={20}
-                      expression="blink"
-                      idle={false}
-                      bob={false}
-                      follow={false}
-                      color={mascotColor}
-                      eyeColor={mascotEyeColor}
-                    />
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0' }}>
-                    <OuiAgenticSpinner size="s" />
+            {isTyping &&
+              !messages.some((m) => m.role === 'tasks' && !m.collapsed) && (
+                // While steps are loading (an uncollapsed task list is present) Olly
+                // stays hidden — the step tracker is the loading indicator. Once the
+                // steps complete, the streaming assistant message pops Olly back in.
+                <div className="threadPage__message threadPage__message--assistant">
+                  <div className="threadPage__assistantStreamRow">
+                    <div className="threadPage__responseMascot threadPage__responseMascot--pulsing">
+                      <Mascot
+                        size={20}
+                        expression="blink"
+                        idle={false}
+                        bob={false}
+                        follow={false}
+                        color={mascotColor}
+                        eyeColor={mascotEyeColor}
+                      />
+                    </div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        padding: '8px 0',
+                      }}>
+                      <OuiAgenticSpinner size="s" />
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
             {/* Suggested prompts — inside the chat feed */}
             {(() => {
               if (
@@ -2699,7 +2952,11 @@ export const ThreadPage = ({
               )
                 return null;
               // Overview-home suggestion
-              if (threadKey === 'overview-home' && messages.length > 0 && !messages.some((m) => m.role === 'user')) {
+              if (
+                threadKey === 'overview-home' &&
+                messages.length > 0 &&
+                !messages.some((m) => m.role === 'user')
+              ) {
                 const suggestion = 'Investigate the checkout-agent loop';
                 return (
                   <div className="threadPage__suggestedPrompts threadPage__suggestedPrompts--bottom">

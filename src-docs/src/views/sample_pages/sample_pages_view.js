@@ -22,6 +22,7 @@ import { SamplePagesLeftNav } from './sample_pages_left_nav';
 import { DetailPagePanel } from './detail_page_panel';
 import { ServicePage } from './service_page';
 import { LogsPage } from './logs_page';
+import { NewPplLogsPage } from './new_ppl_logs_page';
 import { MetricsPage } from './metrics_page';
 import { ThreadPage } from './thread_page';
 import { AlertsPage } from './alerts_page';
@@ -52,7 +53,7 @@ import { AiSkillsPage } from './ai_skills_page';
 import { AiMemoriesPage } from './ai_memories_page';
 import { AiAutomationsPage } from './ai_automations_page';
 import { AiMcpServersPage } from './ai_mcp_servers_page';
-import { OuiErrorBoundary } from '../../../../src/components';
+import { OuiButtonIcon, OuiErrorBoundary } from '../../../../src/components';
 
 import { AskAiPopover } from './ask_ai_popover';
 import {
@@ -84,7 +85,25 @@ import {
   ERROR_RATE_SPIKE_SESSION,
   DNS_TIMEOUT_SESSION,
   OVERVIEW_HOME_SESSION,
+  MCP_INVESTIGATION_SESSION,
 } from './session_mock_data';
+
+/** Quick relative timestamp for the sessions panel. */
+function getRelativeTime(ts) {
+  if (!ts) return '';
+  const diff = Date.now() - ts;
+  const mins = Math.round(diff / 60000);
+  if (mins < 1) return 'Just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.round(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.round(hrs / 24);
+  if (days === 1) return 'yesterday';
+  if (days < 7) return `${days} days ago`;
+  const weeks = Math.round(days / 7);
+  if (weeks === 1) return 'last week';
+  return `${weeks} weeks ago`;
+}
 
 const renderPage = (
   activePage,
@@ -108,7 +127,9 @@ const renderPage = (
           <EmptySessionPageV6
             onStartThread={(prompt) => {
               // Navigate to thread with just user prompt (no response yet)
-              const threadKey = `thread-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+              const threadKey = `thread-${Date.now()}-${Math.random()
+                .toString(36)
+                .slice(2, 9)}`;
               const messages = prompt
                 ? [{ role: 'user', author: 'You', content: prompt }]
                 : [];
@@ -138,6 +159,18 @@ const renderPage = (
         <OuiErrorBoundary>
           <LogsPage
             selectedItem={selectedItem}
+            onContinueAsThread={onContinueAsThread}
+            isPanelOpen={isPanelOpen}
+            onTogglePanel={onTogglePanel}
+            isAskAiPanelOpen={isAskAiPanelOpen}
+            onAskAiToggle={onAskAiToggle}
+          />
+        </OuiErrorBoundary>
+      );
+    case 'new-ppl-logs':
+      return (
+        <OuiErrorBoundary>
+          <NewPplLogsPage
             onContinueAsThread={onContinueAsThread}
             isPanelOpen={isPanelOpen}
             onTogglePanel={onTogglePanel}
@@ -569,7 +602,10 @@ export const SamplePagesView = () => {
         ...prev,
         tabs: [...prev.tabs, newTab],
         activeTabId: newTab.id,
-        threadPanelState: prev.threadPanelState === 'full-screen' ? 'side-by-side' : prev.threadPanelState,
+        threadPanelState:
+          prev.threadPanelState === 'full-screen'
+            ? 'side-by-side'
+            : prev.threadPanelState,
       };
     });
   }, []);
@@ -1077,17 +1113,24 @@ export const SamplePagesView = () => {
 
   // Pages that should open within a session tab instead of as standalone pages
   const SESSION_TAB_PAGES = new Set([
-    'alerts', 'dashboards', 'logs', 'metrics', 'topology-map',
-    'agent-monitoring-traces', 'agent-monitoring-spans',
-    'app-perf-traces', 'app-perf-services',
+    'alerts',
+    'dashboards',
+    'logs',
+    'metrics',
+    'topology-map',
+    'agent-monitoring-traces',
+    'agent-monitoring-spans',
+    'app-perf-traces',
+    'app-perf-services',
   ]);
 
   // Map nav keys to their correct page keys (some nav items show list/empty variants)
   const NAV_TO_PAGE_KEY = {
-    'alerts': 'alerts-list',
-    'dashboards': 'dashboards-list',
-    'logs': 'discover-log',
-    'metrics': 'discover-metric',
+    alerts: 'alerts-list',
+    dashboards: 'dashboards-list',
+    logs: 'discover-log',
+    'new-ppl-logs': 'new-ppl-log',
+    metrics: 'discover-metric',
     'topology-map': 'app-map',
   };
 
@@ -1306,7 +1349,9 @@ export const SamplePagesView = () => {
           setExpandAnim(null);
           skipPanelOpenRef.current = true;
           setActivePage('thread');
-          const threadKey = `thread-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+          const threadKey = `thread-${Date.now()}-${Math.random()
+            .toString(36)
+            .slice(2, 9)}`;
           if (createThreadRef.current) {
             const newKey = createThreadRef.current();
             setPendingThread({
@@ -1317,11 +1362,15 @@ export const SamplePagesView = () => {
             });
           }
           // Set up thread session for SessionContainer
-          const sourceTab = sourcePage ? {
-            id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-            pageKey: sourcePage,
-            title: displayTitle || sourcePage,
-          } : null;
+          const sourceTab = sourcePage
+            ? {
+                id: `tab-${Date.now()}-${Math.random()
+                  .toString(36)
+                  .slice(2, 9)}`,
+                pageKey: sourcePage,
+                title: displayTitle || sourcePage,
+              }
+            : null;
           setThreadSession({
             id: 'thread-session',
             threadKey,
@@ -1339,7 +1388,9 @@ export const SamplePagesView = () => {
         // Fallback: no animation
         skipPanelOpenRef.current = true;
         setActivePage('thread');
-        const threadKey = `thread-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+        const threadKey = `thread-${Date.now()}-${Math.random()
+          .toString(36)
+          .slice(2, 9)}`;
         if (createThreadRef.current) {
           const newKey = createThreadRef.current();
           setPendingThread({
@@ -1350,11 +1401,13 @@ export const SamplePagesView = () => {
           });
         }
         // Set up thread session for SessionContainer
-        const sourceTab = sourcePage ? {
-          id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-          pageKey: sourcePage,
-          title: displayTitle || sourcePage,
-        } : null;
+        const sourceTab = sourcePage
+          ? {
+              id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+              pageKey: sourcePage,
+              title: displayTitle || sourcePage,
+            }
+          : null;
         setThreadSession({
           id: 'thread-session',
           threadKey,
@@ -1468,7 +1521,9 @@ export const SamplePagesView = () => {
           display: 'flex',
         }}>
         <div
-          className={activePage === 'thread' ? undefined : 'samplePagesContentPanel'}
+          className={
+            activePage === 'thread' ? undefined : 'samplePagesContentPanel'
+          }
           style={{ flex: 1, minWidth: 0, position: 'relative' }}>
           {renderPage(
             activePage,
@@ -1632,14 +1687,28 @@ function initializeSessionState() {
 export const SessionPagesView = ({ variant } = {}) => {
   // Parse v5 scenario variants (e.g., 'v5-scenario3' → scenario 3)
   const v5ScenarioMatch = variant && variant.match(/^v5-scenario(\d+)$/);
-  const v5ScenarioNumber = v5ScenarioMatch ? parseInt(v5ScenarioMatch[1], 10) : null;
+  const v5ScenarioNumber = v5ScenarioMatch
+    ? parseInt(v5ScenarioMatch[1], 10)
+    : null;
   const isV5Variant = variant === 'v5' || v5ScenarioNumber != null;
   const isV6Variant = variant === 'v6' || variant === 'v8';
-  const isV7Variant = variant === 'v7';
+  const isMcpVariant = variant === 'mcp-investigation';
+  // The MCP home reuses the v7 session machinery (home landing → chat session).
+  const isV7Variant = variant === 'v7' || isMcpVariant;
   const isV8Variant = variant === 'v8';
   const navExpandRef = useRef(null);
 
-  const EmptyPage = isV6Variant ? EmptySessionPageV6 : isV5Variant ? EmptySessionPageV5 : variant === 'v4' ? EmptySessionPageV3 : variant === 'v3' ? EmptySessionPageV3 : variant === 'v2' ? EmptySessionPageV2 : EmptySessionPage;
+  const EmptyPage = isV6Variant
+    ? EmptySessionPageV6
+    : isV5Variant
+    ? EmptySessionPageV5
+    : variant === 'v4'
+    ? EmptySessionPageV3
+    : variant === 'v3'
+    ? EmptySessionPageV3
+    : variant === 'v2'
+    ? EmptySessionPageV2
+    : EmptySessionPage;
   // Prevent page scroll when this full-screen view is mounted
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -1673,6 +1742,25 @@ export const SessionPagesView = ({ variant } = {}) => {
 
   // Session state: sessions array + activeSessionId
   const [sessionState, setSessionState] = useState(() => {
+    if (isMcpVariant) {
+      return {
+        sessions: [
+          MCP_INVESTIGATION_SESSION,
+          LATENCY_SPIKE_SESSION,
+          ERROR_RATE_SPIKE_SESSION,
+          DNS_TIMEOUT_SESSION,
+          { id: 'stub-1', title: 'Pod OOM — payments-svc', threadKey: 'stub-1', pendingThread: null, tabs: [], activeTabId: null, threadPanelState: 'side-by-side', threadPanelWidth: 50, createdAt: Date.now() - 3600000, isUnreviewed: false },
+          { id: 'stub-2', title: 'Disk Pressure — es-data-3', threadKey: 'stub-2', pendingThread: null, tabs: [], activeTabId: null, threadPanelState: 'side-by-side', threadPanelWidth: 50, createdAt: Date.now() - 7200000, isUnreviewed: false },
+          { id: 'stub-3', title: 'Cert Expiry — ingest gateway', threadKey: 'stub-3', pendingThread: null, tabs: [], activeTabId: null, threadPanelState: 'side-by-side', threadPanelWidth: 50, createdAt: Date.now() - 10800000, isUnreviewed: false },
+          { id: 'stub-4', title: 'Slow Query Audit — billing index', threadKey: 'stub-4', pendingThread: null, tabs: [], activeTabId: null, threadPanelState: 'side-by-side', threadPanelWidth: 50, createdAt: Date.now() - 14400000, isUnreviewed: false },
+          { id: 'stub-5', title: 'Cache hit ratio drop', threadKey: 'stub-5', pendingThread: null, tabs: [], activeTabId: null, threadPanelState: 'side-by-side', threadPanelWidth: 50, createdAt: Date.now() - 18000000, isUnreviewed: false },
+          { id: 'stub-6', title: 'Rate limiter tuning — payments', threadKey: 'stub-6', pendingThread: null, tabs: [], activeTabId: null, threadPanelState: 'side-by-side', threadPanelWidth: 50, createdAt: Date.now() - 21600000, isUnreviewed: false },
+          { id: 'stub-7', title: 'Kafka consumer lag spike', threadKey: 'stub-7', pendingThread: null, tabs: [], activeTabId: null, threadPanelState: 'side-by-side', threadPanelWidth: 50, createdAt: Date.now() - 25200000, isUnreviewed: false },
+        ],
+        activeSessionId: MCP_INVESTIGATION_SESSION.id,
+        version: 1,
+      };
+    }
     if (isV7Variant) {
       return {
         sessions: [
@@ -1757,6 +1845,9 @@ export const SessionPagesView = ({ variant } = {}) => {
 
   // Active view: 'session' (show active session) or 'session-list' (browse all sessions)
   const [activeView, setActiveView] = useState('session');
+
+  // Persistent sessions side-panel toggle
+  const [sessionsPanelOpen, setSessionsPanelOpen] = useState(false);
 
   // Listen for "open a page in a fresh session" events from the home greeting
   // Jump-to chips — mirrors the side-nav behavior: new session, page tab,
@@ -1853,7 +1944,10 @@ export const SessionPagesView = ({ variant } = {}) => {
           // collapse the canvas with no tab. Widget-launched chats keep their
           // canvas page side-by-side.
           threadPanelState: hasFindings ? 'full-screen' : 'side-by-side',
-          title: sessionTitle || title || (prompt ? prompt.slice(0, 40) : 'New Session'),
+          title:
+            sessionTitle ||
+            title ||
+            (prompt ? prompt.slice(0, 40) : 'New Session'),
         };
         if (pageKey && !hasFindings) {
           const pageEntry = SOURCE_PAGE_MOCK[pageKey];
@@ -1890,9 +1984,12 @@ export const SessionPagesView = ({ variant } = {}) => {
   const handleCreateSession = useCallback(() => {
     if (isV7Variant) {
       setSessionState((prev) => {
-        const newId = `overview-home-${Date.now()}`;
+        const base = isMcpVariant
+          ? MCP_INVESTIGATION_SESSION
+          : OVERVIEW_HOME_SESSION;
+        const newId = `${base.id}-${Date.now()}`;
         const newSession = {
-          ...OVERVIEW_HOME_SESSION,
+          ...base,
           id: newId,
           createdAt: Date.now(),
         };
@@ -1920,11 +2017,11 @@ export const SessionPagesView = ({ variant } = {}) => {
       return createSession(prev);
     });
     setActiveView('session');
-  }, [isV7Variant]);
+  }, [isV7Variant, isMcpVariant]);
 
-  /** Sessions_Button: show the session list */
+  /** Sessions_Button: toggle the persistent sessions panel */
   const handleBrowseSessions = useCallback(() => {
-    setActiveView('session-list');
+    setSessionsPanelOpen((prev) => !prev);
   }, []);
 
   /** Library_Button: show the library page */
@@ -2140,7 +2237,11 @@ export const SessionPagesView = ({ variant } = {}) => {
   return (
     <div
       className={`samplePagesWrapper${
-        isSessionView && variant && !(activeSession && activeSession.threadKey === 'overview-home') ? ' samplePagesWrapper--noPattern' : ''
+        isSessionView &&
+        variant &&
+        !(activeSession && activeSession.threadKey === 'overview-home')
+          ? ' samplePagesWrapper--noPattern'
+          : ''
       }`}
       style={{
         display: 'flex',
@@ -2150,7 +2251,7 @@ export const SessionPagesView = ({ variant } = {}) => {
         right: 0,
         bottom: 0,
       }}>
-      {(variant === 'v4' || isV5Variant) ? (
+      {variant === 'v4' || isV5Variant ? (
         <LeftNavV4
           activePage={activeView}
           activeSessionId={sessionState.activeSessionId}
@@ -2209,7 +2310,7 @@ export const SessionPagesView = ({ variant } = {}) => {
             });
             setActiveView('session');
           }}
-          activeView={activeView}
+          activeView={sessionsPanelOpen ? 'session-list' : activeView}
           activeSessionId={sessionState.activeSessionId}
           activePageKey={
             activeView === 'session' && activeSession
@@ -2229,8 +2330,66 @@ export const SessionPagesView = ({ variant } = {}) => {
           flex: 1,
           overflow: 'hidden',
           display: 'flex',
-          paddingLeft: (variant === 'v4' || isV5Variant) ? 14 : 0,
+          paddingLeft: variant === 'v4' || isV5Variant ? 14 : (sessionsPanelOpen ? 0 : 8),
         }}>
+        {/* Persistent sessions panel */}
+        {sessionsPanelOpen && (
+          <div className="sessionsPanel">
+            <div className="sessionsPanel__header">
+              <span className="sessionsPanel__title">Sessions</span>
+              <OuiButtonIcon
+                iconType="cross"
+                aria-label="Close sessions"
+                color="text"
+                display="empty"
+                size="s"
+                onClick={() => setSessionsPanelOpen(false)}
+              />
+            </div>
+            <div className="sessionsPanel__list">
+              {sessionState.sessions
+                .filter(
+                  (s) =>
+                    !s.isHome &&
+                    !s.isLanding &&
+                    (s.threadKey || s.pendingThread || s.tabs.length > 0)
+                )
+                .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+                .map((session) => {
+                  const isActive =
+                    sessionState.activeSessionId === session.id;
+                  const tabCount = session.tabs.length;
+                  const timeAgo = getRelativeTime(session.createdAt);
+                  return (
+                    <button
+                      key={session.id}
+                      type="button"
+                      className={`sessionsPanel__item${
+                        isActive ? ' sessionsPanel__item--active' : ''
+                      }`}
+                      onClick={() => {
+                        handleSelectSession(session.id);
+                      }}>
+                      <div className="sessionsPanel__itemRow">
+                        {session.isRunning && (
+                          <span className="sessionsPanel__liveDot" />
+                        )}
+                        <span className="sessionsPanel__itemTitle">
+                          {session.title}
+                        </span>
+                      </div>
+                      <span className="sessionsPanel__itemMeta">
+                        {tabCount > 0
+                          ? `${tabCount} ${tabCount === 1 ? 'tab' : 'tabs'}`
+                          : ''}
+                        {tabCount > 0 && timeAgo ? ` · ${timeAgo}` : timeAgo || ''}
+                      </span>
+                    </button>
+                  );
+                })}
+            </div>
+          </div>
+        )}
         {renderMainContent()}
       </div>
     </div>

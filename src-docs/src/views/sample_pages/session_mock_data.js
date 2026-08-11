@@ -297,6 +297,7 @@ export const DNS_TIMEOUT_SESSION = {
   tabs: [{ id: 'tab-logs-dns-1', pageKey: 'logs', title: 'DNS timeout logs' }],
   activeTabId: 'tab-logs-dns-1',
   createdAt: Date.now() - 10800000, // 3 hours ago
+  isRunning: true,
   hidden: true,
 };
 
@@ -320,6 +321,32 @@ export const OVERVIEW_HOME_SESSION = {
     { id: 'tab-overview-home', pageKey: 'overview-home', title: 'Overview' },
   ],
   activeTabId: 'tab-overview-home',
+  createdAt: Date.now(),
+};
+
+// ---------------------------------------------------------------------------
+// MCP Investigation Home — chat-only, right panel closed throughout
+// ---------------------------------------------------------------------------
+
+/**
+ * The MCP-app-oriented investigation home. Opens on the Warning-pill greeting
+ * with the chat full-screen (right/canvas panel collapsed to its icon rail).
+ * The whole investigation then streams inline as MCP app cards — no floating
+ * panel. Users can still open the canvas from the collapsed rail's buttons.
+ */
+export const MCP_INVESTIGATION_SESSION = {
+  id: 'mcp-investigation-session',
+  threadKey: 'checkout-p99',
+  pendingThread: null,
+  isHome: true,
+  title: 'Home',
+  summary: 'p99 latency > 1.5s on checkout (prod-web).',
+  // Chat full-screen; the canvas is collapsed to its 52px icon rail and only
+  // opens when the user clicks a rail button or the closing Discover link.
+  threadPanelState: 'full-screen',
+  threadPanelWidth: 60,
+  tabs: [],
+  activeTabId: null,
   createdAt: Date.now(),
 };
 

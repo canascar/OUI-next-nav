@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chat + Canvas Title Bar — UX Options</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --font: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --mono: 'Space Grotesk', ui-monospace, monospace;
+  --ink: #0a0a0a;
+  --ink-mute: rgba(10,10,10,0.46);
+  --ink-fade: rgba(10,10,10,0.28);
+  --surface: #ffffff;
+  --surface-border: #ececef;
+  --page-bg: #f8f7fc;
+  --accent: #6366f1;
+  --accent-soft: rgba(99,102,241,0.08);
+  --accent-muted: rgba(99,102,241,0.15);
+  --glass: rgba(255,255,255,0.62);
+  --glass-border: rgba(255,255,255,0.9);
+  --shadow-sm: 0 1px 2px rgba(15,15,15,0.04), 0 4px 12px rgba(15,15,15,0.04);
+  --shadow-md: 0 4px 12px rgba(15,15,15,0.06), 0 24px 48px rgba(15,15,15,0.06);
+  --radius: 12px;
+  --radius-sm: 6px;
+  --radius-pill: 999px;
+}
+</style>
+</head>
+<body style="margin:0; font-family:var(--font); background:var(--page-bg); color:var(--ink);">
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { overflow-x: hidden; }
+
+.demo-section {
+  max-width: 1100px;
+  margin: 48px auto;
+  padding: 0 24px;
+}
+.demo-section h2 {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--ink-mute);
+  margin-bottom: 12px;
+}
+.demo-section .desc {
+  font-size: 14px;
+  color: var(--ink-mute);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+.demo-frame {
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Shared layout for all options */
+.app-shell {
+  display: flex;
+  height: 520px;
+  min-width: 900px;
+}
+.left-nav {
+  width: 48px;
+  min-width: 48px;
+  background: var(--glass);
+  backdrop-filter: blur(24px) saturate(160%);
+  border-right: 1px solid var(--surface-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0;
+  gap: 16px;
+}
+.nav-icon {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink-mute);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.nav-icon:hover { background: rgba(0,0,0,0.04); }
+.nav-icon.active { background: var(--accent-soft); color: var(--accent); }
+
+.main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* ============ OPTION A: Unified Top Bar (Claude-style) ============ */
+.unified-topbar {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--surface);
+  gap: 0;
+}
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.chat-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 320px;
+}
+.chat-title.generating {
+  background: linear-gradient(90deg, var(--ink) 0%, var(--ink-mute) 50%, var(--ink) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 2s infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.topbar-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--surface-border);
+  margin: 0 12px;
+}
+.topbar-center {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+/* Canvas tabs */
+.canvas-tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.canvas-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-mute);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.canvas-tab:hover {
+  background: rgba(0,0,0,0.04);
+  color: var(--ink);
+}
+.canvas-tab.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.canvas-tab .close {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+.canvas-tab:hover .close { opacity: 0.6; }
+.canvas-tab .close:hover { opacity: 1; background: rgba(0,0,0,0.08); }
+
+.tab-add {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  color: var(--ink-mute);
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.tab-add:hover { background: rgba(0,0,0,0.05); }
+
+/* Views toggle (pill) */
+.views-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-mute);
+  cursor: pointer;
+  border: 1px solid var(--surface-border);
+  transition: all 0.15s;
+}
+.views-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.views-toggle.open { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.views-toggle .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.views-toggle .count {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Icon button */
+.icon-btn {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink-mute);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.icon-btn:hover { background: rgba(0,0,0,0.04); color: var(--ink); }
+
+/* ============ OPTION B: Split header ============ */
+.split-header {
+  display: flex;
+  height: 48px;
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--surface);
+}
+.split-header-chat {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border-right: 1px solid var(--surface-border);
+}
+.split-header-canvas {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 4px;
+  min-width: 380px;
+}
+
+/* ============ OPTION C: Floating title inside chat ============ */
+.floating-title-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background: var(--glass);
+  backdrop-filter: blur(24px) saturate(160%);
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+}
+.floating-title-bar .chat-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ============ OPTION D: Contextual collapse ============ */
+.contextual-topbar {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--surface);
+  transition: all 0.2s ease;
+}
+.views-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-soft);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.views-chip:hover { background: var(--accent-muted); }
+
+/* Content areas */
+.chat-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.canvas-panel {
+  width: 420px;
+  min-width: 380px;
+  border-left: 1px solid var(--surface-border);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Chat content mock */
+.chat-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+.chat-welcome {
+  text-align: center;
+  padding: 60px 24px;
+}
+.chat-welcome .avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #818cf8);
+  margin: 0 auto 16px;
+  display: flex; align-items: center; justify-content: center;
+  color: white;
+  font-weight: 700;
+}
+.chat-welcome h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.chat-welcome p {
+  font-size: 14px;
+  color: var(--ink-mute);
+}
+
+.chat-messages { display: flex; flex-direction: column; gap: 16px; }
+.msg {
+  max-width: 85%;
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.msg.user {
+  align-self: flex-end;
+  background: var(--accent);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+.msg.ai {
+  align-self: flex-start;
+  background: rgba(0,0,0,0.03);
+  border: 1px solid var(--surface-border);
+  border-bottom-left-radius: 4px;
+}
+
+/* Input area */
+.chat-input-area {
+  padding: 12px 16px 16px;
+  border-top: 1px solid var(--surface-border);
+}
+.chat-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--surface-border);
+  border-radius: 24px;
+  background: var(--surface);
+  transition: border-color 0.15s;
+}
+.chat-input:focus-within { border-color: var(--accent); }
+.chat-input input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  font-family: var(--font);
+  color: var(--ink);
+  background: transparent;
+}
+.chat-input input::placeholder { color: var(--ink-fade); }
+.send-btn {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  cursor: pointer;
+  transition: transform 0.12s;
+}
+.send-btn:hover { transform: scale(1.05); }
+
+/* Canvas placeholder */
+.canvas-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-mute);
+  gap: 12px;
+  padding: 32px;
+}
+.canvas-empty .logo {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+}
+.canvas-empty p { font-size: 13px; text-align: center; }
+
+/* Resize handle */
+.resize-handle {
+  width: 4px;
+  cursor: col-resize;
+  background: transparent;
+  transition: background 0.15s;
+  position: relative;
+}
+.resize-handle:hover { background: var(--accent-soft); }
+.resize-handle::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px; height: 32px;
+  border-radius: 2px;
+  background: var(--surface-border);
+  transition: background 0.15s;
+}
+.resize-handle:hover::after { background: var(--accent); }
+</style>
+
+
+<!-- =========================================================
+     OPTION A: Unified Top Bar (Recommended)
+     - Chat title lives LEFT, canvas tabs live RIGHT
+     - "Views" pill replaces text badge, hides label when open
+     - Title animates in on first message
+     ========================================================= -->
+<div class="demo-section">
+  <h2>Option A — Unified Top Bar (Claude / Cursor style)</h2>
+  <div class="desc">
+    Single bar spans the full width. Chat title on the left, vertical divider, canvas tabs on the right.
+    The "Views" badge becomes a compact icon-only toggle when the panel is open — no text to push things around.
+    Title fades/shimmers in as the AI generates it.
+  </div>
+  <div class="demo-frame">
+    <div class="app-shell">
+      <div class="left-nav">
+        <div class="nav-icon active">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="9" r="7"/></svg>
+        </div>
+        <div class="nav-icon">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="12" height="12" rx="2"/></svg>
+        </div>
+        <div class="nav-icon">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 9h12M9 3v12"/></svg>
+        </div>
+      </div>
+      <div class="main-area">
+        <!-- UNIFIED TOPBAR -->
+        <div class="unified-topbar">
+          <div class="topbar-left">
+            <span class="chat-title generating">Investigate: p99 latency > 1.5s on checkout</span>
+          </div>
+          <div class="topbar-divider"></div>
+          <div class="topbar-right">
+            <div class="canvas-tabs">
+              <div class="canvas-tab active">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="1" width="10" height="10" rx="2"/></svg>
+                New Tab
+                <span class="close">&times;</span>
+              </div>
+              <div class="tab-add">+</div>
+            </div>
+            <div style="width:8px"></div>
+            <div class="views-toggle open">
+              <span class="dot"></span>
+              <span class="count">1</span>
+            </div>
+            <div class="icon-btn">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 4h10M2 7h10M2 10h10"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div style="flex:1; display:flex; min-height:0;">
+          <div class="chat-panel">
+            <div class="chat-content">
+              <div class="chat-messages">
+                <div class="msg user">Why is p99 latency above 1.5s on checkout (prod-web)?</div>
+                <div class="msg ai">Picking this up. Here's the rule that fired and where it stands right now. The checkout-p99-latency-prod rule has been firing for 22 minutes...</div>
+              </div>
+            </div>
+            <div class="chat-input-area">
+              <div class="chat-input">
+                <input type="text" placeholder="Ask anything. Type / for actions.">
+                <div class="send-btn">&#8593;</div>
+              </div>
+            </div>
+          </div>
+          <div class="resize-handle"></div>
+          <div class="canvas-panel">
+            <div class="canvas-empty">
+              <div class="logo">S</div>
+              <p>This canvas is waiting for<br>your visualizations</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     OPTION A (Home state - no chat title)
+     ========================================================= -->
+<div class="demo-section">
+  <h2>Option A — Home State (no chat yet)</h2>
+  <div class="desc">
+    When on the home/landing page, the title area shows a breadcrumb or is empty.
+    The bar remains the same structure — just no title text. Clean and minimal.
+  </div>
+  <div class="demo-frame">
+    <div class="app-shell" style="height:320px;">
+      <div class="left-nav">
+        <div class="nav-icon active">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="9" r="7"/></svg>
+        </div>
+      </div>
+      <div class="main-area">
+        <div class="unified-topbar">
+          <div class="topbar-left">
+            <span style="font-size:13px; color:var(--ink-mute);">PROD-WEB &middot; LAST 30M</span>
+          </div>
+          <div class="topbar-divider"></div>
+          <div class="topbar-right">
+            <div class="canvas-tabs">
+              <div class="canvas-tab active">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="1" width="10" height="10" rx="2"/></svg>
+                New Tab
+                <span class="close">&times;</span>
+              </div>
+              <div class="tab-add">+</div>
+            </div>
+            <div style="width:8px"></div>
+            <div class="views-toggle">
+              <span class="dot"></span>
+              <span class="count">1</span>
+            </div>
+            <div class="icon-btn">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 4h10M2 7h10M2 10h10"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="chat-content">
+          <div class="chat-welcome">
+            <div class="avatar">S</div>
+            <h3>Good afternoon.</h3>
+            <p>A couple of things need a look. Start with either and I'll take it from the top.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     OPTION B: Split Header (each panel owns its header)
+     ========================================================= -->
+<div class="demo-section">
+  <h2>Option B — Split Header (Panel-Owned)</h2>
+  <div class="desc">
+    Each panel (chat and canvas) has its own header section. The divider is structural. 
+    Chat title goes in the left header; canvas tabs go in the right header.
+    No "Views" text at all when the canvas is visible — the panel itself IS the view.
+    A collapse arrow on the canvas side hides it entirely.
+  </div>
+  <div class="demo-frame">
+    <div class="app-shell">
+      <div class="left-nav">
+        <div class="nav-icon active">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="9" r="7"/></svg>
+        </div>
+      </div>
+      <div class="main-area">
+        <!-- SPLIT HEADER -->
+        <div class="split-header">
+          <div class="split-header-chat">
+            <span class="chat-title">Investigate: p99 latency > 1.5s on checkout</span>
+            <div style="flex:1"></div>
+            <div class="icon-btn" title="New thread">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 7h10M7 2v10"/></svg>
+            </div>
+          </div>
+          <div class="split-header-canvas">
+            <div class="icon-btn" title="Collapse canvas">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 2l5 5-5 5"/></svg>
+            </div>
+            <div class="canvas-tabs">
+              <div class="canvas-tab active">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="1" width="10" height="10" rx="2"/></svg>
+                New Tab
+                <span class="close">&times;</span>
+              </div>
+              <div class="tab-add">+</div>
+            </div>
+            <div style="flex:1"></div>
+            <div class="icon-btn">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 4h10M2 7h10M2 10h10"/></svg>
+            </div>
+          </div>
+        </div>
+        <!-- Content -->
+        <div style="flex:1; display:flex; min-height:0;">
+          <div class="chat-panel">
+            <div class="chat-content">
+              <div class="chat-messages">
+                <div class="msg user">Why is p99 latency above 1.5s on checkout?</div>
+                <div class="msg ai">Let me check the alerting rule and recent traces...</div>
+              </div>
+            </div>
+            <div class="chat-input-area">
+              <div class="chat-input">
+                <input type="text" placeholder="Ask anything. Type / for actions.">
+                <div class="send-btn">&#8593;</div>
+              </div>
+            </div>
+          </div>
+          <div class="resize-handle"></div>
+          <div class="canvas-panel">
+            <div class="canvas-empty">
+              <div class="logo">S</div>
+              <p>This canvas is waiting for<br>your visualizations</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     OPTION C: Inline Floating Title (ChatGPT-style)
+     ========================================================= -->
+<div class="demo-section">
+  <h2>Option C — Inline Floating Title (ChatGPT style)</h2>
+  <div class="desc">
+    No traditional top bar for the chat. The title is a sticky frosted-glass bar INSIDE the chat scroll area.
+    It appears after the first AI response (the title is generated).
+    Canvas tabs live in a minimal bar at the very top, which is just the collapse toggle + tabs.
+    This keeps the title close to the conversation context, not competing with views controls.
+  </div>
+  <div class="demo-frame">
+    <div class="app-shell">
+      <div class="left-nav">
+        <div class="nav-icon active">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="9" r="7"/></svg>
+        </div>
+      </div>
+      <div class="main-area">
+        <!-- Minimal top bar: just canvas controls -->
+        <div style="display:flex; align-items:center; height:40px; padding:0 12px; border-bottom:1px solid var(--surface-border); background:var(--surface);">
+          <div style="flex:1"></div>
+          <div class="canvas-tabs">
+            <div class="canvas-tab active" style="padding:4px 10px; font-size:12px;">
+              <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="1" width="8" height="8" rx="1.5"/></svg>
+              New Tab
+              <span class="close">&times;</span>
+            </div>
+            <div class="tab-add" style="width:20px;height:20px;font-size:12px;">+</div>
+          </div>
+          <div style="width:8px"></div>
+          <div class="views-toggle" style="padding:3px 7px; font-size:11px;">
+            <span class="dot" style="width:5px;height:5px;"></span>
+            <span class="count">1</span>
+          </div>
+        </div>
+        <div style="flex:1; display:flex; min-height:0;">
+          <div class="chat-panel">
+            <div class="chat-content" style="position:relative;">
+              <!-- Floating title -->
+              <div class="floating-title-bar">
+                <span class="chat-title generating">Investigate: p99 latency > 1.5s on checkout</span>
+                <div style="flex:1"></div>
+                <div class="icon-btn" style="width:24px;height:24px;">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 2l4 4-4 4"/></svg>
+                </div>
+              </div>
+              <div class="chat-messages" style="margin-top:12px;">
+                <div class="msg user">Why is p99 latency above 1.5s on checkout?</div>
+                <div class="msg ai">Picking this up. Here's what I found — the checkout-p99-latency-prod rule has been firing for 22m. Current value is 1.82s against a 1.5s threshold.</div>
+              </div>
+            </div>
+            <div class="chat-input-area">
+              <div class="chat-input">
+                <input type="text" placeholder="Ask anything. Type / for actions.">
+                <div class="send-btn">&#8593;</div>
+              </div>
+            </div>
+          </div>
+          <div class="resize-handle"></div>
+          <div class="canvas-panel">
+            <div class="canvas-empty">
+              <div class="logo">S</div>
+              <p>Canvas ready</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     OPTION D: Contextual Collapse — "Views" disappears when open
+     ========================================================= -->
+<div class="demo-section">
+  <h2>Option D — Contextual Collapse (Your current layout, refined)</h2>
+  <div class="desc">
+    Keeps your existing structure but fixes the "Views 1" text problem:
+    <br>- When canvas is CLOSED: show "Views &middot; 1" as a button on the right
+    <br>- When canvas is OPEN: the text disappears entirely — the panel itself is proof.
+    A small collapse chevron replaces it.
+    <br>Chat title appears inline as a centered pill when a conversation starts.
+  </div>
+  <div class="demo-frame">
+    <div class="app-shell">
+      <div class="left-nav">
+        <div class="nav-icon active">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="9" r="7"/></svg>
+        </div>
+      </div>
+      <div class="main-area">
+        <!-- Top bar: title centered, collapse on right edge -->
+        <div class="contextual-topbar">
+          <div style="flex:1"></div>
+          <span class="chat-title" style="font-size:13px; font-weight:600; text-align:center;">Investigate: p99 latency > 1.5s on checkout (prod-web)</span>
+          <div style="flex:1; display:flex; justify-content:flex-end; align-items:center; gap:4px;">
+            <!-- No "Views 1" text — just a tiny collapse icon for the canvas -->
+            <div class="icon-btn" title="Hide canvas" style="width:28px; height:28px;">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 2l4 4-4 4"/></svg>
+            </div>
+          </div>
+        </div>
+        <!-- Content -->
+        <div style="flex:1; display:flex; min-height:0;">
+          <div class="chat-panel">
+            <div class="chat-content">
+              <div class="chat-messages">
+                <div class="msg user">What's going on with checkout latency?</div>
+                <div class="msg ai">The p99 has been above threshold for 22 minutes. Let me pull up the traces...</div>
+              </div>
+            </div>
+            <div class="chat-input-area">
+              <div class="chat-input">
+                <input type="text" placeholder="Ask anything. Type / for actions.">
+                <div class="send-btn">&#8593;</div>
+              </div>
+            </div>
+          </div>
+          <div class="resize-handle"></div>
+          <div class="canvas-panel">
+            <!-- Canvas has its own minimal tab bar -->
+            <div style="display:flex; align-items:center; height:40px; padding:0 10px; border-bottom:1px solid var(--surface-border);">
+              <div class="canvas-tabs">
+                <div class="canvas-tab active" style="padding:4px 10px; font-size:12px;">
+                  <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="1" width="8" height="8" rx="1.5"/></svg>
+                  New Tab
+                  <span class="close">&times;</span>
+                </div>
+                <div class="tab-add" style="width:20px;height:20px;font-size:12px;">+</div>
+              </div>
+              <div style="flex:1"></div>
+              <div class="icon-btn" style="width:24px; height:24px;">
+                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 4h8M2 7h8M2 10h8"/></svg>
+              </div>
+            </div>
+            <div class="canvas-empty">
+              <div class="logo">S</div>
+              <p>This canvas is waiting for<br>your visualizations</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     OPTION E: Tab Bar with Chat as a "tab" (Linear / Vercel style)
+     ========================================================= -->
+<div class="demo-section">
+  <h2>Option E — Chat IS a Tab (Linear / Vercel v0 style)</h2>
+  <div class="desc">
+    Both chat and canvas tabs live in a single tab bar. "Chat" is a persistent first tab 
+    whose label becomes the conversation title once started. This makes the chat feel 
+    like another artifact/view rather than a separate layer.
+    Cleanest separation of concerns — no "Views" concept needed at all.
+  </div>
+  <div class="demo-frame">
+    <div class="app-shell">
+      <div class="left-nav">
+        <div class="nav-icon active">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="9" cy="9" r="7"/></svg>
+        </div>
+      </div>
+      <div class="main-area">
+        <!-- Single tab bar for everything -->
+        <div style="display:flex; align-items:center; height:44px; padding:0 12px; border-bottom:1px solid var(--surface-border); background:var(--surface); gap:2px;">
+          <!-- Chat tab (with title) -->
+          <div class="canvas-tab active" style="padding:6px 14px;">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M2 3h8v6a1 1 0 01-1 1H3a1 1 0 01-1-1V3z"/><path d="M4 6h4M4 8h2"/></svg>
+            <span style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Investigate: p99 latency</span>
+          </div>
+          <!-- Canvas tab -->
+          <div class="canvas-tab">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="1" width="10" height="10" rx="2"/></svg>
+            Latency Dashboard
+            <span class="close">&times;</span>
+          </div>
+          <div class="canvas-tab">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="1" width="10" height="10" rx="2"/></svg>
+            Traces
+            <span class="close">&times;</span>
+          </div>
+          <div class="tab-add">+</div>
+          <div style="flex:1"></div>
+          <!-- Layout toggle -->
+          <div class="icon-btn" title="Side by side">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="1" y="2" width="12" height="10" rx="2"/><path d="M7 2v10"/></svg>
+          </div>
+          <div class="icon-btn" title="Fullscreen chat">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="2" width="10" height="10" rx="2"/></svg>
+          </div>
+        </div>
+        <!-- Content: side-by-side with active chat + canvas -->
+        <div style="flex:1; display:flex; min-height:0;">
+          <div class="chat-panel">
+            <div class="chat-content">
+              <div class="chat-messages">
+                <div class="msg user">What's the p99 on checkout?</div>
+                <div class="msg ai">Currently 1.82s — 21% above the 1.5s threshold. It's been elevated for 22 minutes. I'll pull up the latency distribution.</div>
+              </div>
+            </div>
+            <div class="chat-input-area">
+              <div class="chat-input">
+                <input type="text" placeholder="Ask anything. Type / for actions.">
+                <div class="send-btn">&#8593;</div>
+              </div>
+            </div>
+          </div>
+          <div class="resize-handle"></div>
+          <div class="canvas-panel">
+            <div class="canvas-empty">
+              <div class="logo">S</div>
+              <p>Select a canvas tab to view</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- =========================================================
+     COMPARISON NOTES
+     ========================================================= -->
+<div class="demo-section">
+  <h2>Comparison & Recommendation</h2>
+  <div class="desc" style="line-height:1.7; max-width:720px;">
+    <table style="width:100%; border-collapse:collapse; font-size:13px; margin-top:8px;">
+      <thead>
+        <tr style="border-bottom:2px solid var(--surface-border); text-align:left;">
+          <th style="padding:8px 12px;">Option</th>
+          <th style="padding:8px 12px;">Title Strategy</th>
+          <th style="padding:8px 12px;">Views Handling</th>
+          <th style="padding:8px 12px;">Pros</th>
+          <th style="padding:8px 12px;">Cons</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--surface-border);">
+          <td style="padding:8px 12px; font-weight:600;">A. Unified</td>
+          <td style="padding:8px 12px;">Left-aligned in top bar</td>
+          <td style="padding:8px 12px;">Compact pill (icon + count)</td>
+          <td style="padding:8px 12px;">Predictable, scalable, familiar</td>
+          <td style="padding:8px 12px;">Long titles compete with tabs</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--surface-border);">
+          <td style="padding:8px 12px; font-weight:600;">B. Split</td>
+          <td style="padding:8px 12px;">In chat's own header</td>
+          <td style="padding:8px 12px;">Implicit (panel is visible)</td>
+          <td style="padding:8px 12px;">Clear ownership, no collision</td>
+          <td style="padding:8px 12px;">Double header height feeling</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--surface-border);">
+          <td style="padding:8px 12px; font-weight:600;">C. Floating</td>
+          <td style="padding:8px 12px;">Sticky inside scroll area</td>
+          <td style="padding:8px 12px;">Minimal top bar</td>
+          <td style="padding:8px 12px;">Immersive, ChatGPT-familiar</td>
+          <td style="padding:8px 12px;">Title disappears on scroll</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--surface-border);">
+          <td style="padding:8px 12px; font-weight:600;">D. Contextual</td>
+          <td style="padding:8px 12px;">Centered pill</td>
+          <td style="padding:8px 12px;">Hidden when canvas open</td>
+          <td style="padding:8px 12px;">Minimal change from current</td>
+          <td style="padding:8px 12px;">Centered titles get cramped</td>
+        </tr>
+        <tr>
+          <td style="padding:8px 12px; font-weight:600;">E. Chat=Tab</td>
+          <td style="padding:8px 12px;">Tab label IS the title</td>
+          <td style="padding:8px 12px;">No views concept needed</td>
+          <td style="padding:8px 12px;">Cleanest mental model</td>
+          <td style="padding:8px 12px;">Biggest departure from current</td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <strong>Recommended:</strong> Option A (or E if you want a bigger rethink). 
+    Option A gives you: title always visible, "Views" indicator becomes minimal when panel is open (just a dot+count pill), 
+    canvas tabs live in their natural position on the right, and the vertical divider visually separates the two concerns.
+    The shimmer animation on title generation adds a nice touch of life.
+  </div>
+</div>
+
+<div style="height:60px;"></div>
+
+</body>
+</html>

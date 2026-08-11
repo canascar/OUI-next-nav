@@ -143,6 +143,15 @@ export const GuidePageHeader: React.FunctionComponent<{}> = () => {
               Onboarding
             </OuiContextMenuItem>,
             <OuiContextMenuItem
+              key="onboarding-previous"
+              icon="empty"
+              onClick={() => {
+                setSamplePagesPopoverOpen(false);
+                window.location.hash = '/onboarding-wizard-previous';
+              }}>
+              Onboarding (previous)
+            </OuiContextMenuItem>,
+            <OuiContextMenuItem
               key="day-n"
               icon="empty"
               onClick={() => {
@@ -150,15 +159,6 @@ export const GuidePageHeader: React.FunctionComponent<{}> = () => {
                 window.location.hash = '/login';
               }}>
               Day N experience
-            </OuiContextMenuItem>,
-            <OuiContextMenuItem
-              key="home"
-              icon="empty"
-              onClick={() => {
-                setSamplePagesPopoverOpen(false);
-                window.location.hash = '/home';
-              }}>
-              Home
             </OuiContextMenuItem>,
           ]}
         />

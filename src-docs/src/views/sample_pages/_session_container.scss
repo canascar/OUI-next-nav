@@ -11,23 +11,44 @@
 
 // sass-lint:disable no-misspelled-properties
 
+// The shell is a column: a topbar that never scrolls, then the panels row.
+// Only the panels' own content scrolls, so the topbar's offsetTop is constant
+// without any position: sticky.
 .sessionContainer {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   flex: 1;
   min-width: 0;
   overflow: hidden;
-  gap: 10px;
-  padding: 14px 14px 14px 0;
+  padding: 7px 7px 7px 0;
   height: 100%;
   position: relative;
   background-color: transparent;
   border-radius: 0;
 }
 
+.sessionContainer__panels {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  gap: 7px;
+}
+
 // Remove gap when chat pane is minimized so page panel reaches the left edge
-.sessionContainer--chatMinimized {
+.sessionContainer--chatMinimized .sessionContainer__panels {
   gap: 0;
+}
+
+// ─── Topbar (removed — title now lives inside ThreadPanel header) ────────────
+
+// Collapsed panel keeps no width and no chrome — the topbar trigger is the
+// only way back, so nothing is left behind to click.
+.sessionContainer__pagePanelWrap--collapsed {
+  border: none;
+  box-shadow: none;
+  background: none;
 }
 
 // Right pane wrapper — glassmorphism card
@@ -48,51 +69,6 @@
 
 .sessionContainer__pagePanelWrap--animating {
   transition: width 500ms cubic-bezier(0.16, 0.9, 0.3, 1);
-}
-
-// Collapsed panel strip (inside pagePanelWrap when full-screen)
-.sessionContainer__collapsedPanel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  height: 100%;
-  width: 100%;
-  background-color: transparent;
-  border-radius: 12px;
-  padding: 0 !important; // sass-lint:disable-line no-important
-}
-
-.sessionContainer__collapsedTabs {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 4px;
-  padding: 0;
-  width: 100%;
-
-  // First child (list icon popover) — match tab bar height with border
-  > *:first-child {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 48px;
-    border-bottom: 1px solid $ouiBorderColor;
-    flex-shrink: 0;
-  }
-
-  // Tab icons below the border
-  > *:not(:first-child) {
-    margin-top: 4px;
-  }
-
-  // Every child centers horizontally
-  > * {
-    margin-left: auto;
-    margin-right: auto;
-  }
 }
 
 // Entrance animation — panels expand from edges when transitioning from empty session
@@ -223,8 +199,10 @@
 
 // ─── Responsive: mobile layout ────────────────────────────────
 @media (max-width: 768px) {
-  .sessionContainer {
-    padding-top: 44px;
+  // The back button is fixed at the top-left, so the topbar indents to clear
+  // it rather than the whole shell pushing down below it.
+  .sessionContainer__topbar {
+    padding-left: 52px;
   }
 
   .sessionContainer__mobileBack {

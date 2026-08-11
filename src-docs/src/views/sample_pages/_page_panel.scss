@@ -37,58 +37,38 @@
   align-items: center;
   border-bottom: 1px solid $ouiBorderColor;
   flex-shrink: 0;
-  height: 48px;
-  padding: 0 0 0 $ouiSizeS;
-  gap: $ouiSizeS;
+  height: 38px;
+  padding: 0 8px;
+  gap: 0;
 
   .sessionContainer--chatMinimized & {
-    padding-left: 0;
+    padding-left: 12px;
   }
 }
 
-// Scrollable tab list container
+// Tab list — never wraps and never scrolls horizontally. Overflowing tabs
+// shrink; the ☰ dropdown at the far right is how you reach any of them.
 .pagePanel__tabList {
   display: flex;
   flex-direction: row;
   flex: 1;
   min-width: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: hidden;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: $ouiSizeS;
-
-  // Hide scrollbar completely
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  // Fade right edge only (scrolled to start)
-  &--fade-right {
-    -webkit-mask-image: linear-gradient(to right, black calc(100% - 32px), transparent);
-    mask-image: linear-gradient(to right, black calc(100% - 32px), transparent);
-  }
-
-  // Fade left edge only (scrolled to end)
-  &--fade-left {
-    -webkit-mask-image: linear-gradient(to right, transparent, black 32px);
-    mask-image: linear-gradient(to right, transparent, black 32px);
-  }
-
-  // Fade both edges (scrolled in the middle)
-  &--fade-both {
-    -webkit-mask-image: linear-gradient(to right, transparent, black 32px, black calc(100% - 32px), transparent);
-    mask-image: linear-gradient(to right, transparent, black 32px, black calc(100% - 32px), transparent);
-  }
+  gap: 0;
 }
-// Separator between tabs
-.pagePanel__tabSeparator {
-  width: 1px;
-  height: 16px;
-  background-color: $ouiColorLightShade;
+
+// Collapse chevron — closes the panel, keeping every tab
+.pagePanel__collapseButton {
   flex-shrink: 0;
+}
+
+// Chat bubble toggle — left of tabs
+.pagePanel__chatToggle {
+  flex-shrink: 0;
+  margin-left: 2px;
+  margin-right: 8px;
 }
 
 // ============================================================
@@ -99,63 +79,79 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: $ouiSizeS;
-  padding: $ouiSizeS 12px;
+  gap: 5px;
+  padding: 0 10px;
   cursor: pointer;
   white-space: nowrap;
-  border-radius: 6px;
-  height: 34px;
-  border: 1px solid transparent;
-  transition: background-color 150ms ease-in-out, border-color 150ms ease-in-out,
+  border-radius: 0;
+  height: 38px;
+  border: none;
+  position: relative;
+  transition: color 120ms ease,
     transform 200ms cubic-bezier(0.2, 0.7, 0.2, 1);
-  flex-shrink: 0;
+  flex: 0 1 auto;
+  min-width: 0;
   outline: none;
+  color: lightOrDarkTheme(rgba(10, 10, 10, 0.52), rgba(250, 250, 250, 0.52));
+  font-size: $ouiFontSizeS;
+
+  // Underline via pseudo — sits at the very bottom, touching the bar's border
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: transparent;
+    transition: background-color 120ms ease;
+  }
+
+  // Thin tick separator between inactive tabs
+  &::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 25%;
+    height: 50%;
+    width: 1px;
+    background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.12), rgba(255, 255, 255, 0.12));
+    transition: opacity 120ms ease;
+  }
+
+  &:last-of-type::after {
+    opacity: 0;
+  }
 
   &:hover {
-    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.04), rgba($ouiColorPrimary, 0.08));
+    color: $ouiTextColor;
   }
 
-  &:focus-visible {
-    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.04), rgba($ouiColorPrimary, 0.08));
-  }
-
-  // Active tab — subtle primary color highlight (softer than an active outline button)
+  // Active tab — ink text, medium weight, quiet underline
   &--active {
-    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.06), rgba($ouiColorPrimary, 0.12));
-    border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.3), rgba($ouiColorPrimary, 0.4));
+    color: $ouiTextColor;
+
+    &::before {
+      background-color: $ouiColorPrimary;
+    }
 
     .pagePanel__tabTitle {
-      color: $ouiColorPrimaryText;
-    }
-
-    // Leading icon and close button follow the title color when active
-    > .ouiIcon,
-    .pagePanel__tabClose .ouiIcon {
-      color: $ouiColorPrimaryText;
-      fill: $ouiColorPrimaryText;
-    }
-
-    &:hover {
-      background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.1), rgba($ouiColorPrimary, 0.16));
-      border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.4), rgba($ouiColorPrimary, 0.5));
+      font-weight: $ouiFontWeightSemiBold;
     }
   }
 
-  // Drag-to-reorder: the dragged tab stays visible and glides to its target
-  // slot (lifted above the others), while neighbors slide aside to make room.
+  // Drag-to-reorder
   &--dragging {
     z-index: 2;
-    pointer-events: none; // let dragover reach the tabs underneath
-    background-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.08), rgba($ouiColorPrimary, 0.16));
-    border-color: lightOrDarkTheme(rgba($ouiColorPrimary, 0.4), rgba($ouiColorPrimary, 0.5));
-    box-shadow: 0 6px 18px lightOrDarkTheme(rgba(0, 0, 0, 0.14), rgba(0, 0, 0, 0.5));
+    pointer-events: none;
+    color: $ouiTextColor;
+    box-shadow: 0 4px 12px lightOrDarkTheme(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4));
     cursor: grabbing;
-  }
-}
 
-// While reordering, drop the separators so the sliding tabs stay aligned.
-.pagePanel__tabList--reordering .pagePanel__tabSeparator {
-  opacity: 0;
+    &::before {
+      background-color: $ouiColorPrimary;
+    }
+  }
 }
 
 // Tab title text
@@ -163,16 +159,23 @@
   font-size: $ouiFontSizeXS;
   color: $ouiTextColor;
   max-width: 140px;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-// Close button wrapper — visible only on active tab
+// The type icon holds its size while the title absorbs the squeeze.
+.pagePanel__tab > .ouiIcon {
+  flex: none;
+}
+
+// Close button — only visible on the active tab; hover state for feedback
 .pagePanel__tabClose {
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
+  flex: none;
   margin-left: 0;
   border: none;
   background: none;
@@ -180,8 +183,25 @@
   cursor: pointer;
   border-radius: $ouiBorderRadius;
 
+  .pagePanel__tab--active & {
+    display: flex;
+  }
+
   &:hover {
     background-color: rgba($ouiColorDarkestShade, 0.1);
+  }
+}
+
+// ✕ close canvas button
+.pagePanel__closeButton {
+  flex: none;
+  display: flex;
+  align-items: center;
+  opacity: 0.5;
+  transition: opacity 120ms ease;
+
+  &:hover {
+    opacity: 1;
   }
 }
 
@@ -191,6 +211,11 @@
 
 .pagePanel__addTabButton {
   flex-shrink: 0;
+  opacity: 0.5;
+
+  &:hover {
+    opacity: 1;
+  }
 }
 
 // ============================================================
@@ -201,11 +226,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 8px;
-  height: 100%;
-  border-left: 1px solid $ouiBorderColor;
+  padding: 0 4px;
   margin-left: auto;
   flex-shrink: 0;
+  gap: 4px;
 }
 
 // Popover content listing all tabs
@@ -217,7 +241,9 @@
 }
 
 .pagePanel__tabListItem {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   width: 100%;
   padding: $ouiSizeS $ouiSizeM;
   border: none;
@@ -333,34 +359,6 @@
 .pagePanel .detailPageHeader__actions {
   border-bottom: none;
   padding-right: 16px;
-}
-
-// AI button in tab bar (when chat minimized)
-.pagePanel__aiButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 48px;
-  padding: 0;
-  height: 100%;
-  border-right: 1px solid $ouiBorderColor;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  position: relative;
-
-  &--highlight {
-    animation: aiButtonPulse 1.5s ease-in-out infinite;
-  }
-}
-
-@keyframes aiButtonPulse {
-  0%, 100% {
-    background-color: transparent;
-  }
-  50% {
-    background-color: rgba($ouiColorPrimary, 0.1);
-  }
 }
 
 // Floating AI popover below the generate icon

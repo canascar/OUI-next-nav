@@ -38,8 +38,8 @@ import {
 import { LoginPage } from './views/sample_pages/login_page';
 
 import { OnboardingWizardPage } from './views/sample_pages/onboarding_wizard_page';
+import { OnboardingPage } from './views/sample_pages/onboarding_page';
 import { MarketingPage } from './views/sample_pages/marketing_page';
-import { FirstRunPage } from './views/sample_pages/first_run_page';
 
 registerTheme('light', [themeLight]);
 registerTheme('dark', [themeDark]);
@@ -75,6 +75,14 @@ render(
         <ScrollToHash />
         <Switch>
           <Route
+            path="/onboarding-wizard-previous"
+            render={() => (
+              <LinkWrapper>
+                <OnboardingPage />
+              </LinkWrapper>
+            )}
+          />
+          <Route
             path="/onboarding-wizard"
             render={() => (
               <LinkWrapper>
@@ -87,14 +95,6 @@ render(
             render={() => (
               <LinkWrapper>
                 <MarketingPage />
-              </LinkWrapper>
-            )}
-          />
-          <Route
-            path="/first-run"
-            render={() => (
-              <LinkWrapper>
-                <FirstRunPage />
               </LinkWrapper>
             )}
           />
@@ -220,10 +220,18 @@ render(
             )}
           />
           <Route
-            path="/sample-pages"
+            path="/sample-page-previous"
             render={() => (
               <LinkWrapper>
                 <SessionPagesView key="v7" variant="v7" />
+              </LinkWrapper>
+            )}
+          />
+          <Route
+            path="/sample-pages"
+            render={() => (
+              <LinkWrapper>
+                <SessionPagesView key="mcp" variant="mcp-investigation" />
               </LinkWrapper>
             )}
           />

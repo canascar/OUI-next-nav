@@ -1,0 +1,910 @@
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * The OpenSearch Contributors require contributions made to
+ * this file be licensed under the Apache-2.0 license or a
+ * compatible open source license.
+ *
+ * Modifications Copyright OpenSearch Contributors. See
+ * GitHub history for details.
+ */
+
+// MCP investigation journey — home greeting, inline MCP app cards, evidence
+// links, the recommendation, the alert rule, and the closing memory card. Cards
+// build on the shared .threadPage__attachment frame so they read as the same
+// object family.
+
+// ---------------------------------------------------------------------------
+// Home greeting — the findings list
+// ---------------------------------------------------------------------------
+
+// Centered while the content fits, scrolled from the top once it doesn't —
+// `align-items: center` alone would clip the greeting off the top of a short
+// viewport, since a flex item overflowing a centered container can't scroll up.
+.mcpHome {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: var(--g-space-6);
+  overflow-y: auto;
+
+  > * {
+    margin: auto;
+  }
+}
+
+.mcpHome__inner {
+  width: 100%;
+  max-width: 560px;
+  text-align: left;
+}
+
+.mcpHome__eyebrow {
+  font-family: var(--g-font-mono);
+  font-size: var(--g-text-meta);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--g-ink-mute);
+  margin-bottom: var(--g-space-3);
+}
+
+// Olly + status dot. The row itself is the shared .v6Scenario__mascotRow; it
+// caps at 480px for Overview's narrower column, so widen it to this page's
+// content width and give the greeting below it a little air.
+.mcpHome__mascotRow {
+  max-width: 100%;
+  margin-bottom: var(--g-space-1);
+}
+
+.mcpHome__title {
+  font-size: var(--g-text-hero);
+  font-weight: 600;
+  color: var(--g-ink-bright);
+  margin: 0 0 var(--g-space-2);
+  letter-spacing: -0.01em;
+}
+
+.mcpHome__lede {
+  font-size: var(--g-text-lg);
+  color: var(--g-ink-soft);
+  margin: 0 0 var(--g-space-6);
+  line-height: 1.5;
+}
+
+// Findings list on the home greeting. The rows themselves are the shared
+// .v6Scenario__findingCard component; this only spaces the list.
+.mcpHome__findings {
+  margin-bottom: 0;
+}
+
+// Ask-anything input. The shimmer + inner layout are shared with Overview home
+// (.emptySessionPage__inputField / __inputActions); this wrapper just spaces it
+// and gives the textarea its own compact rules so it doesn't need to pull in
+// v3-specific typography.
+//
+// SurroundShimmer bleeds 36px past its box on every side (it pads then negative-
+// margins by the same amount so the dot field can spill), so the gap above has
+// to clear that much before it reads as a gap at all — otherwise the dots creep
+// into the findings row above.
+.mcpHome__inputArea {
+  $shimmerBleed: 36px;
+
+  margin-top: calc(#{$shimmerBleed} + var(--g-space-5));
+}
+
+.mcpHome__textarea {
+  width: 100%;
+  min-height: 88px;
+  padding: 12px 12px 40px;
+  border: none;
+  border-radius: 8px;
+  background-color: transparent;
+  color: var(--g-ink-bright);
+  font-family: inherit;
+  font-size: var(--g-text-body);
+  line-height: 1.4;
+  resize: none;
+  outline: none;
+
+  &::placeholder {
+    color: var(--g-ink-mute);
+  }
+}
+
+// Jump-to chips. Shared .v6Scenario__jumpTo* classes; this only clears the
+// shimmer's bottom bleed above and drops the 480px cap Overview's column needs.
+.mcpHome__jumpTo {
+  max-width: 100%;
+  padding-top: calc(36px + var(--g-space-3));
+  justify-content: center;
+}
+
+// ---------------------------------------------------------------------------
+// Shared MCP app card chrome
+// ---------------------------------------------------------------------------
+
+.threadPage__attachment.mcpApp {
+  padding: 0;
+  overflow: hidden;
+  scroll-margin: 80px;
+  transition: box-shadow var(--g-dur-slow) var(--g-ease-out);
+}
+
+// Flash when an evidence link scrolls to a card.
+.mcpApp--flash {
+  box-shadow: 0 0 0 2px var(--g-accent-ring);
+}
+
+.mcpApp__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--g-space-2);
+  padding: 8px 12px;
+  background: var(--g-surface-muted);
+  border-bottom: 1px solid var(--g-hairline);
+}
+
+.mcpApp__app {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--g-font-mono);
+  font-size: var(--g-text-meta);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--g-ink-mute);
+}
+
+.mcpApp__badge {
+  flex: none;
+  font-size: var(--g-text-xs);
+  font-weight: 600;
+  border-radius: var(--g-radius-pill);
+  padding: 2px 9px;
+
+  &--danger {
+    color: var(--g-danger);
+    background: var(--g-danger-soft);
+  }
+  &--warn {
+    color: var(--g-warn);
+    background: var(--g-warn-soft);
+  }
+  &--success {
+    color: var(--g-success);
+    background: var(--g-success-soft);
+  }
+  &--neutral {
+    color: var(--g-ink-mute);
+    background: var(--g-ink-ghost);
+  }
+}
+
+.mcpApp__title {
+  padding: 12px 12px 0;
+  font-size: var(--g-text-body);
+  font-weight: 600;
+  color: var(--g-ink-bright);
+  line-height: 1.35;
+}
+
+.mcpApp__subtitle {
+  padding: 2px 12px 0;
+  font-family: var(--g-font-mono);
+  font-size: var(--g-text-meta);
+  color: var(--g-ink-mute);
+}
+
+.mcpApp__body {
+  padding: 12px;
+}
+
+.mcpApp__note {
+  margin: 10px 0 0;
+  font-size: var(--g-text-sm);
+  color: var(--g-ink-soft);
+  line-height: 1.45;
+}
+
+// Stat rows -----------------------------------------------------------------
+
+.mcpApp__statRow {
+  display: flex;
+  gap: var(--g-space-4);
+  flex-wrap: wrap;
+}
+
+.mcpApp__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mcpApp__statLabel {
+  font-size: var(--g-text-xs);
+  color: var(--g-ink-mute);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.mcpApp__statValue {
+  font-size: var(--g-text-lg);
+  font-weight: 600;
+  color: var(--g-ink-bright);
+  font-variant-numeric: tabular-nums;
+
+  &--danger {
+    color: var(--g-danger);
+  }
+}
+
+.mcpApp__metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px var(--g-space-5);
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--g-hairline);
+}
+
+.mcpApp__metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.mcpApp__metaLabel {
+  font-size: var(--g-text-xs);
+  color: var(--g-ink-mute);
+}
+
+.mcpApp__metaValue {
+  font-size: var(--g-text-sm);
+  color: var(--g-ink);
+}
+
+// Logs ----------------------------------------------------------------------
+
+.mcpApp__query {
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: var(--g-surface-subtle);
+  border-radius: var(--g-radius-sm);
+  font-family: var(--g-font-mono);
+  font-size: var(--g-text-xs);
+  color: var(--g-ink-soft);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.mcpApp__logLines {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--g-hairline);
+  border-radius: var(--g-radius-sm);
+  overflow: hidden;
+}
+
+.mcpApp__logLine {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 8px;
+  align-items: baseline;
+  padding: 6px 10px;
+  font-family: var(--g-font-mono);
+  font-size: var(--g-text-xs);
+  line-height: 1.45;
+
+  & + & {
+    border-top: 1px solid var(--g-hairline);
+  }
+}
+
+.mcpApp__logTs {
+  color: var(--g-ink-mute);
+  white-space: nowrap;
+}
+
+.mcpApp__logLevel {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+
+  &--error {
+    color: var(--g-danger);
+  }
+  &--warn {
+    color: var(--g-warn);
+  }
+}
+
+.mcpApp__logText {
+  color: var(--g-ink);
+  word-break: break-word;
+}
+
+// Trace waterfall -----------------------------------------------------------
+
+.mcpApp__waterfall {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mcpApp__spanGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.mcpApp__span {
+  display: grid;
+  grid-template-columns: minmax(120px, 1.4fr) 2fr auto;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  padding: 5px 8px;
+  border: none;
+  border-radius: var(--g-radius-sm);
+  background: transparent;
+  text-align: left;
+  font-size: var(--g-text-sm);
+  color: var(--g-ink);
+
+  &--clickable {
+    cursor: pointer;
+    transition: background-color var(--g-dur-fast) var(--g-ease-std);
+
+    &:hover {
+      background: var(--g-accent-soft);
+    }
+  }
+
+  &--open {
+    background: var(--g-accent-soft);
+  }
+}
+
+.mcpApp__spanName {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--g-font-mono);
+  font-size: var(--g-text-xs);
+}
+
+.mcpApp__span--bad .mcpApp__spanName {
+  color: var(--g-danger);
+  font-weight: 600;
+}
+
+.mcpApp__spanCaret {
+  flex: none;
+  color: var(--g-ink-mute);
+}
+
+.mcpApp__spanTrack {
+  position: relative;
+  height: 12px;
+  border-radius: var(--g-radius-pill);
+  background: var(--g-surface-subtle);
+}
+
+.mcpApp__spanBar {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  min-width: 3px;
+  border-radius: var(--g-radius-pill);
+  background: var(--g-accent-dim);
+}
+
+.mcpApp__span--bad .mcpApp__spanBar {
+  background: var(--g-danger);
+}
+
+.mcpApp__spanDuration {
+  font-family: var(--g-font-mono);
+  font-size: var(--g-text-xs);
+  color: var(--g-ink-soft);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.mcpApp__span--bad .mcpApp__spanDuration {
+  color: var(--g-danger);
+  font-weight: 600;
+}
+
+.mcpApp__spanDetail {
+  margin: 2px 0 6px 8px;
+  padding: 8px 10px;
+  border-left: 2px solid var(--g-danger);
+  background: var(--g-danger-soft);
+  border-radius: 0 var(--g-radius-sm) var(--g-radius-sm) 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px 12px;
+}
+
+.mcpApp__spanAttr {
+  display: contents;
+}
+
+.mcpApp__spanAttrKey {
+  font-family: var(--g-font-mono);
+  font-size: var(--g-text-xs);
+  color: var(--g-ink-mute);
+}
+
+.mcpApp__spanAttrValue {
+  font-family: var(--g-font-mono);
+  font-size: var(--g-text-xs);
+  color: var(--g-ink-bright);
+  font-weight: 600;
+}
+
+// Metrics chart -------------------------------------------------------------
+
+.mcpApp__chart {
+  position: relative;
+  height: 100px;
+  margin-bottom: 4px;
+}
+
+.mcpApp__chartSvg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.mcpApp__chartMarker {
+  position: absolute;
+  top: 0;
+  transform: translateX(4px);
+  font-family: var(--g-font-mono);
+  font-size: var(--g-text-micro);
+  color: var(--g-ink-mute);
+  white-space: nowrap;
+}
+
+.mcpApp__chartAxis {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--g-font-mono);
+  font-size: var(--g-text-micro);
+  color: var(--g-ink-mute);
+  margin-bottom: 12px;
+}
+
+// Event markers call out the moment something broke, so they carry the warn
+// color rather than the muted deploy-marker treatment.
+.mcpApp__chartMarker--warn {
+  color: var(--g-warn);
+  font-weight: 600;
+}
+
+// Topology — services + agents in one graph -----------------------------------
+
+// Percentage-positioned nodes over an SVG edge layer, so the graph scales with
+// the card instead of needing a fixed pixel canvas.
+.mcpTopo {
+  position: relative;
+  height: 190px;
+  margin-bottom: 12px;
+  background: var(--g-surface-subtle);
+  border: 1px solid var(--g-hairline);
+  border-radius: var(--g-radius-sm);
+}
+
+.mcpTopo__edges {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.mcpTopo__edge {
+  stroke: var(--g-ink-fade);
+  stroke-width: 1;
+}
+
+// The one hot path. Dashes travel from source to target so the direction of the
+// problem is legible without an arrowhead.
+.mcpTopo__edge--hot {
+  stroke: var(--g-danger);
+  stroke-width: 2;
+  stroke-dasharray: 4 3;
+  animation: mcpTopoFlow 900ms linear infinite;
+}
+
+@keyframes mcpTopoFlow {
+  to {
+    stroke-dashoffset: -14;
+  }
+}
+
+.mcpTopo__node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 5px 10px;
+  font-family: var(--g-font-mono);
+  font-size: var(--g-text-xs);
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--g-surface);
+  box-shadow: var(--g-shadow-surface);
+}
+
+// Services are squares.
+.mcpTopo__node--service {
+  border: 1px solid var(--g-accent-dim);
+  border-radius: var(--g-radius-xs);
+  color: var(--g-accent-bright);
+}
+
+// Agents are pills.
+.mcpTopo__node--agent {
+  border: 1px solid #7c3aed;
+  border-radius: var(--g-radius-pill);
+  color: #7c3aed;
+}
+
+// The agent at the center of the spike.
+.mcpTopo__node--alert {
+  border-color: var(--g-danger);
+  color: var(--g-danger);
+  background: var(--g-danger-soft);
+}
+
+.mcpTopo__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px var(--g-space-4);
+  font-size: var(--g-text-xs);
+  color: var(--g-ink-mute);
+}
+
+.mcpTopo__legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.mcpTopo__swatch {
+  width: 10px;
+  height: 10px;
+  flex: none;
+
+  // Same shape language as the nodes they label.
+  &--service {
+    border: 1px solid var(--g-accent-dim);
+    border-radius: var(--g-radius-xs);
+  }
+
+  &--agent {
+    border: 1px solid #7c3aed;
+    border-radius: var(--g-radius-pill);
+  }
+
+  &--hot {
+    height: 2px;
+    width: 14px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--g-danger) 0 4px,
+      transparent 4px 7px
+    );
+  }
+}
+
+.mcpTopo__drill {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--g-hairline);
+}
+
+// Agent spans ----------------------------------------------------------------
+
+// Mono list, one row per span. Same visual weight as the log lines in the
+// checkout flow so the two read as the same kind of evidence.
+.mcpSpans {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--g-hairline);
+  border-radius: var(--g-radius-sm);
+  overflow: hidden;
+}
+
+.mcpSpans__row {
+  display: grid;
+  grid-template-columns: 52px auto 1fr;
+  gap: 8px;
+  align-items: baseline;
+  padding: 7px 10px;
+  font-family: var(--g-font-mono);
+  font-size: var(--g-text-xs);
+  line-height: 1.5;
+
+  & + & {
+    border-top: 1px solid var(--g-hairline);
+  }
+
+  &--bad {
+    background: var(--g-danger-soft);
+  }
+}
+
+.mcpSpans__kind {
+  color: var(--g-ink-mute);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.mcpSpans__arrow {
+  color: var(--g-ink-fade);
+}
+
+.mcpSpans__text {
+  color: var(--g-ink);
+  word-break: break-word;
+}
+
+.mcpSpans__fail {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 8px;
+  color: var(--g-danger);
+  font-weight: 600;
+}
+
+.mcpSpans__meta {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  padding: 1px 7px;
+  border-radius: var(--g-radius-pill);
+  background: var(--g-ink-ghost);
+  color: var(--g-ink-soft);
+  font-weight: 600;
+}
+
+// Recommendation handoff ----------------------------------------------------
+
+// Mono footer: says plainly who applies the change. We never do.
+.mcpApp__handoff {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--g-hairline);
+  font-family: var(--g-font-mono);
+  font-size: var(--g-text-xs);
+  color: var(--g-ink-mute);
+}
+
+// Alert rule offer ----------------------------------------------------------
+
+.mcpRule {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.mcpRule__offer {
+  font-size: var(--g-text-sm);
+  color: var(--g-ink-soft);
+}
+
+.mcpRule__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--g-radius-sm);
+  border: 1px solid var(--g-surface-border-strong);
+  background: var(--g-surface);
+  color: var(--g-ink-bright);
+  font-size: var(--g-text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--g-dur-fast) var(--g-ease-std),
+    border-color var(--g-dur-fast) var(--g-ease-std);
+
+  &:hover {
+    background: var(--g-accent-soft);
+    border-color: var(--g-accent-dim);
+  }
+}
+
+.mcpRule__created {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--g-radius-sm);
+  font-size: var(--g-text-sm);
+  font-weight: 600;
+  color: var(--g-success);
+  background: var(--g-success-soft);
+  animation: mcpRuleIn var(--g-dur-normal) var(--g-ease-out) both;
+}
+
+@keyframes mcpRuleIn {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Memory card ---------------------------------------------------------------
+
+// The visible artifact of what the agent kept. Accent-tinted so it reads as
+// the agent's own object rather than another telemetry app card.
+.threadPage__attachment.mcpMemory {
+  border-color: var(--g-accent-dim);
+  border-left: 3px solid var(--g-accent-bright);
+  background: var(--g-accent-soft);
+}
+
+.mcpMemory__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .ouiIcon {
+    flex: none;
+    color: var(--g-accent-bright);
+  }
+}
+
+.mcpMemory__title {
+  font-size: var(--g-text-body);
+  font-weight: 700;
+  color: var(--g-ink-bright);
+}
+
+.mcpMemory__list {
+  margin: 10px 0 0;
+  padding-left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-family: var(--g-font-mono);
+  font-size: var(--g-text-xs);
+  line-height: 1.5;
+  color: var(--g-ink);
+}
+
+// Evidence links ------------------------------------------------------------
+
+.mcpEvidence {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mcpEvidence__label {
+  font-size: var(--g-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--g-ink-mute);
+}
+
+.mcpEvidence__items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.mcpEvidence__chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--g-radius-pill);
+  border: 1px solid var(--g-surface-border);
+  background: var(--g-surface);
+  font-size: var(--g-text-xs);
+  color: var(--g-ink-soft);
+
+  &--clickable {
+    cursor: pointer;
+    transition: background-color var(--g-dur-fast) var(--g-ease-std),
+      border-color var(--g-dur-fast) var(--g-ease-std),
+      color var(--g-dur-fast) var(--g-ease-std);
+
+    &:hover {
+      background: var(--g-accent-soft);
+      border-color: var(--g-accent-dim);
+      color: var(--g-accent-bright);
+    }
+  }
+}
+
+// Caveat line ---------------------------------------------------------------
+
+// Flows as prose inside the memory turn, not as its own row.
+.mcpCaveat {
+  margin: 10px 0 0;
+  font-size: var(--g-text-sm);
+  line-height: 1.5;
+}
+
+.mcpCaveat__lead {
+  color: var(--g-ink-soft);
+}
+
+// No underline — the arrow carries the affordance.
+.mcpCaveat__link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: var(--g-text-sm);
+  font-weight: 600;
+  color: var(--g-accent-bright);
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--g-accent);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Static report (chat disabled) — same beats, no interactivity
+// ---------------------------------------------------------------------------
+
+.mcpReport {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: var(--g-space-7) var(--g-space-6);
+  overflow-y: auto;
+}
+
+.mcpReport__title {
+  font-size: var(--g-text-display);
+  font-weight: 600;
+  color: var(--g-ink-bright);
+  margin: 0 0 var(--g-space-2);
+}
+
+.mcpReport__meta {
+  font-family: var(--g-font-mono);
+  font-size: var(--g-text-meta);
+  color: var(--g-ink-mute);
+  margin: 0 0 var(--g-space-6);
+}
+
+.mcpReport__heading {
+  font-size: var(--g-text-title);
+  font-weight: 600;
+  color: var(--g-ink-bright);
+  margin: var(--g-space-7) 0 var(--g-space-2);
+}
+
+.mcpReport__text {
+  font-size: var(--g-text-body);
+  color: var(--g-ink-soft);
+  line-height: 1.55;
+  margin: var(--g-space-4) 0 0;
+
+  &--caveat {
+    margin-top: var(--g-space-6);
+    color: var(--g-accent-bright);
+    font-weight: 600;
+  }
+}

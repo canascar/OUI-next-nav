@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logs - OpenSearch Dashboards</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* OUI Light theme colors */
+      --ouiColorPrimary: #006BB4;
+      --ouiColorSecondary: #017D73;
+      --ouiColorDanger: #BD271E;
+      --ouiColorWarning: #F5A700;
+      --ouiColorEmptyShade: #FFF;
+      --ouiColorLightestShade: #F5F7FA;
+      --ouiColorLightShade: #D3DAE6;
+      --ouiColorMediumShade: #98A2B3;
+      --ouiColorDarkShade: #69707D;
+      --ouiColorDarkestShade: #343741;
+      --ouiColorFullShade: #000;
+      --ouiColorVis0: #54B399;
+      --ouiColorVis1: #6092C0;
+      /* Typography */
+      --ouiFontFamily: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      --ouiCodeFontFamily: 'Roboto Mono', Consolas, Menlo, Courier, monospace;
+      --ouiFontSizeXS: 12px;
+      --ouiFontSizeS: 14px;
+      --ouiFontSize: 16px;
+      /* Sizing */
+      --ouiBorderRadius: 6px;
+      --ouiBorderRadiusSmall: 4px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--ouiFontFamily);
+      font-size: var(--ouiFontSizeS);
+      color: var(--ouiColorDarkestShade);
+      background: var(--ouiColorEmptyShade);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== TOP HEADER ===== */
+    .topHeader {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--ouiColorLightShade);
+      flex-shrink: 0;
+    }
+
+    .topHeader__left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .topHeader__logo {
+      width: 24px;
+      height: 24px;
+    }
+
+    .topHeader__breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: var(--ouiFontSizeXS);
+      color: var(--ouiColorDarkShade);
+    }
+
+    .topHeader__breadcrumb .sep {
+      color: var(--ouiColorMediumShade);
+    }
+
+    .topHeader__breadcrumb .current {
+      color: var(--ouiColorDarkestShade);
+      font-weight: 600;
+      font-size: var(--ouiFontSizeS);
+    }
+
+    .topHeader__icons {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      margin-left: 12px;
+    }
+
+    .iconBtn {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--ouiColorDarkShade);
+      border-radius: var(--ouiBorderRadiusSmall);
+    }
+
+    .iconBtn:hover {
+      background: var(--ouiColorLightestShade);
+    }
+
+    .iconBtn svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    .topHeader__right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .dateDisplay {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: var(--ouiFontSizeXS);
+      color: var(--ouiColorDarkShade);
+    }
+
+    .dateDisplay svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--ouiColorDarkShade);
+    }
+
+    .showDatesBtn {
+      border: none;
+      background: none;
+      color: var(--ouiColorPrimary);
+      font-size: var(--ouiFontSizeXS);
+      font-family: var(--ouiFontFamily);
+      cursor: pointer;
+    }
+
+    .showDatesBtn:hover { text-decoration: underline; }
+
+    .updateBtn {
+      height: 34px;
+      padding: 0 16px;
+      background: var(--ouiColorPrimary);
+      color: #fff;
+      border: none;
+      border-radius: var(--ouiBorderRadiusSmall);
+      font-family: var(--ouiFontFamily);
+      font-size: var(--ouiFontSizeXS);
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .updateBtn:hover { background: #005a96; }
+
+    .updateBtn svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+    }
+
+    /* ===== QUERY BAR ===== */
+    .queryBar {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--ouiColorLightShade);
+      background: var(--ouiColorEmptyShade);
+      flex-shrink: 0;
+    }
+
+    .queryBar__pill {
+      height: 26px;
+      padding: 0 10px;
+      border: 1px solid var(--ouiColorLightShade);
+      border-radius: var(--ouiBorderRadiusSmall);
+      background: var(--ouiColorEmptyShade);
+      font-family: var(--ouiFontFamily);
+      font-size: var(--ouiFontSizeXS);
+      font-weight: 600;
+      color: var(--ouiColorDarkestShade);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+
+    .queryBar__dropdown {
+      height: 26px;
+      padding: 0 24px 0 10px;
+      border: 1px solid var(--ouiColorLightShade);
+      border-radius: var(--ouiBorderRadiusSmall);
+      background: var(--ouiColorEmptyShade);
+      font-family: var(--ouiFontFamily);
+      font-size: var(--ouiFontSizeXS);
+      color: var(--ouiColorDarkestShade);
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M5 6L0 0h10L5 6z' fill='%2369707D'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+    }
+
+    .queryBar__link {
+      font-size: var(--ouiFontSizeXS);
+      color: var(--ouiColorDarkShade);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      border: none;
+      background: none;
+      font-family: var(--ouiFontFamily);
+    }
+
+    .queryBar__link:hover { color: var(--ouiColorPrimary); }
+
+    .queryBar__link svg {
+      width: 10px;
+      height: 10px;
+      fill: currentColor;
+    }
+
+    .queryBar__toggle {
+      margin-left: auto;
+      display: flex;
+      overflow: hidden;
+      border-radius: var(--ouiBorderRadiusSmall);
+      border: 1px solid var(--ouiColorLightShade);
+    }
+
+    .queryBar__toggleBtn {
+      height: 26px;
+      padding: 0 12px;
+      border: none;
+      font-family: var(--ouiFontFamily);
+      font-size: var(--ouiFontSizeXS);
+      cursor: pointer;
+      background: var(--ouiColorEmptyShade);
+      color: var(--ouiColorDarkShade);
+    }
+
+    .queryBar__toggleBtn--active {
+      background: var(--ouiColorDarkestShade);
+      color: #fff;
+      font-weight: 500;
+    }
+
+    /* ===== FILTER AREA ===== */
+    .filterArea {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--ouiColorLightShade);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    /* Each row is a flex row with a fixed-width label column */
+    .filterRow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 32px;
+    }
+
+    .filterRow__label {
+      width: 72px;
+      flex-shrink: 0;
+      font-size: var(--ouiFontSizeXS);
+      font-weight: 500;
+      color: var(--ouiColorDarkShade);
+      text-align: right;
+      padding-right: 4px;
+    }
+
+    .filterRow__content {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 0;
+      flex-wrap: wrap;
+    }
+
+    /* Search input */
+    .searchInput {
+      flex: 1;
+      height: 32px;
+      padding: 0 12px;
+      border: 1px solid var(--ouiColorLightShade);
+      border-radius: var(--ouiBorderRadiusSmall);
+      font-family: var(--ouiCodeFontFamily);
+      font-size: var(--ouiFontSizeXS);
+      color: var(--ouiColorDarkestShade);
+      background: var(--ouiColorEmptyShade);
+      outline: none;
+    }
+
+    .searchInput:focus {
+      border-color: var(--ouiColorPrimary);
+    }
+
+    /* Metric chips */
+    .metricChip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 28px;
+      padding: 0 4px 0 10px;
+      border: 1px solid var(--ouiColorLightShade);
+      border-radius: var(--ouiBorderRadiusSmall);
+      background: var(--ouiColorEmptyShade);
+    }
+
+    .metricChip__select {
+      height: 22px;
+      padding: 0 18px 0 6px;
+      border: none;
+      border-radius: 3px;
+      font-family: var(--ouiFontFamily);
+      font-size: var(--ouiFontSizeXS);
+      color: var(--ouiColorDarkestShade);
+      background: transparent;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M4 5L0 0h8L4 5z' fill='%2369707D'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 4px center;
+      cursor: pointer;
+      outline: none;
+      font-weight: 500;
+    }
+
+    .metricChip__sep {
+      width: 1px;
+      height: 16px;
+      background: var(--ouiColorLightShade);
+    }
+
+    .metricChip__field {
+      font-size: var(--ouiFontSizeXS);
+      color: var(--ouiColorDarkestShade);
+      font-weight: 500;
+    }
+
+    .metricChip__modifier {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      height: 20px;
+      padding: 0 6px;
+      background: var(--ouiColorLightestShade);
+      border-radius: 3px;
+      font-size: 11px;
+      color: var(--ouiColorDarkShade);
+    }
+
+    .metricChip__modifier strong {
+      color: var(--ouiColorDarkestShade);
+      font-weight: 600;
+    }
+
+    .metricChip__close {
+      width: 22px;
+      height: 22px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--ouiColorMediumShade);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-size: 14px;
+      transition: color 150ms, background 150ms;
+    }
+
+    .metricChip__close:hover {
+      background: var(--ouiColorLightestShade);
+      color: var(--ouiColorDarkShade);
+    }
+
+    /* Add button */
+    .addBtn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 26px;
+      padding: 0 8px;
+      border: 1px dashed var(--ouiColorLightShade);
+      border-radius: var(--ouiBorderRadiusSmall);
+      background: none;
+      cursor: pointer;
+      font-family: var(--ouiFontFamily);
+      font-size: var(--ouiFontSizeXS);
+      color: var(--ouiColorPrimary);
+      transition: border-color 150ms, background 150ms;
+    }
+
+    .addBtn:hover {
+      border-color: var(--ouiColorPrimary);
+      background: rgba(0, 107, 180, 0.04);
+    }
+
+    .addBtn svg {
+      width: 12px;
+      height: 12px;
+      stroke: currentColor;
+      fill: none;
+    }
+
+    /* Group badge */
+    .groupBadge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 26px;
+      padding: 0 4px 0 10px;
+      background: #edf5fc;
+      border: 1px solid #c8dff2;
+      border-radius: var(--ouiBorderRadiusSmall);
+      font-size: var(--ouiFontSizeXS);
+      color: var(--ouiColorPrimary);
+      font-weight: 500;
+    }
+
+    .groupBadge__close {
+      width: 18px;
+      height: 18px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--ouiColorPrimary);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      opacity: 0.6;
+      transition: opacity 150ms, background 150ms;
+    }
+
+    .groupBadge__close:hover {
+      opacity: 1;
+      background: rgba(0, 107, 180, 0.1);
+    }
+
+    /* Sort controls */
+    .sortRow__select {
+      height: 28px;
+      padding: 0 24px 0 8px;
+      border: 1px solid var(--ouiColorLightShade);
+      border-radius: var(--ouiBorderRadiusSmall);
+      font-family: var(--ouiFontFamily);
+      font-size: var(--ouiFontSizeXS);
+      color: var(--ouiColorDarkestShade);
+      background: var(--ouiColorEmptyShade);
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M5 6L0 0h10L5 6z' fill='%2369707D'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .sortRow__close {
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--ouiColorMediumShade);
+      font-size: 16px;
+      border-radius: 50%;
+      transition: color 150ms, background 150ms;
+    }
+
+    .sortRow__close:hover {
+      background: var(--ouiColorLightestShade);
+      color: var(--ouiColorDarkShade);
+    }
+
+    /* ===== MAIN LAYOUT ===== */
+    .mainLayout {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Left icon nav */
+    .leftNav {
+      width: 40px;
+      border-right: 1px solid var(--ouiColorLightShade);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 0;
+      gap: 2px;
+      flex-shrink: 0;
+      background: var(--ouiColorEmptyShade);
+    }
+
+    .leftNav__icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--ouiColorDarkShade);
+      border-radius: var(--ouiBorderRadiusSmall);
+    }
+
+    .leftNav__icon:hover { background: var(--ouiColorLightestShade); }
+
+    .leftNav__icon--active {
+      color: var(--ouiColorPrimary);
+      background: #e8f4fd;
+    }
+
+    .leftNav__icon svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    /* Fields sidebar */
+    .fieldsSidebar {
+      width: 220px;
+      border-right: 1px solid var(--ouiColorLightShade);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      background: var(--ouiColorEmptyShade);
+      overflow: hidden;
+    }
+
+    .fieldsSidebar__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 12px 8px;
+    }
+
+    .fieldsSidebar__title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ouiColorDarkestShade);
+    }
+
+    .fieldsSidebar__actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .fieldsSidebar__actionBtn {
+      width: 20px;
+      height: 20px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--ouiColorPrimary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fieldsSidebar__actionBtn svg {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+    }
+
+    .fieldsSidebar__search {
+      padding: 0 12px 8px;
+      display: flex;
+      gap: 6px;
+    }
+
+    .fieldsSidebar__searchInput {
+      flex: 1;
+      height: 28px;
+      padding: 0 8px 0 28px;
+      border: 1px solid var(--ouiColorLightShade);
+      border-radius: var(--ouiBorderRadiusSmall);
+      font-family: var(--ouiFontFamily);
+      font-size: var(--ouiFontSizeXS);
+      color: var(--ouiColorDarkestShade);
+      background: var(--ouiColorEmptyShade);
+      outline: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%2398A2B3' d='M11.271 11.978l3.872 3.873a.502.502 0 00.708-.708l-3.873-3.872A6.5 6.5 0 1011.27 11.978zM6.5 12A5.5 5.5 0 106.5 1a5.5 5.5 0 000 11z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 8px center;
+    }
+
+    .fieldsSidebar__searchInput:focus { border-color: var(--ouiColorPrimary); }
+
+    .fieldsSidebar__filterBtn {
+      height: 28px;
+      padding: 0 8px;
+      border: 1px solid var(--ouiColorLightShade);
+      border-radius: var(--ouiBorderRadiusSmall);
+      background: var(--ouiColorEmptyShade);
+      font-family: var(--ouiFontFamily);
+      font-size: var(--ouiFontSizeXS);
+      color: var(--ouiColorDarkShade);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .fieldsSidebar__filterBtn svg {
+      width: 12px;
+      height: 12px;
+      fill: currentColor;
+    }
+
+    .fieldsSidebar__list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .fieldAccordion {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      width: 100%;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--ouiFontFamily);
+      font-size: var(--ouiFontSizeXS);
+      font-weight: 600;
+      color: var(--ouiColorDarkestShade);
+      text-align: left;
+    }
+
+    .fieldAccordion:hover { background: var(--ouiColorLightestShade); }
+
+    .fieldAccordion__arrow {
+      width: 12px;
+      height: 12px;
+      fill: var(--ouiColorDarkShade);
+      flex-shrink: 0;
+    }
+
+    .fieldItem {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 12px 5px 28px;
+      cursor: pointer;
+    }
+
+    .fieldItem:hover { background: var(--ouiColorLightestShade); }
+
+    .fieldToken {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .fieldToken--string { background: #E6F0F8; color: #006BB4; }
+    .fieldToken--number { background: #E6F9F0; color: #017D73; }
+    .fieldToken--date { background: #FEF3E6; color: #B95E04; }
+    .fieldToken--geo { background: #F0E6FE; color: #7B2CB5; }
+    .fieldToken--ip { background: #FCE6E6; color: #BD271E; }
+
+    .fieldItem__name {
+      font-size: var(--ouiFontSizeXS);
+      color: var(--ouiColorDarkestShade);
+    }
+
+    /* Resize handle */
+    .resizeHandle {
+      width: 8px;
+      flex-shrink: 0;
+      cursor: col-resize;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .resizeHandle::before {
+      content: '';
+      width: 2px;
+      height: 24px;
+      background: var(--ouiColorMediumShade);
+      border-radius: 1px;
+    }
+
+    .resizeHandle:hover::before {
+      background: var(--ouiColorPrimary);
+    }
+
+    /* Content area */
+    .contentArea {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    /* Chart */
+    .chartSection {
+      padding: 16px 16px 8px;
+      border-bottom: 1px solid var(--ouiColorLightShade);
+      flex-shrink: 0;
+    }
+
+    .chartSection__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .chartSection__headerLeft {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chartSection__collapseBtn {
+      width: 20px;
+      height: 20px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--ouiColorDarkShade);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chartSection__collapseBtn svg {
+      width: 12px;
+      height: 12px;
+      fill: currentColor;
+    }
+
+    .chartSection__title {
+      font-size: var(--ouiFontSizeS);
+      font-weight: 700;
+    }
+
+    .chartSection__headerRight {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chartSection__intervalLabel {
+      font-size: var(--ouiFontSizeXS);
+      color: var(--ouiColorDarkShade);
+      font-weight: 500;
+    }
+
+    .chartSection__intervalSelect {
+      height: 26px;
+      padding: 0 20px 0 8px;
+      border: 1px solid var(--ouiColorLightShade);
+      border-radius: var(--ouiBorderRadiusSmall);
+      font-family: var(--ouiFontFamily);
+      font-size: var(--ouiFontSizeXS);
+      color: var(--ouiColorDarkestShade);
+      background: var(--ouiColorEmptyShade);
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M4 5L0 0h8L4 5z' fill='%2369707D'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 6px center;
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* Bar chart */
+    .chart {
+      display: flex;
+      height: 80px;
+    }
+
+    .chart__yAxis {
+      width: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-right: 6px;
+      font-size: 10px;
+      color: var(--ouiColorDarkShade);
+    }
+
+    .chart__body {
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      gap: 1px;
+      border-left: 1px solid var(--ouiColorLightShade);
+      border-bottom: 1px solid var(--ouiColorLightShade);
+      padding: 0 2px 0;
+    }
+
+    .chart__bar {
+      flex: 1;
+      background: var(--ouiColorVis0);
+      border-radius: 1px 1px 0 0;
+      min-height: 0;
+      transition: opacity 150ms;
+    }
+
+    .chart__bar:hover { opacity: 0.75; }
+
+    .chart__xAxis {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+      padding-left: 24px;
+      font-size: 10px;
+      color: var(--ouiColorDarkShade);
+    }
+
+    /* Tabs */
+    .tabsRow {
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--ouiColorLightShade);
+      flex-shrink: 0;
+      height: 40px;
+    }
+
+    .tab {
+      height: 100%;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      font-size: var(--ouiFontSizeXS);
+      font-family: var(--ouiFontFamily);
+      color: var(--ouiColorDarkShade);
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      font-weight: 500;
+    }
+
+    .tab:hover { color: var(--ouiColorDarkestShade); }
+
+    .tab--active {
+      color: var(--ouiColorPrimary);
+      border-bottom-color: var(--ouiColorPrimary);
+      font-weight: 600;
+    }
+
+    .tabsRow__hits {
+      margin-left: 16px;
+      font-size: var(--ouiFontSizeXS);
+      color: var(--ouiColorDarkShade);
+    }
+
+    /* Data table */
+    .dataTable__container {
+      flex: 1;
+      overflow: auto;
+    }
+
+    .dataTable {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .dataTable thead {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .dataTable th {
+      padding: 8px 16px;
+      text-align: left;
+      font-size: var(--ouiFontSizeXS);
+      font-weight: 600;
+      color: var(--ouiColorDarkestShade);
+      background: var(--ouiColorLightestShade);
+      border-bottom: 1px solid var(--ouiColorLightShade);
+    }
+
+    .dataTable td {
+      padding: 10px 16px;
+      font-size: var(--ouiFontSizeXS);
+      color: var(--ouiColorDarkestShade);
+      border-bottom: 1px solid var(--ouiColorLightShade);
+    }
+
+    .dataTable tbody tr:hover {
+      background: var(--ouiColorLightestShade);
+    }
+
+    .dataTable__expandBtn {
+      width: 22px;
+      height: 22px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--ouiColorDarkShade);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 3px;
+    }
+
+    .dataTable__expandBtn:hover { background: var(--ouiColorLightShade); }
+
+    .dataTable__expandBtn svg {
+      width: 12px;
+      height: 12px;
+      fill: currentColor;
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP HEADER -->
+<header class="topHeader">
+  <div class="topHeader__left">
+    <svg class="topHeader__logo" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="16" cy="16" r="16" fill="#003B5C"/>
+      <path d="M16 6c-5.52 0-10 4.48-10 10s4.48 10 10 10 10-4.48 10-10S21.52 6 16 6zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" fill="#fff"/>
+      <path d="M16 10c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" fill="#54B399"/>
+    </svg>
+    <nav class="topHeader__breadcrumb">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="#69707D"><path d="M.5 8a7.5 7.5 0 1115 0 7.5 7.5 0 01-15 0zM8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13z"/></svg>
+      <span>o</span>
+      <span class="sep">/</span>
+      <span class="current">Logs</span>
+    </nav>
+    <div class="topHeader__icons">
+      <button class="iconBtn"><svg viewBox="0 0 16 16"><path d="M8 2a.5.5 0 01.5.5V7h4.5a.5.5 0 010 1H8.5v4.5a.5.5 0 01-1 0V8H3a.5.5 0 010-1h4.5V2.5A.5.5 0 018 2z"/></svg></button>
+      <button class="iconBtn"><svg viewBox="0 0 16 16"><path d="M3 2h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1zm0 1v10h10V3H3z"/></svg></button>
+      <button class="iconBtn"><svg viewBox="0 0 16 16"><path d="M3 2h10a1 1 0 011 1v10a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1zm0 1v10h10V3H3z"/></svg></button>
+      <button class="iconBtn"><svg viewBox="0 0 16 16"><path d="M8 2a.5.5 0 01.5.5V7h4.5a.5.5 0 010 1H8.5v4.5a.5.5 0 01-1 0V8H3a.5.5 0 010-1h4.5V2.5A.5.5 0 018 2z"/></svg></button>
+      <button class="iconBtn"><svg viewBox="0 0 16 16"><path d="M8 2a.5.5 0 01.5.5V7h4.5a.5.5 0 010 1H8.5v4.5a.5.5 0 01-1 0V8H3a.5.5 0 010-1h4.5V2.5A.5.5 0 018 2z"/></svg></button>
+      <button class="iconBtn"><svg viewBox="0 0 16 16"><path d="M8 2a.5.5 0 01.5.5V7h4.5a.5.5 0 010 1H8.5v4.5a.5.5 0 01-1 0V8H3a.5.5 0 010-1h4.5V2.5A.5.5 0 018 2z"/></svg></button>
+    </div>
+  </div>
+  <div class="topHeader__right">
+    <div class="dateDisplay">
+      <svg viewBox="0 0 16 16"><path d="M14 2.5a.5.5 0 01.5.5v10a.5.5 0 01-.5.5H2a.5.5 0 01-.5-.5V3a.5.5 0 01.5-.5h12zM2 2a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1V3a1 1 0 00-1-1H2z"/><path d="M3.5 4h2v2h-2V4zm3 0h2v2h-2V4zm3 0h2v2h-2V4zm-6 3h2v2h-2V7zm3 0h2v2h-2V7zm3 0h2v2h-2V7zm-6 3h2v2h-2v-2zm3 0h2v2h-2v-2z"/></svg>
+      <span>Last 24 hours</span>
+    </div>
+    <button class="showDatesBtn">Show dates</button>
+    <button class="updateBtn">
+      <svg viewBox="0 0 16 16"><path d="M2.5 8a5.5 5.5 0 019.3-4h-2.8v1h4V1h-1v2.5A6.5 6.5 0 001.5 8h1zm11 0a5.5 5.5 0 01-9.3 4h2.8V11h-4v4h1v-2.5A6.5 6.5 0 0014.5 8h-1z"/></svg>
+      Update
+    </button>
+  </div>
+</header>
+
+<!-- QUERY BAR -->
+<div class="queryBar">
+  <button class="queryBar__pill">PPL</button>
+  <select class="queryBar__dropdown" style="min-width: 280px;">
+    <option>opensearch_dashboards_sample_data_logs</option>
+  </select>
+  <button class="queryBar__link">
+    <svg viewBox="0 0 10 6"><path d="M5 6L0 0h10L5 6z"/></svg>
+    Recent queries
+  </button>
+  <button class="queryBar__link">
+    <svg viewBox="0 0 10 6"><path d="M5 6L0 0h10L5 6z"/></svg>
+    Saved queries
+  </button>
+  <div class="queryBar__toggle">
+    <button class="queryBar__toggleBtn queryBar__toggleBtn--active">Builder</button>
+    <button class="queryBar__toggleBtn">Code</button>
+  </div>
+</div>
+
+<!-- FILTER AREA -->
+<div class="filterArea">
+  <!-- Search -->
+  <div class="filterRow">
+    <span class="filterRow__label">Search</span>
+    <div class="filterRow__content">
+      <input type="text" class="searchInput" value='agent="Mozilla/5.0 (X11; Linux i686) AppleWebKit/534.24 (KHTML, like Gecko) Chrome/11.0.696.50 Safari/534.24"' />
+    </div>
+  </div>
+
+  <!-- Metrics -->
+  <div class="filterRow">
+    <span class="filterRow__label">Metrics</span>
+    <div class="filterRow__content">
+      <div class="metricChip">
+        <select class="metricChip__select">
+          <option selected>Count</option>
+          <option>Average</option>
+          <option>Sum</option>
+          <option>Min</option>
+          <option>Max</option>
+        </select>
+        <button class="metricChip__close">&#215;</button>
+      </div>
+
+      <div class="metricChip">
+        <select class="metricChip__select">
+          <option>Count</option>
+          <option>Average</option>
+          <option selected>Sum</option>
+          <option>Min</option>
+          <option>Max</option>
+        </select>
+        <span class="metricChip__sep"></span>
+        <span class="metricChip__field">bytes</span>
+        <span class="metricChip__modifier">round <strong>2</strong></span>
+        <button class="metricChip__close">&#215;</button>
+      </div>
+
+      <button class="addBtn">
+        <svg viewBox="0 0 12 12"><path d="M6 1v10M1 6h10" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Metric
+      </button>
+    </div>
+  </div>
+
+  <!-- Group by -->
+  <div class="filterRow">
+    <span class="filterRow__label">Group by</span>
+    <div class="filterRow__content">
+      <span class="groupBadge">
+        clientip
+        <button class="groupBadge__close">&#215;</button>
+      </span>
+
+      <button class="addBtn">
+        <svg viewBox="0 0 12 12"><path d="M6 1v10M1 6h10" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Time span
+      </button>
+    </div>
+  </div>
+
+  <!-- Sort by -->
+  <div class="filterRow">
+    <span class="filterRow__label">Sort by</span>
+    <div class="filterRow__content">
+      <select class="sortRow__select" style="min-width: 100px;">
+        <option selected>count()</option>
+        <option>sum(bytes)</option>
+      </select>
+      <select class="sortRow__select" style="min-width: 70px;">
+        <option selected>Desc</option>
+        <option>Asc</option>
+      </select>
+      <button class="sortRow__close">&#215;</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="mainLayout">
+  <!-- Left icon nav -->
+  <nav class="leftNav">
+    <button class="leftNav__icon"><svg viewBox="0 0 16 16"><path d="M11.271 11.978l3.872 3.873a.502.502 0 00.708-.708l-3.873-3.872A6.5 6.5 0 1011.27 11.978zM6.5 12A5.5 5.5 0 106.5 1a5.5 5.5 0 000 11z"/></svg></button>
+    <button class="leftNav__icon leftNav__icon--active"><svg viewBox="0 0 16 16"><path d="M2 3h12v1H2V3zm0 4h12v1H2V7zm0 4h8v1H2v-1z"/></svg></button>
+    <button class="leftNav__icon"><svg viewBox="0 0 16 16"><path d="M1 3a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H3a2 2 0 01-2-2V3zm2-1a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1V3a1 1 0 00-1-1H3z"/><path d="M4 5h3v3H4V5zm5 0h3v1H9V5zm0 2h3v1H9V7zm-5 3h8v1H4v-1z"/></svg></button>
+    <button class="leftNav__icon"><svg viewBox="0 0 16 16"><path d="M8 1.5a.5.5 0 01.5.5v4.5H13a.5.5 0 010 1H8.5V12a.5.5 0 01-1 0V7.5H3a.5.5 0 010-1h4.5V2a.5.5 0 01.5-.5z"/></svg></button>
+    <button class="leftNav__icon"><svg viewBox="0 0 16 16"><path d="M14 12.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM5 12.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM14 3.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/><path d="M12.5 4.5v8M3.5 4.5v8M3.5 3.5h9" fill="none" stroke="currentColor"/></svg></button>
+    <button class="leftNav__icon"><svg viewBox="0 0 16 16"><path d="M2 2h5v5H2V2zm7 0h5v5H9V2zM2 9h5v5H2V9zm7 0h5v5H9V9z" fill="none" stroke="currentColor" stroke-width="1"/></svg></button>
+    <button class="leftNav__icon"><svg viewBox="0 0 16 16"><path d="M8 1a7 7 0 110 14A7 7 0 018 1zm0 1a6 6 0 100 12A6 6 0 008 2z"/><path d="M8 4v4.5l3 1.5" fill="none" stroke="currentColor" stroke-width="1"/></svg></button>
+  </nav>
+
+  <!-- Fields sidebar -->
+  <aside class="fieldsSidebar">
+    <div class="fieldsSidebar__header">
+      <span class="fieldsSidebar__title">Fields</span>
+      <div class="fieldsSidebar__actions">
+        <button class="fieldsSidebar__actionBtn"><svg viewBox="0 0 16 16"><path d="M2 4h12M2 8h12M2 12h12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+        <button class="fieldsSidebar__actionBtn"><svg viewBox="0 0 16 16"><path d="M4 4h8v8H4z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6 2v2M10 2v2M6 12v2M10 12v2M2 6h2M2 10h2M12 6h2M12 10h2" stroke="currentColor" stroke-width="1.5"/></svg></button>
+      </div>
+    </div>
+    <div class="fieldsSidebar__search">
+      <input type="text" class="fieldsSidebar__searchInput" placeholder="Search field n..." />
+      <button class="fieldsSidebar__filterBtn">
+        <svg viewBox="0 0 16 16"><path d="M2 3h12l-5 5.5V13l-2-1V8.5L2 3z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+        <strong>0</strong>
+      </button>
+    </div>
+    <div class="fieldsSidebar__list">
+      <button class="fieldAccordion">
+        <svg class="fieldAccordion__arrow" viewBox="0 0 10 6"><path d="M5 6L0 0h10L5 6z"/></svg>
+        Selected
+      </button>
+      <button class="fieldAccordion">
+        <svg class="fieldAccordion__arrow" viewBox="0 0 10 6"><path d="M5 6L0 0h10L5 6z"/></svg>
+        Query
+      </button>
+      <div class="fieldItem"><span class="fieldToken fieldToken--string">t</span><span class="fieldItem__name">_id</span></div>
+      <div class="fieldItem"><span class="fieldToken fieldToken--string">t</span><span class="fieldItem__name">_index</span></div>
+      <div class="fieldItem"><span class="fieldToken fieldToken--number">#</span><span class="fieldItem__name">_score</span></div>
+      <div class="fieldItem"><span class="fieldToken fieldToken--string">t</span><span class="fieldItem__name">_type</span></div>
+      <div class="fieldItem"><span class="fieldToken fieldToken--date">@</span><span class="fieldItem__name">@timestamp</span></div>
+      <div class="fieldItem"><span class="fieldToken fieldToken--string">t</span><span class="fieldItem__name">agent</span></div>
+      <div class="fieldItem"><span class="fieldToken fieldToken--number">#</span><span class="fieldItem__name">bytes</span></div>
+      <div class="fieldItem"><span class="fieldToken fieldToken--ip">ip</span><span class="fieldItem__name">clientip</span></div>
+      <div class="fieldItem"><span class="fieldToken fieldToken--string">t</span><span class="fieldItem__name">event.dataset</span></div>
+      <div class="fieldItem"><span class="fieldToken fieldToken--string">t</span><span class="fieldItem__name">extension</span></div>
+      <div class="fieldItem"><span class="fieldToken fieldToken--geo">G</span><span class="fieldItem__name">geo.coordinates</span></div>
+      <div class="fieldItem"><span class="fieldToken fieldToken--string">t</span><span class="fieldItem__name">geo.dest</span></div>
+      <div class="fieldItem"><span class="fieldToken fieldToken--string">t</span><span class="fieldItem__name">geo.src</span></div>
+      <div class="fieldItem"><span class="fieldToken fieldToken--string">t</span><span class="fieldItem__name">geo.srcdest</span></div>
+      <div class="fieldItem"><span class="fieldToken fieldToken--string">t</span><span class="fieldItem__name">host</span></div>
+      <div class="fieldItem"><span class="fieldToken fieldToken--number">#</span><span class="fieldItem__name">ip</span></div>
+    </div>
+  </aside>
+
+  <!-- Resize handle -->
+  <div class="resizeHandle"></div>
+
+  <!-- Content area -->
+  <main class="contentArea">
+    <!-- Chart -->
+    <div class="chartSection">
+      <div class="chartSection__header">
+        <div class="chartSection__headerLeft">
+          <button class="chartSection__collapseBtn"><svg viewBox="0 0 10 6"><path d="M5 6L0 0h10L5 6z" fill="currentColor"/></svg></button>
+          <span class="chartSection__title">Log count</span>
+        </div>
+        <div class="chartSection__headerRight">
+          <span class="chartSection__intervalLabel">Interval</span>
+          <select class="chartSection__intervalSelect">
+            <option selected>Auto</option>
+            <option>Minute</option>
+            <option>Hour</option>
+            <option>Day</option>
+          </select>
+        </div>
+      </div>
+      <div class="chart">
+        <div class="chart__yAxis">
+          <span>8</span>
+          <span>6</span>
+          <span>4</span>
+          <span>2</span>
+          <span>0</span>
+        </div>
+        <div class="chart__body">
+          <div class="chart__bar" style="height:25%"></div>
+          <div class="chart__bar" style="height:12%"></div>
+          <div class="chart__bar" style="height:0%"></div>
+          <div class="chart__bar" style="height:25%"></div>
+          <div class="chart__bar" style="height:12%"></div>
+          <div class="chart__bar" style="height:0%"></div>
+          <div class="chart__bar" style="height:0%"></div>
+          <div class="chart__bar" style="height:12%"></div>
+          <div class="chart__bar" style="height:0%"></div>
+          <div class="chart__bar" style="height:0%"></div>
+          <div class="chart__bar" style="height:0%"></div>
+          <div class="chart__bar" style="height:12%"></div>
+          <div class="chart__bar" style="height:0%"></div>
+          <div class="chart__bar" style="height:0%"></div>
+          <div class="chart__bar" style="height:12%"></div>
+          <div class="chart__bar" style="height:0%"></div>
+          <div class="chart__bar" style="height:0%"></div>
+          <div class="chart__bar" style="height:0%"></div>
+          <div class="chart__bar" style="height:0%"></div>
+          <div class="chart__bar" style="height:0%"></div>
+          <div class="chart__bar" style="height:0%"></div>
+          <div class="chart__bar" style="height:0%"></div>
+          <div class="chart__bar" style="height:0%"></div>
+          <div class="chart__bar" style="height:0%"></div>
+          <div class="chart__bar" style="height:0%"></div>
+          <div class="chart__bar" style="height:0%"></div>
+          <div class="chart__bar" style="height:12%"></div>
+          <div class="chart__bar" style="height:25%"></div>
+          <div class="chart__bar" style="height:0%"></div>
+          <div class="chart__bar" style="height:37%"></div>
+          <div class="chart__bar" style="height:25%"></div>
+          <div class="chart__bar" style="height:50%"></div>
+          <div class="chart__bar" style="height:37%"></div>
+          <div class="chart__bar" style="height:62%"></div>
+          <div class="chart__bar" style="height:50%"></div>
+          <div class="chart__bar" style="height:37%"></div>
+          <div class="chart__bar" style="height:50%"></div>
+          <div class="chart__bar" style="height:62%"></div>
+          <div class="chart__bar" style="height:75%"></div>
+          <div class="chart__bar" style="height:62%"></div>
+          <div class="chart__bar" style="height:50%"></div>
+          <div class="chart__bar" style="height:62%"></div>
+          <div class="chart__bar" style="height:75%"></div>
+          <div class="chart__bar" style="height:100%"></div>
+          <div class="chart__bar" style="height:62%"></div>
+          <div class="chart__bar" style="height:50%"></div>
+          <div class="chart__bar" style="height:37%"></div>
+          <div class="chart__bar" style="height:50%"></div>
+        </div>
+      </div>
+      <div class="chart__xAxis">
+        <span>Jul 13, 12:00</span>
+        <span>Jul 13, 16:00</span>
+        <span>Jul 13, 20:00</span>
+        <span>Jul 14, 00:00</span>
+        <span>Jul 14, 04:00</span>
+        <span>Jul 14, 08:00</span>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabsRow">
+      <button class="tab">Logs</button>
+      <button class="tab tab--active">Statistics</button>
+      <button class="tab">Visualization</button>
+      <span class="tabsRow__hits">74 / 78 hits &middot; 94 ms</span>
+    </div>
+
+    <!-- Data table -->
+    <div class="dataTable__container">
+      <table class="dataTable">
+        <thead>
+          <tr>
+            <th style="width: 200px;">count()</th>
+            <th>clientip</th>
+            <th style="width: 40px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>1.69.35.74</td><td><button class="dataTable__expandBtn"><svg viewBox="0 0 10 6"><path d="M5 6L0 0h10L5 6z" fill="currentColor"/></svg></button></td></tr>
+          <tr><td>1</td><td>6.63.231.192</td><td><button class="dataTable__expandBtn"><svg viewBox="0 0 10 6"><path d="M5 6L0 0h10L5 6z" fill="currentColor"/></svg></button></td></tr>
+          <tr><td>1</td><td>7.88.50.146</td><td><button class="dataTable__expandBtn"><svg viewBox="0 0 10 6"><path d="M5 6L0 0h10L5 6z" fill="currentColor"/></svg></button></td></tr>
+          <tr><td>1</td><td>15.115.203.161</td><td><button class="dataTable__expandBtn"><svg viewBox="0 0 10 6"><path d="M5 6L0 0h10L5 6z" fill="currentColor"/></svg></button></td></tr>
+          <tr><td>1</td><td>16.212.73.169</td><td><button class="dataTable__expandBtn"><svg viewBox="0 0 10 6"><path d="M5 6L0 0h10L5 6z" fill="currentColor"/></svg></button></td></tr>
+          <tr><td>1</td><td>20.61.95.192</td><td><button class="dataTable__expandBtn"><svg viewBox="0 0 10 6"><path d="M5 6L0 0h10L5 6z" fill="currentColor"/></svg></button></td></tr>
+          <tr><td>1</td><td>28.150.163.53</td><td><button class="dataTable__expandBtn"><svg viewBox="0 0 10 6"><path d="M5 6L0 0h10L5 6z" fill="currentColor"/></svg></button></td></tr>
+          <tr><td>1</td><td>32.44.178.201</td><td><button class="dataTable__expandBtn"><svg viewBox="0 0 10 6"><path d="M5 6L0 0h10L5 6z" fill="currentColor"/></svg></button></td></tr>
+          <tr><td>1</td><td>41.77.243.89</td><td><button class="dataTable__expandBtn"><svg viewBox="0 0 10 6"><path d="M5 6L0 0h10L5 6z" fill="currentColor"/></svg></button></td></tr>
+          <tr><td>1</td><td>55.200.15.67</td><td><button class="dataTable__expandBtn"><svg viewBox="0 0 10 6"><path d="M5 6L0 0h10L5 6z" fill="currentColor"/></svg></button></td></tr>
+          <tr><td>1</td><td>68.94.112.44</td><td><button class="dataTable__expandBtn"><svg viewBox="0 0 10 6"><path d="M5 6L0 0h10L5 6z" fill="currentColor"/></svg></button></td></tr>
+          <tr><td>1</td><td>72.181.209.156</td><td><button class="dataTable__expandBtn"><svg viewBox="0 0 10 6"><path d="M5 6L0 0h10L5 6z" fill="currentColor"/></svg></button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+</body>
+</html>

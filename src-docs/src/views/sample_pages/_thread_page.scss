@@ -89,6 +89,18 @@
   }
 }
 
+// Context strip — a single mono line at the top of the feed saying where this
+// investigation came from. Scrolls with the conversation; it's provenance, not
+// chrome.
+.threadPage__contextStrip {
+  flex: none;
+  font-family: var(--g-font-mono);
+  font-size: var(--g-text-xs);
+  color: var(--g-ink-mute);
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--g-hairline);
+}
+
 // Empty state
 .threadPage__emptyState {
   display: flex;

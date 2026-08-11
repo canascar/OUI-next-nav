@@ -33,15 +33,17 @@
   }
 }
 
-// Home page (greeting state) — flat left panel: no border or drop shadow.
+// Home page (greeting state) — flat left panel: no border, shadow, or background.
 // Scoped via the greeting wrap, which only exists on the home page.
 .threadPanel:has(.threadPage__greetingWrap) {
   border: none;
   box-shadow: none;
+  background-color: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
-// Inner content and header fade and hide on collapse
-.threadPanel__header,
+// Inner content fades and hides on collapse
 .threadPanel__content {
   opacity: 1;
   visibility: visible;
@@ -78,58 +80,84 @@
   transition: width 500ms cubic-bezier(0.16, 0.9, 0.3, 1);
 }
 
-// Header bar
+// ─── Thread Panel Header ─────────────────────────────────────
+// Option F: floats on the tint, no line. Spacing separates it from content.
 .threadPanel__header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  // Uniform ~16px inset on all sides. Left is a bare icon (padding = glyph
-  // inset), while the right controls are icon buttons with ~8px of internal
-  // padding, so the right padding is 8px less to land the glyphs at the same
-  // 16px inset as the left icon and the top/bottom breathing room.
-  padding: 0 8px 0 16px;
+  flex: none;
+  height: 38px;
+  padding: 0 12px;
+  gap: 6px;
   border-bottom: 1px solid $ouiBorderColor;
-  flex-shrink: 0;
-  height: 48px;
 }
 
-.threadPanel__headerLeft {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.threadPanel__title {
-  font-size: $ouiFontSizeXS;
-  font-weight: $ouiFontWeightSemiBold;
-  color: $ouiTitleColor;
+.threadPanel__headerTitle {
+  font-size: $ouiFontSizeS;
+  font-weight: $ouiFontWeightMedium;
+  color: $ouiTextColor;
   white-space: nowrap;
-  cursor: text;
-  padding: 2px 4px;
-  border-radius: 2px;
-  transition: background-color 150ms ease;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex-shrink: 1;
 
-  &:hover {
-    background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.04), rgba(255, 255, 255, 0.06));
+  &--generating {
+    background: linear-gradient(
+      90deg,
+      $ouiTextColor 20%,
+      rgba($ouiTextColor, 0.3) 50%,
+      $ouiTextColor 80%
+    );
+    background-size: 200% 100%;
+    // sass-lint:disable no-vendor-prefixes
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: threadTitleShimmer 2s ease-in-out infinite;
   }
 }
 
-.threadPanel__titleInput {
-  font-size: $ouiFontSizeXS;
-  color: $ouiTitleColor;
-  background: none;
-  border: none;
-  border-bottom: 2px solid $ouiColorPrimary;
-  outline: none;
-  padding: 2px 4px;
-  width: 140px;
-  font-family: inherit;
+@keyframes threadTitleShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
-.threadPanel__headerRight {
+.threadPanel__headerSpacer {
+  flex: 1;
+}
+
+.threadPanel__headerBtn {
   display: flex;
   align-items: center;
-  gap: $ouiSizeM;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: none;
+  background: none;
+  color: lightOrDarkTheme(rgba(10, 10, 10, 0.4), rgba(250, 250, 250, 0.5));
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 120ms ease, color 120ms ease;
+
+  &:hover {
+    background-color: lightOrDarkTheme(rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.08));
+    color: $ouiTextColor;
+  }
+
+  // Two-zone tab control: wider, auto-width
+  &--tabControl {
+    width: auto;
+    gap: 4px;
+    padding: 0 8px;
+    font-size: $ouiFontSizeXS;
+    font-weight: $ouiFontWeightMedium;
+    border-radius: $ouiBorderRadiusSmall;
+  }
+}
+
+.threadPanel__tabControlLabel {
+  white-space: nowrap;
 }
 
 .threadPanel__content {
