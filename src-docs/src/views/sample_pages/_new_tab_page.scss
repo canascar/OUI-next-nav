@@ -9,15 +9,14 @@
  * GitHub history for details.
  */
 
-// New Tab page — hero, search, and all three page groups on one screen.
-// There is no pre-selection step, so nothing here is a segmented control.
+// New Tab page — "Open a page" header with filter, grouped two-column cards.
 
 .newTabPage {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  padding: 32px 24px 48px;
+  gap: 24px;
+  padding: 32px 32px 48px;
   height: 100%;
   width: 100%;
   overflow-y: auto;
@@ -26,7 +25,7 @@
   > * {
     flex-shrink: 0;
     width: 100%;
-    max-width: 640px;
+    max-width: 800px;
   }
 }
 
@@ -41,63 +40,70 @@
   }
 }
 
-.newTabPage__hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.newTabPage__logoWrap {
+// Header: title left, filter input right
+.newTabPage__header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  justify-content: space-between;
+  gap: 16px;
 }
 
-.newTabPage__title {
-  text-align: center;
-  font-size: 20px;
-  font-weight: 500;
-  color: $ouiColorMediumShade;
+.newTabPage__heading {
+  font-family: $ouiFontFamily;
+  font-size: 18px;
+  font-weight: 700;
+  color: $ouiTitleColor;
   margin: 0;
-  line-height: 1.4;
 }
 
+// The className on OuiFieldSearch lands on the <input>, not on the
+// .ouiFormControlLayout wrapper that draws the border — so both need the width
+// or the bordered box ends up wider than the input.
+.newTabPage__header .ouiFormControlLayout {
+  width: 200px;
+  max-width: 200px;
+}
+
+.newTabPage__filter {
+  width: 100%;
+  max-width: 100%;
+}
+
+// Groups
 .newTabPage__groups {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 
 .newTabPage__group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
-// Mono uppercase group label. Hidden with its group when a search filters it
-// out — the label lives inside the group, so it goes with it.
 .newTabPage__groupLabel {
-  font-family: var(--g-font-mono);
+  font-family: var(--g-font-mono, $ouiCodeFontFamily);
   font-size: $ouiFontSizeXS;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: $ouiColorMediumShade;
 }
 
+// Two-column grid
 .newTabPage__grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: 10px;
 }
 
+// Card — icon + text block (title + description)
 .newTabPage__card {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
-  padding: 10px 12px;
+  padding: 14px 16px;
   text-align: left;
   border: 1px solid $ouiBorderColor;
   border-radius: $ouiBorderRadius;
@@ -106,23 +112,40 @@
   cursor: pointer;
   transition: border-color 150ms ease, background-color 150ms ease;
 
-  .ouiIcon {
-    flex: none;
-    color: $ouiColorDarkShade;
-  }
-
   &:hover {
     border-color: rgba($ouiColorPrimary, 0.5);
     background-color: rgba($ouiColorPrimary, 0.04);
 
-    .ouiIcon {
+    .newTabPage__cardIcon {
       color: $ouiColorPrimaryText;
     }
   }
 }
 
+.newTabPage__cardIcon {
+  flex: none;
+  color: $ouiColorPrimary;
+}
+
+.newTabPage__cardText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
 .newTabPage__cardLabel {
   font-size: $ouiFontSizeS;
+  font-weight: 600;
+  color: $ouiTitleColor;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.newTabPage__cardDesc {
+  font-size: $ouiFontSizeXS;
+  color: $ouiColorMediumShade;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -137,5 +160,15 @@
 @media (max-width: 640px) {
   .newTabPage__grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .newTabPage__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .newTabPage__header .ouiFormControlLayout {
+    width: 100%;
+    max-width: 100%;
   }
 }

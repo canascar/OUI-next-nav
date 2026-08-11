@@ -11,106 +11,36 @@
 
 import React, { useState, useMemo } from 'react';
 import { OuiFieldSearch, OuiIcon } from '../../../../src/components';
-import { OpenSearch3DLogo } from './opensearch_3d_logo';
-
-const HERO_TITLE = 'This canvas is waiting for your visualizations';
 
 /**
- * Every page reachable from a new tab, in three labeled groups. All groups
- * render at once — there is no pre-selection step, so a page is one click away.
- *
- * `pageKey` is the SOURCE_PAGE_MOCK key loaded into the current tab; `label`
- * becomes the tab name and `icon` its tab icon.
+ * Page groups with descriptions for each item.
  */
 const PAGE_GROUPS = [
   {
     key: 'discover',
     label: 'Discover',
     items: [
-      {
-        key: 'logs',
-        label: 'Logs',
-        icon: 'navDiscover',
-        pageKey: 'discover-log',
-      },
-      {
-        key: 'traces',
-        label: 'Traces',
-        icon: 'visTagCloud',
-        pageKey: 'traces',
-      },
-      {
-        key: 'metrics',
-        label: 'Metrics',
-        icon: 'visLine',
-        pageKey: 'discover-metric',
-      },
-      {
-        key: 'dashboards',
-        label: 'Dashboards',
-        icon: 'navDashboards',
-        pageKey: 'dashboards-list',
-      },
+      { key: 'logs', label: 'Logs', description: 'Search and tail raw logs', icon: 'navDiscover', pageKey: 'discover-log' },
+      { key: 'traces', label: 'Traces', description: 'Waterfalls and spans', icon: 'visTagCloud', pageKey: 'traces' },
+      { key: 'metrics', label: 'Metrics', description: 'Time-series explorer', icon: 'visLine', pageKey: 'discover-metric' },
+      { key: 'dashboards', label: 'Dashboards', description: 'Saved boards', icon: 'navDashboards', pageKey: 'dashboards-list' },
     ],
   },
   {
     key: 'monitor',
     label: 'Monitor',
     items: [
-      {
-        key: 'app-map',
-        label: 'Application Map',
-        icon: 'navServiceMap',
-        pageKey: 'app-map',
-      },
-      {
-        key: 'app-services',
-        label: 'Application Services',
-        icon: 'navOverview',
-        pageKey: 'app-perf-services',
-      },
-      {
-        key: 'app-traces',
-        label: 'Application Traces',
-        icon: 'visTagCloud',
-        pageKey: 'app-traces',
-      },
-      {
-        key: 'forecasting',
-        label: 'Forecasting',
-        icon: 'visLine',
-        pageKey: 'forecasting',
-      },
-      {
-        key: 'agent-traces',
-        label: 'Agent traces',
-        icon: 'visTagCloud',
-        pageKey: 'app-traces',
-      },
-      {
-        key: 'agent-spans',
-        label: 'Agent spans',
-        icon: 'visTagCloud',
-        pageKey: 'agent-spans',
-      },
+      { key: 'app-map', label: 'Application Map', description: 'Service topology', icon: 'navServiceMap', pageKey: 'app-map' },
+      { key: 'app-services', label: 'Application Services', description: 'Service health list', icon: 'navOverview', pageKey: 'app-perf-services' },
+      { key: 'alert-rules', label: 'Alert rules', description: 'Monitors and routing', icon: 'navAlerting', pageKey: 'alerts-list' },
     ],
   },
   {
     key: 'more',
     label: 'More',
     items: [
-      {
-        key: 'notebook',
-        label: 'Notebook',
-        icon: 'document',
-        pageKey: 'notebooks',
-      },
-      {
-        key: 'alert-rules',
-        label: 'Alert rules',
-        icon: 'navAlerting',
-        pageKey: 'alerts-list',
-      },
+      { key: 'notebook', label: 'Notebook', description: 'Analysis documents', icon: 'document', pageKey: 'notebooks' },
+      { key: 'forecasting', label: 'Forecasting', description: 'Trend predictions', icon: 'visLine', pageKey: 'forecasting' },
     ],
   },
 ];
@@ -118,38 +48,35 @@ const PAGE_GROUPS = [
 export const NewTabPage = ({ onSelectPage }) => {
   const [query, setQuery] = useState('');
 
-  // Filtering happens on every keystroke, across all groups at once. A group
-  // with no matches drops out entirely — label included.
   const groups = useMemo(() => {
     const needle = query.trim().toLowerCase();
     if (!needle) return PAGE_GROUPS;
     return PAGE_GROUPS.map((group) => ({
       ...group,
-      items: group.items.filter((item) =>
-        item.label.toLowerCase().includes(needle)
+      items: group.items.filter(
+        (item) =>
+          item.label.toLowerCase().includes(needle) ||
+          item.description.toLowerCase().includes(needle)
       ),
     })).filter((group) => group.items.length > 0);
   }, [query]);
 
   return (
     <div className="newTabPage">
-      <div className="newTabPage__hero">
-        <div className="newTabPage__logoWrap">
-          <OpenSearch3DLogo size={160} />
-        </div>
-        <h2 className="newTabPage__title">{HERO_TITLE}</h2>
-      </div>
-
-      <div className="newTabPage__search">
+      {/* Header row: title left, filter right */}
+      <div className="newTabPage__header">
+        <h2 className="newTabPage__heading">Open a tab</h2>
         <OuiFieldSearch
-          placeholder="Search pages..."
+          placeholder="Type to filter"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          aria-label="Search pages"
-          fullWidth
+          aria-label="Filter pages"
+          className="newTabPage__filter"
+          compressed
         />
       </div>
 
+      {/* Page groups */}
       <div className="newTabPage__groups">
         {groups.map((group) => (
           <div className="newTabPage__group" key={group.key}>
@@ -160,17 +87,19 @@ export const NewTabPage = ({ onSelectPage }) => {
                   key={item.key}
                   type="button"
                   className="newTabPage__card"
-                  // One click loads the page and renames this tab.
                   onClick={() => onSelectPage(item.pageKey, item.label)}>
-                  <OuiIcon type={item.icon} size="m" />
-                  <span className="newTabPage__cardLabel">{item.label}</span>
+                  <OuiIcon type={item.icon} size="m" className="newTabPage__cardIcon" />
+                  <div className="newTabPage__cardText">
+                    <span className="newTabPage__cardLabel">{item.label}</span>
+                    <span className="newTabPage__cardDesc">{item.description}</span>
+                  </div>
                 </button>
               ))}
             </div>
           </div>
         ))}
         {groups.length === 0 && (
-          <p className="newTabPage__noResults">No pages match “{query}”.</p>
+          <p className="newTabPage__noResults">No pages match "{query}".</p>
         )}
       </div>
     </div>
