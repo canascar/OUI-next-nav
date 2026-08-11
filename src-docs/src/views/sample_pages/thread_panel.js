@@ -11,14 +11,17 @@
 
 import React, { forwardRef, useEffect } from 'react';
 
-import { OuiIcon, OuiToolTip } from '../../../../src/components';
+import { OuiIcon } from '../../../../src/components';
 import { ThreadPage } from './thread_page';
 
 /**
  * ThreadPanel — the chat pane.
  *
- * Has its own header bar with the session title (shimmer when generating),
- * share button, session actions menu, and the panel open/close toggle.
+ * Option F quiet pass: controls are bare glyphs, no bordered chips.
+ * Header renders state-conditionally:
+ *   Split:     session ▾ · share
+ *   Chat Full: session ▾ · share · "N tabs | ⌄" (or "+ Page" at 0 tabs)
+ *   Home:      no header
  */
 export const ThreadPanel = forwardRef(
   (
@@ -38,6 +41,8 @@ export const ThreadPanel = forwardRef(
       isPanelOpen,
       onTogglePanel,
       onMinimize,
+      tabCount = 0,
+      activeTabTitle,
     },
     ref
   ) => {
@@ -57,65 +62,59 @@ export const ThreadPanel = forwardRef(
       }
     }, [ref, sizeState]);
 
+    // State derivation
+    const isChatFull = !isPanelOpen; // canvas collapsed = chat owns full width
+    const hasSession = !isHome && !!title;
+
     return (
       <div
         ref={ref}
         className={`threadPanel${isAnimating ? ' threadPanel--animating' : ''}`}
         style={{ width }}>
-        {/* Header: title + actions */}
-        {showHeader && (
+        {/* Option F: Header only when a session exists (not home) */}
+        {showHeader && hasSession && (
           <div className="threadPanel__header">
-            {!isHome && title && (
-              <span
-                className={`threadPanel__headerTitle${
-                  titleGenerating ? ' threadPanel__headerTitle--generating' : ''
-                }`}>
-                {title}
-              </span>
-            )}
+            {/* Session title — bare text, acts as dropdown trigger */}
+            <span
+              className={`threadPanel__headerTitle${
+                titleGenerating ? ' threadPanel__headerTitle--generating' : ''
+              }`}
+              role="button"
+              tabIndex={0}
+              aria-label="Session options">
+              {title}
+            </span>
+
+            {/* Share — bare glyph */}
+            <button
+              type="button"
+              className="threadPanel__headerBtn"
+              aria-label="Share session">
+              <OuiIcon type="share" size="s" />
+            </button>
+
             <div className="threadPanel__headerSpacer" />
-            {!isHome && title && (
-              <>
-                <button
-                  type="button"
-                  className="threadPanel__headerBtn"
-                  title="Share session"
-                  aria-label="Share session">
-                  <OuiIcon type="share" size="s" />
-                </button>
-                <button
-                  type="button"
-                  className="threadPanel__headerBtn"
-                  title="Session actions"
-                  aria-label="Session actions">
-                  <OuiIcon type="boxesVertical" size="s" />
-                </button>
-              </>
-            )}
-            {/* Minimize chat: collapses chat, canvas takes full width */}
-            {!isHome && isPanelOpen && onMinimize && (
-              <OuiToolTip content="Hide chat" position="bottom">
-                <button
-                  type="button"
-                  className="threadPanel__headerBtn"
-                  aria-label="Hide chat"
-                  onClick={onMinimize}>
-                  <OuiIcon type="minimize" size="s" />
-                </button>
-              </OuiToolTip>
-            )}
-            {/* Toggle: only when canvas is closed */}
-            {!isPanelOpen && (
-              <OuiToolTip content="Open page" position="bottom">
-                <button
-                  type="button"
-                  className="threadPanel__headerBtn"
-                  title="Open canvas"
-                  aria-label="Open canvas"
-                  onClick={onTogglePanel}>
-                  <OuiIcon type="dockedRight" size="s" />
-                </button>
-              </OuiToolTip>
+
+            {/* Chat Full state: "N tabs | ⌄" two-zone control, or "+ Page" at zero */}
+            {isChatFull && (
+              <button
+                type="button"
+                className="threadPanel__headerBtn threadPanel__headerBtn--tabControl"
+                aria-label={tabCount > 0 ? `${tabCount} tabs` : 'Open page'}
+                onClick={onTogglePanel}>
+                {tabCount > 0 ? (
+                  <>
+                    <span className="threadPanel__tabControlLabel">
+                      {tabCount} {tabCount === 1 ? 'tab' : 'tabs'}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <OuiIcon type="plus" size="s" />
+                    <span className="threadPanel__tabControlLabel">Open tab</span>
+                  </>
+                )}
+              </button>
             )}
           </div>
         )}
