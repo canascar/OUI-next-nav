@@ -76,7 +76,6 @@ const STORAGE_KEY = 'navConfig_v1';
 
 /** Default promoted items (everything not in floor). */
 const DEFAULT_PROMOTED = [
-  'new-ppl-logs',
   'metrics',
   'topology-map',
 ];

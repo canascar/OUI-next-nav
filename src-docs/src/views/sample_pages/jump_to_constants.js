@@ -10,4 +10,4 @@
  */
 
 // TODO: final copy pending design
-export const JUMP_TO_MORE_LABEL = 'Page';
+export const JUMP_TO_MORE_LABEL = 'Open tab';

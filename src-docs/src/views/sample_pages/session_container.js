@@ -326,6 +326,21 @@ export const SessionContainer = ({
   const isFullScreen = threadPanelState === 'full-screen';
   const isSideBySide = threadPanelState === 'side-by-side';
 
+  // Delay the chat icon from "active" to "default" after closing chat
+  const [chatIconActive, setChatIconActive] = useState(!isMinimized);
+  const chatIconTimerRef = useRef(null);
+  useEffect(() => {
+    if (chatIconTimerRef.current) clearTimeout(chatIconTimerRef.current);
+    if (isSideBySide) {
+      setChatIconActive(true);
+    } else {
+      chatIconTimerRef.current = setTimeout(() => setChatIconActive(false), 500);
+    }
+    return () => {
+      if (chatIconTimerRef.current) clearTimeout(chatIconTimerRef.current);
+    };
+  }, [isMinimized, isFullScreen, isSideBySide]);
+
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
   const mascotColor = isDark ? ['#FFFFFF', '#D9DEE5'] : ['#14558E', '#153A5A'];
@@ -412,6 +427,10 @@ export const SessionContainer = ({
           isPanelOpen={isPanelOpen}
           onTogglePanel={handleTogglePanel}
           onMinimize={handleMinimize}
+          tabCount={tabCount}
+          activeTabTitle={
+            session.tabs.find((t) => t.id === session.activeTabId)?.title
+          }
         />
 
         {/* Resize handle — only in side-by-side */}
@@ -448,6 +467,15 @@ export const SessionContainer = ({
               onOpenCanvasPage={onOpenCanvasPage}
               onCollapsePanel={handleTogglePanel}
               onQueryExecute={handleQueryExecute}
+              onToggleChat={() => {
+                triggerAnimation();
+                if (isMinimized) {
+                  onUpdateSession({ threadPanelState: 'side-by-side' });
+                } else {
+                  onUpdateSession({ threadPanelState: 'minimized' });
+                }
+              }}
+              isChatOpen={chatIconActive}
             />
           </div>
           {/* Olly chat pill — rendered inside page panel wrap for positioning */}

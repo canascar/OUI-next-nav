@@ -71,6 +71,8 @@ const TabBar = ({
   onAddTab,
   onReorderTabs,
   onCollapsePanel,
+  onToggleChat,
+  isChatOpen,
 }) => {
   const tabListRef = useRef(null);
   const [isListOpen, setIsListOpen] = useState(false);
@@ -200,17 +202,17 @@ const TabBar = ({
 
   return (
     <div className="pagePanel__tabBar">
-      {/* Close panel button — the single way to collapse the panel */}
-      {onCollapsePanel && (
-        <OuiToolTip content="Close panel" position="bottom">
+      {/* Chat bubble toggle — left of tabs */}
+      {onToggleChat && (
+        <OuiToolTip content={isChatOpen ? 'Hide chat' : 'Show chat'} position="bottom">
           <OuiButtonIcon
-            iconType="dockedRight"
-            aria-label="Close panel"
-            size="s"
-            color="text"
+            iconType="editorComment"
+            aria-label={isChatOpen ? 'Hide chat' : 'Show chat'}
+            size="xs"
+            color={isChatOpen ? 'primary' : 'text'}
             display="empty"
-            onClick={onCollapsePanel}
-            className="pagePanel__collapseButton"
+            onClick={onToggleChat}
+            className={`pagePanel__chatToggle${isChatOpen ? ' pagePanel__chatToggle--active' : ''}`}
           />
         </OuiToolTip>
       )}
@@ -273,7 +275,7 @@ const TabBar = ({
           <OuiButtonIcon
             iconType="plus"
             aria-label="Add new tab"
-            size="s"
+            size="xs"
             color="text"
             display="empty"
             onClick={onAddTab}
@@ -290,7 +292,7 @@ const TabBar = ({
               <OuiButtonIcon
                 iconType="list"
                 aria-label="View tabs"
-                size="s"
+                size="xs"
                 color="text"
                 display="empty"
                 onClick={() => setIsListOpen((open) => !open)}
@@ -335,6 +337,19 @@ const TabBar = ({
           </OuiPopover>
         </OuiToolTip>
       </div>
+
+      {/* ✕ Close canvas — Option F: the control lives inside the panel it affects */}
+      {onCollapsePanel && (
+        <OuiButtonIcon
+          iconType="cross"
+          aria-label="Close canvas"
+          size="xs"
+          color="text"
+          display="empty"
+          onClick={onCollapsePanel}
+          className="pagePanel__closeButton"
+        />
+      )}
     </div>
   );
 };
@@ -367,6 +382,8 @@ export const PagePanel = ({
   onOpenCanvasPage,
   onCollapsePanel,
   onQueryExecute,
+  onToggleChat,
+  isChatOpen,
 }) => {
   const activeTab = tabs.find((tab) => tab.id === activeTabId);
 
@@ -475,6 +492,8 @@ export const PagePanel = ({
         onAddTab={onAddTab}
         onReorderTabs={onReorderTabs}
         onCollapsePanel={onCollapsePanel}
+        onToggleChat={onToggleChat}
+        isChatOpen={isChatOpen}
       />
       <div
         className="pagePanel__content"

@@ -830,7 +830,6 @@ export const McpHomeGreeting = ({
   onJumpToPage,
 }) => {
   const [inputValue, setInputValue] = useState('');
-  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
 
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
@@ -966,48 +965,14 @@ export const McpHomeGreeting = ({
               <span>{item.label}</span>
             </button>
           ))}
-          <OuiPopover
-            anchorPosition="upRight"
-            panelPaddingSize="none"
-            isOpen={moreMenuOpen}
-            closePopover={() => setMoreMenuOpen(false)}
-            button={
-              <button
-                type="button"
-                className={`v6Scenario__jumpToChip${
-                  moreMenuOpen ? ' v6Scenario__jumpToChip--active' : ''
-                }`}
-                aria-label={JUMP_TO_MORE_LABEL}
-                onClick={() => setMoreMenuOpen((open) => !open)}>
-                <OuiIcon type="plus" size="s" />
-                <span>{JUMP_TO_MORE_LABEL}</span>
-              </button>
-            }>
-            <div className="v6Scenario__morePagesMenu">
-              {MCP_JUMP_TO_MORE_GROUPS.map((group) => (
-                <div key={group.key} className="v6Scenario__morePagesGroup">
-                  {group.label && (
-                    <div className="v6Scenario__morePagesGroupLabel">
-                      {group.label}
-                    </div>
-                  )}
-                  {group.items.map((item) => (
-                    <button
-                      key={`${group.key}-${item.pageKey}-${item.label}`}
-                      type="button"
-                      className="v6Scenario__morePagesItem"
-                      onClick={() => {
-                        jumpTo(item.pageKey, item.label);
-                        setMoreMenuOpen(false);
-                      }}>
-                      <OuiIcon type={item.icon} size="m" />
-                      <span>{item.label}</span>
-                    </button>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </OuiPopover>
+          <button
+            type="button"
+            className="v6Scenario__jumpToChip"
+            aria-label={JUMP_TO_MORE_LABEL}
+            onClick={() => jumpTo('new-tab', 'New Tab')}>
+            <OuiIcon type="plus" size="s" />
+            <span>{JUMP_TO_MORE_LABEL}</span>
+          </button>
         </div>
       </div>
     </div>
