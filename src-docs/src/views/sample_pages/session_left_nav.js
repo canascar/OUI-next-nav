@@ -162,16 +162,6 @@ export const SessionLeftNav = ({
           <OuiIcon type="logoOpenSearch" size="l" aria-hidden="true" />
         </button>
         <div className="sessionLeftNav__headerActions">
-          <OuiToolTip content="Search" position="bottom">
-            <OuiButtonIcon
-              iconType="search"
-              aria-label="Search"
-              color="text"
-              display="empty"
-              size="xs"
-              onClick={() => setSearchOpen(true)}
-            />
-          </OuiToolTip>
           <OuiButtonIcon
             iconType="dockedLeft"
             aria-label="Collapse navigation"
@@ -185,40 +175,55 @@ export const SessionLeftNav = ({
 
       {/* Expanded nav items — v8 unified slot-and-label grid */}
       <div className="sessionLeftNav__itemsExpanded">
-        {/* New session — top action row */}
-        <div className="sessionLeftNav__navItemExpandedRow">
-          <button
-            type="button"
-            className={`sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--main${
-              activeView === 'session' &&
-              (isEmptySession || activePageKey === 'overview-home')
-                ? ' sessionLeftNav__navItemExpanded--active'
-                : ''
-            }`}
-            onClick={() => {
-              setIsNavExpanded(false);
-              onCreateSession();
-            }}>
-            <div className="sessionLeftNav__navItemIconWrap">
-              <OuiIcon
-                type="plusInCircle"
-                size="m"
-                color={
-                  activeView === 'session' &&
-                  (isEmptySession || activePageKey === 'overview-home')
-                    ? 'primary'
-                    : undefined
-                }
-              />
-            </div>
-            <span className="sessionLeftNav__navItemExpandedLabel">
-              New session
-            </span>
-          </button>
-        </div>
+        {/* New session */}
+        <button
+          type="button"
+          className={`sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--main${
+            activeView === 'session' &&
+            (isEmptySession || activePageKey === 'overview-home')
+              ? ' sessionLeftNav__navItemExpanded--active'
+              : ''
+          }`}
+          onClick={() => {
+            setIsNavExpanded(false);
+            onCreateSession();
+          }}>
+          <div className="sessionLeftNav__navItemIconWrap">
+            <OuiIcon
+              type="plusInCircle"
+              size="m"
+              color={
+                activeView === 'session' &&
+                (isEmptySession || activePageKey === 'overview-home')
+                  ? 'primary'
+                  : undefined
+              }
+            />
+          </div>
+          <span className="sessionLeftNav__navItemExpandedLabel">
+            New session
+          </span>
+        </button>
 
-        {/* Separator */}
-        <div className="sessionLeftNav__divider sessionLeftNav__divider--edge" style={{ margin: '2px 12px' }} />
+        {/* All sessions */}
+        <button
+          type="button"
+          className={`sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--main${
+            activeView === 'session-list'
+              ? ' sessionLeftNav__navItemExpanded--active'
+              : ''
+          }`}
+          onClick={() => {
+            setIsNavExpanded(false);
+            onBrowseSessions();
+          }}>
+          <div className="sessionLeftNav__navItemIconWrap">
+            <OuiIcon type="navTicketing" size="m" color={activeView === 'session-list' ? 'primary' : undefined} />
+          </div>
+          <span className="sessionLeftNav__navItemExpandedLabel">
+            All sessions
+          </span>
+        </button>
 
         {/* Floor items — always shown */}
         {NAV_FLOOR.map((item) => {
@@ -309,78 +314,6 @@ export const SessionLeftNav = ({
               );
             })}
           </>
-        )}
-
-        {/* Separator */}
-        <div className="sessionLeftNav__divider sessionLeftNav__divider--edge" style={{ margin: '2px 12px' }} />
-
-        {/* All sessions */}
-        <div className="sessionLeftNav__navItemExpandedRow">
-          <button
-            type="button"
-            className={`sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--main${
-              activeView === 'session-list'
-                ? ' sessionLeftNav__navItemExpanded--active'
-                : ''
-            }`}
-            onClick={() => {
-              setIsNavExpanded(false);
-              onBrowseSessions();
-            }}>
-            <div className="sessionLeftNav__navItemIconWrap">
-              <OuiIcon type="editorComment" size="m" />
-            </div>
-            <span className="sessionLeftNav__navItemExpandedLabel">
-              All sessions
-            </span>
-            <span
-              className="sessionLeftNav__inlineArrow"
-              role="button"
-              tabIndex={0}
-              aria-label={expandedSections['all-sessions'] ? 'Collapse' : 'Expand'}
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleSection('all-sessions');
-              }}
-              onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); toggleSection('all-sessions'); } }}>
-              <OuiIcon
-                type={expandedSections['all-sessions'] ? 'arrowDown' : 'arrowRight'}
-                size="s"
-              />
-            </span>
-          </button>
-        </div>
-        {expandedSections['all-sessions'] && (
-          sessions.slice(0, 12).map((session) => {
-            const isRunning = session.isRunning;
-            const isUnreviewed = session.isUnreviewed !== false;
-            return (
-              <button
-                key={session.id}
-                type="button"
-                className={`sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--child${
-                  session.id === activeSessionId
-                    ? ' sessionLeftNav__navItemExpanded--active'
-                    : ''
-                }`}
-                onClick={() => {
-                  onSelectSession(session.id);
-                }}>
-                <div className="sessionLeftNav__navItemIconWrap">
-                  {isRunning ? (
-                    <OuiAgenticSpinner size="s" />
-                  ) : (
-                    <span style={{ width: 16 }} />
-                  )}
-                </div>
-                <span
-                  className="sessionLeftNav__navItemExpandedLabel"
-                  style={{ fontWeight: isUnreviewed ? 600 : 400 }}>
-                  {session.title}
-                </span>
-              </button>
-            );
-          })
         )}
       </div>
 
@@ -519,20 +452,6 @@ export const SessionLeftNav = ({
         </button>
       </div>
 
-      {/* Search — between logo and nav items */}
-      <div className="sessionLeftNav__actions" style={{ flex: 'none', paddingBottom: 0 }}>
-        <OuiToolTip content="Search" position="right">
-          <OuiButtonIcon
-            className="sessionLeftNav__actionButton"
-            iconType="search"
-            aria-label="Search"
-            color="text"
-            display="empty"
-            onClick={() => setSearchOpen(true)}
-          />
-        </OuiToolTip>
-      </div>
-
       {/* Primary actions */}
       <div className="sessionLeftNav__actions" style={{ flex: 'none' }}>
         {disableActions ? (
@@ -649,6 +568,33 @@ export const SessionLeftNav = ({
           </OuiToolTip>
         )}
 
+        {/* All sessions — toggles a persistent side panel */}
+        {disableActions ? (
+          <OuiButtonIcon
+            className="sessionLeftNav__actionButton"
+            iconType="navTicketing"
+            aria-label="All sessions"
+            color="text"
+            display="empty"
+            isDisabled
+          />
+        ) : (
+          <OuiToolTip content="All sessions" position="right">
+            <OuiButtonIcon
+              className={`sessionLeftNav__actionButton${
+                activeView === 'session-list'
+                  ? ' sessionLeftNav__actionButton--active'
+                  : ''
+              }`}
+              iconType="navTicketing"
+              aria-label="All sessions"
+              color={activeView === 'session-list' ? 'primary' : 'text'}
+              display="empty"
+              onClick={onBrowseSessions}
+            />
+          </OuiToolTip>
+        )}
+
         {/* Floor items as icons — always visible in collapsed state */}
         {!disableActions && (
           <div className="sessionLeftNav__shortcutIcons">
@@ -670,88 +616,6 @@ export const SessionLeftNav = ({
                 </OuiToolTip>
               );
             })}
-            <div className="sessionLeftNav__divider sessionLeftNav__divider--edge" />
-          </div>
-        )}
-
-        {disableActions ? (
-          <OuiButtonIcon
-            className="sessionLeftNav__actionButton"
-            iconType="navTicketing"
-            aria-label="All sessions"
-            color="text"
-            display="empty"
-            isDisabled
-          />
-        ) : (
-          <div
-            onMouseEnter={() => openNavPopover('sessions')}
-            onMouseLeave={() => closeNavPopover()}>
-            <OuiPopover
-              button={
-                <div className="sessionLeftNav__sessionsButtonWrap">
-                  <OuiButtonIcon
-                    className={`sessionLeftNav__actionButton${
-                      activeView === 'session-list'
-                        ? ' sessionLeftNav__actionButton--active'
-                        : ''
-                    }`}
-                    iconType="navTicketing"
-                    aria-label="All sessions"
-                    color={activeView === 'session-list' ? 'primary' : 'text'}
-                    display="empty"
-                    onClick={onBrowseSessions}
-                  />
-                </div>
-              }
-              isOpen={navPopover === 'sessions'}
-              closePopover={() => setNavPopover(null)}
-              anchorPosition="rightUp"
-              panelPaddingSize="s"
-              panelClassName="samplePagesLeftNav__popoverPanel">
-              <div
-                onMouseEnter={() => openNavPopover('sessions')}
-                onMouseLeave={() => closeNavPopover()}>
-                <div className="samplePagesLeftNav__threadPopover">
-                  <div className="samplePagesLeftNav__threadPopoverHeader">
-                    <span>Recent sessions</span>
-                  </div>
-                  <div className="samplePagesLeftNav__threadPopoverContent">
-                    {sessions.slice(0, 5).map((session) => (
-                      <button
-                        key={session.id}
-                        type="button"
-                        className="samplePagesLeftNav__threadPopoverItem"
-                        onClick={() => {
-                          setNavPopover(null);
-                          onSelectSession(session.id);
-                        }}>
-                        <span className="samplePagesLeftNav__threadPopoverTitle">
-                          {session.title}
-                        </span>
-                        <span className="samplePagesLeftNav__threadPopoverSubtitle">
-                          {session.tabs.length > 0
-                            ? `${session.tabs.length} ${
-                                session.tabs.length === 1 ? 'tab' : 'tabs'
-                              }`
-                            : 'No tabs'}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                  <div className="samplePagesLeftNav__threadPopoverFooter">
-                    <OuiButtonEmpty
-                      size="xs"
-                      onClick={() => {
-                        setNavPopover(null);
-                        onBrowseSessions();
-                      }}>
-                      View all
-                    </OuiButtonEmpty>
-                  </div>
-                </div>
-              </div>
-            </OuiPopover>
           </div>
         )}
       </div>

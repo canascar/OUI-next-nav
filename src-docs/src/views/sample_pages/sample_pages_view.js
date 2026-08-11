@@ -53,7 +53,7 @@ import { AiSkillsPage } from './ai_skills_page';
 import { AiMemoriesPage } from './ai_memories_page';
 import { AiAutomationsPage } from './ai_automations_page';
 import { AiMcpServersPage } from './ai_mcp_servers_page';
-import { OuiErrorBoundary } from '../../../../src/components';
+import { OuiButtonIcon, OuiErrorBoundary } from '../../../../src/components';
 
 import { AskAiPopover } from './ask_ai_popover';
 import {
@@ -87,6 +87,23 @@ import {
   OVERVIEW_HOME_SESSION,
   MCP_INVESTIGATION_SESSION,
 } from './session_mock_data';
+
+/** Quick relative timestamp for the sessions panel. */
+function getRelativeTime(ts) {
+  if (!ts) return '';
+  const diff = Date.now() - ts;
+  const mins = Math.round(diff / 60000);
+  if (mins < 1) return 'Just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.round(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.round(hrs / 24);
+  if (days === 1) return 'yesterday';
+  if (days < 7) return `${days} days ago`;
+  const weeks = Math.round(days / 7);
+  if (weeks === 1) return 'last week';
+  return `${weeks} weeks ago`;
+}
 
 const renderPage = (
   activePage,
@@ -1829,6 +1846,9 @@ export const SessionPagesView = ({ variant } = {}) => {
   // Active view: 'session' (show active session) or 'session-list' (browse all sessions)
   const [activeView, setActiveView] = useState('session');
 
+  // Persistent sessions side-panel toggle
+  const [sessionsPanelOpen, setSessionsPanelOpen] = useState(false);
+
   // Listen for "open a page in a fresh session" events from the home greeting
   // Jump-to chips — mirrors the side-nav behavior: new session, page tab,
   // chat minimized, and a full-width canvas.
@@ -1999,9 +2019,9 @@ export const SessionPagesView = ({ variant } = {}) => {
     setActiveView('session');
   }, [isV7Variant, isMcpVariant]);
 
-  /** Sessions_Button: show the session list */
+  /** Sessions_Button: toggle the persistent sessions panel */
   const handleBrowseSessions = useCallback(() => {
-    setActiveView('session-list');
+    setSessionsPanelOpen((prev) => !prev);
   }, []);
 
   /** Library_Button: show the library page */
@@ -2290,7 +2310,7 @@ export const SessionPagesView = ({ variant } = {}) => {
             });
             setActiveView('session');
           }}
-          activeView={activeView}
+          activeView={sessionsPanelOpen ? 'session-list' : activeView}
           activeSessionId={sessionState.activeSessionId}
           activePageKey={
             activeView === 'session' && activeSession
@@ -2310,8 +2330,66 @@ export const SessionPagesView = ({ variant } = {}) => {
           flex: 1,
           overflow: 'hidden',
           display: 'flex',
-          paddingLeft: variant === 'v4' || isV5Variant ? 14 : 0,
+          paddingLeft: variant === 'v4' || isV5Variant ? 14 : (sessionsPanelOpen ? 0 : 8),
         }}>
+        {/* Persistent sessions panel */}
+        {sessionsPanelOpen && (
+          <div className="sessionsPanel">
+            <div className="sessionsPanel__header">
+              <span className="sessionsPanel__title">Sessions</span>
+              <OuiButtonIcon
+                iconType="cross"
+                aria-label="Close sessions"
+                color="text"
+                display="empty"
+                size="s"
+                onClick={() => setSessionsPanelOpen(false)}
+              />
+            </div>
+            <div className="sessionsPanel__list">
+              {sessionState.sessions
+                .filter(
+                  (s) =>
+                    !s.isHome &&
+                    !s.isLanding &&
+                    (s.threadKey || s.pendingThread || s.tabs.length > 0)
+                )
+                .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+                .map((session) => {
+                  const isActive =
+                    sessionState.activeSessionId === session.id;
+                  const tabCount = session.tabs.length;
+                  const timeAgo = getRelativeTime(session.createdAt);
+                  return (
+                    <button
+                      key={session.id}
+                      type="button"
+                      className={`sessionsPanel__item${
+                        isActive ? ' sessionsPanel__item--active' : ''
+                      }`}
+                      onClick={() => {
+                        handleSelectSession(session.id);
+                      }}>
+                      <div className="sessionsPanel__itemRow">
+                        {session.isRunning && (
+                          <span className="sessionsPanel__liveDot" />
+                        )}
+                        <span className="sessionsPanel__itemTitle">
+                          {session.title}
+                        </span>
+                      </div>
+                      <span className="sessionsPanel__itemMeta">
+                        {tabCount > 0
+                          ? `${tabCount} ${tabCount === 1 ? 'tab' : 'tabs'}`
+                          : ''}
+                        {tabCount > 0 && timeAgo ? ` · ${timeAgo}` : timeAgo || ''}
+                      </span>
+                    </button>
+                  );
+                })}
+            </div>
+          </div>
+        )}
         {renderMainContent()}
       </div>
     </div>
