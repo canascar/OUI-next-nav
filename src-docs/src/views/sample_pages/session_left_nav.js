@@ -141,9 +141,6 @@ export const SessionLeftNav = ({
   const promotedItems = getPromotedItems(navConfig.promoted);
   const collapsedGroupItems = getCollapsedGroupItems(navConfig.promoted);
 
-  // Legacy compatibility: NEW_SESSION_ITEMS used in collapsed rail popover
-  const NEW_SESSION_ITEMS = [...NAV_FLOOR, ...promotedItems];
-  const VISIBLE_GROUPS = [];
 
   // ---------- EXPANDED NAV RENDER ----------
   const renderExpandedNav = () => (
@@ -463,88 +460,6 @@ export const SessionLeftNav = ({
             display="empty"
             isDisabled
           />
-        ) : NEW_SESSION_ITEMS.length > 0 ? (
-          <div
-            onMouseEnter={() => openNavPopover('new-session')}
-            onMouseLeave={() => closeNavPopover()}>
-            <OuiPopover
-              button={
-                <OuiButtonIcon
-                  className={`sessionLeftNav__actionButton${
-                    activeView === 'session' &&
-                    (isEmptySession || activePageKey === 'overview-home')
-                      ? ' sessionLeftNav__actionButton--active'
-                      : ''
-                  }`}
-                  iconType="plusInCircle"
-                  aria-label="New session"
-                  color={
-                    activeView === 'session' &&
-                    (isEmptySession || activePageKey === 'overview-home')
-                      ? 'primary'
-                      : 'text'
-                  }
-                  display="empty"
-                  onClick={onCreateSession}
-                />
-              }
-              isOpen={navPopover === 'new-session'}
-              closePopover={() => setNavPopover(null)}
-              anchorPosition="rightUp"
-              panelPaddingSize="s"
-              panelClassName="samplePagesLeftNav__popoverPanel">
-              <div
-                onMouseEnter={() => openNavPopover('new-session')}
-                onMouseLeave={() => closeNavPopover()}>
-                <div className="samplePagesLeftNav__threadPopover">
-                  <div className="samplePagesLeftNav__threadPopoverHeader">
-                    <span>Start with</span>
-                  </div>
-                  <div className="samplePagesLeftNav__threadPopoverContent">
-                    {NEW_SESSION_ITEMS.map((item) => (
-                      <button
-                        key={item.key}
-                        type="button"
-                        className="samplePagesLeftNav__threadPopoverItem"
-                        style={{ flexDirection: 'row', alignItems: 'center' }}
-                        onClick={() => {
-                          setNavPopover(null);
-                          if (onOpenPage) onOpenPage(item.page, item.title);
-                        }}>
-                        <OuiIcon type={item.icon} size="m" style={{ marginRight: 8, flexShrink: 0 }} />
-                        <span className="samplePagesLeftNav__threadPopoverTitle">
-                          {item.label}
-                        </span>
-                      </button>
-                    ))}
-                    {VISIBLE_GROUPS.map((group) => (
-                      <React.Fragment key={group.key}>
-                        <div className="samplePagesLeftNav__threadPopoverGroupLabel">
-                          {group.label}
-                        </div>
-                        {group.children.map((item) => (
-                          <button
-                            key={item.key}
-                            type="button"
-                            className="samplePagesLeftNav__threadPopoverItem"
-                            style={{ flexDirection: 'row', alignItems: 'center' }}
-                            onClick={() => {
-                              setNavPopover(null);
-                              if (onOpenPage) onOpenPage(item.page, item.title);
-                            }}>
-                            <OuiIcon type={item.icon} size="m" style={{ marginRight: 8, flexShrink: 0 }} />
-                            <span className="samplePagesLeftNav__threadPopoverTitle">
-                              {item.label}
-                            </span>
-                          </button>
-                        ))}
-                      </React.Fragment>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </OuiPopover>
-          </div>
         ) : (
           <OuiToolTip content="New session" position="right">
             <OuiButtonIcon
