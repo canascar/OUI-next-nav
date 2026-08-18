@@ -137,6 +137,16 @@ const THREADS = {
     contextStrip: TOKEN_CONTEXT,
     messages: [],
   },
+  'poc-checkout-p99': {
+    title: 'checkout p99 latency',
+    // POC entry: arrival message with prompt chip; investigation plays on accept.
+    // pocAlert is injected at runtime via window.__pocAlert
+    pocEntry: true,
+    messages: [],
+    get pocAlert() {
+      return typeof window !== 'undefined' ? window.__pocAlert : null;
+    },
+  },
   'latency-spike': {
     title: 'Latency spike investigation',
     messages: [
@@ -1834,6 +1844,7 @@ export const ThreadPage = ({
   const isOverviewHome = threadKey === 'overview-home';
   const isMcpInvestigation = threadKey === 'checkout-p99';
   const isTokenInvestigation = threadKey === 'agent-token-spike';
+  const isPocThread = threadKey === 'poc-checkout-p99';
   // Set when a home findings row starts an investigation that wants a context
   // strip above the thread (the checkout flow doesn't).
   const [activeContextStrip, setActiveContextStrip] = useState(null);
@@ -2585,6 +2596,118 @@ export const ThreadPage = ({
       handleSend();
     }
   };
+
+  // POC entry: show arrival message + prompt chip until user accepts
+  const isPocGreeting =
+    isPocThread &&
+    !messages.some((m) => m.role === 'user') &&
+    !greetingDone;
+
+  // Dev override: ?playback=instant renders everything completed immediately
+  const playbackInstant = (() => {
+    try {
+      const hash = window.location.hash || '';
+      const qIndex = hash.indexOf('?');
+      if (qIndex !== -1) {
+        const params = new URLSearchParams(hash.slice(qIndex + 1));
+        return params.get('playback') === 'instant';
+      }
+    } catch (e) { /* noop */ }
+    return false;
+  })();
+
+  // If playback=instant and this is a POC thread, skip greeting and show completed thread
+  const pocInstantPlayedRef = useRef(false);
+  useEffect(() => {
+    if (!isPocThread || !playbackInstant || pocInstantPlayedRef.current) return;
+    pocInstantPlayedRef.current = true;
+    setGreetingDone(true);
+    // Load all MCP_INVESTIGATION_MESSAGES immediately (no delays)
+    setMessages(MCP_INVESTIGATION_MESSAGES.map((m) => ({ ...m, _enter: false })));
+    window.dispatchEvent(new CustomEvent('poc-investigate-accepted', {
+      detail: { alertId: 'checkout-p99' },
+    }));
+  }, [isPocThread, playbackInstant, startInvestigation]);
+
+  // POC bidirectional link: tab activated → scroll chat to top (arrival message)
+  // Tab closed → clear linked indicator
+  const [pocLinked, setPocLinked] = useState(true);
+  useEffect(() => {
+    if (!isPocThread) return;
+    const handleTabActivated = () => {
+      if (feedRef.current) {
+        feedRef.current.scrollTop = 0;
+      }
+    };
+    const handleTabClosed = () => {
+      setPocLinked(false);
+    };
+    window.addEventListener('poc-tab-activated', handleTabActivated);
+    window.addEventListener('poc-tab-closed', handleTabClosed);
+    return () => {
+      window.removeEventListener('poc-tab-activated', handleTabActivated);
+      window.removeEventListener('poc-tab-closed', handleTabClosed);
+    };
+  }, [isPocThread]);
+
+  if (isPocGreeting && !playbackInstant) {
+    const pocAlert = thread.pocAlert || (typeof window !== 'undefined' && window.__pocAlert);
+    const provenanceLabel = pocAlert
+      ? `From your ${pocAlert.provenance.host} \u00b7 ${pocAlert.provenance.skill} skill`
+      : '';
+
+    const handlePocAccept = () => {
+      setGreetingExiting(true);
+      setTimeout(() => {
+        setGreetingDone(true);
+        window.dispatchEvent(new CustomEvent('session-chat-started'));
+        window.dispatchEvent(new CustomEvent('poc-investigate-accepted', {
+          detail: { alertId: pocAlert ? pocAlert.id : 'checkout-p99' },
+        }));
+        startInvestigation(MCP_INVESTIGATION_MESSAGES);
+      }, 350);
+    };
+
+    return (
+      <div
+        className={`threadPage__greetingWrap${
+          greetingExiting ? ' threadPage__greetingWrap--exiting' : ''
+        }`}>
+        <McpHomeGreeting
+          findings={[
+            {
+              key: 'poc-checkout-p99',
+              status: 'Warning',
+              statusColor: 'amber',
+              title: pocAlert
+                ? `${pocAlert.title} — p99 ${pocAlert.p99} (baseline ${pocAlert.p99Baseline}), error rate ${pocAlert.errorRate}`
+                : 'Investigate checkout latency',
+              widget: pocAlert
+                ? { type: 'spark', label: pocAlert.p99, color: 'var(--g-danger)', up: true }
+                : undefined,
+              subtitle: provenanceLabel || undefined,
+            },
+          ]}
+          onSelectFinding={handlePocAccept}
+          onSend={(text) => {
+            if (text.toLowerCase().startsWith('investigate')) {
+              handlePocAccept();
+            } else {
+              pendingSendRef.current = text;
+              setGreetingExiting(true);
+              setTimeout(() => {
+                setGreetingDone(true);
+                if (pendingSendRef.current) {
+                  handleSend(pendingSendRef.current);
+                  pendingSendRef.current = null;
+                }
+              }, 350);
+            }
+          }}
+        />
+      </div>
+    );
+  }
 
   // MCP investigation home: show the Warning-pill greeting until the user
   // starts the investigation. The whole journey then streams into this thread.

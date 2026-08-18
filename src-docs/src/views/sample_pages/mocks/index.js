@@ -36,3 +36,5 @@ export {
   clearSessions,
   clampPaneWidth,
 } from './session_store';
+
+export { POC_ALERTS, getPocAlert } from './pocAlerts';

@@ -228,6 +228,14 @@ render(
             )}
           />
           <Route
+            path="/poc"
+            render={() => (
+              <LinkWrapper>
+                <SessionPagesView key="poc" variant="poc" />
+              </LinkWrapper>
+            )}
+          />
+          <Route
             path="/sample-pages"
             render={() => (
               <LinkWrapper>
