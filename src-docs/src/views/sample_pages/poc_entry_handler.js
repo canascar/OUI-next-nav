@@ -102,21 +102,29 @@ export function buildPocSession(alertId, existingSessions = []) {
     return { session: existing, isExisting: true };
   }
 
-  // Create new POC session
+  // Create new POC session — land directly in the investigation
+  const tabId = `tab-poc-${alert.id}`;
   const session = {
     id: sessionId,
     threadKey: 'poc-checkout-p99',
     pendingThread: null,
-    tabs: [],
-    activeTabId: null,
-    threadPanelState: 'full-screen',
-    threadPanelWidth: 50,
+    tabs: [
+      {
+        id: tabId,
+        pageKey: alert.sourcePageId || 'alerts',
+        title: alert.title,
+        _highlight: true,
+      },
+    ],
+    activeTabId: tabId,
+    threadPanelState: 'side-by-side',
+    threadPanelWidth: 34,
     createdAt: Date.now(),
     title: alert.title,
     // POC-specific metadata
     pocAlert: alert,
     pocArrivalMessage: buildArrivalMessage(alert),
-    pocState: 'awaiting-accept', // 'awaiting-accept' | 'investigating' | 'gate'
+    pocState: 'investigating',
   };
 
   return { session, isExisting: false };

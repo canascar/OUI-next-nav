@@ -2629,6 +2629,18 @@ export const ThreadPage = ({
     }));
   }, [isPocThread, playbackInstant, startInvestigation]);
 
+  // POC auto-play: when landing directly into investigation (no greeting), auto-start the beats
+  const pocAutoPlayedRef = useRef(false);
+  useEffect(() => {
+    if (!isPocThread || playbackInstant || pocAutoPlayedRef.current) return;
+    // If the session is already in investigating state (not awaiting-accept), skip greeting
+    const pocAlert = typeof window !== 'undefined' && window.__pocAlert;
+    if (!pocAlert) return;
+    pocAutoPlayedRef.current = true;
+    setGreetingDone(true);
+    startInvestigation(MCP_INVESTIGATION_MESSAGES);
+  }, [isPocThread, playbackInstant, startInvestigation]);
+
   // POC bidirectional link: tab activated → scroll chat to top (arrival message)
   // Tab closed → clear linked indicator
   const [pocLinked, setPocLinked] = useState(true);
