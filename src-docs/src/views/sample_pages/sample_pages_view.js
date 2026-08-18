@@ -15,6 +15,7 @@ import React, {
   useCallback,
   useEffect,
   useContext,
+  useMemo,
 } from 'react';
 import { ThemeContext } from '../../components/with_theme';
 
@@ -53,7 +54,7 @@ import { AiSkillsPage } from './ai_skills_page';
 import { AiMemoriesPage } from './ai_memories_page';
 import { AiAutomationsPage } from './ai_automations_page';
 import { AiMcpServersPage } from './ai_mcp_servers_page';
-import { OuiButtonIcon, OuiErrorBoundary } from '../../../../src/components';
+import { OuiButtonIcon, OuiErrorBoundary, OuiCallOut } from '../../../../src/components';
 
 import { AskAiPopover } from './ask_ai_popover';
 import {
@@ -87,6 +88,12 @@ import {
   OVERVIEW_HOME_SESSION,
   MCP_INVESTIGATION_SESSION,
 } from './session_mock_data';
+import {
+  detectPocEntry,
+  buildPocSession,
+  pocTelemetry,
+} from './poc_entry_handler';
+import { readQueryParam } from './mocks/capabilities';
 
 /** Quick relative timestamp for the sessions panel. */
 function getRelativeTime(ts) {
@@ -1696,6 +1703,14 @@ export const SessionPagesView = ({ variant } = {}) => {
   // The MCP home reuses the v7 session machinery (home landing → chat session).
   const isV7Variant = variant === 'v7' || isMcpVariant;
   const isV8Variant = variant === 'v8';
+
+  // POC entry detection — either variant='poc' or ?entry=poc on any route
+  const pocEntry = useMemo(() => {
+    if (variant === 'poc') return detectPocEntry().alertId ? detectPocEntry() : { isPoc: true, alertId: readQueryParam('alert') };
+    return detectPocEntry();
+  }, [variant]);
+  const isPocVariant = pocEntry.isPoc;
+
   const navExpandRef = useRef(null);
 
   const EmptyPage = isV6Variant
@@ -1742,6 +1757,33 @@ export const SessionPagesView = ({ variant } = {}) => {
 
   // Session state: sessions array + activeSessionId
   const [sessionState, setSessionState] = useState(() => {
+    // POC entry: create or restore a session keyed by alertId + provenance
+    if (isPocVariant) {
+      const pocResult = buildPocSession(pocEntry.alertId, []);
+      if (pocResult) {
+        pocTelemetry('entry_poc_shown', { alertId: pocEntry.alertId });
+        return {
+          sessions: [pocResult.session],
+          activeSessionId: pocResult.session.id,
+          version: 1,
+        };
+      }
+      // Unknown alert fallback — show returning-user home with a callout
+      return {
+        sessions: [
+          {
+            ...OVERVIEW_HOME_SESSION,
+            pocUnknownAlert: true,
+          },
+          LATENCY_SPIKE_SESSION,
+          ERROR_RATE_SPIKE_SESSION,
+          DNS_TIMEOUT_SESSION,
+        ],
+        activeSessionId: OVERVIEW_HOME_SESSION.id,
+        version: 1,
+        pocCallout: "We couldn't find that alert.",
+      };
+    }
     if (isMcpVariant) {
       return {
         sessions: [
@@ -1842,6 +1884,58 @@ export const SessionPagesView = ({ variant } = {}) => {
     return () =>
       window.removeEventListener('session-chat-started', handleChatStarted);
   }, []);
+
+  // POC: when user accepts the investigation, open the alert canvas tab
+  useEffect(() => {
+    if (!isPocVariant) return;
+    // Make POC alert data available to ThreadPage via window
+    const active = sessionState.sessions.find((s) => s.id === sessionState.activeSessionId);
+    if (active && active.pocAlert) {
+      window.__pocAlert = active.pocAlert;
+    }
+    const handlePocAccepted = (e) => {
+      const { alertId } = e.detail || {};
+      pocTelemetry('prompt_submitted', { source: 'poc_chip' });
+      // Open the alert detail canvas page as a new tab
+      setSessionState((prev) => {
+        if (!prev.activeSessionId) return prev;
+        const active = prev.sessions.find((s) => s.id === prev.activeSessionId);
+        if (!active || !active.pocAlert) return prev;
+        const alert = active.pocAlert;
+        const pageKey = alert.sourcePageId || 'alerts';
+        const title = alert.title;
+        // Deduplicate: never open a second tab for the same alert
+        const existingTab = (active.tabs || []).find(
+          (t) => t.pageKey === pageKey && t.title === title
+        );
+        if (existingTab) {
+          return updateSession(prev, prev.activeSessionId, {
+            activeTabId: existingTab.id,
+            threadPanelState: 'side-by-side',
+            threadPanelWidth: 34,
+            pocState: 'investigating',
+          });
+        }
+        const newTab = {
+          id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+          pageKey,
+          title,
+          _highlight: true,
+        };
+        pocTelemetry('page_opened', { source: 'poc_investigate' });
+        return updateSession(prev, prev.activeSessionId, {
+          tabs: [...(active.tabs || []), newTab],
+          activeTabId: newTab.id,
+          threadPanelState: 'side-by-side',
+          threadPanelWidth: 34,
+          pocState: 'investigating',
+        });
+      });
+    };
+    window.addEventListener('poc-investigate-accepted', handlePocAccepted);
+    return () =>
+      window.removeEventListener('poc-investigate-accepted', handlePocAccepted);
+  }, [isPocVariant]);
 
   // Active view: 'session' (show active session) or 'session-list' (browse all sessions)
   const [activeView, setActiveView] = useState('session');
@@ -2224,13 +2318,23 @@ export const SessionPagesView = ({ variant } = {}) => {
     }
 
     return (
-      <SessionContainer
-        key={variant ? activeSession.id : undefined}
-        session={activeSession}
-        onUpdateSession={handleUpdateSession}
-        onOpenCanvasPage={handleOpenCanvasPage}
-        onGoBack={variant ? handleCreateSession : undefined}
-      />
+      <React.Fragment>
+        {sessionState.pocCallout && (
+          <OuiCallOut
+            title={sessionState.pocCallout}
+            color="warning"
+            size="s"
+            role="alert"
+          />
+        )}
+        <SessionContainer
+          key={variant ? activeSession.id : undefined}
+          session={activeSession}
+          onUpdateSession={handleUpdateSession}
+          onOpenCanvasPage={handleOpenCanvasPage}
+          onGoBack={variant ? handleCreateSession : undefined}
+        />
+      </React.Fragment>
     );
   };
 

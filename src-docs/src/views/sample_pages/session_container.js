@@ -227,12 +227,18 @@ export const SessionContainer = ({
   const handleTabSelect = useCallback(
     (tabId) => {
       onUpdateSession({ activeTabId: tabId });
+      // POC bidirectional link: if this tab was opened via investigate, scroll chat to arrival
+      const tab = session.tabs.find((t) => t.id === tabId);
+      if (tab && tab._highlight) {
+        window.dispatchEvent(new CustomEvent('poc-tab-activated'));
+      }
     },
-    [onUpdateSession]
+    [onUpdateSession, session.tabs]
   );
 
   const handleTabClose = useCallback(
     (tabId) => {
+      const closedTab = session.tabs.find((tab) => tab.id === tabId);
       const closedIndex = session.tabs.findIndex((tab) => tab.id === tabId);
       const updatedTabs = session.tabs.filter((tab) => tab.id !== tabId);
       const updates = { tabs: updatedTabs };
@@ -250,6 +256,10 @@ export const SessionContainer = ({
         }
       }
       onUpdateSession(updates);
+      // POC bidirectional link: if the closed tab was linked, clear linked indicator
+      if (closedTab && closedTab._highlight) {
+        window.dispatchEvent(new CustomEvent('poc-tab-closed'));
+      }
     },
     [session.tabs, session.activeTabId, onUpdateSession, triggerAnimation]
   );
