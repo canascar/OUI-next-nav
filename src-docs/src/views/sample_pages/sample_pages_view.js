@@ -1888,54 +1888,13 @@ export const SessionPagesView = ({ variant } = {}) => {
   // POC: when user accepts the investigation, open the alert canvas tab
   useEffect(() => {
     if (!isPocVariant) return;
-    // Make POC alert data available to ThreadPage via window
+    // Make POC alert data available to ThreadPage and PocInvestigationPage via window
     const active = sessionState.sessions.find((s) => s.id === sessionState.activeSessionId);
     if (active && active.pocAlert) {
       window.__pocAlert = active.pocAlert;
     }
-    const handlePocAccepted = (e) => {
-      const { alertId } = e.detail || {};
-      pocTelemetry('prompt_submitted', { source: 'poc_chip' });
-      // Open the alert detail canvas page as a new tab
-      setSessionState((prev) => {
-        if (!prev.activeSessionId) return prev;
-        const active = prev.sessions.find((s) => s.id === prev.activeSessionId);
-        if (!active || !active.pocAlert) return prev;
-        const alert = active.pocAlert;
-        const pageKey = alert.sourcePageId || 'alerts';
-        const title = alert.title;
-        // Deduplicate: never open a second tab for the same alert
-        const existingTab = (active.tabs || []).find(
-          (t) => t.pageKey === pageKey && t.title === title
-        );
-        if (existingTab) {
-          return updateSession(prev, prev.activeSessionId, {
-            activeTabId: existingTab.id,
-            threadPanelState: 'side-by-side',
-            threadPanelWidth: 34,
-            pocState: 'investigating',
-          });
-        }
-        const newTab = {
-          id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-          pageKey,
-          title,
-          _highlight: true,
-        };
-        pocTelemetry('page_opened', { source: 'poc_investigate' });
-        return updateSession(prev, prev.activeSessionId, {
-          tabs: [...(active.tabs || []), newTab],
-          activeTabId: newTab.id,
-          threadPanelState: 'side-by-side',
-          threadPanelWidth: 34,
-          pocState: 'investigating',
-        });
-      });
-    };
-    window.addEventListener('poc-investigate-accepted', handlePocAccepted);
-    return () =>
-      window.removeEventListener('poc-investigate-accepted', handlePocAccepted);
-  }, [isPocVariant]);
+    pocTelemetry('page_opened', { source: 'poc' });
+  }, [isPocVariant, sessionState.sessions, sessionState.activeSessionId]);
 
   // Active view: 'session' (show active session) or 'session-list' (browse all sessions)
   const [activeView, setActiveView] = useState('session');

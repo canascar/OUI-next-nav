@@ -29,6 +29,7 @@ import { ServicePage } from './service_page';
 import { ServiceDetailPage } from './service_detail_page';
 import { AlertRulePage } from './alert_rule_page';
 import { OverviewHomePage } from './overview_home_page';
+import { PocInvestigationPage } from './poc_investigation_page';
 
 /**
  * @typedef {Object} Session
@@ -136,6 +137,7 @@ export const SOURCE_PAGE_MOCK = {
   forecasting: { component: AppServicesPageMock, title: 'Forecasting' },
   'agent-spans': { component: AppServicesPageMock, title: 'Agent Spans' },
   'overview-home': { component: OverviewHomePage, title: 'Overview' },
+  'poc-investigation': { component: PocInvestigationPage, title: 'Investigation' },
 };
 
 /**

@@ -381,6 +381,7 @@ body {
 @import '../views/sample_pages/page_panel';
 @import '../views/sample_pages/library_page';
 @import '../views/sample_pages/mcp_investigation';
+@import '../views/sample_pages/poc_investigation';
 
 @include ouiBreakpoint('xs', 's') {
   .guideSideNav {

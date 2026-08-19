@@ -65,6 +65,7 @@ import {
   MCP_CAVEAT,
   MCP_P99_FINDING,
 } from './mcp_investigation';
+import { PocChatReport } from './poc_chat_report';
 import {
   McpTokenAppAttachment,
   TOKEN_INVESTIGATION_MESSAGES,
@@ -138,14 +139,11 @@ const THREADS = {
     messages: [],
   },
   'poc-checkout-p99': {
-    title: 'checkout p99 latency',
-    // POC entry: arrival message with prompt chip; investigation plays on accept.
-    // pocAlert is injected at runtime via window.__pocAlert
+    title: 'Checkout p99 latency',
+    // POC v2: completed investigation rendered by PocChatReport.
+    // Alert data injected at runtime via window.__pocAlert.
     pocEntry: true,
     messages: [],
-    get pocAlert() {
-      return typeof window !== 'undefined' ? window.__pocAlert : null;
-    },
   },
   'latency-spike': {
     title: 'Latency spike investigation',
@@ -2597,128 +2595,12 @@ export const ThreadPage = ({
     }
   };
 
-  // POC entry: show arrival message + prompt chip until user accepts
-  const isPocGreeting =
-    isPocThread &&
-    !messages.some((m) => m.role === 'user') &&
-    !greetingDone;
-
-  // Dev override: ?playback=instant renders everything completed immediately
-  const playbackInstant = (() => {
-    try {
-      const hash = window.location.hash || '';
-      const qIndex = hash.indexOf('?');
-      if (qIndex !== -1) {
-        const params = new URLSearchParams(hash.slice(qIndex + 1));
-        return params.get('playback') === 'instant';
-      }
-    } catch (e) { /* noop */ }
-    return false;
-  })();
-
-  // If playback=instant and this is a POC thread, skip greeting and show completed thread
-  const pocInstantPlayedRef = useRef(false);
-  useEffect(() => {
-    if (!isPocThread || !playbackInstant || pocInstantPlayedRef.current) return;
-    pocInstantPlayedRef.current = true;
-    setGreetingDone(true);
-    // Load all MCP_INVESTIGATION_MESSAGES immediately (no delays)
-    setMessages(MCP_INVESTIGATION_MESSAGES.map((m) => ({ ...m, _enter: false })));
-    window.dispatchEvent(new CustomEvent('poc-investigate-accepted', {
-      detail: { alertId: 'checkout-p99' },
-    }));
-  }, [isPocThread, playbackInstant, startInvestigation]);
-
-  // POC auto-play: when landing directly into investigation (no greeting), auto-start the beats
-  const pocAutoPlayedRef = useRef(false);
-  useEffect(() => {
-    if (!isPocThread || playbackInstant || pocAutoPlayedRef.current) return;
-    // If the session is already in investigating state (not awaiting-accept), skip greeting
-    const pocAlert = typeof window !== 'undefined' && window.__pocAlert;
-    if (!pocAlert) return;
-    pocAutoPlayedRef.current = true;
-    setGreetingDone(true);
-    startInvestigation(MCP_INVESTIGATION_MESSAGES);
-  }, [isPocThread, playbackInstant, startInvestigation]);
-
-  // POC bidirectional link: tab activated → scroll chat to top (arrival message)
-  // Tab closed → clear linked indicator
-  const [pocLinked, setPocLinked] = useState(true);
-  useEffect(() => {
-    if (!isPocThread) return;
-    const handleTabActivated = () => {
-      if (feedRef.current) {
-        feedRef.current.scrollTop = 0;
-      }
-    };
-    const handleTabClosed = () => {
-      setPocLinked(false);
-    };
-    window.addEventListener('poc-tab-activated', handleTabActivated);
-    window.addEventListener('poc-tab-closed', handleTabClosed);
-    return () => {
-      window.removeEventListener('poc-tab-activated', handleTabActivated);
-      window.removeEventListener('poc-tab-closed', handleTabClosed);
-    };
-  }, [isPocThread]);
-
-  if (isPocGreeting && !playbackInstant) {
-    const pocAlert = thread.pocAlert || (typeof window !== 'undefined' && window.__pocAlert);
-    const provenanceLabel = pocAlert
-      ? `From your ${pocAlert.provenance.host} \u00b7 ${pocAlert.provenance.skill} skill`
-      : '';
-
-    const handlePocAccept = () => {
-      setGreetingExiting(true);
-      setTimeout(() => {
-        setGreetingDone(true);
-        window.dispatchEvent(new CustomEvent('session-chat-started'));
-        window.dispatchEvent(new CustomEvent('poc-investigate-accepted', {
-          detail: { alertId: pocAlert ? pocAlert.id : 'checkout-p99' },
-        }));
-        startInvestigation(MCP_INVESTIGATION_MESSAGES);
-      }, 350);
-    };
-
-    return (
-      <div
-        className={`threadPage__greetingWrap${
-          greetingExiting ? ' threadPage__greetingWrap--exiting' : ''
-        }`}>
-        <McpHomeGreeting
-          findings={[
-            {
-              key: 'poc-checkout-p99',
-              status: 'Warning',
-              statusColor: 'amber',
-              title: pocAlert
-                ? `${pocAlert.title} — p99 ${pocAlert.p99} (baseline ${pocAlert.p99Baseline}), error rate ${pocAlert.errorRate}`
-                : 'Investigate checkout latency',
-              widget: pocAlert
-                ? { type: 'spark', label: pocAlert.p99, color: 'var(--g-danger)', up: true }
-                : undefined,
-              subtitle: provenanceLabel || undefined,
-            },
-          ]}
-          onSelectFinding={handlePocAccept}
-          onSend={(text) => {
-            if (text.toLowerCase().startsWith('investigate')) {
-              handlePocAccept();
-            } else {
-              pendingSendRef.current = text;
-              setGreetingExiting(true);
-              setTimeout(() => {
-                setGreetingDone(true);
-                if (pendingSendRef.current) {
-                  handleSend(pendingSendRef.current);
-                  pendingSendRef.current = null;
-                }
-              }, 350);
-            }
-          }}
-        />
-      </div>
-    );
+  // POC v2: completed investigation — render the report directly, no replay
+  if (isPocThread) {
+    const pocAlert = typeof window !== 'undefined' ? window.__pocAlert : null;
+    if (pocAlert) {
+      return <PocChatReport alert={pocAlert} />;
+    }
   }
 
   // MCP investigation home: show the Warning-pill greeting until the user

@@ -1,0 +1,835 @@
+// POC Investigation — canvas ticket + chat report styles
+
+// ─── Canvas: Investigation ticket ────────────────────────────────────────────
+
+.pocInvestigation {
+  padding: 0;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.pocInvestigation__body {
+  padding: 10px 0;
+}
+
+.pocInvestigation__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.pocInvestigation__provenance {
+  font-size: 13px;
+  color: $ouiTextSubduedColor;
+  font-weight: 400;
+}
+
+.pocInvestigation__badge {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba($ouiColorSuccess, 0.1);
+  color: $ouiColorSuccess;
+}
+
+.pocInvestigation__summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  border: 1px solid $ouiColorLightShade;
+  border-radius: 6px;
+  margin-bottom: 28px;
+  overflow: hidden;
+  background: $ouiColorEmptyShade;
+}
+
+.pocInvestigation__summaryItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border-right: 1px solid $ouiColorLightShade;
+
+  &:last-child {
+    border-right: none;
+  }
+}
+
+.pocInvestigation__summaryLabel {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: $ouiTextSubduedColor;
+}
+
+.pocInvestigation__summaryValue {
+  font-size: 13px;
+  line-height: 1.5;
+  color: $ouiTextColor;
+}
+
+.pocInvestigation__section {
+  margin-bottom: 24px;
+}
+
+.pocInvestigation__sectionHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.pocInvestigation__sectionTitle {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+.pocInvestigation__sectionMeta {
+  font-size: 11px;
+  color: $ouiTextSubduedColor;
+}
+
+.pocInvestigation__steps {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: $ouiColorEmptyShade;
+  border: 1px solid $ouiColorLightShade;
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.pocInvestigation__shimmer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+// ─── Step rows ────────────────────────────────────────────────────────────────
+
+.pocStep {
+  border-top: 1px solid $ouiColorLightShade;
+  padding: 16px 20px;
+
+  &:first-child {
+    border-top: none;
+  }
+}
+
+.pocStep__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+
+.pocStep__label {
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.pocStep__result {
+  font-size: 12px;
+  color: $ouiTextSubduedColor;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pocStep__duration {
+  font-size: 11px;
+  color: $ouiTextSubduedColor;
+  font-family: $ouiCodeFontFamily;
+  white-space: nowrap;
+}
+
+.pocStep__body {
+  padding: 14px 0 0 0;
+}
+
+// ─── Dashboard-style cards ────────────────────────────────────────────────────
+
+.pocCard {
+  border: 1px solid $ouiColorLightShade;
+  border-radius: 8px;
+  overflow: hidden;
+  background: $ouiColorEmptyShade;
+}
+
+.pocCard__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-bottom: 1px solid $ouiColorLightShade;
+  background: $ouiColorLightestShade;
+}
+
+.pocCard__sectionLabel {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: $ouiTextSubduedColor;
+}
+
+.pocCard__source {
+  font-size: 11px;
+  color: $ouiTextSubduedColor;
+  opacity: 0.7;
+}
+
+.pocCard__badge {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+
+  &--danger {
+    background: rgba($ouiColorDanger, 0.12);
+    color: $ouiColorDanger;
+  }
+
+  &--warning {
+    background: rgba($ouiColorWarning, 0.12);
+    color: $ouiColorWarning;
+  }
+
+  &--success {
+    background: rgba($ouiColorSuccess, 0.12);
+    color: $ouiColorSuccess;
+  }
+}
+
+.pocCard__body {
+  padding: 14px 16px 16px;
+}
+
+.pocCard__title {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 2px;
+}
+
+.pocCard__subtitle {
+  font-size: 11px;
+  color: $ouiTextSubduedColor;
+  margin: 0 0 12px;
+  font-family: $ouiCodeFontFamily;
+}
+
+.pocCard__metrics {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.pocCard__metric {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pocCard__metricLabel {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: $ouiTextSubduedColor;
+}
+
+.pocCard__metricValue {
+  font-size: 16px;
+  font-weight: 700;
+  font-family: $ouiCodeFontFamily;
+
+  &--danger {
+    color: $ouiColorDanger;
+  }
+
+  &--primary {
+    color: $ouiColorPrimary;
+  }
+
+  &--warning {
+    color: $ouiColorWarning;
+  }
+}
+
+.pocCard__footnote {
+  font-size: 11px;
+  color: $ouiTextSubduedColor;
+  margin: 8px 0 0;
+  line-height: 1.5;
+}
+
+.pocCard__code {
+  font-family: $ouiCodeFontFamily;
+  font-size: 11px;
+  background: $ouiColorLightestShade;
+  border: 1px solid $ouiColorLightShade;
+  padding: 10px 12px;
+  margin: 0 0 10px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border-radius: 4px;
+  line-height: 1.5;
+}
+
+.pocCard__logs {
+  margin: 0 0 10px;
+  border: 1px solid $ouiColorLightShade;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.pocCard__logLine {
+  font-family: $ouiCodeFontFamily;
+  font-size: 11px;
+  padding: 6px 10px;
+  border-bottom: 1px solid $ouiColorLightShade;
+  word-break: break-word;
+  line-height: 1.45;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.pocCard__link {
+  background: none;
+  border: none;
+  color: $ouiColorPrimary;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Trace span bars
+.pocCard__spans {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 8px 0;
+}
+
+.pocCard__span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 22px;
+
+  &--highlight {
+    .pocCard__spanName {
+      color: $ouiColorDanger;
+      font-weight: 600;
+    }
+    .pocCard__spanBar {
+      background: $ouiColorDanger;
+    }
+    .pocCard__spanDur {
+      color: $ouiColorDanger;
+      font-weight: 600;
+    }
+  }
+}
+
+.pocCard__spanName {
+  min-width: 150px;
+  font-family: $ouiCodeFontFamily;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.pocCard__spanTrack {
+  flex: 1;
+  height: 8px;
+  background: $ouiColorLightShade;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.pocCard__spanBar {
+  height: 100%;
+  background: $ouiColorPrimary;
+  border-radius: 4px;
+}
+
+.pocCard__spanDur {
+  font-family: $ouiCodeFontFamily;
+  font-size: 11px;
+  min-width: 44px;
+  text-align: right;
+  color: $ouiTextSubduedColor;
+}
+
+// Chart area
+.pocCard__chart {
+  height: 60px;
+  margin: 8px 0 12px;
+
+  &--full {
+    height: 90px;
+    margin: 12px 0 16px;
+  }
+}
+
+.pocCard__chartSvg {
+  width: 100%;
+  height: 60px;
+  display: block;
+  color: $ouiTextColor;
+
+  &--full {
+    width: 100%;
+    height: 90px;
+  }
+}
+
+// ─── Chat: Report ─────────────────────────────────────────────────────────────
+
+.pocChat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.pocChat__thread {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pocChat__userMsg {
+  background: rgba($ouiColorPrimary, 0.08);
+  border: 1px solid rgba($ouiColorPrimary, 0.15);
+  border-radius: 12px 12px 4px 12px;
+  padding: 10px 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  max-width: 75%;
+  align-self: flex-end;
+  width: fit-content;
+}
+
+.pocChat__assistantMsg {
+  width: 100%;
+  max-width: 640px;
+  align-self: center;
+}
+
+.pocChat__msgBody {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// Collapsible lines (memory, steps)
+.pocChat__collapsible {
+  // no extra margin — gap handles spacing
+}
+
+.pocChat__collapsibleTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: $ouiTextColor;
+  cursor: pointer;
+
+  &:hover {
+    color: $ouiColorPrimary;
+  }
+}
+
+.pocChat__collapsibleBody {
+  margin-top: 6px;
+}
+
+.pocChat__memoryItems {
+  font-size: 12px;
+  color: $ouiTextSubduedColor;
+  line-height: 1.6;
+  white-space: pre-line;
+  padding-left: 2px;
+}
+
+.pocChat__memoryItem {
+  padding: 1px 0;
+}
+
+// Root cause
+.pocChat__rootCause {
+  p {
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0 0 8px;
+
+    &:last-child { margin-bottom: 0; }
+  }
+}
+
+// Ran investigation row (mascot + collapsible)
+.pocChat__ranInvestigation {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .pocChat__mascot {
+    flex-shrink: 0;
+  }
+}
+
+// Olly idle — below the last response
+.pocChat__ollyIdle {
+  margin-top: 4px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+// Step chips
+.pocChat__stepChips {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pocChat__stepChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 3px 0;
+  font: inherit;
+  font-size: 12px;
+  color: $ouiTextSubduedColor;
+  cursor: pointer;
+  text-align: left;
+
+  &:hover {
+    color: $ouiColorPrimary;
+  }
+}
+
+.pocChat__stepNum {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: $ouiColorLightShade;
+  font-size: 9px;
+  font-weight: 600;
+  color: $ouiTextSubduedColor;
+  flex-shrink: 0;
+}
+
+// Recommended actions
+.pocChat__actions {
+  border: 1px solid $ouiColorLightShade;
+  border-radius: 8px;
+  overflow: hidden;
+  background: $ouiColorEmptyShade;
+}
+
+.pocChat__actionsHeader {
+  padding: 10px 14px;
+  border-bottom: 1px solid $ouiColorLightShade;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.pocChat__actionsTitle {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.pocChat__actionsSubtitle {
+  font-size: 11px;
+  color: $ouiTextSubduedColor;
+}
+
+.pocChat__actionsList {
+  padding: 0;
+}
+
+.pocChat__actionItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid $ouiColorLightShade;
+  cursor: pointer;
+
+  &:last-child { border-bottom: none; }
+
+  &:hover {
+    background: $ouiColorLightestShade;
+  }
+}
+
+.pocChat__actionCheck {
+  margin-top: 2px;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  accent-color: $ouiColorPrimary;
+}
+
+.pocChat__actionContent {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.pocChat__actionLabel {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.pocChat__actionMeta {
+  font-size: 11px;
+  color: $ouiTextSubduedColor;
+  line-height: 1.4;
+}
+
+.pocChat__actionTag {
+  font-weight: 600;
+  margin-right: 4px;
+  color: $ouiColorPrimary;
+}
+
+.pocChat__actionsFooter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-top: 1px solid $ouiColorLightShade;
+  background: $ouiColorLightestShade;
+}
+
+.pocChat__actionsCount {
+  font-size: 11px;
+  color: $ouiTextSubduedColor;
+  flex: 1;
+}
+
+.pocChat__skipBtn {
+  background: none;
+  border: 1px solid $ouiColorLightShade;
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-family: inherit;
+  color: $ouiTextSubduedColor;
+  cursor: pointer;
+
+  &:hover { border-color: $ouiTextSubduedColor; }
+}
+
+.pocChat__continueBtn {
+  background: $ouiColorPrimary;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  color: #fff;
+  cursor: pointer;
+
+  &:hover { opacity: 0.9; }
+}
+
+// After continue: results
+.pocChat__results {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pocChat__resultLine {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-family: $ouiCodeFontFamily;
+  color: $ouiTextColor;
+  line-height: 1.5;
+  padding: 6px 10px;
+  border: 1px solid $ouiColorLightShade;
+  border-radius: 6px;
+  background: $ouiColorEmptyShade;
+}
+
+.pocChat__summary {
+  font-size: 13px;
+  line-height: 1.55;
+  color: $ouiTextColor;
+  margin: 0;
+}
+
+// After continue: second message
+.pocChat__userMsgInline {
+  background: rgba($ouiColorPrimary, 0.08);
+  border: 1px solid rgba($ouiColorPrimary, 0.15);
+  border-radius: 12px 12px 4px 12px;
+  padding: 8px 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 16px 0;
+  width: fit-content;
+  align-self: flex-end;
+  margin-left: auto;
+}
+
+.pocChat__secondMsg {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 640px;
+}
+
+// Feedback (thumbs up/down)
+.pocChat__feedback {
+  display: flex;
+  gap: 2px;
+}
+
+.pocChat__feedbackBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: none;
+  background: none;
+  color: $ouiTextSubduedColor;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    background: $ouiColorLightestShade;
+    color: $ouiTextColor;
+  }
+
+  &--active {
+    color: $ouiColorPrimary;
+  }
+}
+
+// Scroll to bottom button
+.pocChat__scrollBtn {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid $ouiColorLightShade;
+  background: $ouiColorEmptyShade;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  transition: opacity 150ms ease;
+
+  &:hover {
+    background: $ouiColorLightestShade;
+  }
+}
+
+// Composer
+.pocChat__composer {
+  flex-shrink: 0;
+  padding: 12px 20px 20px;
+
+  .threadPage__inputWrapper {
+    border: 1px solid $ouiColorLightShade;
+    border-radius: 12px;
+    padding: 10px 14px 8px;
+    background: $ouiColorEmptyShade;
+    transition: border-color 150ms ease;
+
+    &:focus-within {
+      border-color: $ouiColorPrimary;
+    }
+  }
+
+  .threadPage__textarea {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    min-height: 40px;
+    font-size: 13px;
+    resize: none;
+    background: transparent;
+  }
+
+  .threadPage__inputActions {
+    display: flex;
+    align-items: center;
+    padding-top: 6px;
+
+    // + on the left
+    > :first-child {
+      margin-right: auto;
+    }
+
+    // mic in the middle, send on the right
+    gap: 4px;
+  }
+}
