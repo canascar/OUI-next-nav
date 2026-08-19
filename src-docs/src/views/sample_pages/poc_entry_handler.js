@@ -10,16 +10,11 @@
  */
 
 /**
- * POC entry handler — resolves the #/poc?alert=<alertId> or
- * #/sample-pages?entry=poc&alert=<alertId> route into a session state
- * suitable for SessionPagesView.
+ * POC entry handler v2 — completed investigation on arrival.
  *
- * Responsibilities:
- * - Parse entry + alertId from query params
- * - Resolve alert from pocAlerts mock registry
- * - Build or restore the POC session (keyed by alertId + provenance.session)
- * - Provide the arrival message, prompt chip, and provenance metadata
- * - Handle unknown alertId gracefully (returns null → caller shows fallback)
+ * The customer lands at a FINISHED investigation: canvas shows the 4-step
+ * ticket, chat shows the report (memory + root cause + recommendations).
+ * Nothing replays, nothing is blank.
  */
 
 import { readQueryParam } from './mocks/capabilities';
@@ -31,64 +26,34 @@ function pocSessionId(alert) {
 }
 
 /**
- * Determine if the current URL is a POC entry. Returns the alertId or null.
- * Handles both:
- *   #/poc?alert=checkout-p99
- *   #/sample-pages?entry=poc&alert=checkout-p99
- *
- * @returns {{ isPoc: boolean, alertId: string|null }}
+ * Determine if the current URL is a POC entry.
+ * Handles both #/poc?alert=... and #/sample-pages?entry=poc&alert=...
+ * firstrun=1 wins over entry=poc.
  */
 export function detectPocEntry() {
   const hash = window.location.hash || '';
 
-  // Check for firstrun=1 — it wins over entry=poc per spec
   if (readQueryParam('firstrun') === '1') {
     return { isPoc: false, alertId: null };
   }
 
-  // #/poc?alert=...
   if (hash.startsWith('#/poc')) {
-    const alertId = readQueryParam('alert');
-    return { isPoc: true, alertId: alertId || null };
+    return { isPoc: true, alertId: readQueryParam('alert') || null };
   }
 
-  // #/sample-pages?entry=poc&alert=...
-  const entry = readQueryParam('entry');
-  if (entry === 'poc') {
-    const alertId = readQueryParam('alert');
-    return { isPoc: true, alertId: alertId || null };
+  if (readQueryParam('entry') === 'poc') {
+    return { isPoc: true, alertId: readQueryParam('alert') || null };
   }
 
   return { isPoc: false, alertId: null };
 }
 
 /**
- * Build the POC arrival message for a given alert.
- * @param {import('./mocks/pocAlerts').PocAlert} alert
- * @returns {Object} Message object for the chat thread
- */
-function buildArrivalMessage(alert) {
-  return {
-    role: 'assistant',
-    content: `I see the ${alert.title} alert from your POC. p99 is ${alert.p99} against a ${alert.p99Baseline} baseline, error rate ${alert.errorRate}%. Want me to investigate?`,
-    provenance: {
-      label: `From your ${alert.provenance.host} · ${alert.provenance.skill} skill`,
-      host: alert.provenance.host,
-      skill: alert.provenance.skill,
-    },
-    promptChips: [
-      { label: 'Investigate checkout latency', action: 'investigate' },
-    ],
-  };
-}
-
-/**
  * Build or restore a POC session for the given alert.
  * Returns null if alert is unknown (caller handles fallback).
  *
- * @param {string|null} alertId
- * @param {Array} existingSessions - Current session list for dedup check
- * @returns {{ session: Object, isExisting: boolean }|null}
+ * The session arrives COMPLETED: side-by-side, canvas tab open with the
+ * investigation ticket, chat showing the report.
  */
 export function buildPocSession(alertId, existingSessions = []) {
   const alert = getPocAlert(alertId);
@@ -102,7 +67,6 @@ export function buildPocSession(alertId, existingSessions = []) {
     return { session: existing, isExisting: true };
   }
 
-  // Create new POC session — land directly in the investigation
   const tabId = `tab-poc-${alert.id}`;
   const session = {
     id: sessionId,
@@ -111,41 +75,29 @@ export function buildPocSession(alertId, existingSessions = []) {
     tabs: [
       {
         id: tabId,
-        pageKey: alert.sourcePageId || 'alerts',
-        title: alert.title,
+        pageKey: 'poc-investigation',
+        title: 'Checkout P99 Latency Investigation',
         _highlight: true,
+        _pocAlertId: alert.id,
       },
     ],
     activeTabId: tabId,
     threadPanelState: 'side-by-side',
-    threadPanelWidth: 34,
+    threadPanelWidth: 38,
     createdAt: Date.now(),
     title: alert.title,
-    // POC-specific metadata
+    // POC metadata
     pocAlert: alert,
-    pocArrivalMessage: buildArrivalMessage(alert),
-    pocState: 'investigating',
+    pocState: 'completed',
   };
 
   return { session, isExisting: false };
 }
 
-/**
- * Get the alert data for a given alertId (convenience re-export).
- * @param {string} alertId
- * @returns {import('./mocks/pocAlerts').PocAlert|null}
- */
 export { getPocAlert };
 
-// ---------------------------------------------------------------------------
-// Telemetry (no-op logger — spec says use existing helper or no-op)
-// ---------------------------------------------------------------------------
+// ─── Telemetry ────────────────────────────────────────────────────────────────
 
-/**
- * No-op telemetry logger. Logs to console in dev only.
- * @param {string} event
- * @param {Object} [payload]
- */
 export function pocTelemetry(event, payload = {}) {
   // eslint-disable-next-line no-console
   if (process.env.NODE_ENV !== 'production') {
