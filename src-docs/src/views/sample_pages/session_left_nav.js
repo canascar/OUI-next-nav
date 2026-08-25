@@ -28,11 +28,13 @@ import {
   ProfilePopoverContent,
 } from './sample_pages_left_nav';
 import {
-  NAV_FLOOR,
+  NAV_RAIL_KEYS,
+  NAV_TOP_KEYS,
+  NAV_SECTIONS,
+  getNavItems,
+  getNavItemTitle,
   loadNavConfig,
   saveNavConfig,
-  getPromotedItems,
-  getCollapsedGroupItems,
 } from './nav_config';
 import { SearchPopover } from './search_popover';
 
@@ -138,9 +140,42 @@ export const SessionLeftNav = ({
   }, []);
 
   // Derived nav item lists
-  const promotedItems = getPromotedItems(navConfig.promoted);
-  const collapsedGroupItems = getCollapsedGroupItems(navConfig.promoted);
+  const railItems = getNavItems(NAV_RAIL_KEYS);
+  const topItems = getNavItems(NAV_TOP_KEYS);
 
+  const openPage = useCallback(
+    (item) => {
+      setIsNavExpanded(false);
+      if (onOpenPage) onOpenPage(item.page, getNavItemTitle(item));
+    },
+    [onOpenPage]
+  );
+
+  // A single page row in the expanded rail. Shared by the top block and by
+  // every grouped section so all rows stay visually identical.
+  const renderExpandedItem = (item) => {
+    const isActive = activePageKey != null && item.page === activePageKey;
+    return (
+      <button
+        key={item.key}
+        type="button"
+        className={`sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--child${
+          isActive ? ' sessionLeftNav__navItemExpanded--active' : ''
+        }`}
+        onClick={() => openPage(item)}>
+        <div className="sessionLeftNav__navItemIconWrap">
+          <OuiIcon
+            type={item.icon}
+            size="m"
+            color={isActive ? 'primary' : undefined}
+          />
+        </div>
+        <span className="sessionLeftNav__navItemExpandedLabel">
+          {item.label}
+        </span>
+      </button>
+    );
+  };
 
   // ---------- EXPANDED NAV RENDER ----------
   const renderExpandedNav = () => (
@@ -222,96 +257,44 @@ export const SessionLeftNav = ({
           </span>
         </button>
 
-        {/* Floor items — always shown */}
-        {NAV_FLOOR.map((item) => {
-          const isActive = activePageKey != null && item.page === activePageKey;
-          return (
-            <button
-              key={item.key}
-              type="button"
-              className={`sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--child${
-                isActive ? ' sessionLeftNav__navItemExpanded--active' : ''
-              }`}
-              onClick={() => {
-                setIsNavExpanded(false);
-                if (onOpenPage) onOpenPage(item.page, item.label);
-              }}>
-              <div className="sessionLeftNav__navItemIconWrap">
-                <OuiIcon type={item.icon} size="m" color={isActive ? 'primary' : undefined} />
-              </div>
-              <span className="sessionLeftNav__navItemExpandedLabel">
-                {item.label}
-              </span>
-            </button>
-          );
-        })}
-        {/* Promoted items */}
-        {promotedItems.map((item) => {
-          const isActive = activePageKey != null && item.page === activePageKey;
-          return (
-            <button
-              key={item.key}
-              type="button"
-              className={`sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--child${
-                isActive ? ' sessionLeftNav__navItemExpanded--active' : ''
-              }`}
-              onClick={() => {
-                setIsNavExpanded(false);
-                if (onOpenPage) onOpenPage(item.page, item.label);
-              }}>
-              <div className="sessionLeftNav__navItemIconWrap">
-                <OuiIcon type={item.icon} size="m" color={isActive ? 'primary' : undefined} />
-              </div>
-              <span className="sessionLeftNav__navItemExpandedLabel">
-                {item.label}
-              </span>
-            </button>
-          );
-        })}
+        {/* Top block — everyday destinations, deliberately unlabelled */}
+        {topItems.map(renderExpandedItem)}
 
-        {/* More — disclosure for collapsed-group items */}
-        {collapsedGroupItems.length > 0 && (
-          <>
-            <button
-              type="button"
-              className="sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--child"
-              style={{ opacity: 0.6 }}
-              aria-expanded={navConfig.groupOpen}
-              onClick={() => updateNavConfig((prev) => ({ ...prev, groupOpen: !prev.groupOpen }))}>
-              <div className="sessionLeftNav__navItemIconWrap">
-                <OuiIcon
-                  type={navConfig.groupOpen ? 'arrowDown' : 'arrowRight'}
-                  size="s"
-                />
-              </div>
-              <span className="sessionLeftNav__navItemExpandedLabel">
-                More
-              </span>
-            </button>
-            {navConfig.groupOpen && collapsedGroupItems.map((item) => {
-              const isActive = activePageKey != null && item.page === activePageKey;
-              return (
+        {/* Labelled sections */}
+        {NAV_SECTIONS.map((section) => {
+          const items = getNavItems(section.itemKeys);
+          if (items.length === 0) return null;
+          // Non-collapsible sections are always open.
+          const isOpen = !section.collapsible || navConfig.groupOpen;
+          return (
+            <div key={section.key} className="sessionLeftNav__groupSection">
+              {section.collapsible ? (
                 <button
-                  key={item.key}
                   type="button"
-                  className={`sessionLeftNav__navItemExpanded sessionLeftNav__navItemExpanded--child${
-                    isActive ? ' sessionLeftNav__navItemExpanded--active' : ''
-                  }`}
-                  onClick={() => {
-                    setIsNavExpanded(false);
-                    if (onOpenPage) onOpenPage(item.page, item.label);
-                  }}>
-                  <div className="sessionLeftNav__navItemIconWrap">
-                    <OuiIcon type={item.icon} size="m" color={isActive ? 'primary' : undefined} />
-                  </div>
-                  <span className="sessionLeftNav__navItemExpandedLabel">
-                    {item.label}
-                  </span>
+                  className="sessionLeftNav__sectionSubtitle sessionLeftNav__sectionSubtitleRow sessionLeftNav__sectionToggle"
+                  aria-expanded={isOpen}
+                  onClick={() =>
+                    updateNavConfig((prev) => ({
+                      ...prev,
+                      groupOpen: !prev.groupOpen,
+                    }))
+                  }>
+                  <span>{section.label}</span>
+                  <OuiIcon
+                    className="sessionLeftNav__sectionSubtitleIcon"
+                    type={isOpen ? 'arrowDown' : 'arrowRight'}
+                    size="s"
+                  />
                 </button>
-              );
-            })}
-          </>
-        )}
+              ) : (
+                <div className="sessionLeftNav__sectionSubtitle">
+                  {section.label}
+                </div>
+              )}
+              {isOpen && items.map(renderExpandedItem)}
+            </div>
+          );
+        })}
       </div>
 
       {/* Footer (expanded) */}
@@ -510,11 +493,11 @@ export const SessionLeftNav = ({
           </OuiToolTip>
         )}
 
-        {/* Floor items as icons — always visible in collapsed state */}
+        {/* Pinned pages as icons — always visible in collapsed state */}
         {!disableActions && (
           <div className="sessionLeftNav__shortcutIcons">
             <div className="sessionLeftNav__divider sessionLeftNav__divider--edge" />
-            {NAV_FLOOR.map((item) => {
+            {railItems.map((item) => {
               const isActive = activePageKey != null && item.page === activePageKey;
               return (
                 <OuiToolTip key={item.key} content={item.label} position="right">
@@ -526,7 +509,7 @@ export const SessionLeftNav = ({
                     aria-label={item.label}
                     color={isActive ? 'primary' : 'text'}
                     display="empty"
-                    onClick={() => { if (onOpenPage) onOpenPage(item.page, item.label); }}
+                    onClick={() => openPage(item)}
                   />
                 </OuiToolTip>
               );
