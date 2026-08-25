@@ -112,12 +112,104 @@
   }
 }
 
-// Jump-to chips. Shared .v6Scenario__jumpTo* classes; this only clears the
-// shimmer's bottom bleed above and drops the 480px cap Overview's column needs.
-.mcpHome__jumpTo {
+// Suggested prompts — the row that replaced the Jump-to page pills. Accent-
+// outlined pills so they read as the agent talking back rather than as
+// navigation, plus the quieter tab link underneath. The top padding still has
+// to clear SurroundShimmer's 36px bottom bleed or the dots land in the gap.
+.mcpHome__suggestions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--g-space-3);
+  width: 100%;
   max-width: 100%;
   padding-top: calc(36px + var(--g-space-3));
+  // Same entrance the Jump-to row inherited from .v6Scenario__jumpTo, so this
+  // block still lands last in the greeting's fade-in sequence.
+  animation: v6FadeInUp 520ms cubic-bezier(0.22, 1, 0.36, 1) 330ms both;
+}
+
+.mcpHome__suggestionRow {
+  display: flex;
+  align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.mcpHome__suggestionChip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: var(--g-radius-pill);
+  border: 1px solid lightOrDarkTheme(rgba($ouiColorPrimary, 0.85), rgba($ouiColorPrimary, 0.45));
+  background: rgba($ouiColorEmptyShade, 0.72);
+  color: $ouiColorDarkShade;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  text-align: left;
+  cursor: pointer;
+  appearance: none;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  transition: transform var(--g-dur-fast) var(--g-ease-out), border-color var(--g-dur-fast) var(--g-ease-out), background-color var(--g-dur-fast) var(--g-ease-out), box-shadow var(--g-dur-fast) var(--g-ease-out);
+
+  &:hover {
+    border-color: $ouiColorPrimary;
+    background: lightOrDarkTheme($ouiColorEmptyShade, rgba($ouiColorPrimary, 0.12));
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px -12px rgba($ouiColorPrimary, 0.5);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $ouiColorPrimary;
+    outline-offset: 2px;
+  }
+}
+
+// The escape hatch the Jump-to row used to carry — quieter than the chips so
+// the suggestions stay the loudest thing in this block.
+.mcpHome__openTab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: $ouiBorderRadiusSmall;
+  background: transparent;
+  color: rgba($ouiColorDarkShade, 0.7);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  appearance: none;
+  transition: color var(--g-dur-fast) var(--g-ease-out);
+
+  .ouiIcon {
+    transition: transform var(--g-dur-fast) var(--g-ease-out);
+  }
+
+  &:hover {
+    color: $ouiColorPrimary;
+
+    .ouiIcon {
+      transform: translateX(2px);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid $ouiColorPrimary;
+    outline-offset: 2px;
+  }
 }
 
 // ---------------------------------------------------------------------------

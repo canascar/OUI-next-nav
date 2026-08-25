@@ -627,6 +627,12 @@ export const AppTracesPageMock = () => (
 export const AppServicesPageMock = () => (
   <EmptyPlaceholderPage title="Application Services" />
 );
+export const SkillsPageMock = () => <EmptyPlaceholderPage title="Skills" />;
+export const SlosPageMock = () => <EmptyPlaceholderPage title="SLOs" />;
+export const AnomalyDetectionPageMock = () => (
+  <EmptyPlaceholderPage title="Anomaly Detection" />
+);
+export const AlertingPageMock = () => <EmptyPlaceholderPage title="Alerting" />;
 
 // Trace analysis page mock — payments-db trace waterfall
 export const TraceAnalysisPageMock = () => (

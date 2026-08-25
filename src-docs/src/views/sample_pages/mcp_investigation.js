@@ -44,8 +44,6 @@ import {
   SurroundShimmer,
   ScenarioFindingCard,
   StatusDot,
-  JUMP_TO_ITEMS,
-  JUMP_TO_MORE_GROUPS,
 } from './empty_session_page_v6';
 import { JUMP_TO_MORE_LABEL } from './jump_to_constants';
 
@@ -790,28 +788,29 @@ export const MCP_INVESTIGATION_MESSAGES = [
 // ---------------------------------------------------------------------------
 
 /**
- * The chips shown inline; everything else lives behind the "more" chip. Pulled
- * from the shared Overview home list by key so the labels and icons stay in one
- * place — this page just surfaces fewer of them.
+ * What Olly thinks is worth asking next, read off the findings above: the
+ * checkout p99 regression and the support-triage token spike. These replaced
+ * the Jump-to page pills — the row now suggests a next question instead of a
+ * destination, because on this page the question is the thing that moves.
+ *
+ * `label` is the short chip copy; `prompt` is the fuller question actually sent
+ * to the agent, so the chip stays scannable without losing specifics.
  */
-const MCP_JUMP_TO_CHIPS = ['logs', 'metrics', 'dashboards'];
-const MCP_JUMP_TO_ITEMS = MCP_JUMP_TO_CHIPS.map((pageKey) =>
-  JUMP_TO_ITEMS.find((item) => item.pageKey === pageKey)
-).filter(Boolean);
-
-/**
- * The "more" popover carries everything the chips don't — the shared groups,
- * plus the Overview chips left off this page's shorter row.
- */
-const MCP_JUMP_TO_MORE_GROUPS = [
+const MCP_SUGGESTED_PROMPTS = [
   {
-    key: 'mcp-rest',
-    label: null,
-    items: JUMP_TO_ITEMS.filter(
-      (item) => !MCP_JUMP_TO_CHIPS.includes(item.pageKey)
-    ),
+    label: 'Why did p99 spike?',
+    prompt: 'Why did p99 latency on checkout (prod-web) cross 1.5s?',
   },
-  ...JUMP_TO_MORE_GROUPS,
+  {
+    label: 'What changed at 14:02?',
+    prompt:
+      'What changed in the 14:02 deploy to prod-web, and could it explain the checkout p99 regression?',
+  },
+  {
+    label: 'Who’s burning tokens?',
+    prompt:
+      'Why has support-triage burned 4.2M tokens today against a 1.0M/day baseline?',
+  },
 ];
 
 /**
@@ -819,8 +818,8 @@ const MCP_JUMP_TO_MORE_GROUPS = [
  * findings; clicking a row starts that finding's investigation in the chat
  * thread. The rows are the shared ScenarioFindingCard, so every flow's entry
  * point looks the same. Under the list sits the same shimmering ask-anything
- * input and Jump-to chip row used on Overview home, so the two greetings are
- * one family.
+ * input Overview home uses, then a row of suggested prompts — Olly's read on
+ * what to ask next about the findings above — and a link out to a new tab.
  */
 export const McpHomeGreeting = ({
   onStartInvestigation,
@@ -837,15 +836,22 @@ export const McpHomeGreeting = ({
   const mascotEyeColor = isDark ? '#181028' : '#fff';
   const [mascotExpression, setMascotExpression] = useState(undefined);
 
-  const submit = () => {
-    const text = inputValue.trim();
-    if (!text) return;
+  // One path for every ask on this page, so a suggestion chip and a typed
+  // question land in exactly the same place.
+  const ask = (text) => {
+    const trimmed = (text || '').trim();
+    if (!trimmed) return;
     if (onSend) {
-      onSend(text);
+      onSend(trimmed);
     } else if (onStartInvestigation) {
       // Fall back to the host's own handler so a free-form ask never dead-ends.
       onStartInvestigation();
     }
+  };
+
+  const submit = () => {
+    if (!inputValue.trim()) return;
+    ask(inputValue);
     setInputValue('');
   };
 
@@ -951,27 +957,33 @@ export const McpHomeGreeting = ({
           </SurroundShimmer>
         </div>
 
-        {/* Jump-to chips — the same rows and popover as Overview home, so a
-            question isn't the only way off this page. */}
-        <div className="v6Scenario__jumpTo mcpHome__jumpTo">
-          <span className="v6Scenario__jumpToLabel">Jump to</span>
-          {MCP_JUMP_TO_ITEMS.map((item) => (
-            <button
-              key={item.pageKey}
-              type="button"
-              className="v6Scenario__jumpToChip"
-              onClick={() => jumpTo(item.pageKey, item.label)}>
-              <OuiIcon type={item.icon} size="s" />
-              <span>{item.label}</span>
-            </button>
-          ))}
+        {/* Suggested prompts — Olly's read on what to ask next, given the
+            findings above. Clicking one sends it straight through, same as
+            typing it. The tab link underneath keeps the old escape hatch, so a
+            question still isn't the only way off this page. */}
+        <div className="mcpHome__suggestions">
+          <div
+            className="mcpHome__suggestionRow"
+            role="group"
+            aria-label="Suggested questions">
+            {MCP_SUGGESTED_PROMPTS.map((suggestion) => (
+              <button
+                key={suggestion.label}
+                type="button"
+                className="mcpHome__suggestionChip"
+                title={suggestion.prompt}
+                onClick={() => ask(suggestion.prompt)}>
+                {suggestion.label}
+              </button>
+            ))}
+          </div>
+
           <button
             type="button"
-            className="v6Scenario__jumpToChip"
-            aria-label={JUMP_TO_MORE_LABEL}
+            className="mcpHome__openTab"
             onClick={() => jumpTo('new-tab', 'New Tab')}>
-            <OuiIcon type="plus" size="s" />
             <span>{JUMP_TO_MORE_LABEL}</span>
+            <OuiIcon type="arrowRight" size="s" />
           </button>
         </div>
       </div>

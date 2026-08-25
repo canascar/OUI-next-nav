@@ -462,6 +462,21 @@
   }
 }
 
+// Collapsible section header rendered as a button. Only strips the native
+// button chrome — typography and colour still come from __sectionSubtitle.
+.sessionLeftNav__sectionToggle {
+  width: 100%;
+  background: none;
+  border: none;
+  appearance: none;
+  cursor: pointer;
+  text-align: left;
+
+  &:hover .sessionLeftNav__sectionSubtitleIcon {
+    opacity: 1;
+  }
+}
+
 // Children container for collapsible sections
 .sessionLeftNav__sectionChildren {
   display: flex;

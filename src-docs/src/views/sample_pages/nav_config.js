@@ -28,7 +28,12 @@ import { SOURCE_PAGE_MOCK } from './session_models';
  */
 export const NAV_FLOOR = [
   { key: 'alerts', label: 'Alerts', icon: 'navAlerting', page: 'alerts-list' },
-  { key: 'dashboards', label: 'Dashboards', icon: 'navDashboards', page: 'dashboards-list' },
+  {
+    key: 'dashboards',
+    label: 'Dashboards',
+    icon: 'navDashboards',
+    page: 'dashboards-list',
+  },
   { key: 'logs', label: 'Logs', icon: 'navDiscover', page: 'discover-log' },
 ];
 
@@ -43,29 +48,171 @@ export const NAV_FLOOR_KEYS = new Set(NAV_FLOOR.map((item) => item.key));
  * All nav-eligible page items. Each item maps to an entry in SOURCE_PAGE_MOCK.
  * This is the single source of truth for what can appear in the nav.
  */
+/**
+ * `label` is what the rail renders. Items whose label is only unambiguous in
+ * the context of its section (two "Traces", two "Spans") carry a `title` used
+ * for the tab and session name instead.
+ */
 export const NAV_ALL_PAGES = [
   { key: 'alerts', label: 'Alerts', icon: 'navAlerting', page: 'alerts-list' },
-  { key: 'dashboards', label: 'Dashboards', icon: 'navDashboards', page: 'dashboards-list' },
+  {
+    key: 'dashboards',
+    label: 'Dashboards',
+    icon: 'navDashboards',
+    page: 'dashboards-list',
+  },
   { key: 'logs', label: 'Logs', icon: 'navDiscover', page: 'discover-log' },
-  { key: 'new-ppl-logs', label: 'Logs (new PPL)', icon: 'navDiscover', page: 'new-ppl-log' },
-  { key: 'metrics', label: 'Metrics', icon: 'visArea', page: 'discover-metric' },
-  { key: 'topology-map', label: 'Topology map', icon: 'navAiFlow', page: 'app-map' },
-  { key: 'agent-traces', label: 'Agent Traces', icon: 'visTable', page: 'app-traces' },
-  { key: 'agent-spans', label: 'Agent Spans', icon: 'visTagCloud', page: 'agent-spans' },
-  { key: 'app-traces', label: 'Application Traces', icon: 'apmTrace', page: 'traces' },
-  { key: 'app-services', label: 'Application Services', icon: 'navServices', page: 'app-perf-services' },
-  { key: 'notebooks', label: 'Notebooks', icon: 'document', page: 'notebooks' },
-  { key: 'forecasting', label: 'Forecasting', icon: 'visLine', page: 'forecasting' },
+  {
+    key: 'new-ppl-logs',
+    label: 'Logs (new PPL)',
+    icon: 'navDiscover',
+    page: 'new-ppl-log',
+  },
+  {
+    key: 'metrics',
+    label: 'Metrics',
+    icon: 'visArea',
+    page: 'discover-metric',
+  },
+  { key: 'skills', label: 'Skills', icon: 'wrench', page: 'skills' },
+  {
+    key: 'topology-map',
+    label: 'Topology Map',
+    icon: 'navAiFlow',
+    page: 'app-map',
+  },
+  {
+    key: 'agent-traces',
+    label: 'Traces',
+    title: 'Agent Traces',
+    icon: 'visTable',
+    page: 'app-traces',
+  },
+  {
+    key: 'agent-spans',
+    label: 'Spans',
+    title: 'Agent Spans',
+    icon: 'visTagCloud',
+    page: 'agent-spans',
+  },
+  {
+    key: 'app-traces',
+    label: 'Traces',
+    title: 'Application Traces',
+    icon: 'apmTrace',
+    page: 'traces',
+  },
+  {
+    key: 'app-services',
+    label: 'Services',
+    title: 'Application Services',
+    icon: 'navServices',
+    page: 'app-perf-services',
+  },
+  { key: 'slos', label: 'SLOs', icon: 'navSlos', page: 'slos' },
+  {
+    key: 'notebooks',
+    label: 'Notebooks',
+    icon: 'navNotebooks',
+    page: 'notebooks',
+  },
+  {
+    key: 'anomaly-detection',
+    label: 'Anomaly Detection',
+    icon: 'anomalyDetection',
+    page: 'anomaly-detection',
+  },
+  {
+    key: 'forecasting',
+    label: 'Forecasting',
+    icon: 'visLine',
+    page: 'forecasting',
+  },
+  { key: 'alerting', label: 'Alerting', icon: 'navAlerting', page: 'alerting' },
 ];
 
 /** All page keys as a Set. */
 export const NAV_ALL_PAGE_KEYS = new Set(NAV_ALL_PAGES.map((item) => item.key));
 
+/**
+ * Resolve registry keys to full item objects, preserving the given order.
+ * Unknown keys are dropped so a stale key can never crash the rail.
+ * @param {string[]} keys
+ * @returns {Array<{key: string, label: string, icon: string, page: string}>}
+ */
+export function getNavItems(keys) {
+  return keys
+    .map((key) => NAV_ALL_PAGES.find((item) => item.key === key))
+    .filter(Boolean);
+}
+
+/** Title to use for the tab/session a nav item opens. */
+export function getNavItemTitle(item) {
+  return item.title || item.label;
+}
+
+// ---------------------------------------------------------------------------
+// Information architecture — how the expanded rail is grouped
+// ---------------------------------------------------------------------------
+
+/**
+ * Registry keys pinned to the collapsed rail, in order. The floor is always
+ * present; Metrics is pinned beside it so the core telemetry surfaces are one
+ * click away without expanding.
+ */
+export const NAV_RAIL_KEYS = [...NAV_FLOOR.map((item) => item.key), 'metrics'];
+
+/**
+ * The expanded rail's top block — sits directly under "New session" /
+ * "All sessions" and above the first section label. Unlabelled by design:
+ * these are the everyday destinations.
+ */
+export const NAV_TOP_KEYS = [
+  'skills',
+  'alerts',
+  'dashboards',
+  'logs',
+  'metrics',
+  'topology-map',
+];
+
+/**
+ * Labelled sections rendered below the top block, in order. A section marked
+ * `collapsible` gets a disclosure toggle; its open/closed state persists
+ * through NavConfig.groupOpen.
+ */
+export const NAV_SECTIONS = [
+  {
+    key: 'agent-monitoring',
+    label: 'Agent monitoring',
+    itemKeys: ['agent-traces', 'agent-spans'],
+  },
+  {
+    key: 'app-perf',
+    label: 'Application performance',
+    itemKeys: ['app-traces', 'app-services', 'slos'],
+  },
+  {
+    key: 'more',
+    label: 'More',
+    collapsible: true,
+    itemKeys: [
+      'notebooks',
+      'anomaly-detection',
+      'forecasting',
+      'alerting',
+      'new-ppl-logs',
+    ],
+  },
+];
+
 // ---------------------------------------------------------------------------
 // NavConfig — persisted user preferences
 // ---------------------------------------------------------------------------
 
-const STORAGE_KEY = 'navConfig_v1';
+// Bumped to v2 when the rail moved to grouped sections — a config persisted
+// under v1 describes the old flat layout, so it is ignored rather than migrated.
+const STORAGE_KEY = 'navConfig_v2';
 
 /**
  * @typedef {Object} NavConfig
@@ -75,10 +222,13 @@ const STORAGE_KEY = 'navConfig_v1';
  */
 
 /** Default promoted items (everything not in floor). */
-const DEFAULT_PROMOTED = [
-  'metrics',
-  'topology-map',
-];
+const DEFAULT_PROMOTED = ['metrics', 'topology-map'];
+
+/**
+ * "More" starts open so the full set of destinations is visible on first run;
+ * collapsing it is a deliberate user choice that then persists.
+ */
+const DEFAULT_GROUP_OPEN = true;
 
 /**
  * Load NavConfig from localStorage. Returns defaults on missing/corrupt data.
@@ -96,8 +246,12 @@ export function loadNavConfig() {
     );
     return {
       promoted: validPromoted,
-      collapsed: typeof parsed.collapsed === 'boolean' ? parsed.collapsed : false,
-      groupOpen: typeof parsed.groupOpen === 'boolean' ? parsed.groupOpen : false,
+      collapsed:
+        typeof parsed.collapsed === 'boolean' ? parsed.collapsed : false,
+      groupOpen:
+        typeof parsed.groupOpen === 'boolean'
+          ? parsed.groupOpen
+          : DEFAULT_GROUP_OPEN,
     };
   } catch {
     return getDefaultConfig();
@@ -124,7 +278,7 @@ export function getDefaultConfig() {
   return {
     promoted: [...DEFAULT_PROMOTED],
     collapsed: false,
-    groupOpen: false,
+    groupOpen: DEFAULT_GROUP_OPEN,
   };
 }
 
