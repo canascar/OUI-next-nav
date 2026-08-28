@@ -43,12 +43,13 @@ export const ThreadPanel = forwardRef(
       onMinimize,
       tabCount = 0,
       activeTabTitle,
+      linkedAttachments,
     },
     ref
   ) => {
-    const handleNavigate = (pageKey, navTitle) => {
+    const handleNavigate = (pageKey, navTitle, meta) => {
       if (onViewAction) {
-        onViewAction(pageKey, navTitle || pageKey);
+        onViewAction(pageKey, navTitle || pageKey, meta);
       }
     };
 
@@ -129,6 +130,7 @@ export const ThreadPanel = forwardRef(
               pendingThread ? pendingThread.sourcePageTitle : undefined
             }
             onNavigate={handleNavigate}
+            linkedAttachments={linkedAttachments}
           />
         </div>
       </div>

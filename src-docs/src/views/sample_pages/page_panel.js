@@ -46,6 +46,7 @@ export const PAGE_TAB_ICONS = {
   traces: 'visTagCloud',
   forecasting: 'visLine',
   'agent-spans': 'visTagCloud',
+  'poc-frontend-p95-report': 'document',
   'new-tab': 'folderClosed',
 };
 

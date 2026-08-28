@@ -11,6 +11,7 @@
 
 import React, {
   useCallback,
+  useMemo,
   useRef,
   useState,
   useEffect,
@@ -230,7 +231,13 @@ export const SessionContainer = ({
       // POC bidirectional link: if this tab was opened via investigate, scroll chat to arrival
       const tab = session.tabs.find((t) => t.id === tabId);
       if (tab && tab._highlight) {
-        window.dispatchEvent(new CustomEvent('poc-tab-activated'));
+        window.dispatchEvent(
+          new CustomEvent('poc-tab-activated', {
+            // `sourceAttachment` names the chat card that opened this tab, so
+            // the chat pane can scroll back to the message it came from.
+            detail: { sourceAttachment: tab.sourceAttachment || null },
+          })
+        );
       }
     },
     [onUpdateSession, session.tabs]
@@ -258,7 +265,11 @@ export const SessionContainer = ({
       onUpdateSession(updates);
       // POC bidirectional link: if the closed tab was linked, clear linked indicator
       if (closedTab && closedTab._highlight) {
-        window.dispatchEvent(new CustomEvent('poc-tab-closed'));
+        window.dispatchEvent(
+          new CustomEvent('poc-tab-closed', {
+            detail: { sourceAttachment: closedTab.sourceAttachment || null },
+          })
+        );
       }
     },
     [session.tabs, session.activeTabId, onUpdateSession, triggerAnimation]
@@ -307,8 +318,8 @@ export const SessionContainer = ({
   );
 
   const handleViewAction = useCallback(
-    (pageKey, title) => {
-      onOpenCanvasPage(pageKey, title);
+    (pageKey, title, meta) => {
+      onOpenCanvasPage(pageKey, title, meta);
       // If the chat is fully expanded (canvas collapsed), reveal the canvas
       // half-way so the newly opened page is visible.
       if (threadPanelState === 'full-screen') {
@@ -401,6 +412,14 @@ export const SessionContainer = ({
   // home-chat-started event and the title appears.
   const isHomeIdle = !!session.isHome;
 
+  // Chat cards whose canvas tab is currently open. The session owns the tabs,
+  // so it owns the linked state too — the indicator then survives a reload and
+  // clears itself when the tab closes, with no duplicate state in the chat.
+  const linkedAttachments = useMemo(
+    () => session.tabs.map((t) => t.sourceAttachment).filter(Boolean),
+    [session.tabs]
+  );
+
   return (
     <div
       className={`sessionContainer${
@@ -428,6 +447,7 @@ export const SessionContainer = ({
           pendingThread={session.pendingThread}
           pendingInputValue={session.pendingInputValue}
           onViewAction={handleViewAction}
+          linkedAttachments={linkedAttachments}
           width={leftWidth}
           isAnimating={isAnimating}
           title={displayTitle}

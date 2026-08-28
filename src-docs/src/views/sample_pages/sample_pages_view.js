@@ -94,6 +94,10 @@ import {
   pocTelemetry,
 } from './poc_entry_handler';
 import { readQueryParam } from './mocks/capabilities';
+import {
+  FRONTEND_P95_REPORT_PAGE_KEY,
+  setFrontendP95State,
+} from './mocks/frontendP95';
 
 /** Quick relative timestamp for the sessions panel. */
 function getRelativeTime(ts) {
@@ -592,7 +596,7 @@ export const SamplePagesView = () => {
     setThreadSession((prev) => ({ ...prev, ...updates }));
   }, []);
 
-  const handleThreadOpenCanvasPage = useCallback((pageKey, title) => {
+  const handleThreadOpenCanvasPage = useCallback((pageKey, title, meta) => {
     setThreadSession((prev) => {
       const pageEntry = SOURCE_PAGE_MOCK[pageKey];
       const displayTitle = title || (pageEntry ? pageEntry.title : pageKey);
@@ -604,6 +608,7 @@ export const SamplePagesView = () => {
         id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
         pageKey,
         title: displayTitle,
+        ...(meta || {}),
       };
       return {
         ...prev,
@@ -1896,6 +1901,21 @@ export const SessionPagesView = ({ variant } = {}) => {
     pocTelemetry('page_opened', { source: 'poc' });
   }, [isPocVariant, sessionState.sessions, sessionState.activeSessionId]);
 
+  // frontend-p95 arrival: remember whether the investigation report tab is
+  // open, so reload and repeat deep-link visits restore the same canvas
+  // instead of a second tab or an empty one.
+  useEffect(() => {
+    if (!isPocVariant) return;
+    const active = sessionState.sessions.find(
+      (s) => s.id === sessionState.activeSessionId
+    );
+    if (!active || !active.pocIncident) return;
+    const reportTabOpen = active.tabs.some(
+      (t) => t.pageKey === FRONTEND_P95_REPORT_PAGE_KEY
+    );
+    setFrontendP95State({ reportTabOpen });
+  }, [isPocVariant, sessionState.sessions, sessionState.activeSessionId]);
+
   // Active view: 'session' (show active session) or 'session-list' (browse all sessions)
   const [activeView, setActiveView] = useState('session');
 
@@ -2111,13 +2131,24 @@ export const SessionPagesView = ({ variant } = {}) => {
     });
   }, []);
 
-  /** Open a canvas page as a tab in the active session */
-  const handleOpenCanvasPage = useCallback((pageKey, title) => {
+  /**
+   * Open a canvas page as a tab in the active session. `meta` carries optional
+   * tab fields from the caller — `{ sourceAttachment, _highlight }` when the
+   * page was opened from a chat attachment, so the tab can point back at the
+   * message that opened it.
+   */
+  const handleOpenCanvasPage = useCallback((pageKey, title, meta) => {
     setSessionState((prev) => {
       if (!prev.activeSessionId) return prev;
       const pageEntry = SOURCE_PAGE_MOCK[pageKey];
       const displayTitle = title || (pageEntry ? pageEntry.title : pageKey);
-      return openCanvasPage(prev, prev.activeSessionId, pageKey, displayTitle);
+      return openCanvasPage(
+        prev,
+        prev.activeSessionId,
+        pageKey,
+        displayTitle,
+        meta
+      );
     });
   }, []);
 
