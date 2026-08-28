@@ -100,9 +100,13 @@ export function setActiveSession(state, id) {
  * @param {string} sessionId - Session to add the tab to
  * @param {string} pageKey - Key mapping to a canvas page component
  * @param {string} title - Display title for the tab
+ * @param {Object} [meta] - Optional extra tab fields merged into a newly
+ *   created tab, e.g. `{ sourceAttachment, _highlight }` when the tab was
+ *   opened from a chat attachment. Ignored when an existing tab is activated,
+ *   so the original tab keeps whatever opened it.
  * @returns {import('./session_models').PersistedSessionState}
  */
-export function openCanvasPage(state, sessionId, pageKey, title) {
+export function openCanvasPage(state, sessionId, pageKey, title, meta) {
   return {
     ...state,
     sessions: state.sessions.map((session) => {
@@ -124,6 +128,7 @@ export function openCanvasPage(state, sessionId, pageKey, title) {
         id: `tab-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
         pageKey,
         title,
+        ...(meta || {}),
       };
 
       return {

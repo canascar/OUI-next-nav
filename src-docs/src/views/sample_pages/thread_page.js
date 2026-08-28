@@ -67,6 +67,13 @@ import {
 } from './mcp_investigation';
 import { PocChatReport } from './poc_chat_report';
 import {
+  FRONTEND_P95_THREAD_KEY,
+  FRONTEND_P95_INCIDENT,
+  buildFrontendP95Messages,
+  getFrontendP95State,
+  setFrontendP95State,
+} from './mocks/frontendP95';
+import {
   McpTokenAppAttachment,
   TOKEN_INVESTIGATION_MESSAGES,
   TOKEN_CONTEXT,
@@ -144,6 +151,19 @@ const THREADS = {
     // Alert data injected at runtime via window.__pocAlert.
     pocEntry: true,
     messages: [],
+  },
+  [FRONTEND_P95_THREAD_KEY]: {
+    title: FRONTEND_P95_INCIDENT.sessionTitle,
+    // Second POC arrival: the agent already closed this one, so the SRE lands
+    // on the finished thread. No `staggered`, no `streaming`, no `delayBefore`
+    // — every message is in state on the first commit, so there is no typing
+    // or playback on arrival. The gate answer is read from persisted state so
+    // a reload restores the same thread.
+    pocEntry: true,
+    messages: [],
+    // Built per mount rather than declared inline so the persisted gate answer
+    // is picked up on every arrival, not just the one that set it.
+    buildMessages: () => buildFrontendP95Messages(getFrontendP95State()),
   },
   'latency-spike': {
     title: 'Latency spike investigation',
@@ -655,8 +675,15 @@ primary_conninfo = 'host=primary port=5432 user=replicator'`,
 };
 
 // Renders a single user prompt bubble (right-aligned, light background)
-const UserMessage = ({ author: _author, content, attachment, enter }) => (
+const UserMessage = ({
+  author: _author,
+  content,
+  attachment,
+  enter,
+  innerRef,
+}) => (
   <div
+    ref={innerRef}
     className={`threadPage__message threadPage__message--user${
       enter ? ' threadPage__message--enter' : ''
     }`}>
@@ -788,6 +815,7 @@ const LinkPreviewAttachment = ({
   description,
   image,
   onViewAsPage,
+  linked,
 }) => {
   return (
     <div className="threadPage__attachmentWrap">
@@ -810,6 +838,16 @@ const LinkPreviewAttachment = ({
           {href && (
             <OuiText size="xs" color="subdued">
               <span className="threadPage__linkPreviewUrl">{href}</span>
+            </OuiText>
+          )}
+          {/* Linked indicator — this card currently has a canvas tab open.
+              Reuses the subdued URL row; TODO(design) if a dedicated
+              treatment is wanted. */}
+          {linked && (
+            <OuiText size="xs" color="subdued">
+              <span className="threadPage__linkPreviewUrl">
+                <OuiIcon type="link" size="s" /> Open in canvas
+              </span>
             </OuiText>
           )}
         </div>
@@ -1241,6 +1279,9 @@ const AssistantMessage = ({
   expandFindings,
   hideFeedback,
   enter,
+  reportLink,
+  isReportLinked,
+  innerRef,
 }) => {
   const allAttachments = attachments || (attachment ? [attachment] : []);
   const showMascot = isLastAssistant && !isTyping;
@@ -1253,6 +1294,7 @@ const AssistantMessage = ({
 
   return (
     <div
+      ref={innerRef}
       className={`threadPage__message threadPage__message--assistant${
         enter ? ' threadPage__message--enter' : ''
       }`}>
@@ -1342,6 +1384,19 @@ const AssistantMessage = ({
                   })}
                 </div>
               ))}
+            {/* Artifact handle — sits directly above the feedback row so the
+                report is reachable without hunting through the message. Same
+                link-preview card and the same onViewAsPage → openCanvasPage
+                path the latency-spike attachments use. */}
+            {reportLink && (
+              <LinkPreviewAttachment
+                href={reportLink.href}
+                title={reportLink.title}
+                description={reportLink.description}
+                linked={isReportLinked}
+                onViewAsPage={() => onViewAsPage(reportLink)}
+              />
+            )}
             {/* Hide message-level feedback on finding-context cards (findings
                 with no text) so the callout reads as context, not a rateable
                 answer. */}
@@ -1479,6 +1534,76 @@ const TaskListMessage = ({ tasks, statuses, collapsed, onToggleCollapse }) => {
         {!collapsed && (
           <div className="progressTracker__toggleBody">
             <ProgressTracker id="task-progress" steps={steps} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/**
+ * ApprovalGateMessage — a decision the agent will not make on the user's behalf.
+ *
+ * Pending, it lists `gate.options` as mutually exclusive choices; picking one is
+ * the commit, and nothing runs until then. Once chosen it collapses to that
+ * option's one-line record, so the thread keeps the decision without keeping the
+ * prompt. Reuses the existing action-card and result-line markup; no new styles.
+ *
+ * @param {Object} props
+ * @param {Object} props.gate The approvalGate message.
+ * @param {(option: Object) => void} props.onChoose
+ */
+const ApprovalGateMessage = ({ gate, onChoose, innerRef }) => {
+  const options = gate.options || [];
+
+  if (gate.status !== 'pending') {
+    const chosen = options.find((o) => o.status === gate.status);
+    return (
+      <div
+        ref={innerRef}
+        className="threadPage__message threadPage__message--assistant">
+        <div className="pocChat__resultLine">
+          <OuiIcon type="checkInCircleEmpty" size="s" color="subdued" />
+          <span>{chosen ? chosen.record : gate.status}</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      ref={innerRef}
+      className="threadPage__message threadPage__message--assistant">
+      <div className="pocChat__actions">
+        <div className="pocChat__actionsHeader">
+          <span className="pocChat__actionsTitle">{gate.title}</span>
+          {gate.detail && (
+            <span className="pocChat__actionsSubtitle">{gate.detail}</span>
+          )}
+        </div>
+        <div className="pocChat__actionsList">
+          {options.map((option) => (
+            /* eslint-disable-next-line jsx-a11y/click-events-have-key-events */
+            <div
+              key={option.id}
+              className="pocChat__actionItem"
+              role="button"
+              tabIndex={0}
+              aria-label={`${option.label} — ${option.detail}`}
+              onClick={() => onChoose(option)}>
+              <span className="pocChat__actionCheck">
+                <OuiIcon type={option.icon} size="m" color="subdued" />
+              </span>
+              <span className="pocChat__actionContent">
+                <span className="pocChat__actionLabel">{option.label}</span>
+                <span className="pocChat__actionMeta">{option.detail}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+        {gate.pendingNote && (
+          <div className="pocChat__actionsFooter">
+            <span className="pocChat__actionsCount">{gate.pendingNote}</span>
           </div>
         )}
       </div>
@@ -1784,6 +1909,17 @@ const CONCLUSION_MESSAGE = {
 
 const NEW_THREAD = { title: 'New thread', messages: [] };
 
+/**
+ * Seed messages for a thread. Most registry entries declare a static
+ * `messages` array; entries that need per-mount state (e.g. a persisted
+ * approval answer) provide `buildMessages()` instead.
+ *
+ * @param {Object} thread A THREADS entry.
+ * @returns {Array}
+ */
+const threadMessages = (thread) =>
+  thread.buildMessages ? thread.buildMessages() : thread.messages;
+
 const EMPTY_CHAT_TITLES = [
   'How can I help?',
   'Ask and I will provide',
@@ -1803,6 +1939,7 @@ export const ThreadPage = ({
   onPageChange,
   onNavigate,
   onGreetingStateChange,
+  linkedAttachments = [],
 }) => {
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
@@ -1811,7 +1948,7 @@ export const ThreadPage = ({
 
   const threadKey = selectedItem || (onNavigate ? null : 'latency-spike');
   const thread = (threadKey && THREADS[threadKey]) || NEW_THREAD;
-  const initialMessages = pendingMessages || thread.messages;
+  const initialMessages = pendingMessages || threadMessages(thread);
 
   // Determine effective scripted response key — detect connection-timeout pattern from pending messages
   const effectiveScriptedKey = (() => {
@@ -1892,6 +2029,14 @@ export const ThreadPage = ({
   const [isAttachMenuOpen, setIsAttachMenuOpen] = useState(false);
   const [completedScriptedIds, setCompletedScriptedIds] = useState(new Set());
 
+  // Chat ↔ canvas linkage. Which cards are "linked" comes from the session's
+  // open tabs via `linkedAttachments`, so the indicator survives a reload and
+  // clears itself on tab close. `flashMessageId` briefly replays the existing
+  // message-enter animation so activating a tab points at its source message.
+  const [flashMessageId, setFlashMessageId] = useState(null);
+  const messageRefs = useRef({});
+  const flashTimerRef = useRef(null);
+
   const streamTimers = useRef([]);
 
   // Drag-to-resize handlers for related assets flyout
@@ -1955,8 +2100,15 @@ export const ThreadPage = ({
             pageKey = 'alerts';
           }
         }
-        const displayTitle = item.title || pageKey;
-        onNavigate(pageKey, displayTitle);
+        // `pageTitle` lets a card label differ from its tab title (e.g. an
+        // "Investigation report" link that opens "Investigation · frontend-p95").
+        const displayTitle = item.pageTitle || item.title || pageKey;
+        // `linkKey` marks the card as the tab's origin, which turns on the
+        // linked indicator here and the scroll-back on tab activation.
+        const meta = item.linkKey
+          ? { sourceAttachment: item.linkKey, _highlight: true }
+          : undefined;
+        onNavigate(pageKey, displayTitle, meta);
         return;
       }
 
@@ -1981,6 +2133,69 @@ export const ThreadPage = ({
     },
     [canvasItems, onNavigate]
   );
+
+  /**
+   * Scroll a message into view inside the feed and flash it, reusing the
+   * existing message-enter animation as the highlight.
+   *
+   * TODO(design): a dedicated "referenced message" treatment would read better
+   * than replaying the enter animation. No new styles in this change.
+   */
+  const flashMessage = useCallback((messageId) => {
+    if (!messageId) return;
+    const node = messageRefs.current[messageId];
+    if (node && node.scrollIntoView) {
+      node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    setFlashMessageId(null);
+    // Clear first so a repeat activation restarts the animation.
+    if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
+    flashTimerRef.current = setTimeout(() => setFlashMessageId(messageId), 20);
+  }, []);
+
+  useEffect(() => () => clearTimeout(flashTimerRef.current), []);
+
+  /**
+   * Record the option the user picked on an approval gate. Nothing executes
+   * here beyond recording it — the gate collapses to that option's one-line
+   * record, an option carrying a `confirmation` appends it, and the choice is
+   * persisted so a reload keeps it.
+   *
+   * @param {number} index Position of the gate in `messages`.
+   * @param {Object} option The chosen entry from `gate.options`.
+   */
+  const handleGateDecision = useCallback((index, option) => {
+    setMessages((prev) => {
+      const gate = prev[index];
+      if (!gate || gate.role !== 'approvalGate' || gate.status !== 'pending') {
+        return prev;
+      }
+      const updated = [...prev];
+      updated[index] = { ...gate, status: option.status };
+      if (option.confirmation) {
+        updated.splice(index + 1, 0, option.confirmation);
+      }
+      return updated;
+    });
+    setFrontendP95State({ gateStatus: option.status });
+  }, []);
+
+  // Canvas → chat. Activating a linked tab points back at the message that
+  // opened it. (Clearing the linked indicator on close needs no listener —
+  // `linkedAttachments` is derived from the session's open tabs.)
+  useEffect(() => {
+    const handleTabActivated = (e) => {
+      const key = e.detail && e.detail.sourceAttachment;
+      if (!key) return;
+      const source = messages.find(
+        (m) => m.reportLink && m.reportLink.linkKey === key
+      );
+      if (source && source.id) flashMessage(source.id);
+    };
+    window.addEventListener('poc-tab-activated', handleTabActivated);
+    return () =>
+      window.removeEventListener('poc-tab-activated', handleTabActivated);
+  }, [messages, flashMessage]);
 
   // The drill-down links out to the classic product. Opens the requested page
   // in the canvas (right side), which is otherwise closed; the checkout flow's
@@ -2059,7 +2274,8 @@ export const ThreadPage = ({
 
   // Reset messages and canvas when switching threads
   useEffect(() => {
-    const msgs = pendingMessages || thread.messages;
+    const seeded = threadMessages(thread);
+    const msgs = pendingMessages || seeded;
     // A session started from a home callout leads with a finding-only assistant
     // message. We reveal it (and the follow-up) with an Olly typing animation so
     // the finding reads like a response rather than appearing all at once.
@@ -2073,7 +2289,7 @@ export const ThreadPage = ({
     if (pendingMessages) {
       setMessages(isFindingScoped ? [] : pendingMessages);
     } else {
-      setMessages(thread.messages);
+      setMessages(seeded);
     }
     setMessage('');
     setIsTyping(false);
@@ -2332,7 +2548,10 @@ export const ThreadPage = ({
     }
   }, [
     threadKey,
-    thread.messages,
+    // `thread` comes from the module-level THREADS map (or NEW_THREAD), so its
+    // identity is stable for a given threadKey — depending on the object rather
+    // than `thread.messages` covers buildMessages() entries too.
+    thread,
     pendingMessages,
     sourcePage,
     sourcePageTitle,
@@ -2868,6 +3087,17 @@ export const ThreadPage = ({
               </div>
             )}
             {messages.map((msg, i) => {
+              // Messages that can be pointed at from the canvas carry an `id`.
+              // Registering a ref lets tab activation scroll back to them, and
+              // `flashMessageId` replays the enter animation as the highlight.
+              const registerRef = msg.id
+                ? (node) => {
+                    if (node) messageRefs.current[msg.id] = node;
+                    else delete messageRefs.current[msg.id];
+                  }
+                : undefined;
+              const isFlashing = !!msg.id && flashMessageId === msg.id;
+
               if (msg.role === 'user') {
                 return (
                   <UserMessage
@@ -2875,7 +3105,18 @@ export const ThreadPage = ({
                     author={msg.author}
                     content={msg.content}
                     attachment={msg.attachment}
-                    enter={msg._enter}
+                    enter={msg._enter || isFlashing}
+                    innerRef={registerRef}
+                  />
+                );
+              }
+              if (msg.role === 'approvalGate') {
+                return (
+                  <ApprovalGateMessage
+                    key={i}
+                    gate={msg}
+                    innerRef={registerRef}
+                    onChoose={(option) => handleGateDecision(i, option)}
                   />
                 );
               }
@@ -2920,7 +3161,13 @@ export const ThreadPage = ({
                   }
                   isTyping={isTyping}
                   largeGreeting={msg.largeGreeting}
-                  enter={msg._enter}
+                  enter={msg._enter || isFlashing}
+                  reportLink={msg.reportLink}
+                  isReportLinked={
+                    !!msg.reportLink &&
+                    linkedAttachments.includes(msg.reportLink.linkKey)
+                  }
+                  innerRef={registerRef}
                 />
               );
             })}

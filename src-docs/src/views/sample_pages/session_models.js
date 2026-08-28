@@ -34,6 +34,8 @@ import { ServiceDetailPage } from './service_detail_page';
 import { AlertRulePage } from './alert_rule_page';
 import { OverviewHomePage } from './overview_home_page';
 import { PocInvestigationPage } from './poc_investigation_page';
+import { FrontendP95ReportPage } from './frontend_p95_report_page';
+import { FRONTEND_P95_REPORT_PAGE_KEY } from './mocks/frontendP95';
 
 /**
  * @typedef {Object} Session
@@ -149,6 +151,13 @@ export const SOURCE_PAGE_MOCK = {
   alerting: { component: AlertingPageMock, title: 'Alerting' },
   'overview-home': { component: OverviewHomePage, title: 'Overview' },
   'poc-investigation': { component: PocInvestigationPage, title: 'Investigation' },
+  // Read-only investigation report for the frontend-p95 arrival. Deliberately
+  // absent from PAGES_WITH_OWN_HEADER and LIST_PAGES in page_panel.js so it
+  // gets the standard DetailPageHeader and no interactive props.
+  [FRONTEND_P95_REPORT_PAGE_KEY]: {
+    component: FrontendP95ReportPage,
+    title: 'Investigation · frontend-p95',
+  },
 };
 
 /**
