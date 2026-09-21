@@ -32,19 +32,10 @@
  */
 
 import React, { useContext, useState } from 'react';
-import {
-  OuiButtonIcon,
-  OuiIcon,
-  OuiPopover,
-  OuiToolTip,
-} from '../../../../src/components';
+import { OuiButtonIcon, OuiIcon, OuiToolTip } from '../../../../src/components';
 import { Mascot } from '../../../../olly-mascot/Mascot';
 import { ThemeContext } from '../../components/with_theme';
-import {
-  SurroundShimmer,
-  ScenarioFindingCard,
-  StatusDot,
-} from './empty_session_page_v6';
+import { SpaceBackground } from './space_background';
 import { JUMP_TO_MORE_LABEL } from './jump_to_constants';
 
 // ---------------------------------------------------------------------------
@@ -824,8 +815,6 @@ const MCP_SUGGESTED_PROMPTS = [
 export const McpHomeGreeting = ({
   onStartInvestigation,
   onSend,
-  findings = [],
-  onSelectFinding,
   onJumpToPage,
 }) => {
   const [inputValue, setInputValue] = useState('');
@@ -861,8 +850,8 @@ export const McpHomeGreeting = ({
 
   return (
     <div className="mcpHome">
+      <SpaceBackground />
       <div className="mcpHome__inner">
-
         {/* Olly — the same mascot row
             Overview home opens with. */}
         <div className="v6Scenario__mascotRow mcpHome__mascotRow">
@@ -896,65 +885,41 @@ export const McpHomeGreeting = ({
         </div>
 
         <h1 className="mcpHome__title">Good afternoon.</h1>
-        <p className="mcpHome__lede">
-          {findings.length > 1
-            ? 'A couple of things need a look. Start with either and I’ll take it from the top.'
-            : 'One thing needs a look. Start here and I’ll take it from the top.'}
-        </p>
-
-        {/* Findings list — one row per finding, all the same component. Clicking
-            a row opens that investigation. */}
-        <div className="v6Scenario__findings v6Scenario__findings--inline mcpHome__findings">
-          {findings.map((finding) => (
-            <ScenarioFindingCard
-              key={finding.key}
-              finding={finding}
-              idPrefix="mcpHome"
-              showFeedback={false}
-              canDismiss
-              onSelect={() => {
-                if (onSelectFinding) onSelectFinding(finding);
-              }}
-            />
-          ))}
-        </div>
 
         {/* Shimmering ask-anything input — same visual treatment as Overview
             home so the two greetings feel like one family. */}
         <div className="mcpHome__inputArea">
-          <SurroundShimmer hide={false}>
-            <div className="emptySessionPage__inputField">
-              <textarea
-                className="mcpHome__textarea"
-                placeholder="Ask AI anything, or type to search a page"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    submit();
-                  }
-                }}
-                rows={3}
+          <div className="emptySessionPage__inputField">
+            <textarea
+              className="mcpHome__textarea"
+              placeholder="Ask AI anything, or type to search a page"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  submit();
+                }
+              }}
+              rows={3}
+            />
+            <div className="emptySessionPage__inputActions">
+              <OuiButtonIcon
+                iconType="plus"
+                aria-label="Add attachment"
+                size="xs"
+                color="text"
               />
-              <div className="emptySessionPage__inputActions">
-                <OuiButtonIcon
-                  iconType="plus"
-                  aria-label="Add attachment"
-                  size="xs"
-                  color="text"
-                />
-                <OuiButtonIcon
-                  iconType="sortUp"
-                  aria-label="Send"
-                  display="fill"
-                  size="xs"
-                  isDisabled={!inputValue.trim()}
-                  onClick={submit}
-                />
-              </div>
+              <OuiButtonIcon
+                iconType="sortUp"
+                aria-label="Send"
+                display="fill"
+                size="xs"
+                isDisabled={!inputValue.trim()}
+                onClick={submit}
+              />
             </div>
-          </SurroundShimmer>
+          </div>
         </div>
 
         {/* Suggested prompts — Olly's read on what to ask next, given the

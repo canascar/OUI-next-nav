@@ -22,6 +22,7 @@
 // `align-items: center` alone would clip the greeting off the top of a short
 // viewport, since a flex item overflowing a centered container can't scroll up.
 .mcpHome {
+  position: relative; // positioning context for the animated space background
   display: flex;
   align-items: center;
   justify-content: center;
@@ -29,12 +30,19 @@
   padding: var(--g-space-6);
   overflow-y: auto;
 
-  > * {
+  > .mcpHome__inner {
     margin: auto;
   }
 }
 
+// Full-bleed animated WebGL backdrop; sits behind content, never interactive.
+.mcpHome__spaceBg {
+  z-index: 0;
+}
+
 .mcpHome__inner {
+  position: relative; // stack above .mcpHome__spaceBg
+  z-index: 1;
   width: 100%;
   max-width: 560px;
   text-align: left;
@@ -107,8 +115,12 @@
   resize: none;
   outline: none;
 
+  // --g-ink-mute isn't overridden for dark mode (stays a near-black value),
+  // so the placeholder vanishes on the dark input. Set a theme-aware subtle
+  // tone explicitly: soft light in dark mode, soft dark in light mode.
   &::placeholder {
-    color: var(--g-ink-mute);
+    color: lightOrDarkTheme(rgba(10, 10, 10, 0.46), rgba(255, 255, 255, 0.5));
+    opacity: 1; // Firefox lowers placeholder opacity by default
   }
 }
 
