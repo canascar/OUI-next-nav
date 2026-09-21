@@ -67,8 +67,11 @@
     animation: none !important;
     opacity: 0;
     transform: translateY(14px);
+    // Start softly blurred and sharpen as each element fades/rises in.
+    filter: blur(6px);
     transition: opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
-      transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+      transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 700ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   // Olly rises a little further than the rest so the mascot clearly "moves up"
@@ -84,6 +87,7 @@
     > .mcpHome__suggestions {
       opacity: 1;
       transform: translateY(0);
+      filter: blur(0);
     }
 
     // Stagger: the greeting leads, the input follows, and Olly + the
@@ -110,6 +114,7 @@
     > .mcpHome__suggestions {
       opacity: 1;
       transform: none;
+      filter: none;
       transition: none;
     }
   }
