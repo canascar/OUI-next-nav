@@ -31,7 +31,7 @@
  * McpInvestigationReport).
  */
 
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { OuiButtonIcon, OuiIcon, OuiToolTip } from '../../../../src/components';
 import { Mascot } from '../../../../olly-mascot/Mascot';
 import { ThemeContext } from '../../components/with_theme';
@@ -812,6 +812,11 @@ const MCP_SUGGESTED_PROMPTS = [
  * input Overview home uses, then a row of suggested prompts — Olly's read on
  * what to ask next about the findings above — and a link out to a new tab.
  */
+// The content fades in once (after the space background's ring has formed) on
+// initial page load. A module-level flag keeps it from replaying on remounts
+// (tab open, theme toggle) within the same load.
+let mcpContentIntroPlayed = false;
+
 export const McpHomeGreeting = ({
   onStartInvestigation,
   onSend,
@@ -824,6 +829,36 @@ export const McpHomeGreeting = ({
   const mascotColor = isDark ? ['#FFFFFF', '#D9DEE5'] : ['#14558E', '#153A5A'];
   const mascotEyeColor = isDark ? '#181028' : '#fff';
   const [mascotExpression, setMascotExpression] = useState(undefined);
+
+  // Reveal the content after the ring forms — but only the first time. On
+  // remounts it's already been shown, so it starts visible with no delay.
+  const [contentRevealed, setContentRevealed] = useState(mcpContentIntroPlayed);
+  useEffect(() => {
+    if (mcpContentIntroPlayed) return undefined;
+    const reduce =
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) {
+      mcpContentIntroPlayed = true;
+      setContentRevealed(true);
+      return undefined;
+    }
+    // Let the corona FULLY finish spinning in first. The SpaceBackground intro
+    // runs ~2s, but its easeOut tail keeps the ring visibly settling right up
+    // to the end — if the content starts at 2s its fade-up plays over that
+    // still-moving swirl and reads as part of it. So hold until the intro has
+    // come to rest (2s) plus a short buffer, THEN cascade the content in. The
+    // per-child stagger + rise lives in CSS (.mcpHome__inner--revealed).
+    const INTRO_MS = 2000;
+    // Negative: start the content just BEFORE the swirl fully settles, so the
+    // title/form begin rising as the particles ease into their last moments.
+    const SETTLE_BUFFER_MS = -250;
+    const timer = setTimeout(() => {
+      mcpContentIntroPlayed = true;
+      setContentRevealed(true);
+    }, INTRO_MS + SETTLE_BUFFER_MS);
+    return () => clearTimeout(timer);
+  }, []);
 
   // One path for every ask on this page, so a suggestion chip and a typed
   // question land in exactly the same place.
@@ -851,7 +886,10 @@ export const McpHomeGreeting = ({
   return (
     <div className="mcpHome">
       <SpaceBackground />
-      <div className="mcpHome__inner">
+      <div
+        className={`mcpHome__inner${
+          contentRevealed ? ' mcpHome__inner--revealed' : ''
+        }`}>
         {/* Olly — the same mascot row
             Overview home opens with. */}
         <div className="v6Scenario__mascotRow mcpHome__mascotRow">

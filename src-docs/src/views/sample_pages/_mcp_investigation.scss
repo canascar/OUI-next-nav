@@ -46,6 +46,73 @@
   width: 100%;
   max-width: 560px;
   text-align: left;
+
+  // ── Sequenced intro reveal ──────────────────────────────────────────────
+  // The particle corona spins in first (SpaceBackground, ~2s). Once it settles
+  // the JS adds --revealed (see McpHomeGreeting) and the content cascades in:
+  // the title leads, then the input, and finally Olly + the suggestion bubbles
+  // and "Open tab" arrive together last. Each child fades up with an ease-out
+  // glide and a staggered delay.
+  //
+  // Direct children that participate in the cascade. They start hidden and
+  // pushed down; --revealed brings them to rest.
+  > .mcpHome__mascotRow,
+  > .mcpHome__title,
+  > .mcpHome__inputArea,
+  > .mcpHome__suggestions {
+    // Cancel the shared v6FadeInUp keyframe entrance (inherited by the mascot
+    // row from .v6Scenario__mascotRow, and set locally on .mcpHome__suggestions)
+    // so it doesn't fire on mount ahead of this gated reveal. This staggered
+    // transition is the single source of truth for the greeting's entrance.
+    animation: none !important;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  // Olly rises a little further than the rest so the mascot clearly "moves up"
+  // into place as it fades in.
+  > .mcpHome__mascotRow {
+    transform: translateY(24px);
+  }
+
+  &--revealed {
+    > .mcpHome__mascotRow,
+    > .mcpHome__title,
+    > .mcpHome__inputArea,
+    > .mcpHome__suggestions {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    // Stagger: the greeting leads, the input follows, and Olly + the
+    // suggestion bubbles / "Open tab" bring up the rear together, so the
+    // playful bits land last.
+    > .mcpHome__title {
+      transition-delay: 0ms;
+    }
+
+    > .mcpHome__inputArea {
+      transition-delay: 160ms;
+    }
+
+    > .mcpHome__mascotRow,
+    > .mcpHome__suggestions {
+      transition-delay: 320ms;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    > .mcpHome__mascotRow,
+    > .mcpHome__title,
+    > .mcpHome__inputArea,
+    > .mcpHome__suggestions {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
 }
 
 .mcpHome__eyebrow {
@@ -98,7 +165,10 @@
 .mcpHome__inputArea {
   $shimmerBleed: 36px;
 
-  margin-top: calc(#{$shimmerBleed} + var(--g-space-5));
+  // The 36px only cancels SurroundShimmer's bleed (so the dots don't creep into
+  // the title above); the extra spacing on top of it is the real visible gap.
+  // Kept tight so the input sits close under the greeting.
+  margin-top: calc(#{$shimmerBleed} + var(--g-space-1));
 }
 
 .mcpHome__textarea {

@@ -16,8 +16,15 @@ import { applyTheme } from '../../services';
 
 const THEME_NAMES = OUI_THEMES.map(({ value }) => value);
 
+// Default to dark. Referenced by value (not array index) so it stays correct
+// if the theme list is reordered. Falls back to the last theme if v9-dark ever
+// goes away.
+const DEFAULT_THEME =
+  THEME_NAMES.find((name) => name === 'v9-dark') ??
+  THEME_NAMES[THEME_NAMES.length - 1];
+
 const defaultState = {
-  theme: THEME_NAMES[5],
+  theme: DEFAULT_THEME,
   changeTheme: (themeValue: OUI_THEME['value']) => {
     applyTheme(themeValue);
   },
