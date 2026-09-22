@@ -159,6 +159,127 @@ function sampleSurfacePoints(mesh, count) {
   return out;
 }
 
+/**
+ * Turn a raw sampled point cloud (flat xyz Float32Array in the model's own
+ * space) into a front-facing, centered, view-scaled CONSTELLATION that traces
+ * the logo's silhouette.
+ *
+ * The GLB may sit at any orientation, so we don't trust its axes: we find the
+ * three axes of greatest spread (a cheap PCA via the covariance matrix) and map
+ * the two widest onto screen X/Y and the thinnest onto a shallow Z. That yields
+ * the recognizable front silhouette regardless of how the model was authored,
+ * and flattens the depth so the logo reads as a crisp shape rather than a blob.
+ *
+ * `targetHalf` is the desired half-height in world units (the logo is scaled to
+ * roughly fit that), and `zSpread` is how much depth jitter to keep for
+ * twinkle/parallax.
+ */
+function shapeLogoConstellation(raw, targetHalf, zSpread) {
+  const n = raw.length / 3;
+  if (n === 0) return raw;
+
+  // Centroid.
+  let cx = 0;
+  let cy = 0;
+  let cz = 0;
+  for (let i = 0; i < n; i++) {
+    cx += raw[i * 3];
+    cy += raw[i * 3 + 1];
+    cz += raw[i * 3 + 2];
+  }
+  cx /= n;
+  cy /= n;
+  cz /= n;
+
+  // Covariance matrix of the centered cloud (symmetric 3x3).
+  let xx = 0;
+  let yy = 0;
+  let zz = 0;
+  let xy = 0;
+  let xz = 0;
+  let yz = 0;
+  for (let i = 0; i < n; i++) {
+    const dx = raw[i * 3] - cx;
+    const dy = raw[i * 3 + 1] - cy;
+    const dz = raw[i * 3 + 2] - cz;
+    xx += dx * dx;
+    yy += dy * dy;
+    zz += dz * dz;
+    xy += dx * dy;
+    xz += dx * dz;
+    yz += dy * dz;
+  }
+  const cov = [
+    [xx / n, xy / n, xz / n],
+    [xy / n, yy / n, yz / n],
+    [xz / n, yz / n, zz / n],
+  ];
+
+  // Power-iteration to extract the dominant eigenvector of a 3x3 matrix.
+  const matVec = (m, v) => [
+    m[0][0] * v[0] + m[0][1] * v[1] + m[0][2] * v[2],
+    m[1][0] * v[0] + m[1][1] * v[1] + m[1][2] * v[2],
+    m[2][0] * v[0] + m[2][1] * v[1] + m[2][2] * v[2],
+  ];
+  const norm = (v) => {
+    const l = Math.hypot(v[0], v[1], v[2]) || 1;
+    return [v[0] / l, v[1] / l, v[2] / l];
+  };
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  const powerIter = (m, seed) => {
+    let v = norm(seed);
+    for (let k = 0; k < 24; k++) v = norm(matVec(m, v));
+    return v;
+  };
+  // 1st axis: dominant spread.
+  const e1 = powerIter(cov, [1, 0.3, 0.1]);
+  // Deflate cov by removing the e1 component, then iterate again for e2.
+  const lambda1 = dot(matVec(cov, e1), e1);
+  const deflated = cov.map((row, r) =>
+    row.map((val, c) => val - lambda1 * e1[r] * e1[c])
+  );
+  const e2raw = powerIter(deflated, [0.2, 1, 0.15]);
+  // Orthonormalize e2 against e1, then e3 = e1 × e2.
+  const proj = dot(e2raw, e1);
+  const e2 = norm([
+    e2raw[0] - proj * e1[0],
+    e2raw[1] - proj * e1[1],
+    e2raw[2] - proj * e1[2],
+  ]);
+  const e3 = [
+    e1[1] * e2[2] - e1[2] * e2[1],
+    e1[2] * e2[0] - e1[0] * e2[2],
+    e1[0] * e2[1] - e1[1] * e2[0],
+  ];
+
+  // Project every point onto (e1, e2, e3): e1→Y (tallest axis up), e2→X,
+  // e3→depth. Track XY extent so we can scale to fit `targetHalf`.
+  const out = new Float32Array(n * 3);
+  let maxExtent = 1e-6;
+  for (let i = 0; i < n; i++) {
+    const dx = raw[i * 3] - cx;
+    const dy = raw[i * 3 + 1] - cy;
+    const dz = raw[i * 3 + 2] - cz;
+    const a = dx * e2[0] + dy * e2[1] + dz * e2[2]; // → X
+    const b = dx * e1[0] + dy * e1[1] + dz * e1[2]; // → Y
+    out[i * 3] = a;
+    out[i * 3 + 1] = b;
+    out[i * 3 + 2] = 0; // depth filled below (flattened + jitter)
+    const ext = Math.max(Math.abs(a), Math.abs(b));
+    if (ext > maxExtent) maxExtent = ext;
+  }
+
+  // Scale to fit and add a shallow depth jitter so the flat silhouette still
+  // twinkles/parallaxes a little without losing its shape.
+  const scale = targetHalf / maxExtent;
+  for (let i = 0; i < n; i++) {
+    out[i * 3] *= scale;
+    out[i * 3 + 1] *= scale;
+    out[i * 3 + 2] = (Math.random() * 2 - 1) * zSpread;
+  }
+  return out;
+}
+
 /** Round soft-glow sprite for additive points (drawn once to a canvas). */
 function makeGlowTexture() {
   const size = 64;
@@ -444,9 +565,15 @@ export const SpaceBackground = () => {
       return out;
     };
 
-    // Placeholder while the GLB streams in — a corona ring so the eclipse is
-    // present immediately even on slow loads.
+    // Placeholder while the GLB streams in — an even field so the background is
+    // present immediately even on slow loads. Once the GLB loads, the near
+    // layer is rebuilt into the OpenSearch logo silhouette.
     const CLOUD_COUNT = 2600;
+    // Logo constellation: how many motes trace the silhouette, the half-height
+    // it's scaled to (world units), and its shallow depth jitter.
+    const LOGO_COUNT = 5200;
+    const LOGO_HALF = 4.6;
+    const LOGO_Z = 0.35;
 
     // Weighted pick from the palette's nebula hues so most motes sit in the
     // iris/violet band with rarer orchid/rose/cyan sparks — an astral gradient.
@@ -498,9 +625,9 @@ export const SpaceBackground = () => {
         // ~12% are bright "beacons" (1.4–2.4×) that bloom noticeably. This is
         // what makes some stars glow more than others.
         const glowFactor =
-          Math.random() < 0.12
-            ? 1.4 + Math.random() * 1.0
-            : 0.35 + Math.random() * 0.45;
+          Math.random() < 0.1
+            ? 1.2 + Math.random() * 0.8
+            : 0.3 + Math.random() * 0.4;
         glowBaseColors[i * 3] = c.r * b * glowFactor;
         glowBaseColors[i * 3 + 1] = c.g * b * glowFactor;
         glowBaseColors[i * 3 + 2] = c.b * b * glowFactor;
@@ -741,20 +868,31 @@ export const SpaceBackground = () => {
         });
         if (!meshes.length) return;
 
-        // Sample the logo surface only to derive an organic mote COUNT (the
-        // GLB seeds the field's density); the motes are then arranged into the
-        // eclipse corona ring rather than the logo silhouette.
-        const PER = Math.floor(4200 / meshes.length);
-        let sampled = 0;
+        // Sample each mesh surface and KEEP the points — the motes are arranged
+        // into the OpenSearch logo SILHOUETTE (a brand constellation), not an
+        // even field. Points are gathered in world space, then oriented +
+        // scaled to face the camera by shapeLogoConstellation below.
+        const PER = Math.floor(LOGO_COUNT / meshes.length);
+        const chunks = [];
+        let total = 0;
         meshes.forEach((mesh) => {
           const world = mesh.clone();
           world.geometry = mesh.geometry.clone();
           world.geometry.applyMatrix4(mesh.matrixWorld);
-          sampled += sampleSurfacePoints(world, PER).length / 3;
+          const pts = sampleSurfacePoints(world, PER);
+          chunks.push(pts);
+          total += pts.length;
           world.geometry.dispose();
         });
-        const fieldCount = Math.max(CLOUD_COUNT, sampled);
-        const field = buildStarfieldPositions(fieldCount);
+        // Concatenate all mesh samples into one cloud.
+        const cloud = new Float32Array(total);
+        let off = 0;
+        chunks.forEach((c) => {
+          cloud.set(c, off);
+          off += c.length;
+        });
+        // Orient/center/scale the cloud into the front-facing logo silhouette.
+        const field = shapeLogoConstellation(cloud, LOGO_HALF, LOGO_Z);
 
         // Swap the placeholder field for the denser, GLB-seeded starfield.
         constellation.remove(points);
@@ -1103,9 +1241,10 @@ export const SpaceBackground = () => {
         const twinkle =
           0.84 + Math.sin(t * 1.6) * 0.1 + Math.sin(t * 0.7) * 0.06;
         pointsMat.opacity = 0.9 * twinkle;
-        // Enhanced glow — a stronger additive bloom so each star carries more
-        // glare (was 0.12).
-        glowMat.opacity = 0.2 * (twinkle + 0.1);
+        // Softer additive halo than before — the logo silhouette packs motes
+        // densely in places, and a heavy halo saturates those overlaps into
+        // pale gray clumps. A lighter bloom keeps the constellation crisp.
+        glowMat.opacity = 0.13 * (twinkle + 0.1);
       }
 
       // Deep starfield parallax — drifts opposite the pointer for depth.
