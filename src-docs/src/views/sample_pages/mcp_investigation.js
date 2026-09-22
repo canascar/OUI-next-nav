@@ -829,6 +829,7 @@ export const McpHomeGreeting = ({
   const mascotColor = isDark ? ['#FFFFFF', '#D9DEE5'] : ['#14558E', '#153A5A'];
   const mascotEyeColor = isDark ? '#181028' : '#fff';
   const [mascotExpression, setMascotExpression] = useState(undefined);
+  const textareaRef = React.useRef(null);
 
   // Reveal the content after the ring forms — but only the first time. On
   // remounts it's already been shown, so it starts visible with no delay.
@@ -859,6 +860,16 @@ export const McpHomeGreeting = ({
     }, INTRO_MS + SETTLE_BUFFER_MS);
     return () => clearTimeout(timer);
   }, []);
+
+  // Focus the ask field once the content has revealed, so the field is ready
+  // for typing (and its animated focus border lights up) as the greeting lands.
+  useEffect(() => {
+    if (!contentRevealed) return undefined;
+    const id = setTimeout(() => {
+      if (textareaRef.current) textareaRef.current.focus({ preventScroll: true });
+    }, 120);
+    return () => clearTimeout(id);
+  }, [contentRevealed]);
 
   // One path for every ask on this page, so a suggestion chip and a typed
   // question land in exactly the same place.
@@ -929,6 +940,7 @@ export const McpHomeGreeting = ({
         <div className="mcpHome__inputArea">
           <div className="emptySessionPage__inputField">
             <textarea
+              ref={textareaRef}
               className="mcpHome__textarea"
               placeholder="Ask AI anything, or type to search a page"
               value={inputValue}

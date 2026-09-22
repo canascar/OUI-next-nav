@@ -444,27 +444,33 @@ export const SpaceBackground = () => {
     // Lay `count` motes into a camera-facing annulus: dense at RING_RADIUS with
     // a soft inner/outer falloff, plus radial "streamers" flaring outward like
     // a real corona. Returns a flat xyz Float32Array.
+    const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5)); // ~2.399963 rad
     const buildCoronaPositions = (count) => {
       const out = new Float32Array(count * 3);
       for (let i = 0; i < count; i++) {
-        const ang = Math.random() * Math.PI * 2;
+        // Distribute angles by the golden angle (+ small jitter) so motes fan
+        // out evenly around the ring instead of clumping at random — this keeps
+        // them from piling on top of each other.
+        const ang = i * GOLDEN_ANGLE + (Math.random() - 0.5) * 0.25;
         // Bias radius toward the ring: base radius + a two-sided exponential
         // spread so density peaks at RING_RADIUS and streams outward.
         const u = Math.random();
+        // Lower exponent = flatter distribution, so mass isn't piled up in a
+        // thin band at RING_RADIUS (which read as washed-out clumps where the
+        // glow halos stacked). Spread wider so motes stay distinct.
         const spread =
-          (Math.random() < 0.5 ? -1 : 1) * Math.pow(Math.random(), 1.7);
-        // Tight inward feathering (particles hug the shadow's rim and get
-        // occluded), long outward flares for the corona streamers.
-        const radial = spread < 0 ? spread * 0.6 : spread * 3.6;
+          (Math.random() < 0.5 ? -1 : 1) * Math.pow(Math.random(), 1.25);
+        // Inward feathering toward the shadow rim, long outward corona flares.
+        const radial = spread < 0 ? spread * 1.0 : spread * 4.2;
         const r = RING_RADIUS + radial;
         // Occasional long streamers for drama.
         const streamer = u > 0.86 ? Math.pow(Math.random(), 2) * 4.5 : 0;
         const rr = Math.max(0.2, r + streamer);
         out[i * 3] = Math.cos(ang) * rr;
         out[i * 3 + 1] = Math.sin(ang) * rr;
-        // Thin in depth so it reads as a flat corona disc, with a little
-        // volume for parallax shimmer.
-        out[i * 3 + 2] = (Math.random() - 0.5) * 1.4;
+        // Thin in depth — a shallow spread so the disc has a touch of volume
+        // without motes stacking directly in front of one another.
+        out[i * 3 + 2] = (Math.random() - 0.5) * 0.7;
       }
       return out;
     };
@@ -536,9 +542,9 @@ export const SpaceBackground = () => {
       size: palette.additive ? 0.42 : 0.5,
       map: glowTex,
       transparent: true,
-      // Dark: full glow. Crisp light: a restrained additive halo for a touch of
-      // glare/bloom over the solid dots, kept low so it doesn't wash out.
-      opacity: palette.additive ? 0.18 : 0.1,
+      // Dark: a lighter halo so overlapping glows don't stack into washed-out
+      // gray clumps at the dense ring band. Crisp light: restrained glare.
+      opacity: palette.additive ? 0.12 : 0.1,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
       sizeAttenuation: true,
@@ -690,12 +696,16 @@ export const SpaceBackground = () => {
       const introP = playIntro
         ? easeOut(Math.min(1, (performance.now() - introStart) / INTRO_MS))
         : 1;
-      // Extra spin that unwinds as it settles — fewer turns than before so the
-      // intro glides open like a tunnel rather than winding down like a drain.
-      const introSpin = (1 - introP) * Math.PI * 2;
-      // Swells from a tighter core out to full size — a deeper draw-in reads
-      // more like rushing out of a wormhole than a flat swirl expanding.
+      // A gentle partial turn that unwinds as it settles — well under half a
+      // rotation, so the intro glides open like a tunnel opening rather than
+      // spinning in like a whirlpool.
+      const introSpin = (1 - introP) * Math.PI * 0.7;
+      // Swells from a tighter core out to full size — a deep draw-in reads like
+      // rushing out of a wormhole. Depth pull-in (below) carries most of it.
       const introScale = 0.25 + 0.75 * introP;
+      // Wormhole pull: start pushed deep behind and glide forward to rest — the
+      // dominant intro motion is this axial rush toward the camera, not spin.
+      const introZ = (1 - introP) * -9;
 
       // Wormhole drift: the ring barely turns in its own plane — a very slow
       // astral rotation, not a whirlpool swirl. The motion is dominated by the
@@ -711,8 +721,8 @@ export const SpaceBackground = () => {
       // into the tunnel. Sinusoidal (not a hard wrap) so it never pops; the two
       // layers share materials, so a fade-and-wrap would flicker. Large travel
       // + slow rate makes the zoom the dominant motion.
-      const nearTravel = Math.sin(t * 0.22) * 1.8;
-      constellation.position.z = nearTravel;
+      const nearTravel = Math.sin(t * 0.2) * 0.8;
+      constellation.position.z = nearTravel + introZ;
 
       // A little parallax drift of the whole eclipse toward the pointer.
       constellation.position.x = mouse.x * 0.25;
@@ -730,8 +740,8 @@ export const SpaceBackground = () => {
       // as the near ring zooms toward you the far ring recedes — the parallax
       // between them deepens the tunnel and strengthens the zoom-into feel.
       farLayer.rotation.z = t * 0.018 + introSpin * 1.15;
-      const farTravel = -3.5 - Math.sin(t * 0.22) * 1.8;
-      farLayer.position.z = farTravel;
+      const farTravel = -3.5 - Math.sin(t * 0.2) * 0.8;
+      farLayer.position.z = farTravel + introZ * 1.3;
       farLayer.scale.setScalar(
         1.25 * (1 + Math.sin(t * 0.5 + 1.5) * 0.015) * (0.3 + 0.7 * introP)
       );
@@ -749,7 +759,7 @@ export const SpaceBackground = () => {
         const twinkle =
           0.84 + Math.sin(t * 1.6) * 0.1 + Math.sin(t * 0.7) * 0.06;
         pointsMat.opacity = 0.9 * twinkle * introP;
-        glowMat.opacity = 0.18 * (twinkle + 0.1) * introP;
+        glowMat.opacity = 0.12 * (twinkle + 0.1) * introP;
       }
 
       // Nebula clouds drift slowly on their own orbits + breathe in opacity,

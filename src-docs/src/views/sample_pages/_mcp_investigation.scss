@@ -66,18 +66,20 @@
     // transition is the single source of truth for the greeting's entrance.
     animation: none !important;
     opacity: 0;
-    transform: translateY(14px);
-    // Start softly blurred and sharpen as each element fades/rises in.
-    filter: blur(6px);
-    transition: opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
-      transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
-      filter 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    transform: translateY(16px);
+    // Start softly blurred and sharpen as each element fades/rises in. Longer,
+    // gentler easing so there are no hard edges — everything melts into place.
+    filter: blur(8px);
+    transition: opacity 1100ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 1100ms cubic-bezier(0.16, 1, 0.3, 1),
+      filter 1100ms cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform, filter;
   }
 
   // Olly rises a little further than the rest so the mascot clearly "moves up"
   // into place as it fades in.
   > .mcpHome__mascotRow {
-    transform: translateY(24px);
+    transform: translateY(28px);
   }
 
   &--revealed {
@@ -92,18 +94,19 @@
 
     // Stagger: the greeting leads, the input follows, and Olly + the
     // suggestion bubbles / "Open tab" bring up the rear together, so the
-    // playful bits land last.
+    // playful bits land last. Wider spacing so the elements glide in one after
+    // another rather than overlapping into a single motion.
     > .mcpHome__title {
       transition-delay: 0ms;
     }
 
     > .mcpHome__inputArea {
-      transition-delay: 160ms;
+      transition-delay: 260ms;
     }
 
     > .mcpHome__mascotRow,
     > .mcpHome__suggestions {
-      transition-delay: 320ms;
+      transition-delay: 520ms;
     }
   }
 
@@ -135,6 +138,21 @@
 .mcpHome__mascotRow {
   max-width: 100%;
   margin-bottom: var(--g-space-1);
+
+  // Olly gets an iris/violet glow in dark mode, and a soft bluish drop shadow
+  // in light mode. drop-shadow follows the SVG's shape (unlike box-shadow).
+  .v6Scenario__mascotWrap {
+    // Stacked drop-shadows build a stronger, tighter-to-wider glow so Olly
+    // reads clearly against the busy corona. Light mode gets a soft blue shadow.
+    filter: lightOrDarkTheme(
+      drop-shadow(0 4px 7px rgba(78, 70, 229, 0.4)),
+      (
+        drop-shadow(0 0 6px rgba(196, 184, 255, 0.9))
+          drop-shadow(0 0 16px rgba(157, 139, 255, 0.85))
+          drop-shadow(0 0 30px rgba(124, 92, 255, 0.6))
+      )
+    );
+  }
 }
 
 .mcpHome__title {
@@ -174,6 +192,65 @@
   // the title above); the extra spacing on top of it is the real visible gap.
   // Kept tight so the input sits close under the greeting.
   margin-top: calc(#{$shimmerBleed} + var(--g-space-1));
+
+  // ── Input field: translucent fill + animated focus border ───────────────
+  // The field sits over the corona, so give its fill ~80% opacity to let the
+  // particles glow faintly through. On focus, an animated conic-gradient border
+  // picks up the purples/glare from the particle field and spins.
+  .emptySessionPage__inputField {
+    // Animated purple/glare border on focus. The ::before ring already exists
+    // (a slow ambient conic-gradient); on focus we swap it to a brighter
+    // iris/violet glare and spin it faster, plus add an outer glow.
+    &:focus-within {
+      box-shadow: lightOrDarkTheme(
+        0 6px 22px rgba(110, 86, 207, 0.22),
+        0 0 26px rgba(124, 92, 255, 0.4)
+      );
+
+      &::before {
+        // Rotate the GRADIENT's angle (via the animated --mcp-angle property),
+        // NOT the element — a rotating filled rounded-rect shows its corners
+        // sweeping. Animating the conic `from` angle keeps the ring perfectly
+        // still while the colors travel around it: no seam, no corner sweep.
+        background: conic-gradient(
+          from var(--mcp-angle, 0deg),
+          rgba(124, 92, 255, 0.9),
+          rgba(157, 139, 255, 0.55),
+          rgba(196, 184, 255, 0.95),
+          rgba(91, 139, 255, 0.6),
+          rgba(157, 139, 255, 0.55),
+          rgba(124, 92, 255, 0.9)
+        );
+        animation: mcpHomeFocusBorderSpin 5s linear infinite;
+        inset: -2px;
+        border-radius: 18px;
+        // Clip the gradient to a RING: paint the full box, then subtract the
+        // padding-box so only a ~3px border band remains. This keeps the
+        // animated gradient out of the field body entirely (no bleed-through
+        // the translucent centre) while the corona still shows through.
+        padding: 3px;
+        mask: linear-gradient(#000 0 0) content-box exclude,
+          linear-gradient(#000 0 0);
+        -webkit-mask: linear-gradient(#000 0 0) content-box,
+          linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+      }
+    }
+  }
+}
+
+// Register --mcp-angle as a real <angle> so it can be interpolated. Without
+// @property it's an unanimatable string and the gradient would jump 0→360.
+@property --mcp-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes mcpHomeFocusBorderSpin {
+  to {
+    --mcp-angle: 360deg;
+  }
 }
 
 .mcpHome__textarea {

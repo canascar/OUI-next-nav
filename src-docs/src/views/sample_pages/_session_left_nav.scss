@@ -654,6 +654,39 @@
 // ============================================================
 
 .sessionsPanel {
+  // Animating shell — collapses width to 0 when closed so it can transition
+  // both open AND closed. The inner box keeps a fixed width so content does
+  // not reflow/squish while the shell animates.
+  // Keep min-width at 0 always — toggling it would snap the box open and
+  // defeat the width transition. `width` alone drives the animation; the
+  // inner box carries the fixed 220px content width.
+  flex: 0 0 auto;
+  width: 0;
+  min-width: 0;
+  height: 100%;
+  margin-right: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  will-change: width;
+  transition:
+    width 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    margin-right 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 200ms ease;
+
+  &--open {
+    width: 220px;
+    margin-right: 8px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+.sessionsPanel__inner {
   width: 220px;
   min-width: 220px;
   height: 100%;
@@ -663,8 +696,18 @@
   -webkit-backdrop-filter: blur(26px) saturate(175%);
   backdrop-filter: blur(26px) saturate(175%);
   border-right: 1px solid lightOrDarkTheme(#ececef, rgba(255, 255, 255, 0.08));
-  margin-right: 8px;
-  overflow: hidden;
+  // Slide + fade the content in as the shell expands
+  transform: translateX(-12px);
+  transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  .sessionsPanel--open & {
+    transform: translateX(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transform: none;
+    transition: none;
+  }
 }
 
 .sessionsPanel__header {

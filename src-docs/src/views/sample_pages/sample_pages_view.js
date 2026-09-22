@@ -2424,11 +2424,15 @@ export const SessionPagesView = ({ variant } = {}) => {
           flex: 1,
           overflow: 'hidden',
           display: 'flex',
-          paddingLeft: variant === 'v4' || isV5Variant ? 14 : (sessionsPanelOpen ? 0 : 8),
+          paddingLeft: variant === 'v4' || isV5Variant ? 14 : 8,
         }}>
-        {/* Persistent sessions panel */}
-        {sessionsPanelOpen && (
-          <div className="sessionsPanel">
+        {/* Persistent sessions panel — kept mounted so it can animate open AND closed */}
+        <div
+          className={`sessionsPanel${
+            sessionsPanelOpen ? ' sessionsPanel--open' : ''
+          }`}
+          aria-hidden={!sessionsPanelOpen}>
+          <div className="sessionsPanel__inner">
             <div className="sessionsPanel__header">
               <span className="sessionsPanel__title">Sessions</span>
               <OuiButtonIcon
@@ -2484,7 +2488,7 @@ export const SessionPagesView = ({ variant } = {}) => {
                 })}
             </div>
           </div>
-        )}
+        </div>
         {renderMainContent()}
       </div>
     </div>
