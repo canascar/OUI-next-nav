@@ -185,6 +185,69 @@ function makeGlowTexture() {
   return tex;
 }
 
+/**
+ * Four-point sparkle "star" glyph — a bright core with four tapered rays (a
+ * subtle secondary diagonal cross), drawn white on transparent so it can be
+ * tinted per-mote. This is what turns the corona motes into little stars
+ * instead of round dots (Krea-style twinkle).
+ */
+function makeStarTexture() {
+  const size = 128;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const cx = size / 2;
+  const cy = size / 2;
+
+  // Soft round core glow so the centre still reads as a luminous point.
+  const core = ctx.createRadialGradient(cx, cy, 0, cx, cy, size * 0.14);
+  core.addColorStop(0, 'rgba(255,255,255,1)');
+  core.addColorStop(0.5, 'rgba(255,255,255,0.9)');
+  core.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = core;
+  ctx.fillRect(0, 0, size, size);
+
+  // Draw a tapered ray from the centre out to `len`, `half` wide at the base,
+  // fading to transparent at the tip — the classic sparkle spike.
+  const ray = (angle, len, half) => {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(angle);
+    const grad = ctx.createLinearGradient(0, 0, len, 0);
+    grad.addColorStop(0, 'rgba(255,255,255,0.95)');
+    grad.addColorStop(0.35, 'rgba(255,255,255,0.5)');
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(0, -half);
+    ctx.lineTo(len, 0);
+    ctx.lineTo(0, half);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  };
+
+  const maxLen = size * 0.48;
+  // Primary vertical + horizontal spikes (long, thin).
+  ray(0, maxLen, size * 0.05);
+  ray(Math.PI, maxLen, size * 0.05);
+  ray(Math.PI / 2, maxLen, size * 0.05);
+  ray(-Math.PI / 2, maxLen, size * 0.05);
+  // Shorter, fainter diagonal spikes for a fuller four-point sparkle.
+  const diag = maxLen * 0.55;
+  ctx.globalAlpha = 0.5;
+  ray(Math.PI / 4, diag, size * 0.03);
+  ray((3 * Math.PI) / 4, diag, size * 0.03);
+  ray((5 * Math.PI) / 4, diag, size * 0.03);
+  ray((7 * Math.PI) / 4, diag, size * 0.03);
+  ctx.globalAlpha = 1;
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.needsUpdate = true;
+  return tex;
+}
+
 /** Crisp round dot with a soft antialiased edge — for solid (non-glow) motes. */
 function makeDotTexture() {
   const size = 64;
@@ -229,6 +292,7 @@ let hasIntroPlayed = false;
 export const SpaceBackground = () => {
   const containerRef = useRef(null);
   const vignetteRef = useRef(null);
+  const blurRef = useRef(null);
   const frameRef = useRef(null);
   const themeContext = useContext(ThemeContext);
   const isDark = themeContext.theme === 'v9-dark';
@@ -301,9 +365,17 @@ export const SpaceBackground = () => {
     });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // Start the canvas transparent and fade it in via the animate loop. This
+    // guarantees a smooth fade-into-scene with NO first-frame flash, regardless
+    // of when the GLB swaps the placeholder field for the denser one (the
+    // per-mote color fade alone could pop if the swap lands mid-reveal).
+    renderer.domElement.style.opacity = '0';
+    renderer.domElement.style.willChange = 'opacity';
     container.appendChild(renderer.domElement);
 
     const glowTex = makeGlowTexture();
+    // Star sparkle glyph — the corona motes render as little four-point stars.
+    const starTex = makeStarTexture();
     // Crisp light mode uses a solid dot; glowing dark mode uses the soft glow.
     const crisp = !!palette.crisp;
     const dotTex = crisp ? makeDotTexture() : null;
@@ -334,143 +406,40 @@ export const SpaceBackground = () => {
     const stars = new THREE.Points(starGeo, starMat);
     scene.add(stars);
 
-    // ── Central aura (soft glowing sprite behind the logo) ───────
-    // Always additive so it reads as a luminous bloom (a normal-blended sprite
-    // would look like a flat smudge).
-    const auraMat = new THREE.SpriteMaterial({
-      map: glowTex,
-      color: palette.core.getHex(),
-      transparent: true,
-      // Crisp light mode has no glow, so the central bloom is off.
-      opacity: crisp ? 0 : 0.7,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-    });
-    const aura = new THREE.Sprite(auraMat);
-    // Sized to bloom around the corona ring — the diffuse glare behind it.
-    aura.scale.set(18, 18, 1);
-    aura.position.set(0, 0.2, -4);
-    aura.visible = !crisp;
-    scene.add(aura);
-
-    // ── Nebula haze clouds ───────────────────────────────────────
-    // A few large, soft, colored additive sprites drifting behind the corona
-    // give the scene a celestial, nebula-like depth rather than a plain ring.
-    const nebulaCloudMats = [];
-    const nebulaCloudSprites = [];
-    // Skip the additive haze clouds in crisp light mode (they only muddy a
-    // light backdrop).
-    (crisp ? [] : palette.nebulaClouds || []).forEach((hex, i) => {
-      const m = new THREE.SpriteMaterial({
-        map: glowTex,
-        color: new THREE.Color(hex),
-        transparent: true,
-        // Much fainter in light mode — additive haze piles up to white on a
-        // pale backdrop and washes out the depth.
-        opacity: palette.additive ? 0.22 : 0.05,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending,
-      });
-      const s = new THREE.Sprite(m);
-      const ang = (i / (palette.nebulaClouds.length || 1)) * Math.PI * 2 + 0.6;
-      const rad = 4.6 * (0.7 + (i % 2) * 0.5); // ~corona radius, spread around
-      s.scale.set(16 + i * 3, 16 + i * 3, 1);
-      s.position.set(Math.cos(ang) * rad, Math.sin(ang) * rad * 0.7, -6 - i);
-      s.userData.baseAng = ang;
-      s.userData.rad = rad;
-      scene.add(s);
-      nebulaCloudMats.push(m);
-      nebulaCloudSprites.push(s);
-    });
-
-    // ── Eclipse occluding disc (the "moon") ──────────────────────
-    // A dark circle in front of the corona so the centre stays calm and the
-    // input content reads against shadow. Uses a soft-edged radial texture so
-    // it feathers into the surrounding glare instead of a hard cutout.
-    const discTex = (() => {
-      const size = 128;
-      const canvas = document.createElement('canvas');
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext('2d');
-      const g = ctx.createRadialGradient(
-        size / 2,
-        size / 2,
-        0,
-        size / 2,
-        size / 2,
-        size / 2
-      );
-      // Solid dark core that holds most of the disc, then a tight feather at
-      // the rim — a crisper eclipse shadow that clearly occludes the centre.
-      g.addColorStop(0, 'rgba(255,255,255,1)');
-      g.addColorStop(0.74, 'rgba(255,255,255,1)');
-      g.addColorStop(0.9, 'rgba(255,255,255,0.85)');
-      g.addColorStop(1, 'rgba(255,255,255,0)');
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, size, size);
-      const tex = new THREE.CanvasTexture(canvas);
-      tex.needsUpdate = true;
-      return tex;
-    })();
-    const discMat = new THREE.SpriteMaterial({
-      map: discTex,
-      color: new THREE.Color(palette.disc),
-      transparent: true,
-      opacity: palette.discOpacity,
-      depthWrite: false,
-      blending: THREE.NormalBlending,
-    });
-    const disc = new THREE.Sprite(discMat);
-    // A touch larger than the corona's inner edge so it clearly occludes the
-    // inner particles — the shadow eats into the ring rather than sitting inside
-    // an empty hole. Its solid core (~0.74 of radius) lands right at the rim.
-    disc.scale.set(RING_RADIUS * 2.5, RING_RADIUS * 2.5, 1);
-    disc.position.set(0, 0.2, 1.5); // in front of the corona
-    scene.add(disc);
-
-    // ── Eclipse corona ───────────────────────────────────────────
-    // The particles form a glaring ring (corona) centred on the input. A dark
-    // occluding disc (the "moon") sits in the middle so the input content reads
-    // against calm darkness while light blazes around it.
+    // ── Starfield constellation ──────────────────────────────────
+    // The particles form an even field of stars across the whole background
+    // (no eclipse ring, no occluding disc, no central aura). Density tapers
+    // gently toward the centre so the greeting/input still read clearly.
     const constellation = new THREE.Group();
     constellation.position.set(0, 0.2, 0);
     scene.add(constellation);
 
-    // Radius of the corona ring in world units. Sized so the dark centre
-    // comfortably frames the greeting + input block.
-    const RING_RADIUS = 4.6;
+    // Half-extents of the star field in world units. Wider than the frame so
+    // stars run edge to edge with room for parallax drift.
+    const FIELD_X = 11;
+    const FIELD_Y = 8;
+    const FIELD_Z = 4;
 
-    // Lay `count` motes into a camera-facing annulus: dense at RING_RADIUS with
-    // a soft inner/outer falloff, plus radial "streamers" flaring outward like
-    // a real corona. Returns a flat xyz Float32Array.
-    const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5)); // ~2.399963 rad
-    const buildCoronaPositions = (count) => {
+    // Lay `count` motes into an even full-field starfield (no ring). A gentle
+    // radial thinning toward the centre keeps a calmer pocket behind the
+    // greeting/input without carving a hard hole. Returns a flat xyz array.
+    const buildStarfieldPositions = (count) => {
       const out = new Float32Array(count * 3);
       for (let i = 0; i < count; i++) {
-        // Distribute angles by the golden angle (+ small jitter) so motes fan
-        // out evenly around the ring instead of clumping at random — this keeps
-        // them from piling on top of each other.
-        const ang = i * GOLDEN_ANGLE + (Math.random() - 0.5) * 0.25;
-        // Bias radius toward the ring: base radius + a two-sided exponential
-        // spread so density peaks at RING_RADIUS and streams outward.
-        const u = Math.random();
-        // Lower exponent = flatter distribution, so mass isn't piled up in a
-        // thin band at RING_RADIUS (which read as washed-out clumps where the
-        // glow halos stacked). Spread wider so motes stay distinct.
-        const spread =
-          (Math.random() < 0.5 ? -1 : 1) * Math.pow(Math.random(), 1.25);
-        // Inward feathering toward the shadow rim, long outward corona flares.
-        const radial = spread < 0 ? spread * 1.0 : spread * 4.2;
-        const r = RING_RADIUS + radial;
-        // Occasional long streamers for drama.
-        const streamer = u > 0.86 ? Math.pow(Math.random(), 2) * 4.5 : 0;
-        const rr = Math.max(0.2, r + streamer);
-        out[i * 3] = Math.cos(ang) * rr;
-        out[i * 3 + 1] = Math.sin(ang) * rr;
-        // Thin in depth — a shallow spread so the disc has a touch of volume
-        // without motes stacking directly in front of one another.
-        out[i * 3 + 2] = (Math.random() - 0.5) * 0.7;
+        let x;
+        let y;
+        // Rejection-sample so density tapers softly near the centre (where the
+        // text/input sit) instead of a uniform block or a hard ring.
+        for (let tries = 0; tries < 4; tries++) {
+          x = (Math.random() * 2 - 1) * FIELD_X;
+          y = (Math.random() * 2 - 1) * FIELD_Y;
+          const d = Math.hypot(x / FIELD_X, y / FIELD_Y); // 0 centre → ~1 edge
+          // Keep with probability rising from ~0.3 at centre to 1 at the edge.
+          if (Math.random() < 0.3 + 0.7 * d) break;
+        }
+        out[i * 3] = x;
+        out[i * 3 + 1] = y;
+        out[i * 3 + 2] = (Math.random() * 2 - 1) * FIELD_Z;
       }
       return out;
     };
@@ -499,20 +468,73 @@ export const SpaceBackground = () => {
       // Per-point size variance for a more organic, twinkling field.
       const sizes = new Float32Array(n);
       // Per-point nebula color so the corona reads as a celestial gradient
-      // rather than one flat hue.
+      // rather than one flat hue. `colors` is the LIVE attribute the material
+      // reads; `baseColors` is the untouched target we scale by each mote's
+      // fade factor during the Krea-style staggered fade-in.
       const colors = new Float32Array(n * 3);
+      const baseColors = new Float32Array(n * 3);
+      // Companion glow attributes: a SECOND set of colors for the glow halo,
+      // scaled per-mote by a random glow factor so some stars glow far brighter
+      // than others (rare "beacons"), while most keep a subtle halo — a more
+      // organic, varied field. Kept on the same geometry so the glow layer can
+      // share positions + fade timing but read its own `aGlowColor`.
+      const glowColors = new Float32Array(n * 3);
+      const glowBaseColors = new Float32Array(n * 3);
+      // Per-mote fade-in timing: a random birth delay (0→1 of the fade window)
+      // so stars pop in scattered over time, plus a per-mote fade span. This
+      // is what gives the "stars quietly appearing one by one" look.
+      const fadeDelay = new Float32Array(n);
+      const fadeSpan = new Float32Array(n);
       const c = new THREE.Color();
       for (let i = 0; i < n; i++) {
         sizes[i] = 0.05 + Math.random() * 0.14;
         c.copy(pickNebulaColor());
         // Slight per-mote brightness jitter for depth/twinkle at rest.
         const b = 0.75 + Math.random() * 0.25;
-        colors[i * 3] = c.r * b;
-        colors[i * 3 + 1] = c.g * b;
-        colors[i * 3 + 2] = c.b * b;
+        baseColors[i * 3] = c.r * b;
+        baseColors[i * 3 + 1] = c.g * b;
+        baseColors[i * 3 + 2] = c.b * b;
+        // Randomized glow strength: most motes glow faintly (~0.35–0.8×), but
+        // ~12% are bright "beacons" (1.4–2.4×) that bloom noticeably. This is
+        // what makes some stars glow more than others.
+        const glowFactor =
+          Math.random() < 0.12
+            ? 1.4 + Math.random() * 1.0
+            : 0.35 + Math.random() * 0.45;
+        glowBaseColors[i * 3] = c.r * b * glowFactor;
+        glowBaseColors[i * 3 + 1] = c.g * b * glowFactor;
+        glowBaseColors[i * 3 + 2] = c.b * b * glowFactor;
+        // Start fully dark; the fade-in ramp fills these in over the intro.
+        colors[i * 3] = 0;
+        colors[i * 3 + 1] = 0;
+        colors[i * 3 + 2] = 0;
+        glowColors[i * 3] = 0;
+        glowColors[i * 3 + 1] = 0;
+        glowColors[i * 3 + 2] = 0;
+        // Spread births across most of the window and give each a slower
+        // ramp, so the fade-in is clearly visible (stars trickle in) rather
+        // than snapping to full almost immediately.
+        fadeDelay[i] = Math.random() * 0.7; // birth anywhere in first 70%
+        fadeSpan[i] = 0.28 + Math.random() * 0.4; // each star fades over 28–68%
       }
+      // Dedicated pointer-glow color buffer — all zero (black/invisible) at
+      // rest; writeLayerColors fills it with the additive proximity bloom each
+      // frame so a soft lit pool follows the cursor in both themes.
+      const pointerColors = new Float32Array(n * 3);
       geo.setAttribute('aSize', new THREE.BufferAttribute(sizes, 1));
       geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+      geo.setAttribute('aGlowColor', new THREE.BufferAttribute(glowColors, 3));
+      geo.setAttribute(
+        'aPointerColor',
+        new THREE.BufferAttribute(pointerColors, 3)
+      );
+      // Stash the fade bookkeeping on the geometry so the animate loop can
+      // drive the per-mote reveal (both core `color` and glow `aGlowColor`).
+      geo.userData.baseColors = baseColors;
+      geo.userData.glowBaseColors = glowBaseColors;
+      geo.userData.fadeDelay = fadeDelay;
+      geo.userData.fadeSpan = fadeSpan;
+      geo.userData.faded = false; // set true once fully revealed (stop writing)
       return geo;
     };
 
@@ -520,9 +542,9 @@ export const SpaceBackground = () => {
     // blended so the purple reads darker than the pale backdrop.
     const pointsMat = new THREE.PointsMaterial({
       vertexColors: true, // per-mote nebula hues
-      // Crisp mode: solid dots with a soft glow halo baked into the texture.
-      size: crisp ? 0.18 : 0.26,
-      map: moteTex,
+      // Four-point sparkle stars — kept small for a fine, distant starfield.
+      size: crisp ? 0.14 : 0.2,
+      map: starTex,
       transparent: true,
       opacity: crisp ? 1 : 0.9,
       depthWrite: false,
@@ -530,41 +552,155 @@ export const SpaceBackground = () => {
       sizeAttenuation: true,
     });
 
-    // Additive glow material — a larger, softer, lower-opacity halo rendered on
-    // top of the core so both themes get the heavy glare/bloom. Additive on a
-    // light backdrop adds a gentle luminous bloom without washing the motes out.
+    // Glow halo behind the core mote.
+    //
+    // Dark mode: ADDITIVE bloom — a soft luminous glare that adds light,
+    // carrying per-mote nebula hues.
+    //
+    // Crisp light mode: additive would only LIGHTEN the pale backdrop and make
+    // the stars blend in. Instead use NORMAL blending with a single deep-violet
+    // tint so the halo reads as a soft DARK aura around each star — that darker
+    // pool makes the light-mode stars stand out against the lavender bg.
     const glowMat = new THREE.PointsMaterial({
-      vertexColors: true, // per-mote nebula hues in the halo too
-      // In dark mode the core is already additive and glows on its own, so the
-      // extra halo is kept light to avoid a blown-out wash; in light mode the
-      // core is normal-blended, so this additive halo IS the glare and carries
-      // more weight.
-      size: palette.additive ? 0.42 : 0.5,
+      vertexColors: !crisp, // dark: per-mote hues; light: one dark tint below
+      // A soft LIGHT-PURPLE halo in light mode — a gentle lavender bloom that
+      // haloes each star without the smoky dark pool. Kept close to the core.
+      color: crisp ? new THREE.Color('#b9a8f5') : 0xffffff, // light lavender
+      // Bigger halo so each star carries a fuller bloom/glow.
+      size: crisp ? 0.34 : 0.4,
       map: glowTex,
       transparent: true,
-      // Dark: a lighter halo so overlapping glows don't stack into washed-out
-      // gray clumps at the dense ring band. Crisp light: restrained glare.
-      opacity: palette.additive ? 0.12 : 0.1,
+      opacity: crisp ? 0.22 : 0.12,
+      depthWrite: false,
+      blending: crisp ? THREE.NormalBlending : THREE.AdditiveBlending,
+      sizeAttenuation: true,
+    });
+
+    // Pointer-glow halo material — a dedicated ADDITIVE bloom layer that is
+    // normally fully dark (its per-mote color sits at black) and only lights up
+    // around the cursor. Additive works in BOTH themes for the torch: on the
+    // pale light bg a local additive bloom is the only way to actually brighten
+    // motes near the pointer (the normal-blended core/halo can't add light), and
+    // on dark it stacks a little extra glare. Its `aPointerColor` attribute is
+    // written each frame by writeLayerColors from the proximity boost.
+    // The pointer glow is a soft pool that follows the cursor. It reads its
+    // per-mote intensity from the `aPointerColor` buffer (black at rest → lit
+    // near the cursor), written each frame by writeLayerColors.
+    //
+    // MUST be ADDITIVE in both themes: additive of a black (zero) color is a
+    // no-op, so motes away from the cursor stay invisible. (A normal-blended
+    // sprite with a near-black color would instead paint translucent DARK
+    // pixels everywhere the texture has alpha — greying out the whole field.)
+    // Dark: per-mote nebula hue → a luminous torch. Light: a restrained soft
+    // bloom — low opacity + tight radius keep it a gentle local lift, not the
+    // full-field whiteout that a broad additive pool caused.
+    const pointerGlowMat = new THREE.PointsMaterial({
+      vertexColors: true,
+      // Soft halo so the lit pool reads as a smooth glow, not dots. Kept
+      // restrained so the pool is a gentle accent, not a wall of blobs.
+      size: crisp ? 0.4 : 0.5,
+      map: glowTex,
+      transparent: true,
+      opacity: crisp ? 0.28 : 0.3,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
       sizeAttenuation: true,
     });
 
-    // Build a group holding the core points plus their additive glow, sharing
-    // one geometry. Used for both the placeholder cloud and the logo field.
+    // Build a group holding the core points plus their glow halo. The core and
+    // glow share positions + fade timing, but the glow uses its OWN geometry
+    // whose vertex `color` is the per-mote randomized glow color (`aGlowColor`
+    // on the core geo) — so some stars bloom far brighter than others while the
+    // core motes stay uniform.
     const buildConstellationLayer = (positions) => {
       const geo = buildGeoFromPositions(positions);
+
+      // Glow geometry: reuse the SAME position buffer (no duplication) but give
+      // it a `color` attribute backed by the core geo's glow colors, so the
+      // glow material's vertexColors picks up the randomized per-star strength.
+      const glowGeo = new THREE.BufferGeometry();
+      glowGeo.setAttribute('position', geo.getAttribute('position'));
+      glowGeo.setAttribute('color', geo.getAttribute('aGlowColor'));
+
+      // Pointer-glow geometry: shares positions, but its `color` is the
+      // dedicated `aPointerColor` buffer that writeLayerColors fills with the
+      // proximity bloom (black at rest → bright near the cursor).
+      const pointerGeo = new THREE.BufferGeometry();
+      pointerGeo.setAttribute('position', geo.getAttribute('position'));
+      pointerGeo.setAttribute('color', geo.getAttribute('aPointerColor'));
+
       const group = new THREE.Group();
-      // Additive glow halo behind the core — full bloom in dark mode, a
-      // restrained glare in crisp light mode (low opacity, see glowMat).
-      group.add(new THREE.Points(geo, glowMat));
+      // Pointer-glow pool sits behind everything (drawn first): additive bloom
+      // on dark, a soft dark-iris pool on light.
+      group.add(new THREE.Points(pointerGeo, pointerGlowMat));
+      // Randomized-strength glow halo behind the core.
+      group.add(new THREE.Points(glowGeo, glowMat));
       group.add(new THREE.Points(geo, pointsMat));
       group.userData.geo = geo;
+      group.userData.glowGeo = glowGeo;
+      group.userData.pointerGeo = pointerGeo;
       return group;
     };
 
-    // Initial corona ring
-    let points = buildConstellationLayer(buildCoronaPositions(CLOUD_COUNT));
+    // Krea-style staggered fade-in: the corona stars don't all appear at once.
+    // Each mote reveals at its own random time over STAR_FADE_MS, ramping its
+    // color from black up to its base color (works for both additive and alpha
+    // blending — a darker color simply reads as fainter). Once every mote is
+    // fully in, we stop rewriting the attribute (geo.userData.faded = true).
+    const STAR_FADE_MS = 3400;
+    const smoothstep = (x) => {
+      const c = Math.max(0, Math.min(1, x));
+      return c * c * (3 - 2 * c);
+    };
+    const advanceStarFade = (geo, elapsedMs) => {
+      if (!geo || geo.userData.faded) return;
+      const base = geo.userData.baseColors;
+      const glowBase = geo.userData.glowBaseColors;
+      const delay = geo.userData.fadeDelay;
+      const span = geo.userData.fadeSpan;
+      if (!base || !delay || !span) return;
+      const attr = geo.getAttribute('color');
+      const arr = attr.array;
+      const glowAttr = geo.getAttribute('aGlowColor');
+      const glowArr = glowAttr ? glowAttr.array : null;
+      const p = Math.min(1, elapsedMs / STAR_FADE_MS);
+      let allIn = true;
+      const n = delay.length;
+      for (let i = 0; i < n; i++) {
+        // Local progress for this mote: (globalP - its delay) / its span.
+        const f = smoothstep((p - delay[i]) / span[i]);
+        if (f < 1) allIn = false;
+        arr[i * 3] = base[i * 3] * f;
+        arr[i * 3 + 1] = base[i * 3 + 1] * f;
+        arr[i * 3 + 2] = base[i * 3 + 2] * f;
+        // Ramp the randomized glow color in lockstep with the core.
+        if (glowArr && glowBase) {
+          glowArr[i * 3] = glowBase[i * 3] * f;
+          glowArr[i * 3 + 1] = glowBase[i * 3 + 1] * f;
+          glowArr[i * 3 + 2] = glowBase[i * 3 + 2] * f;
+        }
+      }
+      attr.needsUpdate = true;
+      if (glowAttr) glowAttr.needsUpdate = true;
+      if (allIn && p >= 1) geo.userData.faded = true;
+    };
+    // When reduced motion is on, we skip the staggered reveal and show the
+    // stars fully formed immediately.
+    const revealInstantly = (geo) => {
+      if (!geo || !geo.userData.baseColors) return;
+      const attr = geo.getAttribute('color');
+      attr.array.set(geo.userData.baseColors);
+      attr.needsUpdate = true;
+      const glowAttr = geo.getAttribute('aGlowColor');
+      if (glowAttr && geo.userData.glowBaseColors) {
+        glowAttr.array.set(geo.userData.glowBaseColors);
+        glowAttr.needsUpdate = true;
+      }
+      geo.userData.faded = true;
+    };
+
+    // Initial starfield
+    let points = buildConstellationLayer(buildStarfieldPositions(CLOUD_COUNT));
     constellation.add(points);
 
     // ── Far corona layer (depth) ─────────────────────────────────
@@ -572,11 +708,18 @@ export const SpaceBackground = () => {
     // rotating very slowly. The parallax between the two layers gives the
     // corona real volume — more astral than a single flat disc.
     const farLayer = buildConstellationLayer(
-      buildCoronaPositions(Math.round(CLOUD_COUNT * 0.7))
+      buildStarfieldPositions(Math.round(CLOUD_COUNT * 0.7))
     );
     farLayer.scale.setScalar(1.25);
     farLayer.position.z = -3.5;
     constellation.add(farLayer);
+
+    // On remounts (fade already played) or reduced motion, show the stars fully
+    // formed right away — otherwise they'd start black and never get rewritten.
+    if (!playStarFade) {
+      revealInstantly(points.userData.geo);
+      revealInstantly(farLayer.userData.geo);
+    }
 
     // Load the GLB and reshape the constellation to the logo's surface.
     const loader = new GLTFLoader();
@@ -610,13 +753,26 @@ export const SpaceBackground = () => {
           sampled += sampleSurfacePoints(world, PER).length / 3;
           world.geometry.dispose();
         });
-        const coronaCount = Math.max(CLOUD_COUNT, sampled);
-        const corona = buildCoronaPositions(coronaCount);
+        const fieldCount = Math.max(CLOUD_COUNT, sampled);
+        const field = buildStarfieldPositions(fieldCount);
 
-        // Swap the placeholder ring for the denser, GLB-seeded corona.
+        // Swap the placeholder field for the denser, GLB-seeded starfield.
         constellation.remove(points);
         if (points.userData.geo) points.userData.geo.dispose();
-        points = buildConstellationLayer(corona);
+        if (points.userData.glowGeo) points.userData.glowGeo.dispose();
+        if (points.userData.pointerGeo) points.userData.pointerGeo.dispose();
+        points = buildConstellationLayer(field);
+        // Keep the fade coherent across the swap so it never flashes or pops:
+        // - not fading (remount) or fade already done → show fully formed.
+        // - mid-fade → seed the new geo to the CURRENT fade progress so it
+        //   picks up exactly where the placeholder was instead of restarting
+        //   dark (which would flicker). The loop then continues it smoothly.
+        const fadeDoneMs = performance.now() - starFadeStart;
+        if (!playStarFade || fadeDoneMs >= STAR_FADE_MS) {
+          revealInstantly(points.userData.geo);
+        } else {
+          advanceStarFade(points.userData.geo, fadeDoneMs);
+        }
         constellation.add(points);
       },
       undefined,
@@ -628,11 +784,155 @@ export const SpaceBackground = () => {
     // ── Parallax from pointer (subtle) ───────────────────────────
     const mouse = { x: 0, y: 0 };
     const mouseTarget = { x: 0, y: 0 };
+    // Pointer position in normalized device coords (-1..1), relative to THIS
+    // container (not the whole window) so the proximity glow tracks the cursor
+    // accurately even when the panel is a side column. `pointerInside` gates
+    // the glow off when the cursor leaves the background.
+    const pointerNdc = new THREE.Vector2(0, 0);
+    let pointerInside = false;
     const onMouseMove = (e) => {
       mouseTarget.x = (e.clientX / window.innerWidth) * 2 - 1;
       mouseTarget.y = (e.clientY / window.innerHeight) * 2 - 1;
+      const rect = container.getBoundingClientRect();
+      const nx = (e.clientX - rect.left) / rect.width;
+      const ny = (e.clientY - rect.top) / rect.height;
+      pointerNdc.x = nx * 2 - 1;
+      pointerNdc.y = -(ny * 2 - 1);
+      pointerInside = nx >= 0 && nx <= 1 && ny >= 0 && ny <= 1;
     };
     if (!reduceMotion) window.addEventListener('mousemove', onMouseMove);
+
+    // ── Pointer-proximity glow ───────────────────────────────────
+    // Motes within a radius of the cursor bloom brighter — a soft "torch" that
+    // lights the starfield around the pointer. Each frame we raycast the
+    // pointer onto each layer's local z-plane, then rewrite every mote's color
+    // as base * fade * (1 + boost·falloff): a single pass that OWNS the color
+    // write (it folds in the staggered fade-in factor so we don't fight
+    // advanceStarFade — see the animate loop). The boost is largest at the
+    // cursor and smoothly decays to 0 at GLOW_RADIUS.
+    const raycaster = new THREE.Raycaster();
+    // Reusable scratch objects (no per-frame allocation).
+    const glowPlane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+    const hitWorld = new THREE.Vector3();
+    const hitLocal = new THREE.Vector3();
+    const layerWorld = new THREE.Vector3();
+    // Radius (world units) of the lit pool around the cursor. Kept fairly
+    // tight so the glow is a localized pool under the cursor, not the whole
+    // field lighting up.
+    const GLOW_RADIUS = 2.2;
+    // Boost multiplier at the cursor centre. Kept modest for a subtle glow
+    // (dialed back per "slightly less glow"). Slightly gentler on light.
+    const GLOW_BOOST = crisp ? 1.2 : 1.6;
+    // Light-mode pool tint — a soft iris that, added over the pale bg near the
+    // cursor, lifts into a gentle lavender bloom (not white). Kept mid-toned so
+    // a little additive goes a long way without blowing out.
+    const lightPoolColor = new THREE.Color('#8a78e8');
+    // Smoothed 0→1 strength so the pool fades in/out as the cursor enters and
+    // leaves the background instead of snapping. `glowWasActive` gives us one
+    // extra write frame after the pool fully fades so the last boosted colors
+    // get reset back to their resting base values.
+    let glowStrength = 0;
+    let glowWasActive = false;
+
+    // Resolve the pointer's position in a layer's LOCAL space (the layer is
+    // scaled + z-offset). Writes into `hitLocal`; returns false if the ray
+    // misses the plane. Call once per layer per frame.
+    const resolvePointerLocal = (layer) => {
+      raycaster.setFromCamera(pointerNdc, camera);
+      layer.getWorldPosition(layerWorld);
+      glowPlane.constant = -layerWorld.z; // plane at the layer's world depth
+      if (!raycaster.ray.intersectPlane(glowPlane, hitWorld)) return false;
+      layer.worldToLocal(hitLocal.copy(hitWorld));
+      return true;
+    };
+
+    // Single color-write pass for one layer: color = base·fade·(1 + boost).
+    // `fadeElapsedMs` drives the staggered reveal (null → fully revealed).
+    // `strength` (0..1) scales the whole proximity boost.
+    const writeLayerColors = (layer, fadeElapsedMs, strength, applyPointer) => {
+      const geo = layer.userData.geo;
+      if (!geo || !geo.userData.baseColors) return;
+      const base = geo.userData.baseColors;
+      const glowBase = geo.userData.glowBaseColors;
+      const delay = geo.userData.fadeDelay;
+      const span = geo.userData.fadeSpan;
+      const parr = geo.getAttribute('position').array;
+      const colorAttr = geo.getAttribute('color');
+      const glowAttr = geo.getAttribute('aGlowColor');
+      const pointerAttr = geo.getAttribute('aPointerColor');
+      const arr = colorAttr.array;
+      const glowArr = glowAttr ? glowAttr.array : null;
+      const pointerArr = pointerAttr ? pointerAttr.array : null;
+
+      const hasPointer =
+        applyPointer && strength > 0.001 && resolvePointerLocal(layer);
+      const r2 = GLOW_RADIUS * GLOW_RADIUS;
+      const fadeP =
+        fadeElapsedMs == null ? 1 : Math.min(1, fadeElapsedMs / STAR_FADE_MS);
+      const n = base.length / 3;
+      for (let i = 0; i < n; i++) {
+        // Per-mote staggered fade factor (0 dark → 1 full).
+        const fade =
+          fadeElapsedMs == null
+            ? 1
+            : smoothstep((fadeP - delay[i]) / span[i]);
+        // Radial proximity boost around the cursor.
+        let boost = 0;
+        if (hasPointer) {
+          const dx = parr[i * 3] - hitLocal.x;
+          const dy = parr[i * 3 + 1] - hitLocal.y;
+          const d2 = dx * dx + dy * dy;
+          if (d2 < r2) {
+            const f = 1 - d2 / r2; // 1 at cursor → 0 at radius
+            boost = f * f * GLOW_BOOST * strength;
+          }
+        }
+        if (crisp) {
+          // LIGHT MODE — leave the crisp motes and their lavender halo at their
+          // resting look (brightening a normal-blended mote just pushes it pale
+          // and washes it out)…
+          arr[i * 3] = base[i * 3] * fade;
+          arr[i * 3 + 1] = base[i * 3 + 1] * fade;
+          arr[i * 3 + 2] = base[i * 3 + 2] * fade;
+          if (glowArr && glowBase) {
+            glowArr[i * 3] = glowBase[i * 3] * fade;
+            glowArr[i * 3 + 1] = glowBase[i * 3 + 1] * fade;
+            glowArr[i * 3 + 2] = glowBase[i * 3 + 2] * fade;
+          }
+          // …and carry the glow via the additive pointer pool: a soft iris tint
+          // scaled by the radial boost (0 at rest → full near the cursor), so a
+          // gentle lavender bloom lifts the field only under the cursor.
+          if (pointerArr) {
+            const p = fade * Math.min(1, boost);
+            pointerArr[i * 3] = lightPoolColor.r * p;
+            pointerArr[i * 3 + 1] = lightPoolColor.g * p;
+            pointerArr[i * 3 + 2] = lightPoolColor.b * p;
+          }
+        } else {
+          // DARK MODE — additive bloom. Brighten the core a touch and drive the
+          // dedicated additive pointer layer for a luminous torch of light.
+          const core = fade * (1 + boost);
+          arr[i * 3] = base[i * 3] * core;
+          arr[i * 3 + 1] = base[i * 3 + 1] * core;
+          arr[i * 3 + 2] = base[i * 3 + 2] * core;
+          if (glowArr && glowBase) {
+            const halo = fade * (1 + boost * 1.5);
+            glowArr[i * 3] = glowBase[i * 3] * halo;
+            glowArr[i * 3 + 1] = glowBase[i * 3 + 1] * halo;
+            glowArr[i * 3 + 2] = glowBase[i * 3 + 2] * halo;
+          }
+          if (pointerArr) {
+            const p = fade * boost;
+            pointerArr[i * 3] = base[i * 3] * p;
+            pointerArr[i * 3 + 1] = base[i * 3 + 1] * p;
+            pointerArr[i * 3 + 2] = base[i * 3 + 2] * p;
+          }
+        }
+      }
+      colorAttr.needsUpdate = true;
+      if (glowAttr) glowAttr.needsUpdate = true;
+      if (pointerAttr) pointerAttr.needsUpdate = true;
+    };
 
     // ── Resize ───────────────────────────────────────────────────
     // Don't resize the renderer directly in the observer/event callback — that
@@ -672,8 +972,12 @@ export const SpaceBackground = () => {
     // so the scene appears fully formed with no re-animation.
     const INTRO_MS = 2000;
     const playIntro = !hasIntroPlayed && !reduceMotion;
+    // The staggered star fade-in rides along with the intro: it plays on the
+    // first mount of a page load and is skipped on remounts (already faded).
+    const playStarFade = playIntro;
     hasIntroPlayed = true;
     const introStart = performance.now();
+    const starFadeStart = introStart;
     // easeOutQuint for a smoother, longer-settling glide (less abrupt than the
     // cubic wind-down) — suits the calmer wormhole intro.
     const easeOut = (x) => 1 - Math.pow(1 - x, 5);
@@ -688,6 +992,34 @@ export const SpaceBackground = () => {
       applyResizeIfNeeded();
       t += 0.0038;
 
+      // Ease the proximity-glow strength toward its target so the pool clearly
+      // TRANSITIONS IN on hover and fades back out when the cursor leaves — a
+      // gentle ramp, not a snap. Fade-out is a touch slower than fade-in for a
+      // soft trailing glow.
+      const glowTargetNow = pointerInside ? 1 : 0;
+      const ease = pointerInside ? 0.06 : 0.04;
+      glowStrength += (glowTargetNow - glowStrength) * ease;
+
+      // Star colors: a single pass per layer folds the staggered fade-in AND
+      // the pointer-proximity glow into one write. We keep writing while the
+      // fade is still running or the glow pool is active (or lingering just
+      // after the cursor leaves), then leave the buffers at their resting base
+      // colors once nothing is animating them — no per-frame work at idle.
+      const fadeElapsed = playStarFade
+        ? performance.now() - starFadeStart
+        : null;
+      const fading = playStarFade && fadeElapsed < STAR_FADE_MS;
+      const glowActive = glowStrength > 0.002 || glowWasActive;
+      glowWasActive = glowStrength > 0.002;
+      if (fading || glowActive) {
+        const fadeArg = fading ? fadeElapsed : null;
+        // Only the NEAR layer gets the pointer pool — the far layer is scaled +
+        // pushed back, so a second pool there just smears the effect. It still
+        // gets the fade write.
+        writeLayerColors(points, fadeArg, glowStrength, true);
+        writeLayerColors(farLayer, fadeArg, glowStrength, false);
+      }
+
       // Smooth the parallax.
       mouse.x += (mouseTarget.x - mouse.x) * 0.04;
       mouse.y += (mouseTarget.y - mouse.y) * 0.04;
@@ -696,22 +1028,36 @@ export const SpaceBackground = () => {
       const introP = playIntro
         ? easeOut(Math.min(1, (performance.now() - introStart) / INTRO_MS))
         : 1;
-      // A gentle partial turn that unwinds as it settles — well under half a
-      // rotation, so the intro glides open like a tunnel opening rather than
-      // spinning in like a whirlpool.
-      const introSpin = (1 - introP) * Math.PI * 0.7;
-      // Swells from a tighter core out to full size — a deep draw-in reads like
-      // rushing out of a wormhole. Depth pull-in (below) carries most of it.
-      const introScale = 0.25 + 0.75 * introP;
-      // Wormhole pull: start pushed deep behind and glide forward to rest — the
-      // dominant intro motion is this axial rush toward the camera, not spin.
-      const introZ = (1 - introP) * -9;
+      // Start near full size and settle — a gentle swell, NOT a deep zoom. A
+      // big draw-in would shrink the field enough to reveal its rectangular
+      // container edges; keeping the scale high means the starfield always
+      // overfills the frame so the box is never visible. The per-star fade-in
+      // carries the reveal instead.
+      const introScale = 0.94 + 0.06 * introP;
+      // A shallow forward glide only — small enough that the field stays
+      // full-frame throughout (no deep pull-in that would expose the edges).
+      const introZ = (1 - introP) * -1.2;
 
-      // Wormhole drift: the ring barely turns in its own plane — a very slow
-      // astral rotation, not a whirlpool swirl. The motion is dominated by the
-      // continuous zoom into depth (below), so it reads as flying into a tunnel
-      // rather than water spinning down a drain. Intro spin adds on top.
-      constellation.rotation.set(0, 0, t * 0.025 + introSpin);
+      // Fade the whole canvas into the scene — a global opacity ramp on top of
+      // the per-mote color fade. This is what removes the first-load flash: the
+      // scene eases up from fully transparent no matter what the particles are
+      // doing underneath (placeholder → GLB swap). Reaches full a bit early so
+      // the field is present while individual stars keep twinkling in.
+      renderer.domElement.style.opacity = String(Math.min(1, introP * 1.3));
+
+      // Fade the DOM overlays (blur + vignette) in with the stars so the
+      // soft-focus haze and edge fade ramp up rather than snapping on. No
+      // scale/zoom — just opacity.
+      if (blurRef.current) {
+        blurRef.current.style.opacity = String(introP);
+      }
+      if (vignetteRef.current) {
+        vignetteRef.current.style.opacity = String(introP);
+      }
+
+      // No rotation — the starfield stays still in-plane; only the gentle
+      // depth swell + pointer parallax move it.
+      constellation.rotation.set(0, 0, 0);
       // Gentle, slow swell — smoothed (small amplitude, long period) so the
       // tunnel breathes calmly instead of pulsing.
       const breathe = 1 + Math.sin(t * 0.5) * 0.015;
@@ -724,57 +1070,45 @@ export const SpaceBackground = () => {
       const nearTravel = Math.sin(t * 0.2) * 0.8;
       constellation.position.z = nearTravel + introZ;
 
-      // A little parallax drift of the whole eclipse toward the pointer.
+      // A little parallax drift of the whole field toward the pointer.
       constellation.position.x = mouse.x * 0.25;
       constellation.position.y = 0.2 - mouse.y * 0.18;
-      disc.position.x = mouse.x * 0.25;
-      disc.position.y = 0.2 - mouse.y * 0.18;
-      aura.position.x = mouse.x * 0.25;
-      aura.position.y = 0.2 - mouse.y * 0.18;
 
-      // Corona glare pulses. Strong additive bloom in dark mode; kept low in
-      // light mode so the centre keeps its gradient depth instead of blowing
-      // Far corona layer turns the SAME slow direction as the near ring (no
-      // counter-spin — that clash is what read as a churning whirlpool), even
-      // slower. It swells in depth on the OPPOSITE phase to the near ring, so
-      // as the near ring zooms toward you the far ring recedes — the parallax
-      // between them deepens the tunnel and strengthens the zoom-into feel.
-      farLayer.rotation.z = t * 0.018 + introSpin * 1.15;
+      // Far layer also stays still in-plane; it swells in depth on the OPPOSITE
+      // phase to the near field so the parallax between them keeps a little
+      // depth without any rotation.
+      farLayer.rotation.z = 0;
       const farTravel = -3.5 - Math.sin(t * 0.2) * 0.8;
       farLayer.position.z = farTravel + introZ * 1.3;
       farLayer.scale.setScalar(
-        1.25 * (1 + Math.sin(t * 0.5 + 1.5) * 0.015) * (0.3 + 0.7 * introP)
+        // Keep the far layer near full size too (0.94→1) so it never shrinks
+        // enough to expose its container edges during the intro.
+        1.25 * (1 + Math.sin(t * 0.5 + 1.5) * 0.015) * (0.94 + 0.06 * introP)
       );
 
+      // The per-mote color fade (advanceStarFade) drives the staggered star
+      // reveal, so the star MATERIAL opacity is NOT gated by introP anymore —
+      // otherwise the whole field would also cross-fade as a block and wash out
+      // the "stars appearing one by one" look. The aura/bloom still ride introP.
+      // Star twinkle — two out-of-phase shimmer waves so the field sparkles
+      // unevenly, like real starlight rather than one global pulse.
       if (crisp) {
-        // Crisp light mode: solid motes + a faint additive glare that gently
-        // shimmers. Fade in during the intro.
         const tw = 0.9 + Math.sin(t * 1.4) * 0.1;
-        pointsMat.opacity = tw * introP;
-        glowMat.opacity = 0.1 * (0.7 + Math.sin(t * 1.1) * 0.3) * introP;
+        pointsMat.opacity = tw;
+        // Crisp light halo is a fixed light-lavender tint (no vertex colors),
+        // so it can't ride the per-mote color fade — gate its opacity with
+        // introP instead so the soft purple bloom fades in with the stars.
+        glowMat.opacity = 0.3 * (0.85 + Math.sin(t * 1.1) * 0.15) * introP;
       } else {
-        aura.material.opacity = (0.65 + Math.sin(t * 1.6) * 0.18) * introP;
-        // Astral twinkle: two out-of-phase shimmer waves so the corona
-        // sparkles unevenly, like real starlight rather than one global pulse.
         const twinkle =
           0.84 + Math.sin(t * 1.6) * 0.1 + Math.sin(t * 0.7) * 0.06;
-        pointsMat.opacity = 0.9 * twinkle * introP;
-        glowMat.opacity = 0.12 * (twinkle + 0.1) * introP;
+        pointsMat.opacity = 0.9 * twinkle;
+        // Enhanced glow — a stronger additive bloom so each star carries more
+        // glare (was 0.12).
+        glowMat.opacity = 0.2 * (twinkle + 0.1);
       }
 
-      // Nebula clouds drift slowly on their own orbits + breathe in opacity,
-      // giving the backdrop a living, celestial depth.
-      nebulaCloudSprites.forEach((s, i) => {
-        const a = s.userData.baseAng + t * (0.03 + i * 0.01);
-        const rad = s.userData.rad;
-        s.position.x = Math.cos(a) * rad + mouse.x * 0.15;
-        s.position.y = Math.sin(a) * rad * 0.7 - mouse.y * 0.1 + 0.2;
-        s.material.opacity =
-          (palette.additive ? 0.22 : 0.05) *
-          (0.7 + Math.sin(t * 0.6 + i * 1.3) * 0.3);
-      });
-
-      // Starfield parallax — drifts opposite the pointer for depth.
+      // Deep starfield parallax — drifts opposite the pointer for depth.
       stars.rotation.z = t * 0.02;
       stars.position.x = -mouse.x * 0.6;
       stars.position.y = mouse.y * 0.4;
@@ -791,6 +1125,10 @@ export const SpaceBackground = () => {
       // Static, composed single frame. No RAF loop, so re-apply size + repaint
       // directly when the container resizes.
       constellation.rotation.set(0, 0, 0);
+      // No animate loop to fade them in, so show the canvas + overlays fully.
+      renderer.domElement.style.opacity = '1';
+      if (blurRef.current) blurRef.current.style.opacity = '1';
+      if (vignetteRef.current) vignetteRef.current.style.opacity = '1';
       render();
       const staticResize = () => {
         onResize();
@@ -819,14 +1157,19 @@ export const SpaceBackground = () => {
       starGeo.dispose();
       starMat.dispose();
       if (points && points.userData.geo) points.userData.geo.dispose();
+      if (points && points.userData.glowGeo) points.userData.glowGeo.dispose();
+      if (points && points.userData.pointerGeo)
+        points.userData.pointerGeo.dispose();
       if (farLayer && farLayer.userData.geo) farLayer.userData.geo.dispose();
+      if (farLayer && farLayer.userData.glowGeo)
+        farLayer.userData.glowGeo.dispose();
+      if (farLayer && farLayer.userData.pointerGeo)
+        farLayer.userData.pointerGeo.dispose();
       pointsMat.dispose();
       glowMat.dispose();
-      auraMat.dispose();
-      discMat.dispose();
-      discTex.dispose();
-      nebulaCloudMats.forEach((m) => m.dispose());
+      pointerGlowMat.dispose();
       glowTex.dispose();
+      starTex.dispose();
       if (dotTex) dotTex.dispose();
       renderer.dispose();
       if (container.contains(renderer.domElement)) {
@@ -850,10 +1193,29 @@ export const SpaceBackground = () => {
         pointerEvents: 'none',
         zIndex: 0,
       }}>
+      {/* Blur layer — sits above the star canvas and softens it into a
+          dreamy, out-of-focus glow. backdrop-filter blurs everything painted
+          behind it (the stars); it's fully transparent otherwise so it adds no
+          tint of its own. Below the vignette and the greeting content. */}
+      <div
+        ref={blurRef}
+        className="mcpHome__spaceBlur"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 1,
+          pointerEvents: 'none',
+          WebkitBackdropFilter: 'blur(0.8px)',
+          backdropFilter: 'blur(0.8px)',
+          // Fade in with the stars (driven from the animate loop). No scale.
+          opacity: 0,
+          willChange: 'opacity',
+        }}
+      />
       {/* Vignette in the background color — fades the particles out toward the
-          container edges so the corona dissolves softly instead of hard-
+          container edges so the field dissolves softly instead of hard-
           clipping. The gradient (theme bg at the rim → transparent centre) is
-          set in the effect where the palette is known. Sits above the canvas,
+          set in the effect where the palette is known. Sits above the blur,
           below the greeting content. */}
       <div
         ref={vignetteRef}
@@ -861,8 +1223,11 @@ export const SpaceBackground = () => {
         style={{
           position: 'absolute',
           inset: 0,
-          zIndex: 1,
+          zIndex: 2,
           pointerEvents: 'none',
+          // Fade in with the stars (driven from the animate loop). No scale.
+          opacity: 0,
+          willChange: 'opacity',
         }}
       />
     </div>
