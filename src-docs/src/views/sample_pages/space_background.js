@@ -449,6 +449,15 @@ let hasIntroPlayed = false;
 // straight to the dissolved end state (logo gone, calm starfield only).
 let hasDissolved = false;
 
+// Reset the once-per-load intro gates so the NEXT mount of SpaceBackground
+// replays the full build → dissolve choreography from scratch. Used by the
+// greeting's "replay intro" control (it also remounts this component via a
+// React key, which is what actually restarts the animation).
+export const resetSpaceBackgroundIntro = () => {
+  hasIntroPlayed = false;
+  hasDissolved = false;
+};
+
 export const SpaceBackground = () => {
   const containerRef = useRef(null);
   const vignetteRef = useRef(null);

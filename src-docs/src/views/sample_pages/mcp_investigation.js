@@ -35,7 +35,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { OuiButtonIcon, OuiIcon, OuiToolTip } from '../../../../src/components';
 import { Mascot } from '../../../../olly-mascot/Mascot';
 import { ThemeContext } from '../../components/with_theme';
-import { SpaceBackground } from './space_background';
+import { SpaceBackground, resetSpaceBackgroundIntro } from './space_background';
 import { JUMP_TO_MORE_LABEL } from './jump_to_constants';
 
 // ---------------------------------------------------------------------------
@@ -839,9 +839,36 @@ export const McpHomeGreeting = ({
   // stagger/rise. Always start hidden and let the effect drive the reveal.
   const [contentRevealed, setContentRevealed] = useState(false);
   // True when the entrance already played this page load — i.e. this mount is a
-  // RETURN. Captured at mount so it doesn't change under us. Drives the
-  // --instant modifier: a simple fade instead of the staggered cascade.
-  const [isReturn] = useState(() => mcpContentIntroPlayed);
+  // RETURN. Drives the --instant modifier: a simple fade instead of the
+  // staggered cascade. Initialized from the module flag at mount; the replay
+  // button forces it back to false so the full intro cascade plays again.
+  const [isReturn, setIsReturn] = useState(() => mcpContentIntroPlayed);
+  // Bumped by the replay button to remount SpaceBackground (restarting the
+  // constellation animation) and re-run the reveal effect below.
+  const [replayKey, setReplayKey] = useState(0);
+
+  // Whole-screen fade during a replay: drop the entire home (content +
+  // constellation) to transparent, then once it's faded out, reset the intro
+  // and let it play back in. No per-element UI motion — just a clean fade out
+  // and fade back in.
+  const [screenFadingOut, setScreenFadingOut] = useState(false);
+
+  // Replay the full intro: fade the whole screen out first, then reset the
+  // once-per-load gates for the constellation and content, remount
+  // SpaceBackground (via replayKey) and re-run the reveal effect — so the
+  // build → dissolve → reveal plays again as the screen fades back in.
+  const replayIntro = () => {
+    setScreenFadingOut(true);
+    setTimeout(() => {
+      resetSpaceBackgroundIntro();
+      mcpContentIntroPlayed = false;
+      setContentRevealed(false);
+      setIsReturn(false);
+      setReplayKey((k) => k + 1);
+      setScreenFadingOut(false);
+    }, 450); // matches the .mcpHome--fadingOut transition
+  };
+
   useEffect(() => {
     const reduce =
       typeof window.matchMedia === 'function' &&
@@ -891,7 +918,9 @@ export const McpHomeGreeting = ({
       setContentRevealed(true);
     }, REVEAL_MS);
     return () => clearTimeout(timer);
-  }, []);
+    // Re-runs on replay (replayKey bump) to play the full intro again.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [replayKey]);
 
   // Focus the ask field once the content has revealed, so the field is ready
   // for typing (and its animated focus border lights up) as the greeting lands.
@@ -927,9 +956,14 @@ export const McpHomeGreeting = ({
   };
 
   return (
-    <div className="mcpHome">
-      <SpaceBackground />
+    <div className={`mcpHome${screenFadingOut ? ' mcpHome--fadingOut' : ''}`}>
+      {/* Both keyed with replayKey so the replay button HARD-REMOUNTS them —
+          the constellation restarts its intro, and the content re-mounts fresh
+          in the hidden state instead of slowly fading its old (revealed) self
+          out, which caused the UI to flash during the screen fade. */}
+      <SpaceBackground key={`bg-${replayKey}`} />
       <div
+        key={`inner-${replayKey}`}
         className={`mcpHome__inner${
           contentRevealed ? ' mcpHome__inner--revealed' : ''
         }${isReturn ? ' mcpHome__inner--instant' : ''}`}>
@@ -1034,6 +1068,15 @@ export const McpHomeGreeting = ({
           </button>
         </div>
       </div>
+
+      {/* Small control, bottom-right: replays the constellation intro. */}
+      <button
+        type="button"
+        className="mcpHome__replay"
+        aria-label="Replay intro animation"
+        onClick={replayIntro}>
+        <OuiIcon type="refresh" size="m" />
+      </button>
     </div>
   );
 };
