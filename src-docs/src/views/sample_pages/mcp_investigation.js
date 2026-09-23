@@ -832,11 +832,16 @@ export const McpHomeGreeting = ({
   const textareaRef = React.useRef(null);
 
   // Reveal the content after the ring forms. The FIRST time (per page load) we
-  // wait for the full constellation build; on RETURN to the new-session screen
-  // (a remount after leaving) we replay a quick fade-in instead of snapping in,
-  // so the greeting glides back rather than popping. Always start hidden and
-  // let the effect drive the reveal so the CSS --revealed transition runs.
+  // wait for the full constellation build+dissolve, then cascade the greeting
+  // in (staggered rise/blur). On RETURN to the new-session screen (a remount
+  // after visiting a session) we DON'T replay that entrance choreography — the
+  // content just plainly fades in together with the background, no per-element
+  // stagger/rise. Always start hidden and let the effect drive the reveal.
   const [contentRevealed, setContentRevealed] = useState(false);
+  // True when the entrance already played this page load — i.e. this mount is a
+  // RETURN. Captured at mount so it doesn't change under us. Drives the
+  // --instant modifier: a simple fade instead of the staggered cascade.
+  const [isReturn] = useState(() => mcpContentIntroPlayed);
   useEffect(() => {
     const reduce =
       typeof window.matchMedia === 'function' &&
@@ -927,7 +932,7 @@ export const McpHomeGreeting = ({
       <div
         className={`mcpHome__inner${
           contentRevealed ? ' mcpHome__inner--revealed' : ''
-        }`}>
+        }${isReturn ? ' mcpHome__inner--instant' : ''}`}>
         {/* Olly — the same mascot row
             Overview home opens with. */}
         <div className="v6Scenario__mascotRow mcpHome__mascotRow">

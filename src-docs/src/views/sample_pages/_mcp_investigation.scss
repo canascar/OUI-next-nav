@@ -110,6 +110,45 @@
     }
   }
 
+  // ── Return (remount) reveal ──────────────────────────────────────────────
+  // On RETURN to the new-session screen (after visiting a session), we do NOT
+  // replay the entrance choreography. The children skip the rise + blur +
+  // stagger and simply FADE in together, in sync with the background's return
+  // fade — a calm reappearance, not a re-performed intro. --instant is applied
+  // whether or not --revealed is present, so the elements sit un-transformed
+  // (no downward offset / blur) from the first frame and only opacity animates.
+  &--instant {
+    // Zoom the whole content group in a touch as it fades — the block starts
+    // slightly small and settles to full size, so the return reads as a gentle
+    // push-in rather than a flat fade. Applied on the wrapper so all children
+    // scale together as one unit (no per-element stagger).
+    transform-origin: 50% 45%;
+    transform: scale(0.96);
+    opacity: 0;
+    transition: opacity 900ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity, transform;
+
+    > .mcpHome__mascotRow,
+    > .mcpHome__title,
+    > .mcpHome__inputArea,
+    > .mcpHome__suggestions {
+      // Children carry no entrance of their own on return — the wrapper owns
+      // the fade + zoom. Keep them un-transformed/sharp and fully opaque so
+      // only the wrapper animates.
+      transform: none;
+      filter: none;
+      opacity: 1;
+      transition: none;
+      transition-delay: 0ms;
+    }
+
+    &.mcpHome__inner--revealed {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     > .mcpHome__mascotRow,
     > .mcpHome__title,
@@ -198,6 +237,18 @@
   // particles glow faintly through. On focus, an animated conic-gradient border
   // picks up the purples/glare from the particle field and spins.
   .emptySessionPage__inputField {
+    background-color: transparent;
+    // The shared ::after paints the visible OPAQUE inner fill (it cuts out the
+    // border ring). Drop it to ~80% so the field reads translucent and the
+    // corona glows faintly through.
+    &::after {
+      background: lightOrDarkTheme(
+        rgba(255, 255, 255, 0.8),
+        rgba(21, 27, 38, 0.8)
+      );
+      transition: background 220ms ease;
+    }
+
     // Animated purple/glare border on focus. The ::before ring already exists
     // (a slow ambient conic-gradient); on focus we swap it to a brighter
     // iris/violet glare and spin it faster, plus add an outer glow.
