@@ -844,20 +844,25 @@ export const McpHomeGreeting = ({
       setContentRevealed(true);
       return undefined;
     }
-    // Let the corona FULLY finish spinning in first. The SpaceBackground intro
-    // runs ~2s, but its easeOut tail keeps the ring visibly settling right up
-    // to the end — if the content starts at 2s its fade-up plays over that
-    // still-moving swirl and reads as part of it. So hold until the intro has
-    // come to rest (2s) plus a short buffer, THEN cascade the content in. The
+    // Hold the UI until the CONSTELLATION HAS FULLY FORMED. The SpaceBackground
+    // plays a multi-phase intro: the stars fade in scattered (~3.4s), hold
+    // briefly (~0.5s), then fly into the OpenSearch logo formation (~3.2s).
+    // Only once the logo has settled do we cascade the greeting/input/buttons
+    // in on top — so the brand mark builds first, THEN the UI arrives. The
     // per-child stagger + rise lives in CSS (.mcpHome__inner--revealed).
-    const INTRO_MS = 2000;
-    // Negative: start the content just BEFORE the swirl fully settles, so the
-    // title/form begin rising as the particles ease into their last moments.
-    const SETTLE_BUFFER_MS = -250;
+    // Keep these in sync with STAR_FADE_MS / MORPH_HOLD_MS / MORPH_MS in
+    // space_background.js.
+    const STAR_FADE_MS = 3400;
+    const MORPH_HOLD_MS = 500;
+    const MORPH_MS = 3200;
+    const FORM_COMPLETE_MS = STAR_FADE_MS + MORPH_HOLD_MS + MORPH_MS;
+    // Start the content just BEFORE the very last motes settle, so the title/
+    // form begin rising as the logo lands its final shape.
+    const SETTLE_BUFFER_MS = -350;
     const timer = setTimeout(() => {
       mcpContentIntroPlayed = true;
       setContentRevealed(true);
-    }, INTRO_MS + SETTLE_BUFFER_MS);
+    }, FORM_COMPLETE_MS + SETTLE_BUFFER_MS);
     return () => clearTimeout(timer);
   }, []);
 

@@ -68,27 +68,44 @@ const PALETTES = {
   light: {
     core: new THREE.Color('#6E56CF'), // iris (oui-next light primary)
     accent: new THREE.Color('#5f47c4'), // solid iris motes
-    spark: new THREE.Color('#8168d4'), // violet far stars
+    spark: new THREE.Color('#7358c8'), // violet far stars (a touch deeper)
     fog: new THREE.Color('#d8d0ee'), // light haze so distant motes fade softly
-    bg: '#ece8f7', // light lavender backdrop — clearly a light theme
-    // Radial gradient: a soft lifted centre deepening a little toward the edges.
-    bgGradient:
-      'radial-gradient(120% 90% at 50% 42%, #f3f0fa 0%, #e8e3f4 48%, #d7cfec 100%)',
+    bg: '#e6e0f5', // light lavender backdrop — clearly a light theme
+    // Reversed radial backdrop, built at runtime (buildLightBackdrop) so its
+    // OUTER stop is the ACTUAL resolved page bg — no seam at the container
+    // edge. These are just the inner→outer core colours; the final stop is
+    // swapped for the real page rgb in the effect.
+    // A deeper lavender pool CENTRED behind the logo (tighter now) fading to the
+    // page bg, so the darker core gives the motes contrast without flooding the
+    // whole frame.
+    bgInner: '#c3b3e9', // darkest — centre pool, behind the logo
+    bgMid: '#d3c7ef', // mid lavender
+    // Soft central aura bloom behind the logo — a gentle iris lift so the
+    // constellation feels lit from within. Kept restrained so it doesn't cancel
+    // the darker gradient centre (it sits on top of it).
+    aura:
+      'radial-gradient(40% 36% at 50% 46%, rgba(124,92,255,0.10) 0%, rgba(124,92,255,0.05) 44%, rgba(124,92,255,0) 76%)',
     disc: '#f3f0fa', // calm centre — matches the lighter gradient core
     discOpacity: 0.82,
     additive: false, // crisp alpha motes, no additive bloom
     crisp: true, // skip glow halo + central aura bloom on light
-    // On-brand iris/violet spread, saturated for the light stage. Indigo
-    // through iris to lilac with a blue-iris spark — no pinks/cyans.
+    // On-brand iris/violet spread, tuned to read as luminous stars against the
+    // DARKER centre pool — a bit brighter/cleaner than fully-deepened so the
+    // dense logo regions sparkle instead of muddying. Iris through violet to a
+    // bright lilac, with a blue-iris spark — no pinks/cyans.
+    // Lifted lighter/brighter so the light-mode stars read as LUMINOUS points
+    // within the glow rather than dark specks — the palette is weighted toward
+    // brighter lilacs with a near-white sparkle, so the constellation glares
+    // with light instead of muddying into a dim purple haze.
     nebula: [
-      new THREE.Color('#4338ca'), // deep indigo
-      new THREE.Color('#5f47c4'), // iris
-      new THREE.Color('#6E56CF'), // iris (oui-next light primary)
-      new THREE.Color('#7a5ad0'), // violet
-      new THREE.Color('#9b83e0'), // lilac
-      new THREE.Color('#4f6fd6'), // blue-iris spark
+      new THREE.Color('#7a63d8'), // iris (lifted)
+      new THREE.Color('#8b73e0'), // violet
+      new THREE.Color('#9f87ea'), // light violet
+      new THREE.Color('#b6a4f2'), // bright lilac
+      new THREE.Color('#d8cbfa'), // pale lilac (bright sparkle)
+      new THREE.Color('#8aa0f0'), // blue-iris spark (lifted)
     ],
-    nebulaWeights: [0.2, 0.24, 0.24, 0.16, 0.1, 0.06],
+    nebulaWeights: [0.16, 0.22, 0.24, 0.18, 0.14, 0.06],
     nebulaClouds: ['#5f47c4', '#7a5ad0', '#9b83e0', '#4f6fd6'],
   },
 };
@@ -174,9 +191,12 @@ function sampleSurfacePoints(mesh, count) {
  * roughly fit that), and `zSpread` is how much depth jitter to keep for
  * twinkle/parallax.
  */
-function shapeLogoConstellation(raw, targetHalf, zSpread) {
+function shapeLogoConstellation(raw, targetHalf, zSpread, orient) {
   const n = raw.length / 3;
   if (n === 0) return raw;
+  const rotDeg = (orient && orient.rotDeg) || 0;
+  const flipX = !!(orient && orient.flipX);
+  const flipY = !!(orient && orient.flipY);
 
   // Centroid.
   let cx = 0;
@@ -269,12 +289,25 @@ function shapeLogoConstellation(raw, targetHalf, zSpread) {
     if (ext > maxExtent) maxExtent = ext;
   }
 
-  // Scale to fit and add a shallow depth jitter so the flat silhouette still
-  // twinkles/parallaxes a little without losing its shape.
+  // Scale to fit, apply the in-plane orientation correction (mirror + rotate)
+  // so the brand mark lands in its canonical upright position — PCA finds the
+  // logo's flat plane but its in-plane rotation/handedness are arbitrary, so we
+  // fix them explicitly here — and add a shallow depth jitter so the flat
+  // silhouette still twinkles/parallaxes a little without losing its shape.
   const scale = targetHalf / maxExtent;
+  const rot = (rotDeg * Math.PI) / 180;
+  const cosR = Math.cos(rot);
+  const sinR = Math.sin(rot);
   for (let i = 0; i < n; i++) {
-    out[i * 3] *= scale;
-    out[i * 3 + 1] *= scale;
+    let x = out[i * 3] * scale * (flipX ? -1 : 1);
+    let y = out[i * 3 + 1] * scale * (flipY ? -1 : 1);
+    // Rotate in the XY (screen) plane.
+    const rx = x * cosR - y * sinR;
+    const ry = x * sinR + y * cosR;
+    x = rx;
+    y = ry;
+    out[i * 3] = x;
+    out[i * 3 + 1] = y;
     out[i * 3 + 2] = (Math.random() * 2 - 1) * zSpread;
   }
   return out;
@@ -448,15 +481,39 @@ export const SpaceBackground = () => {
       )}`;
     })();
 
-    // Backdrop behind the transparent canvas = the real page background, so the
-    // faded edges match it exactly.
+    // Backdrop behind the transparent canvas. Light mode paints a REVERSED
+    // radial gradient — a deeper lavender pool centred behind the logo fading
+    // out to the ACTUAL resolved page bg at the rim — so the pale-bg motes have
+    // contrast to pop against AND the container dissolves into the page with no
+    // seam. Dark mode keeps the flat page bg (its additive glow carries depth).
     container.style.backgroundColor = pageBgStr;
+    if (palette.crisp && palette.bgInner) {
+      // Build the gradient so its OUTER stop is exactly the page bg (pageRgb) —
+      // this is what removes the visible container edge. The dark pool is kept
+      // fairly tight (fully faded to page bg by ~85%) so it sits behind the
+      // logo rather than flooding the whole panel.
+      const backdrop =
+        `radial-gradient(105% 88% at 50% 44%, ${palette.bgInner} 0%, ` +
+        `${palette.bgMid} 34%, rgba(${pageRgb}, 1) 78%, rgba(${pageRgb}, 1) 100%)`;
+      // aura (soft central iris bloom) painted ABOVE the backdrop.
+      container.style.backgroundImage = palette.aura
+        ? `${palette.aura}, ${backdrop}`
+        : backdrop;
+    } else {
+      container.style.backgroundImage = 'none';
+    }
 
     // Vignette overlay — transparent through the middle (particles fully
-    // visible around the eclipse) ramping to the solid PAGE background at the
-    // edges, so the corona dissolves into the page instead of hard-clipping.
+    // visible around the eclipse) ramping to the solid backdrop at the edges,
+    // so the corona dissolves into the page instead of hard-clipping. In light
+    // mode fade to the gradient's RIM colour (not the flat page bg) so the
+    // dissolve matches the new gradient edge; dark mode fades to the page bg.
+    // Fade the vignette to the ACTUAL resolved page bg in both themes — the
+    // light backdrop gradient already ends at pageRgb, so matching here keeps
+    // the whole dissolve seamless right out to the container edge.
+    const vignetteRgb = pageRgb;
     if (vignetteRef.current) {
-      vignetteRef.current.style.background = `radial-gradient(72% 72% at 50% 48%, rgba(${pageRgb}, 0) 26%, rgba(${pageRgb}, 0.55) 56%, rgba(${pageRgb}, 0.9) 80%, rgba(${pageRgb}, 1) 100%)`;
+      vignetteRef.current.style.background = `radial-gradient(72% 72% at 50% 48%, rgba(${vignetteRgb}, 0) 26%, rgba(${vignetteRgb}, 0.55) 56%, rgba(${vignetteRgb}, 0.9) 80%, rgba(${vignetteRgb}, 1) 100%)`;
     }
     // Additive glow on dark; normal alpha blend on light so dark motes darken
     // the pale canvas instead of washing out.
@@ -574,6 +631,11 @@ export const SpaceBackground = () => {
     const LOGO_COUNT = 5200;
     const LOGO_HALF = 4.6;
     const LOGO_Z = 0.35;
+    // In-plane orientation correction applied after PCA flattening, tuned so
+    // the mark lands in its canonical upright position (two paisley teardrops +
+    // the right-side arc). rotDeg rotates in the screen plane; flipX/flipY
+    // mirror to fix PCA's arbitrary handedness.
+    const LOGO_ORIENT = { rotDeg: -135, flipX: false, flipY: false };
 
     // Weighted pick from the palette's nebula hues so most motes sit in the
     // iris/violet band with rarer orchid/rose/cyan sparks — an astral gradient.
@@ -655,6 +717,18 @@ export const SpaceBackground = () => {
         'aPointerColor',
         new THREE.BufferAttribute(pointerColors, 3)
       );
+      // Morph bookkeeping: remember the initial (scattered) positions as the
+      // FROM state, and give each mote a small random morph delay so they fly
+      // into the logo formation in a staggered, organic wave rather than all at
+      // once. `logoPos` (the TO state) is filled once the GLB loads.
+      geo.userData.scatterPos = Float32Array.from(positions);
+      geo.userData.logoPos = null;
+      // Gentle per-mote stagger — kept small so the motes travel largely
+      // together (no stragglers lagging behind), for a cohesive, smooth glide
+      // into formation.
+      const morphDelay = new Float32Array(n);
+      for (let i = 0; i < n; i++) morphDelay[i] = Math.random() * 0.2;
+      geo.userData.morphDelay = morphDelay;
       // Stash the fade bookkeeping on the geometry so the animate loop can
       // drive the per-mote reveal (both core `color` and glow `aGlowColor`).
       geo.userData.baseColors = baseColors;
@@ -662,6 +736,19 @@ export const SpaceBackground = () => {
       geo.userData.fadeDelay = fadeDelay;
       geo.userData.fadeSpan = fadeSpan;
       geo.userData.faded = false; // set true once fully revealed (stop writing)
+      // Per-mote shimmer phase + rate for the idle twinkle. Each mote gets a
+      // random phase (so they twinkle out of sync) and a slightly randomized
+      // rate, driving a gentle brightness oscillation in writeShimmer once the
+      // scene is idle (no fade, no pointer glow). This is what keeps the
+      // constellation alive with a subtle shimmer in both themes.
+      const shimmerPhase = new Float32Array(n);
+      const shimmerRate = new Float32Array(n);
+      for (let i = 0; i < n; i++) {
+        shimmerPhase[i] = Math.random() * Math.PI * 2;
+        shimmerRate[i] = 0.7 + Math.random() * 0.9;
+      }
+      geo.userData.shimmerPhase = shimmerPhase;
+      geo.userData.shimmerRate = shimmerRate;
       return geo;
     };
 
@@ -689,19 +776,47 @@ export const SpaceBackground = () => {
     // tint so the halo reads as a soft DARK aura around each star — that darker
     // pool makes the light-mode stars stand out against the lavender bg.
     const glowMat = new THREE.PointsMaterial({
-      vertexColors: !crisp, // dark: per-mote hues; light: one dark tint below
-      // A soft LIGHT-PURPLE halo in light mode — a gentle lavender bloom that
-      // haloes each star without the smoky dark pool. Kept close to the core.
-      color: crisp ? new THREE.Color('#b9a8f5') : 0xffffff, // light lavender
+      vertexColors: !crisp, // dark: per-mote hues; light: one iris tint below
+      // Light mode: a richer IRIS halo (not the pale lavender it was) so each
+      // mote carries a visible soft aura against the brighter gradient centre —
+      // gives the light constellation real bloom instead of near-invisible
+      // haze. NormalBlended, so it deposits a soft violet ring around the core.
+      color: crisp ? new THREE.Color('#8a72e6') : 0xffffff,
       // Bigger halo so each star carries a fuller bloom/glow.
-      size: crisp ? 0.34 : 0.4,
+      size: crisp ? 0.44 : 0.4,
       map: glowTex,
       transparent: true,
-      opacity: crisp ? 0.22 : 0.12,
+      opacity: crisp ? 0.34 : 0.12,
       depthWrite: false,
       blending: crisp ? THREE.NormalBlending : THREE.AdditiveBlending,
       sizeAttenuation: true,
     });
+
+    // Light-mode ADDITIVE bloom halo — the same idea as dark mode's glow, now
+    // possible because the backdrop has a DARKER centre pool (additive only
+    // lightens, so it needs something darker than white to bloom into). Reads
+    // the per-mote `aGlowColor` (nebula hue × random beacon strength) and adds a
+    // soft luminous glare, strongest over the dark centre and naturally fading
+    // toward the pale rim (less headroom to lighten). Only added in crisp mode.
+    const lightBloomMat = crisp
+      ? new THREE.PointsMaterial({
+          vertexColors: true,
+          // Additive bloom drawn ON TOP of the crisp cores so the glare crowns
+          // the stars (like dark mode). On the pale bg additive saturates to
+          // white fast, so keep the REST strength low — a gentle white-iris
+          // glare over the dense logo regions in the default (un-hovered) state
+          // that doesn't wash out the star detail. The hover spike (aGlowColor
+          // amplified in writeLayerColors) drives the stronger glare near the
+          // cursor and is independent of this base opacity.
+          size: 0.42,
+          map: glowTex,
+          transparent: true,
+          opacity: 0.18,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+          sizeAttenuation: true,
+        })
+      : null;
 
     // Pointer-glow halo material — a dedicated ADDITIVE bloom layer that is
     // normally fully dark (its per-mote color sits at black) and only lights up
@@ -762,9 +877,24 @@ export const SpaceBackground = () => {
       group.add(new THREE.Points(pointerGeo, pointerGlowMat));
       // Randomized-strength glow halo behind the core.
       group.add(new THREE.Points(glowGeo, glowMat));
+      // Crisp star cores.
       group.add(new THREE.Points(geo, pointsMat));
+      // Light mode: the ADDITIVE per-mote bloom (reads aGlowColor) is drawn
+      // LAST, ON TOP of the crisp cores — so the luminous glare crowns the
+      // stars where they cluster densely, matching dark mode (whose additive
+      // bloom visually sits above the sparkles). Additive over the cores lifts
+      // the dense regions into a bright white-iris glare rather than the flat
+      // wash it made when drawn behind.
+      let lightBloomGeo = null;
+      if (lightBloomMat) {
+        lightBloomGeo = new THREE.BufferGeometry();
+        lightBloomGeo.setAttribute('position', geo.getAttribute('position'));
+        lightBloomGeo.setAttribute('color', geo.getAttribute('aGlowColor'));
+        group.add(new THREE.Points(lightBloomGeo, lightBloomMat));
+      }
       group.userData.geo = geo;
       group.userData.glowGeo = glowGeo;
+      group.userData.lightBloomGeo = lightBloomGeo;
       group.userData.pointerGeo = pointerGeo;
       return group;
     };
@@ -826,8 +956,12 @@ export const SpaceBackground = () => {
       geo.userData.faded = true;
     };
 
-    // Initial starfield
-    let points = buildConstellationLayer(buildStarfieldPositions(CLOUD_COUNT));
+    // Initial starfield — the NEAR layer starts as an even scattered field with
+    // the SAME mote count as the logo, so once the GLB loads we can morph each
+    // mote from its scattered spot straight into the logo silhouette (no swap,
+    // no count change). The stars fade in scattered first; then they fly into
+    // formation.
+    let points = buildConstellationLayer(buildStarfieldPositions(LOGO_COUNT));
     constellation.add(points);
 
     // ── Far corona layer (depth) ─────────────────────────────────
@@ -856,6 +990,20 @@ export const SpaceBackground = () => {
         : MODEL_PATH.default || MODEL_PATH;
     let disposed = false;
 
+    // ── Morph state (scatter → logo) ─────────────────────────────
+    // `logoReady` flips true when the GLB has been sampled into logoPos.
+    // The morph starts once the stars have finished fading in AND the logo is
+    // ready; `morphStart` timestamps that moment, `morphDone` stops the work.
+    let logoReady = false;
+    let morphStart = 0;
+    let morphDone = false;
+    // Duration of the fly-into-formation animation. Longer = smoother, more
+    // graceful glide into the logo.
+    const MORPH_MS = 3200;
+    // Small settle beat after the fade completes before the morph kicks off, so
+    // the eye registers the scattered field first.
+    const MORPH_HOLD_MS = 500;
+
     loader.load(
       modelPath,
       (gltf) => {
@@ -870,48 +1018,50 @@ export const SpaceBackground = () => {
 
         // Sample each mesh surface and KEEP the points — the motes are arranged
         // into the OpenSearch logo SILHOUETTE (a brand constellation), not an
-        // even field. Points are gathered in world space, then oriented +
-        // scaled to face the camera by shapeLogoConstellation below.
-        const PER = Math.floor(LOGO_COUNT / meshes.length);
+        // even field. We sample EXACTLY LOGO_COUNT points total (matching the
+        // scattered field's mote count) so every mote has a 1:1 from→to target
+        // and can morph in place with no swap.
+        const geo = points.userData.geo;
+        const targetCount = geo.userData.scatterPos.length / 3;
+        const PER = Math.floor(targetCount / meshes.length);
         const chunks = [];
         let total = 0;
-        meshes.forEach((mesh) => {
+        meshes.forEach((mesh, mi) => {
           const world = mesh.clone();
           world.geometry = mesh.geometry.clone();
           world.geometry.applyMatrix4(mesh.matrixWorld);
-          const pts = sampleSurfacePoints(world, PER);
+          // Last mesh takes the remainder so the total is exactly targetCount.
+          const want =
+            mi === meshes.length - 1 ? targetCount - PER * mi : PER;
+          const pts = sampleSurfacePoints(world, want);
           chunks.push(pts);
           total += pts.length;
           world.geometry.dispose();
         });
-        // Concatenate all mesh samples into one cloud.
+        // Concatenate all mesh samples into one cloud (== targetCount points).
         const cloud = new Float32Array(total);
         let off = 0;
         chunks.forEach((c) => {
           cloud.set(c, off);
           off += c.length;
         });
-        // Orient/center/scale the cloud into the front-facing logo silhouette.
-        const field = shapeLogoConstellation(cloud, LOGO_HALF, LOGO_Z);
+        // Orient/center/scale the cloud into the front-facing logo silhouette,
+        // corrected to the canonical upright brand position (see LOGO_ORIENT).
+        const logoPos = shapeLogoConstellation(
+          cloud,
+          LOGO_HALF,
+          LOGO_Z,
+          LOGO_ORIENT
+        );
 
-        // Swap the placeholder field for the denser, GLB-seeded starfield.
-        constellation.remove(points);
-        if (points.userData.geo) points.userData.geo.dispose();
-        if (points.userData.glowGeo) points.userData.glowGeo.dispose();
-        if (points.userData.pointerGeo) points.userData.pointerGeo.dispose();
-        points = buildConstellationLayer(field);
-        // Keep the fade coherent across the swap so it never flashes or pops:
-        // - not fading (remount) or fade already done → show fully formed.
-        // - mid-fade → seed the new geo to the CURRENT fade progress so it
-        //   picks up exactly where the placeholder was instead of restarting
-        //   dark (which would flicker). The loop then continues it smoothly.
-        const fadeDoneMs = performance.now() - starFadeStart;
-        if (!playStarFade || fadeDoneMs >= STAR_FADE_MS) {
-          revealInstantly(points.userData.geo);
-        } else {
-          advanceStarFade(points.userData.geo, fadeDoneMs);
+        // Don't swap — stash the logo positions as the morph TARGET. The
+        // animate loop will fly each mote from its scattered spot into the logo
+        // once the fade-in has finished (see the morph block in animate()).
+        // Guard against a count mismatch (shouldn't happen, but be safe).
+        if (logoPos.length === geo.userData.scatterPos.length) {
+          geo.userData.logoPos = logoPos;
+          logoReady = true;
         }
-        constellation.add(points);
       },
       undefined,
       () => {
@@ -958,9 +1108,10 @@ export const SpaceBackground = () => {
     // tight so the glow is a localized pool under the cursor, not the whole
     // field lighting up.
     const GLOW_RADIUS = 2.2;
-    // Boost multiplier at the cursor centre. Kept modest for a subtle glow
-    // (dialed back per "slightly less glow"). Slightly gentler on light.
-    const GLOW_BOOST = crisp ? 1.2 : 1.6;
+    // Boost multiplier at the cursor centre. Light matches dark now so the
+    // hover glare is just as punchy in both themes (the darker light centre
+    // pool finally lets additive bloom read).
+    const GLOW_BOOST = 1.6;
     // Light-mode pool tint — a soft iris that, added over the pale bg near the
     // cursor, lifts into a gentle lavender bloom (not white). Kept mid-toned so
     // a little additive goes a long way without blowing out.
@@ -1026,22 +1177,25 @@ export const SpaceBackground = () => {
           }
         }
         if (crisp) {
-          // LIGHT MODE — leave the crisp motes and their lavender halo at their
-          // resting look (brightening a normal-blended mote just pushes it pale
-          // and washes it out)…
+          // LIGHT MODE — the crisp core stays at its resting look (brightening a
+          // normal-blended mote just washes it pale)…
           arr[i * 3] = base[i * 3] * fade;
           arr[i * 3 + 1] = base[i * 3 + 1] * fade;
           arr[i * 3 + 2] = base[i * 3 + 2] * fade;
+          // …but the ADDITIVE per-mote bloom (aGlowColor → lightBloomMat) now
+          // SPIKES near the cursor just like dark mode's halo, so hovering
+          // drives a strong luminous glare over the darker centre pool. Away
+          // from the cursor it sits at its (lightened) resting strength.
           if (glowArr && glowBase) {
-            glowArr[i * 3] = glowBase[i * 3] * fade;
-            glowArr[i * 3 + 1] = glowBase[i * 3 + 1] * fade;
-            glowArr[i * 3 + 2] = glowBase[i * 3 + 2] * fade;
+            const halo = fade * (1 + boost * 2.2);
+            glowArr[i * 3] = glowBase[i * 3] * halo;
+            glowArr[i * 3 + 1] = glowBase[i * 3 + 1] * halo;
+            glowArr[i * 3 + 2] = glowBase[i * 3 + 2] * halo;
           }
-          // …and carry the glow via the additive pointer pool: a soft iris tint
-          // scaled by the radial boost (0 at rest → full near the cursor), so a
-          // gentle lavender bloom lifts the field only under the cursor.
+          // Plus the dedicated additive pointer pool: an extra iris lift right
+          // under the cursor for a fuller torch (stacks with the halo spike).
           if (pointerArr) {
-            const p = fade * Math.min(1, boost);
+            const p = fade * Math.min(1.5, boost);
             pointerArr[i * 3] = lightPoolColor.r * p;
             pointerArr[i * 3 + 1] = lightPoolColor.g * p;
             pointerArr[i * 3 + 2] = lightPoolColor.b * p;
@@ -1070,6 +1224,42 @@ export const SpaceBackground = () => {
       colorAttr.needsUpdate = true;
       if (glowAttr) glowAttr.needsUpdate = true;
       if (pointerAttr) pointerAttr.needsUpdate = true;
+    };
+
+    // ── Idle shimmer ─────────────────────────────────────────────
+    // A subtle per-mote twinkle for when nothing else is animating the colors
+    // (no fade, no pointer glow). Each mote's core `color` and glow `aGlowColor`
+    // are scaled by 1 + amp·sin(t·rate + phase), with a random phase/rate per
+    // mote so the field shimmers out of sync rather than pulsing as one. Works
+    // in both themes: it just nudges each mote's base brightness up and down a
+    // little. Amplitude is kept small so it reads as a gentle living shimmer,
+    // not a flashing strobe.
+    const SHIMMER_AMP = 0.14;
+    const writeShimmer = (layer, nowSec) => {
+      const geo = layer.userData.geo;
+      if (!geo || !geo.userData.baseColors || !geo.userData.shimmerPhase) return;
+      const base = geo.userData.baseColors;
+      const glowBase = geo.userData.glowBaseColors;
+      const phase = geo.userData.shimmerPhase;
+      const rate = geo.userData.shimmerRate;
+      const colorAttr = geo.getAttribute('color');
+      const glowAttr = geo.getAttribute('aGlowColor');
+      const arr = colorAttr.array;
+      const glowArr = glowAttr ? glowAttr.array : null;
+      const n = phase.length;
+      for (let i = 0; i < n; i++) {
+        const s = 1 + SHIMMER_AMP * Math.sin(nowSec * rate[i] + phase[i]);
+        arr[i * 3] = base[i * 3] * s;
+        arr[i * 3 + 1] = base[i * 3 + 1] * s;
+        arr[i * 3 + 2] = base[i * 3 + 2] * s;
+        if (glowArr && glowBase) {
+          glowArr[i * 3] = glowBase[i * 3] * s;
+          glowArr[i * 3 + 1] = glowBase[i * 3 + 1] * s;
+          glowArr[i * 3 + 2] = glowBase[i * 3 + 2] * s;
+        }
+      }
+      colorAttr.needsUpdate = true;
+      if (glowAttr) glowAttr.needsUpdate = true;
     };
 
     // ── Resize ───────────────────────────────────────────────────
@@ -1119,6 +1309,11 @@ export const SpaceBackground = () => {
     // easeOutQuint for a smoother, longer-settling glide (less abrupt than the
     // cubic wind-down) — suits the calmer wormhole intro.
     const easeOut = (x) => 1 - Math.pow(1 - x, 5);
+    // easeInOutQuint for the scatter→logo morph — a soft, drawn-out accelerate
+    // then a long gentle settle so motes ease out of the field and glide into
+    // place without any abrupt start or hard stop.
+    const easeInOut = (x) =>
+      x < 0.5 ? 16 * x * x * x * x * x : 1 - Math.pow(-2 * x + 2, 5) / 2;
     const render = () => {
       renderer.render(scene, camera);
     };
@@ -1156,6 +1351,53 @@ export const SpaceBackground = () => {
         // gets the fade write.
         writeLayerColors(points, fadeArg, glowStrength, true);
         writeLayerColors(farLayer, fadeArg, glowStrength, false);
+      } else if (!reduceMotion) {
+        // Idle: nothing is fading or glowing, so keep the constellation alive
+        // with a subtle per-mote shimmer (skipped for reduced motion, which
+        // renders a single static frame anyway).
+        const nowSec = performance.now() / 1000;
+        writeShimmer(points, nowSec);
+        writeShimmer(farLayer, nowSec);
+      }
+
+      // ── Fly the scattered stars into the logo formation ─────────
+      // Once the fade-in has finished AND the logo target is ready, morph each
+      // near-layer mote from its scattered position to its logo position over
+      // MORPH_MS, staggered per-mote so they arrive in an organic wave. On
+      // remounts (no fade) we skip straight to the logo so it's already formed.
+      if (!morphDone) {
+        const geo = points.userData.geo;
+        const fadeFinished = !playStarFade || fadeElapsed >= STAR_FADE_MS;
+        if (!playStarFade && logoReady && geo.userData.logoPos) {
+          // Remount / reduced-motion path: snap to the logo, no animation.
+          geo.getAttribute('position').array.set(geo.userData.logoPos);
+          geo.getAttribute('position').needsUpdate = true;
+          morphDone = true;
+        } else if (logoReady && fadeFinished && geo.userData.logoPos) {
+          if (morphStart === 0) morphStart = performance.now() + MORPH_HOLD_MS;
+          const mp = (performance.now() - morphStart) / MORPH_MS;
+          if (mp >= 0) {
+            const from = geo.userData.scatterPos;
+            const to = geo.userData.logoPos;
+            const delay = geo.userData.morphDelay;
+            const posAttr = geo.getAttribute('position');
+            const parr = posAttr.array;
+            const nm = from.length / 3;
+            let allDone = true;
+            for (let i = 0; i < nm; i++) {
+              // Per-mote local progress with its stagger delay, then eased.
+              const local = (mp - delay[i]) / (1 - delay[i]);
+              const e = easeInOut(Math.max(0, Math.min(1, local)));
+              if (e < 1) allDone = false;
+              const ix = i * 3;
+              parr[ix] = from[ix] + (to[ix] - from[ix]) * e;
+              parr[ix + 1] = from[ix + 1] + (to[ix + 1] - from[ix + 1]) * e;
+              parr[ix + 2] = from[ix + 2] + (to[ix + 2] - from[ix + 2]) * e;
+            }
+            posAttr.needsUpdate = true;
+            if (allDone && mp >= 1) morphDone = true;
+          }
+        }
       }
 
       // Smooth the parallax.
@@ -1233,10 +1475,18 @@ export const SpaceBackground = () => {
       if (crisp) {
         const tw = 0.9 + Math.sin(t * 1.4) * 0.1;
         pointsMat.opacity = tw;
-        // Crisp light halo is a fixed light-lavender tint (no vertex colors),
-        // so it can't ride the per-mote color fade — gate its opacity with
-        // introP instead so the soft purple bloom fades in with the stars.
-        glowMat.opacity = 0.3 * (0.85 + Math.sin(t * 1.1) * 0.15) * introP;
+        // Crisp light halo is a fixed iris tint (no vertex colors), so it can't
+        // ride the per-mote color fade — gate its opacity with introP instead
+        // so the soft iris bloom fades in with the stars. Bumped up so the
+        // light constellation carries more visible glow.
+        glowMat.opacity = 0.42 * (0.85 + Math.sin(t * 1.1) * 0.15) * introP;
+        // Additive per-mote bloom (dark-mode-style glow, now visible over the
+        // darker centre pool). Kept light at REST for crisp stars; the strong
+        // glare near the cursor comes from the aGlowColor spike, not this base
+        // opacity. Gentle twinkle only.
+        if (lightBloomMat) {
+          lightBloomMat.opacity = 0.18 * (0.85 + Math.sin(t * 1.25) * 0.15);
+        }
       } else {
         const twinkle =
           0.84 + Math.sin(t * 1.6) * 0.1 + Math.sin(t * 0.7) * 0.06;
@@ -1297,15 +1547,20 @@ export const SpaceBackground = () => {
       starMat.dispose();
       if (points && points.userData.geo) points.userData.geo.dispose();
       if (points && points.userData.glowGeo) points.userData.glowGeo.dispose();
+      if (points && points.userData.lightBloomGeo)
+        points.userData.lightBloomGeo.dispose();
       if (points && points.userData.pointerGeo)
         points.userData.pointerGeo.dispose();
       if (farLayer && farLayer.userData.geo) farLayer.userData.geo.dispose();
       if (farLayer && farLayer.userData.glowGeo)
         farLayer.userData.glowGeo.dispose();
+      if (farLayer && farLayer.userData.lightBloomGeo)
+        farLayer.userData.lightBloomGeo.dispose();
       if (farLayer && farLayer.userData.pointerGeo)
         farLayer.userData.pointerGeo.dispose();
       pointsMat.dispose();
       glowMat.dispose();
+      if (lightBloomMat) lightBloomMat.dispose();
       pointerGlowMat.dispose();
       glowTex.dispose();
       starTex.dispose();
