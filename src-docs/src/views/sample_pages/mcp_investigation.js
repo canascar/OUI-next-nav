@@ -831,11 +831,13 @@ export const McpHomeGreeting = ({
   const [mascotExpression, setMascotExpression] = useState(undefined);
   const textareaRef = React.useRef(null);
 
-  // Reveal the content after the ring forms — but only the first time. On
-  // remounts it's already been shown, so it starts visible with no delay.
-  const [contentRevealed, setContentRevealed] = useState(mcpContentIntroPlayed);
+  // Reveal the content after the ring forms. The FIRST time (per page load) we
+  // wait for the full constellation build; on RETURN to the new-session screen
+  // (a remount after leaving) we replay a quick fade-in instead of snapping in,
+  // so the greeting glides back rather than popping. Always start hidden and
+  // let the effect drive the reveal so the CSS --revealed transition runs.
+  const [contentRevealed, setContentRevealed] = useState(false);
   useEffect(() => {
-    if (mcpContentIntroPlayed) return undefined;
     const reduce =
       typeof window.matchMedia === 'function' &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -844,25 +846,45 @@ export const McpHomeGreeting = ({
       setContentRevealed(true);
       return undefined;
     }
-    // Hold the UI until the CONSTELLATION HAS FULLY FORMED. The SpaceBackground
-    // plays a multi-phase intro: the stars fade in scattered (~3.4s), hold
-    // briefly (~0.5s), then fly into the OpenSearch logo formation (~3.2s).
-    // Only once the logo has settled do we cascade the greeting/input/buttons
-    // in on top — so the brand mark builds first, THEN the UI arrives. The
-    // per-child stagger + rise lives in CSS (.mcpHome__inner--revealed).
-    // Keep these in sync with STAR_FADE_MS / MORPH_HOLD_MS / MORPH_MS in
+    // On return (intro already played this load): a short beat, then reveal —
+    // the SpaceBackground fades its already-formed constellation back in over a
+    // similar window, so content + backdrop return together.
+    if (mcpContentIntroPlayed) {
+      const returnTimer = setTimeout(() => setContentRevealed(true), 120);
+      return () => clearTimeout(returnTimer);
+    }
+    // First load: hold the UI until the constellation has fully BUILT AND
+    // DISSOLVED. The SpaceBackground plays a multi-phase intro: the stars fade
+    // in scattered (~3.4s), hold briefly (~0.5s), fly into the OpenSearch logo
+    // (~3.2s), hold (~0.6s), then the logo disperses and fades out (~2.6s).
+    // Only AFTER the logo has dissolved away do we cascade the greeting/input/
+    // buttons in — so the brand mark builds and clears the stage first, THEN
+    // the UI arrives into the calm field. The per-child stagger + rise lives in
+    // CSS (.mcpHome__inner--revealed). Keep these in sync with STAR_FADE_MS /
+    // MORPH_HOLD_MS / MORPH_MS / DISSOLVE_HOLD_MS / DISSOLVE_MS in
     // space_background.js.
     const STAR_FADE_MS = 3400;
     const MORPH_HOLD_MS = 500;
     const MORPH_MS = 3200;
-    const FORM_COMPLETE_MS = STAR_FADE_MS + MORPH_HOLD_MS + MORPH_MS;
-    // Start the content just BEFORE the very last motes settle, so the title/
-    // form begin rising as the logo lands its final shape.
-    const SETTLE_BUFFER_MS = -350;
+    const DISSOLVE_HOLD_MS = 600;
+    const DISSOLVE_MS = 2600;
+    // Reveal the UI a little way INTO the dissolve, so the logo is clearly
+    // breaking apart before the greeting starts fading up — the two overlap for
+    // a smooth hand-off, but the dissolve leads. Fires at the dissolve kickoff
+    // plus a fraction of the dissolve. Keep in sync with STAR_FADE_MS /
+    // MORPH_HOLD_MS / MORPH_MS / DISSOLVE_HOLD_MS / DISSOLVE_MS in
+    // space_background.js.
+    const DISSOLVE_ENTER_FRAC = 0.4; // start the UI ~40% into the dissolve
+    const REVEAL_MS =
+      STAR_FADE_MS +
+      MORPH_HOLD_MS +
+      MORPH_MS +
+      DISSOLVE_HOLD_MS +
+      DISSOLVE_MS * DISSOLVE_ENTER_FRAC;
     const timer = setTimeout(() => {
       mcpContentIntroPlayed = true;
       setContentRevealed(true);
-    }, FORM_COMPLETE_MS + SETTLE_BUFFER_MS);
+    }, REVEAL_MS);
     return () => clearTimeout(timer);
   }, []);
 

@@ -442,6 +442,12 @@ function makeDotTexture() {
 // The spin-in / form-the-ring intro plays once per page load. Module-level so
 // it survives remounts (tab open, theme toggle, resize) within the same load.
 let hasIntroPlayed = false;
+// Set true only once the logo constellation has FULLY dissolved. Keyed
+// separately from hasIntroPlayed so a remount that happens BEFORE the dissolve
+// completes (e.g. React StrictMode double-mount, a quick re-render) doesn't
+// prematurely hide the still-building/forming logo. Once true, remounts skip
+// straight to the dissolved end state (logo gone, calm starfield only).
+let hasDissolved = false;
 
 export const SpaceBackground = () => {
   const containerRef = useRef(null);
@@ -854,8 +860,18 @@ export const SpaceBackground = () => {
     // whose vertex `color` is the per-mote randomized glow color (`aGlowColor`
     // on the core geo) — so some stars bloom far brighter than others while the
     // core motes stay uniform.
-    const buildConstellationLayer = (positions) => {
+    const buildConstellationLayer = (positions, ownMaterials) => {
       const geo = buildGeoFromPositions(positions);
+
+      // The near (logo) layer needs to fade out INDEPENDENTLY during the
+      // dissolve, but the base materials are shared with the far layer. So the
+      // near layer gets its OWN cloned material instances — same look, but a
+      // separate `.opacity` we can drive to 0 without touching the far field.
+      // The twinkle loop keeps every clone's opacity in sync via layerMats.
+      const pMat = ownMaterials ? pointsMat.clone() : pointsMat;
+      const gMat = ownMaterials ? glowMat.clone() : glowMat;
+      const lbMat = ownMaterials && lightBloomMat ? lightBloomMat.clone() : lightBloomMat;
+      const pgMat = ownMaterials ? pointerGlowMat.clone() : pointerGlowMat;
 
       // Glow geometry: reuse the SAME position buffer (no duplication) but give
       // it a `color` attribute backed by the core geo's glow colors, so the
@@ -874,11 +890,11 @@ export const SpaceBackground = () => {
       const group = new THREE.Group();
       // Pointer-glow pool sits behind everything (drawn first): additive bloom
       // on dark, a soft dark-iris pool on light.
-      group.add(new THREE.Points(pointerGeo, pointerGlowMat));
+      group.add(new THREE.Points(pointerGeo, pgMat));
       // Randomized-strength glow halo behind the core.
-      group.add(new THREE.Points(glowGeo, glowMat));
+      group.add(new THREE.Points(glowGeo, gMat));
       // Crisp star cores.
-      group.add(new THREE.Points(geo, pointsMat));
+      group.add(new THREE.Points(geo, pMat));
       // Light mode: the ADDITIVE per-mote bloom (reads aGlowColor) is drawn
       // LAST, ON TOP of the crisp cores — so the luminous glare crowns the
       // stars where they cluster densely, matching dark mode (whose additive
@@ -886,16 +902,20 @@ export const SpaceBackground = () => {
       // the dense regions into a bright white-iris glare rather than the flat
       // wash it made when drawn behind.
       let lightBloomGeo = null;
-      if (lightBloomMat) {
+      if (lbMat) {
         lightBloomGeo = new THREE.BufferGeometry();
         lightBloomGeo.setAttribute('position', geo.getAttribute('position'));
         lightBloomGeo.setAttribute('color', geo.getAttribute('aGlowColor'));
-        group.add(new THREE.Points(lightBloomGeo, lightBloomMat));
+        group.add(new THREE.Points(lightBloomGeo, lbMat));
       }
       group.userData.geo = geo;
       group.userData.glowGeo = glowGeo;
       group.userData.lightBloomGeo = lightBloomGeo;
       group.userData.pointerGeo = pointerGeo;
+      // The layer's own material set (clones for the near layer, shared refs for
+      // the far layer). The twinkle loop drives their per-frame opacity; the
+      // dissolve scales the near layer's clones to 0.
+      group.userData.mats = { pMat, gMat, lbMat, pgMat, ownMaterials: !!ownMaterials };
       return group;
     };
 
@@ -961,7 +981,9 @@ export const SpaceBackground = () => {
     // mote from its scattered spot straight into the logo silhouette (no swap,
     // no count change). The stars fade in scattered first; then they fly into
     // formation.
-    let points = buildConstellationLayer(buildStarfieldPositions(LOGO_COUNT));
+    // Near (logo) layer gets its OWN material clones so it can fade out
+    // independently during the dissolve without dimming the far starfield.
+    let points = buildConstellationLayer(buildStarfieldPositions(LOGO_COUNT), true);
     constellation.add(points);
 
     // ── Far corona layer (depth) ─────────────────────────────────
@@ -980,6 +1002,16 @@ export const SpaceBackground = () => {
     if (!playStarFade) {
       revealInstantly(points.userData.geo);
       revealInstantly(farLayer.userData.geo);
+    }
+    // Only if the logo has ALREADY fully dissolved (a return/remount after the
+    // whole build→UI→dissolve choreography finished) do we skip to the
+    // dissolved end state — hide the near (logo) layer so just the calm far
+    // starfield shows behind the returning content. A remount that lands mid-
+    // build (StrictMode double-mount, quick re-render) must NOT hide it, or the
+    // logo never gets to form.
+    if (hasDissolved && !reduceMotion) {
+      points.userData.geo.userData.dissolveFade = 0;
+      points.visible = false;
     }
 
     // Load the GLB and reshape the constellation to the logo's surface.
@@ -1003,6 +1035,23 @@ export const SpaceBackground = () => {
     // Small settle beat after the fade completes before the morph kicks off, so
     // the eye registers the scattered field first.
     const MORPH_HOLD_MS = 500;
+
+    // ── Dissolve state (logo → disperse + fade) ──────────────────
+    // Once the logo has formed AND the UI has faded in on top, the logo
+    // constellation dissolves: the near-layer motes drift apart and fade out so
+    // the brand mark quietly disperses, leaving a calm field behind the content
+    // instead of a busy silhouette. `dissolveStart` timestamps the kickoff (a
+    // hold after the morph finishes so the UI reveal lands first); `dissolveP`
+    // (0→1) is the eased progress the color/position writers read.
+    let dissolveStart = 0;
+    let dissolveP = 0;
+    let dissolveDone = false;
+    // Hold after the morph completes before dissolving — a short beat so the
+    // eye registers the formed logo, then it disperses. (The UI now reveals
+    // AFTER the dissolve, so this no longer needs to cover the UI cascade.)
+    const DISSOLVE_HOLD_MS = 600;
+    // Length of the disperse-and-fade itself.
+    const DISSOLVE_MS = 2600;
 
     loader.load(
       modelPath,
@@ -1158,13 +1207,16 @@ export const SpaceBackground = () => {
       const r2 = GLOW_RADIUS * GLOW_RADIUS;
       const fadeP =
         fadeElapsedMs == null ? 1 : Math.min(1, fadeElapsedMs / STAR_FADE_MS);
+      // Dissolve dims the whole layer to nothing (folds into the fade factor so
+      // core, glow and pointer bloom all fade out together).
+      const dis = geo.userData.dissolveFade == null ? 1 : geo.userData.dissolveFade;
       const n = base.length / 3;
       for (let i = 0; i < n; i++) {
-        // Per-mote staggered fade factor (0 dark → 1 full).
+        // Per-mote staggered fade factor (0 dark → 1 full), scaled by dissolve.
         const fade =
-          fadeElapsedMs == null
+          (fadeElapsedMs == null
             ? 1
-            : smoothstep((fadeP - delay[i]) / span[i]);
+            : smoothstep((fadeP - delay[i]) / span[i])) * dis;
         // Radial proximity boost around the cursor.
         let boost = 0;
         if (hasPointer) {
@@ -1246,9 +1298,11 @@ export const SpaceBackground = () => {
       const glowAttr = geo.getAttribute('aGlowColor');
       const arr = colorAttr.array;
       const glowArr = glowAttr ? glowAttr.array : null;
+      // Dissolve dims the whole layer to nothing (1 = full, 0 = gone).
+      const dis = geo.userData.dissolveFade == null ? 1 : geo.userData.dissolveFade;
       const n = phase.length;
       for (let i = 0; i < n; i++) {
-        const s = 1 + SHIMMER_AMP * Math.sin(nowSec * rate[i] + phase[i]);
+        const s = (1 + SHIMMER_AMP * Math.sin(nowSec * rate[i] + phase[i])) * dis;
         arr[i * 3] = base[i * 3] * s;
         arr[i * 3 + 1] = base[i * 3 + 1] * s;
         arr[i * 3 + 2] = base[i * 3 + 2] * s;
@@ -1303,9 +1357,24 @@ export const SpaceBackground = () => {
     // The staggered star fade-in rides along with the intro: it plays on the
     // first mount of a page load and is skipped on remounts (already faded).
     const playStarFade = playIntro;
+    // Return fade: on a REMOUNT (leaving the new-session screen and coming
+    // back), the intro has already played so the logo is pre-formed — but we
+    // still want the whole constellation to FADE back in rather than snap. This
+    // ramps the canvas + overlay opacity over RETURN_FADE_MS while the stars
+    // stay in formation. Skipped on the very first load (the intro owns the
+    // fade) and for reduced motion.
+    const playReturnFade = hasIntroPlayed && !reduceMotion;
+    const RETURN_FADE_MS = 900;
+    // The logo dissolve plays once per page load, as the tail of the reveal
+    // choreography: form the logo → UI fades in → logo disperses. It should run
+    // whenever the logo hasn't dissolved yet (so a mid-build remount still gets
+    // to dissolve), and never after it's already gone. Skipped for reduced
+    // motion (that path renders a single static frame with the logo shown).
+    const playDissolve = !hasDissolved && !reduceMotion;
     hasIntroPlayed = true;
     const introStart = performance.now();
     const starFadeStart = introStart;
+    const returnFadeStart = introStart;
     // easeOutQuint for a smoother, longer-settling glide (less abrupt than the
     // cubic wind-down) — suits the calmer wormhole intro.
     const easeOut = (x) => 1 - Math.pow(1 - x, 5);
@@ -1400,6 +1469,71 @@ export const SpaceBackground = () => {
         }
       }
 
+      // ── Dissolve the logo constellation (disperse + fade) ───────
+      // After the logo has formed and the UI has faded in on top, the near
+      // (logo) layer disperses and fades so the brand mark quietly dissolves,
+      // leaving a calm backdrop behind the content. Runs once, on first load.
+      if (morphDone && playDissolve && !dissolveDone) {
+        const geo = points.userData.geo;
+        if (dissolveStart === 0) {
+          dissolveStart = performance.now() + DISSOLVE_HOLD_MS;
+          // Snapshot the settled logo positions as the dissolve FROM state and
+          // give each mote an outward drift direction (radially away from the
+          // centre + a little upward lift and random jitter) so the shape
+          // breaks apart organically rather than scaling uniformly.
+          const parr = geo.getAttribute('position').array;
+          const nD = parr.length / 3;
+          const fromPos = Float32Array.from(parr);
+          const dir = new Float32Array(nD * 3);
+          for (let i = 0; i < nD; i++) {
+            const x = parr[i * 3];
+            const y = parr[i * 3 + 1];
+            const len = Math.hypot(x, y) || 1;
+            // Outward radial + gentle upward lift + small random scatter.
+            dir[i * 3] = (x / len) * (2.2 + Math.random() * 2.2) + (Math.random() - 0.5);
+            dir[i * 3 + 1] =
+              (y / len) * (2.2 + Math.random() * 2.2) + 0.8 + (Math.random() - 0.5);
+            dir[i * 3 + 2] = (Math.random() - 0.5) * 2;
+          }
+          geo.userData.dissolveFrom = fromPos;
+          geo.userData.dissolveDir = dir;
+        }
+        const dp = (performance.now() - dissolveStart) / DISSOLVE_MS;
+        if (dp >= 0) {
+          const dpc = Math.min(1, dp);
+          // POSITION: ease-out drift outward — quick to set off, decelerating.
+          dissolveP = easeOut(dpc);
+          const from = geo.userData.dissolveFrom;
+          const dir = geo.userData.dissolveDir;
+          const posAttr = geo.getAttribute('position');
+          const parr = posAttr.array;
+          const nD = from.length / 3;
+          for (let i = 0; i < nD; i++) {
+            const ix = i * 3;
+            parr[ix] = from[ix] + dir[ix] * dissolveP;
+            parr[ix + 1] = from[ix + 1] + dir[ix + 1] * dissolveP;
+            parr[ix + 2] = from[ix + 2] + dir[ix + 2] * dissolveP;
+          }
+          posAttr.needsUpdate = true;
+          // FADE: dim steadily across the WHOLE disperse so the motes visibly
+          // grow fainter as they drift apart (not a late plunge that reads as a
+          // pop). Reach full transparency a bit BEFORE the motion ends so
+          // there's no visible snap when the layer is finally hidden. Ease-out
+          // (fast-ish early, gentle tail) keeps the dimming perceptible from the
+          // very start of the drift.
+          const FADE_DONE_AT = 0.85; // fully invisible by 85% of the drift
+          const fp = Math.min(1, dpc / FADE_DONE_AT);
+          const fadeOut = 1 - Math.pow(1 - fp, 2); // ease-out
+          geo.userData.dissolveFade = 1 - fadeOut;
+          if (dp >= 1) {
+            dissolveDone = true;
+            hasDissolved = true; // remounts now skip to the dissolved end state
+            geo.userData.dissolveFade = 0;
+            points.visible = false; // fully gone — stop drawing the logo layer
+          }
+        }
+      }
+
       // Smooth the parallax.
       mouse.x += (mouseTarget.x - mouse.x) * 0.04;
       mouse.y += (mouseTarget.y - mouse.y) * 0.04;
@@ -1418,21 +1552,31 @@ export const SpaceBackground = () => {
       // full-frame throughout (no deep pull-in that would expose the edges).
       const introZ = (1 - introP) * -1.2;
 
+      // Opacity reveal progress. First load rides the intro (introP). On a
+      // RETURN remount the intro is done (introP === 1), so ramp a separate
+      // return-fade instead so the pre-formed constellation fades back in
+      // rather than snapping. Anything else (e.g. reduced motion) stays at 1.
+      const revealP = playIntro
+        ? Math.min(1, introP * 1.3)
+        : playReturnFade
+        ? easeOut(Math.min(1, (performance.now() - returnFadeStart) / RETURN_FADE_MS))
+        : 1;
+
       // Fade the whole canvas into the scene — a global opacity ramp on top of
       // the per-mote color fade. This is what removes the first-load flash: the
       // scene eases up from fully transparent no matter what the particles are
       // doing underneath (placeholder → GLB swap). Reaches full a bit early so
       // the field is present while individual stars keep twinkling in.
-      renderer.domElement.style.opacity = String(Math.min(1, introP * 1.3));
+      renderer.domElement.style.opacity = String(revealP);
 
       // Fade the DOM overlays (blur + vignette) in with the stars so the
       // soft-focus haze and edge fade ramp up rather than snapping on. No
       // scale/zoom — just opacity.
       if (blurRef.current) {
-        blurRef.current.style.opacity = String(introP);
+        blurRef.current.style.opacity = String(revealP);
       }
       if (vignetteRef.current) {
-        vignetteRef.current.style.opacity = String(introP);
+        vignetteRef.current.style.opacity = String(revealP);
       }
 
       // No rotation — the starfield stays still in-plane; only the gentle
@@ -1472,30 +1616,47 @@ export const SpaceBackground = () => {
       // the "stars appearing one by one" look. The aura/bloom still ride introP.
       // Star twinkle — two out-of-phase shimmer waves so the field sparkles
       // unevenly, like real starlight rather than one global pulse.
+      // Compute this frame's base material opacities once, then apply them to
+      // BOTH layers' material sets. The near (logo) layer uses its own clones,
+      // so we scale its opacities by its dissolveFade — that's what actually
+      // fades the whole logo layer (cores + glow + bloom) to transparent during
+      // the dissolve, instead of leaving faint sprite artifacts drifting.
+      let baseCore;
+      let baseGlow;
+      let baseBloom = 0;
       if (crisp) {
-        const tw = 0.9 + Math.sin(t * 1.4) * 0.1;
-        pointsMat.opacity = tw;
+        baseCore = 0.9 + Math.sin(t * 1.4) * 0.1;
         // Crisp light halo is a fixed iris tint (no vertex colors), so it can't
         // ride the per-mote color fade — gate its opacity with introP instead
-        // so the soft iris bloom fades in with the stars. Bumped up so the
-        // light constellation carries more visible glow.
-        glowMat.opacity = 0.42 * (0.85 + Math.sin(t * 1.1) * 0.15) * introP;
-        // Additive per-mote bloom (dark-mode-style glow, now visible over the
-        // darker centre pool). Kept light at REST for crisp stars; the strong
-        // glare near the cursor comes from the aGlowColor spike, not this base
-        // opacity. Gentle twinkle only.
-        if (lightBloomMat) {
-          lightBloomMat.opacity = 0.18 * (0.85 + Math.sin(t * 1.25) * 0.15);
-        }
+        // so the soft iris bloom fades in with the stars.
+        baseGlow = 0.42 * (0.85 + Math.sin(t * 1.1) * 0.15) * introP;
+        // Additive per-mote bloom. Gentle twinkle at rest; the hover glare comes
+        // from the aGlowColor spike, not this base opacity.
+        baseBloom = 0.18 * (0.85 + Math.sin(t * 1.25) * 0.15);
       } else {
         const twinkle =
           0.84 + Math.sin(t * 1.6) * 0.1 + Math.sin(t * 0.7) * 0.06;
-        pointsMat.opacity = 0.9 * twinkle;
-        // Softer additive halo than before — the logo silhouette packs motes
-        // densely in places, and a heavy halo saturates those overlaps into
-        // pale gray clumps. A lighter bloom keeps the constellation crisp.
-        glowMat.opacity = 0.13 * (twinkle + 0.1);
+        baseCore = 0.9 * twinkle;
+        // Softer additive halo — the logo packs motes densely, and a heavy halo
+        // saturates overlaps into pale gray clumps.
+        baseGlow = 0.13 * (twinkle + 0.1);
       }
+      const applyLayerOpacity = (layer) => {
+        const m = layer.userData.mats;
+        if (!m) return;
+        // Near-layer clones fade with the dissolve; the far layer (shared refs)
+        // stays at full (its dissolveFade is undefined → 1).
+        const dis =
+          layer.userData.geo.userData.dissolveFade == null
+            ? 1
+            : layer.userData.geo.userData.dissolveFade;
+        m.pMat.opacity = baseCore * dis;
+        m.gMat.opacity = baseGlow * dis;
+        if (m.lbMat) m.lbMat.opacity = baseBloom * dis;
+        if (m.pgMat) m.pgMat.opacity = (crisp ? 0.28 : 0.3) * dis;
+      };
+      applyLayerOpacity(points);
+      applyLayerOpacity(farLayer);
 
       // Deep starfield parallax — drifts opposite the pointer for depth.
       stars.rotation.z = t * 0.02;
