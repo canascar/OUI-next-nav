@@ -5,18 +5,18 @@ on:
     branches: [main, OUI-sample-pages, canascar-july9, constellation]
   workflow_dispatch:
 
+# Publishes the built docs to a `gh-pages` branch (classic Pages), which avoids
+# the `github-pages` environment's deployment-branch protection rules.
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
-  build-docs:
-    name: Build documentation
+  build-and-deploy:
+    name: Build and deploy documentation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -38,19 +38,12 @@ jobs:
       - name: Build docs
         run: yarn build-docs
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs/
+      - name: Add .nojekyll
+        run: touch docs/.nojekyll
 
-  deploy:
-    name: Deploy to GitHub Pages
-    needs: build-docs
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
+          publish_branch: gh-pages
