@@ -458,7 +458,7 @@ export const resetSpaceBackgroundIntro = () => {
   hasDissolved = false;
 };
 
-export const SpaceBackground = () => {
+export const SpaceBackground = ({ skipIntro = false } = {}) => {
   const containerRef = useRef(null);
   const vignetteRef = useRef(null);
   const blurRef = useRef(null);
@@ -535,9 +535,13 @@ export const SpaceBackground = () => {
     const blendMode = palette.additive
       ? THREE.AdditiveBlending
       : THREE.NormalBlending;
+    // `skipIntro` (a RETURN to the new-session screen) takes the same path as
+    // reduced motion: render the scene fully formed in a single static frame,
+    // no intro / dissolve / fade — it just appears.
     const reduceMotion =
-      typeof window.matchMedia === 'function' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      skipIntro ||
+      (typeof window.matchMedia === 'function' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
     let width = container.clientWidth || window.innerWidth;
     let height = container.clientHeight || window.innerHeight;
@@ -718,8 +722,8 @@ export const SpaceBackground = () => {
         // Spread births across most of the window and give each a slower
         // ramp, so the fade-in is clearly visible (stars trickle in) rather
         // than snapping to full almost immediately.
-        fadeDelay[i] = Math.random() * 0.7; // birth anywhere in first 70%
-        fadeSpan[i] = 0.28 + Math.random() * 0.4; // each star fades over 28–68%
+        fadeDelay[i] = Math.random() * 0.5; // birth anywhere in first 50%
+        fadeSpan[i] = 0.24 + Math.random() * 0.34; // each star fades over 24–58%
       }
       // Dedicated pointer-glow color buffer — all zero (black/invisible) at
       // rest; writeLayerColors fills it with the additive proximity bloom each
@@ -933,7 +937,7 @@ export const SpaceBackground = () => {
     // color from black up to its base color (works for both additive and alpha
     // blending — a darker color simply reads as fainter). Once every mote is
     // fully in, we stop rewriting the attribute (geo.userData.faded = true).
-    const STAR_FADE_MS = 3400;
+    const STAR_FADE_MS = 2600;
     const smoothstep = (x) => {
       const c = Math.max(0, Math.min(1, x));
       return c * c * (3 - 2 * c);
@@ -1018,7 +1022,7 @@ export const SpaceBackground = () => {
     // starfield shows behind the returning content. A remount that lands mid-
     // build (StrictMode double-mount, quick re-render) must NOT hide it, or the
     // logo never gets to form.
-    if (hasDissolved && !reduceMotion) {
+    if (hasDissolved) {
       points.userData.geo.userData.dissolveFade = 0;
       points.visible = false;
     }

@@ -49,6 +49,61 @@
 // Small "replay intro" control, pinned bottom-right of the home. Subtle at
 // rest so it doesn't compete with the greeting; lifts a touch on hover. Sits
 // above the space backdrop and the content.
+// Segmented control of version pills (V1–V4), centered along the bottom.
+// Explicit glass surface with a light stroke so it reads clearly on either
+// theme's backdrop. Lives inside .mcpHome so it fades with everything.
+.mcpHome__versionSwitch {
+  position: absolute;
+  left: 50%;
+  bottom: var(--g-space-5);
+  transform: translateX(-50%);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border: 1px solid lightOrDarkTheme(rgba(20, 20, 30, 0.18), rgba(255, 255, 255, 0.28));
+  border-radius: 999px;
+  background: lightOrDarkTheme(rgba(255, 255, 255, 0.82), rgba(24, 22, 40, 0.72));
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+}
+
+.mcpHome__versionPill {
+  min-width: 40px;
+  height: 28px;
+  padding: 0 var(--g-space-3);
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  // Explicit readable ink (the --g-ink-soft token stays near-black in dark
+  // mode and would vanish on a dark backdrop), so inactive pills are legible.
+  color: lightOrDarkTheme(rgba(20, 20, 30, 0.78), rgba(255, 255, 255, 0.82));
+  font-size: var(--g-text-body-sm, 13px);
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
+
+  &:hover {
+    color: lightOrDarkTheme(#111, #fff);
+    background: lightOrDarkTheme(
+      rgba(20, 20, 30, 0.08),
+      rgba(255, 255, 255, 0.12)
+    );
+  }
+
+  // Selected version — solid iris accent, white text, clearly the active one.
+  &--active,
+  &--active:hover {
+    color: #fff;
+    background: var(--g-accent-bright, #4f46e5);
+  }
+}
+
+// Replay button — pinned to the bottom-RIGHT corner (independent of the
+// centered version switcher). Glass surface + strong ink so the icon reads on
+// either theme's backdrop.
 .mcpHome__replay {
   position: absolute;
   right: var(--g-space-5);
@@ -60,28 +115,24 @@
   width: 34px;
   height: 34px;
   padding: 0;
-  border: 1px solid var(--g-border, rgba(255, 255, 255, 0.28));
+  border: 1px solid lightOrDarkTheme(rgba(20, 20, 30, 0.18), rgba(255, 255, 255, 0.28));
   border-radius: 50%;
-  // More solid surface + full opacity so the icon reads clearly against the
-  // busy constellation backdrop.
-  background: color-mix(in srgb, var(--g-surface, #1a1a24) 90%, transparent);
-  // Strong ink for the icon itself so it's clearly visible, not muted.
-  color: var(--g-ink, currentColor);
+  background: lightOrDarkTheme(rgba(255, 255, 255, 0.82), rgba(24, 22, 40, 0.72));
+  color: lightOrDarkTheme(#111, #fff);
   cursor: pointer;
   opacity: 1;
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
   transition: background-color 160ms ease, color 160ms ease,
     border-color 160ms ease;
 
   .ouiIcon {
-    // Ensure the glyph tracks the button's strong ink color.
     color: inherit;
   }
 
   &:hover {
-    color: var(--g-ink, currentColor);
-    background: color-mix(in srgb, var(--g-surface, #1a1a24) 100%, transparent);
-    border-color: var(--g-border-strong, rgba(255, 255, 255, 0.4));
+    background: lightOrDarkTheme(#fff, rgba(36, 33, 56, 0.9));
+    border-color: lightOrDarkTheme(rgba(20, 20, 30, 0.3), rgba(255, 255, 255, 0.4));
   }
 }
 
@@ -162,40 +213,21 @@
 
   // ── Return (remount) reveal ──────────────────────────────────────────────
   // On RETURN to the new-session screen (after visiting a session), we do NOT
-  // replay the entrance choreography. The children skip the rise + blur +
-  // stagger and simply FADE in together, in sync with the background's return
-  // fade — a calm reappearance, not a re-performed intro. --instant is applied
-  // whether or not --revealed is present, so the elements sit un-transformed
-  // (no downward offset / blur) from the first frame and only opacity animates.
-  &--instant {
-    // Zoom the whole content group in a touch as it fades — the block starts
-    // slightly small and settles to full size, so the return reads as a gentle
-    // push-in rather than a flat fade. Applied on the wrapper so all children
-    // scale together as one unit (no per-element stagger).
-    transform-origin: 50% 45%;
-    transform: scale(0.96);
-    opacity: 0;
-    transition: opacity 900ms cubic-bezier(0.16, 1, 0.3, 1),
-      transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
-    will-change: opacity, transform;
-
+  // replay ANY entrance. Coming back from a session, the new-session screen
+  // just appears fully formed — NO fade, NO scale, NO stagger. Everything is
+  // shown statically from the first frame. --noAnim overrides the base
+  // hidden/transition rules so nothing animates on return.
+  &--noAnim {
     > .mcpHome__mascotRow,
     > .mcpHome__title,
     > .mcpHome__inputArea,
     > .mcpHome__suggestions {
-      // Children carry no entrance of their own on return — the wrapper owns
-      // the fade + zoom. Keep them un-transformed/sharp and fully opaque so
-      // only the wrapper animates.
+      opacity: 1;
       transform: none;
       filter: none;
-      opacity: 1;
       transition: none;
       transition-delay: 0ms;
-    }
-
-    &.mcpHome__inner--revealed {
-      opacity: 1;
-      transform: scale(1);
+      animation: none;
     }
   }
 
@@ -226,7 +258,8 @@
 // content width and give the greeting below it a little air.
 .mcpHome__mascotRow {
   max-width: 100%;
-  margin-bottom: var(--g-space-1);
+  // More air between Olly and the greeting below.
+  margin-bottom: var(--g-space-5);
 
   // Olly gets an iris/violet glow in dark mode, and a soft bluish drop shadow
   // in light mode. drop-shadow follows the SVG's shape (unlike box-shadow).
@@ -288,13 +321,21 @@
   // picks up the purples/glare from the particle field and spins.
   .emptySessionPage__inputField {
     background-color: transparent;
-    // The shared ::after paints the visible OPAQUE inner fill (it cuts out the
-    // border ring). Drop it to ~80% so the field reads translucent and the
-    // corona glows faintly through.
+    // Frost the backdrop BEHIND the field so the animated background (any
+    // version) is softened, not seen crisply through the translucent fill.
+    // The field body is transparent, so this blur applies to whatever sits
+    // behind it; the ::after fill (below) then tints it. Rounded to match the
+    // field so the frost stays inside the corners.
+    border-radius: 16px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    // The shared ::after paints the visible inner fill (it cuts out the border
+    // ring). Drop it to ~70% so the field reads translucent and the blurred
+    // backdrop shows softly through (a frosted-glass look).
     &::after {
       background: lightOrDarkTheme(
-        rgba(255, 255, 255, 0.8),
-        rgba(21, 27, 38, 0.8)
+        rgba(255, 255, 255, 0.7),
+        rgba(21, 27, 38, 0.7)
       );
       transition: background 220ms ease;
     }
@@ -374,6 +415,66 @@
   &::placeholder {
     color: lightOrDarkTheme(rgba(10, 10, 10, 0.46), rgba(255, 255, 255, 0.5));
     opacity: 1; // Firefox lowers placeholder opacity by default
+  }
+}
+
+// Shimmering custom placeholder — overlays the textarea while it's empty.
+// Native ::placeholder can't animate a gradient, so this positioned span does:
+// a soft light band sweeps across the muted base tone via background-clip:text.
+// Positioned to match the textarea's text origin (padding 12px, same font).
+.mcpHome__placeholder {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 48px; // clear the action buttons on the right
+  z-index: 1;
+  pointer-events: none;
+  font-family: inherit;
+  font-size: var(--g-text-body);
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  // Base muted tone + a brighter sweep band, animated left→right. The base
+  // color matches the old ::placeholder so it reads the same when the band
+  // isn't over it.
+  $ph-base: lightOrDarkTheme(rgba(10, 10, 10, 0.46), rgba(255, 255, 255, 0.5));
+  $ph-hi: lightOrDarkTheme(rgba(110, 86, 207, 0.95), rgba(196, 184, 255, 0.98));
+  background: linear-gradient(
+    100deg,
+    #{$ph-base} 0%,
+    #{$ph-base} 35%,
+    #{$ph-hi} 50%,
+    #{$ph-base} 65%,
+    #{$ph-base} 100%
+  );
+  background-size: 220% 100%;
+  background-position: 120% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: mcpHomePlaceholderShimmer 3.6s ease-in-out infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    // Fall back to the flat muted tone (no gradient) when motion is reduced.
+    background: none;
+    -webkit-text-fill-color: $ph-base;
+    color: $ph-base;
+  }
+}
+
+@keyframes mcpHomePlaceholderShimmer {
+  0% {
+    background-position: 120% 0;
+  }
+  // Sweep across, then hold before repeating so it's a periodic glint, not a
+  // constant scroll.
+  55%,
+  100% {
+    background-position: -20% 0;
   }
 }
 

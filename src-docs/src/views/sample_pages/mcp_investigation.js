@@ -31,11 +31,15 @@
  * McpInvestigationReport).
  */
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, { Suspense, useContext, useEffect, useState } from 'react';
 import { OuiButtonIcon, OuiIcon, OuiToolTip } from '../../../../src/components';
 import { Mascot } from '../../../../olly-mascot/Mascot';
 import { ThemeContext } from '../../components/with_theme';
-import { SpaceBackground, resetSpaceBackgroundIntro } from './space_background';
+import {
+  INTRO_VERSIONS,
+  INTRO_VERSION_STORAGE_KEY,
+  resetIntroVersion,
+} from './intro_versions';
 import { JUMP_TO_MORE_LABEL } from './jump_to_constants';
 
 // ---------------------------------------------------------------------------
@@ -817,6 +821,26 @@ const MCP_SUGGESTED_PROMPTS = [
 // (tab open, theme toggle) within the same load.
 let mcpContentIntroPlayed = false;
 
+// Rotating home greetings. Each nudges the user toward asking the agent
+// something, themed around search / observability / metrics / telemetry. One is
+// picked at random per mount (fresh on refresh / new session).
+const MCP_GREETINGS = [
+  'What should we investigate?',
+  'Ask me about your metrics.',
+  'What’s happening in your telemetry?',
+  'Let’s dig into your observability data.',
+  'Point me at a signal to explore.',
+  'What do you want to search today?',
+  'Ask about latency, errors, or spend.',
+  'What’s worth a closer look?',
+  'Let’s trace something down.',
+  'Curious about a spike? Just ask.',
+  'What metrics are on your mind?',
+  'Search your data — ask me anything.',
+];
+const pickGreeting = () =>
+  MCP_GREETINGS[Math.floor(Math.random() * MCP_GREETINGS.length)];
+
 export const McpHomeGreeting = ({
   onStartInvestigation,
   onSend,
@@ -830,6 +854,10 @@ export const McpHomeGreeting = ({
   const mascotEyeColor = isDark ? '#181028' : '#fff';
   const [mascotExpression, setMascotExpression] = useState(undefined);
   const textareaRef = React.useRef(null);
+  // A random greeting — fresh on mount (page load / new session) AND re-picked
+  // whenever the intro replays (refresh button / version switch bumps
+  // replayKey), so the title rotates each time.
+  const [greeting, setGreeting] = useState(pickGreeting);
 
   // Reveal the content after the ring forms. The FIRST time (per page load) we
   // wait for the full constellation build+dissolve, then cascade the greeting
@@ -837,15 +865,44 @@ export const McpHomeGreeting = ({
   // after visiting a session) we DON'T replay that entrance choreography — the
   // content just plainly fades in together with the background, no per-element
   // stagger/rise. Always start hidden and let the effect drive the reveal.
-  const [contentRevealed, setContentRevealed] = useState(false);
   // True when the entrance already played this page load — i.e. this mount is a
-  // RETURN. Drives the --instant modifier: a simple fade instead of the
-  // staggered cascade. Initialized from the module flag at mount; the replay
-  // button forces it back to false so the full intro cascade plays again.
+  // RETURN to the new-session screen after visiting a session. On return we
+  // show everything STATICALLY — no intro, no fade — so it just reappears
+  // instantly. The replay button forces it back to false to play the intro.
   const [isReturn, setIsReturn] = useState(() => mcpContentIntroPlayed);
-  // Bumped by the replay button to remount SpaceBackground (restarting the
-  // constellation animation) and re-run the reveal effect below.
+  // On return the content starts already revealed (shown instantly, no fade);
+  // on first load / replay it starts hidden and the effect drives the reveal.
+  const [contentRevealed, setContentRevealed] = useState(() =>
+    mcpContentIntroPlayed ? true : false
+  );
+  // Bumped by the replay button to remount the active intro version (restarting
+  // its animation) and re-run the reveal effect below.
   const [replayKey, setReplayKey] = useState(0);
+  // Which intro version is showing (V1 = the original constellation). Only the
+  // selected version's module is loaded (they're React.lazy), and refresh only
+  // replays THIS version. Persisted to localStorage so a BROWSER refresh keeps
+  // you on the same version; falls back to the first (V1) if none/invalid.
+  const [activeVersionId, setActiveVersionId] = useState(() => {
+    try {
+      const saved = window.localStorage.getItem(INTRO_VERSION_STORAGE_KEY);
+      if (saved && INTRO_VERSIONS.some((v) => v.id === saved)) return saved;
+    } catch (e) {
+      // localStorage unavailable (private mode, etc.) — just use the default.
+    }
+    return INTRO_VERSIONS[0].id;
+  });
+  const activeVersion =
+    INTRO_VERSIONS.find((v) => v.id === activeVersionId) || INTRO_VERSIONS[0];
+  const ActiveIntro = activeVersion.Component;
+
+  // Persist the selected version so a browser refresh restores it.
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(INTRO_VERSION_STORAGE_KEY, activeVersionId);
+    } catch (e) {
+      // Ignore write failures (private mode, quota, etc.).
+    }
+  }, [activeVersionId]);
 
   // Whole-screen fade during a replay: drop the entire home (content +
   // constellation) to transparent, then once it's faded out, reset the intro
@@ -853,20 +910,37 @@ export const McpHomeGreeting = ({
   // and fade back in.
   const [screenFadingOut, setScreenFadingOut] = useState(false);
 
-  // Replay the full intro: fade the whole screen out first, then reset the
-  // once-per-load gates for the constellation and content, remount
-  // SpaceBackground (via replayKey) and re-run the reveal effect — so the
-  // build → dissolve → reveal plays again as the screen fades back in.
-  const replayIntro = () => {
+  // Shared fade-out → reset → play-in choreography. Fades the whole screen out,
+  // then (once transparent) resets the once-per-load content gate, optionally
+  // switches to a new version, resets THAT version's intro, and remounts it +
+  // the content so the intro plays back in. `nextId` defaults to the current
+  // version (a plain refresh); pass a new id to switch versions.
+  const runIntro = (nextId = activeVersionId) => {
     setScreenFadingOut(true);
-    setTimeout(() => {
-      resetSpaceBackgroundIntro();
+    setTimeout(async () => {
+      // Reset the target version's once-per-load gates BEFORE remounting it.
+      // Awaited because V1's reset is an async dynamic import — remounting
+      // before it resolves would let V1 read its still-true gates and skip the
+      // intro. Only the active/target version is reset (others untouched).
+      await resetIntroVersion(nextId);
       mcpContentIntroPlayed = false;
+      if (nextId !== activeVersionId) setActiveVersionId(nextId);
       setContentRevealed(false);
       setIsReturn(false);
+      setGreeting(pickGreeting()); // rotate the title on every replay/switch
       setReplayKey((k) => k + 1);
       setScreenFadingOut(false);
     }, 450); // matches the .mcpHome--fadingOut transition
+  };
+
+  // Refresh button: replay ONLY the currently-selected version.
+  const replayIntro = () => runIntro();
+
+  // Version switcher: fade out, load + play the picked version. Selecting the
+  // already-active version just replays it (same as refresh).
+  const selectVersion = (id) => {
+    if (screenFadingOut) return; // ignore clicks mid-transition
+    runIntro(id);
   };
 
   useEffect(() => {
@@ -878,47 +952,25 @@ export const McpHomeGreeting = ({
       setContentRevealed(true);
       return undefined;
     }
-    // On return (intro already played this load): a short beat, then reveal —
-    // the SpaceBackground fades its already-formed constellation back in over a
-    // similar window, so content + backdrop return together.
+    // On return (intro already played this load): NOTHING animates. The content
+    // was initialized already-revealed and renders statically via the --no-anim
+    // modifier, and the backdrop is told to skip its intro. So coming back from
+    // a session just shows the new-session screen instantly.
     if (mcpContentIntroPlayed) {
-      const returnTimer = setTimeout(() => setContentRevealed(true), 120);
-      return () => clearTimeout(returnTimer);
+      return undefined;
     }
-    // First load: hold the UI until the constellation has fully BUILT AND
-    // DISSOLVED. The SpaceBackground plays a multi-phase intro: the stars fade
-    // in scattered (~3.4s), hold briefly (~0.5s), fly into the OpenSearch logo
-    // (~3.2s), hold (~0.6s), then the logo disperses and fades out (~2.6s).
-    // Only AFTER the logo has dissolved away do we cascade the greeting/input/
-    // buttons in — so the brand mark builds and clears the stage first, THEN
-    // the UI arrives into the calm field. The per-child stagger + rise lives in
-    // CSS (.mcpHome__inner--revealed). Keep these in sync with STAR_FADE_MS /
-    // MORPH_HOLD_MS / MORPH_MS / DISSOLVE_HOLD_MS / DISSOLVE_MS in
-    // space_background.js.
-    const STAR_FADE_MS = 3400;
-    const MORPH_HOLD_MS = 500;
-    const MORPH_MS = 3200;
-    const DISSOLVE_HOLD_MS = 600;
-    const DISSOLVE_MS = 2600;
-    // Reveal the UI a little way INTO the dissolve, so the logo is clearly
-    // breaking apart before the greeting starts fading up — the two overlap for
-    // a smooth hand-off, but the dissolve leads. Fires at the dissolve kickoff
-    // plus a fraction of the dissolve. Keep in sync with STAR_FADE_MS /
-    // MORPH_HOLD_MS / MORPH_MS / DISSOLVE_HOLD_MS / DISSOLVE_MS in
-    // space_background.js.
-    const DISSOLVE_ENTER_FRAC = 0.4; // start the UI ~40% into the dissolve
-    const REVEAL_MS =
-      STAR_FADE_MS +
-      MORPH_HOLD_MS +
-      MORPH_MS +
-      DISSOLVE_HOLD_MS +
-      DISSOLVE_MS * DISSOLVE_ENTER_FRAC;
+    // First load (or replay/version-switch): hold the greeting hidden until the
+    // ACTIVE version's intro has played, then cascade the UI in. Each version
+    // declares its own revealMs (V1 waits out the long build+dissolve; V2–V4
+    // are short), so the content arrives in step with whatever version is
+    // showing instead of a hardcoded V1 timeline. The per-child stagger + rise
+    // lives in CSS (.mcpHome__inner--revealed).
     const timer = setTimeout(() => {
       mcpContentIntroPlayed = true;
       setContentRevealed(true);
-    }, REVEAL_MS);
+    }, activeVersion.revealMs);
     return () => clearTimeout(timer);
-    // Re-runs on replay (replayKey bump) to play the full intro again.
+    // Re-runs on replay/version-switch (replayKey bump) to play the intro again.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [replayKey]);
 
@@ -957,16 +1009,22 @@ export const McpHomeGreeting = ({
 
   return (
     <div className={`mcpHome${screenFadingOut ? ' mcpHome--fadingOut' : ''}`}>
-      {/* Both keyed with replayKey so the replay button HARD-REMOUNTS them —
-          the constellation restarts its intro, and the content re-mounts fresh
-          in the hidden state instead of slowly fading its old (revealed) self
-          out, which caused the UI to flash during the screen fade. */}
-      <SpaceBackground key={`bg-${replayKey}`} />
+      {/* Active intro version, lazy-loaded (only the selected version's module
+          is fetched/run). Keyed by version + replayKey so switching versions OR
+          hitting refresh HARD-REMOUNTS just this backdrop, restarting its intro.
+          Suspense covers the async module load with a blank frame (no spinner —
+          the screen is mid fade anyway). */}
+      <Suspense fallback={null}>
+        <ActiveIntro
+          key={`bg-${activeVersion.id}-${replayKey}`}
+          skipIntro={isReturn}
+        />
+      </Suspense>
       <div
         key={`inner-${replayKey}`}
         className={`mcpHome__inner${
           contentRevealed ? ' mcpHome__inner--revealed' : ''
-        }${isReturn ? ' mcpHome__inner--instant' : ''}`}>
+        }${isReturn ? ' mcpHome__inner--noAnim' : ''}`}>
         {/* Olly — the same mascot row
             Overview home opens with. */}
         <div className="v6Scenario__mascotRow mcpHome__mascotRow">
@@ -999,7 +1057,7 @@ export const McpHomeGreeting = ({
           </OuiToolTip>
         </div>
 
-        <h1 className="mcpHome__title">Good afternoon.</h1>
+        <h1 className="mcpHome__title">{greeting}</h1>
 
         {/* Shimmering ask-anything input — same visual treatment as Overview
             home so the two greetings feel like one family. */}
@@ -1008,7 +1066,6 @@ export const McpHomeGreeting = ({
             <textarea
               ref={textareaRef}
               className="mcpHome__textarea"
-              placeholder="Ask AI anything, or type to search a page"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={(e) => {
@@ -1019,6 +1076,15 @@ export const McpHomeGreeting = ({
               }}
               rows={3}
             />
+            {/* Custom shimmering placeholder — shown only while the field is
+                empty. Native ::placeholder can't carry an animated gradient, so
+                this overlay does (background-clip:text sweep). Hidden from a11y
+                and non-interactive so it never blocks the textarea. */}
+            {!inputValue && (
+              <span className="mcpHome__placeholder" aria-hidden="true">
+                Ask AI anything, or type to search a page
+              </span>
+            )}
             <div className="emptySessionPage__inputActions">
               <OuiButtonIcon
                 iconType="plus"
@@ -1069,7 +1135,27 @@ export const McpHomeGreeting = ({
         </div>
       </div>
 
-      {/* Small control, bottom-right: replays the constellation intro. */}
+      {/* Version switcher — centered along the bottom. Cycles the intro
+          versions (V1 = original); only the selected version's module loads. */}
+      <div
+        className="mcpHome__versionSwitch"
+        role="group"
+        aria-label="Intro version">
+        {INTRO_VERSIONS.map((v) => (
+          <button
+            key={v.id}
+            type="button"
+            className={`mcpHome__versionPill${
+              v.id === activeVersionId ? ' mcpHome__versionPill--active' : ''
+            }`}
+            aria-pressed={v.id === activeVersionId}
+            onClick={() => selectVersion(v.id)}>
+            {v.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Replay button — bottom-right corner. Replays just the active version. */}
       <button
         type="button"
         className="mcpHome__replay"
