@@ -878,6 +878,16 @@ export const McpHomeGreeting = ({
   // Bumped by the replay button to remount the active intro version (restarting
   // its animation) and re-run the reveal effect below.
   const [replayKey, setReplayKey] = useState(0);
+
+  // A "static, no-animation" render only happens on a genuine RETURN — i.e. the
+  // intro already played this load AND the user hasn't triggered a replay/
+  // switch. Deriving it (instead of trusting isReturn alone) avoids a React 16
+  // batching race: after runIntro's `await`, setIsReturn(false) and
+  // setReplayKey(k+1) land in separate renders, so a bumped replayKey could
+  // briefly pair with a stale isReturn=true and freeze the new intro. Because
+  // any replay/switch bumps replayKey > 0, gating on replayKey === 0
+  // guarantees replays always animate.
+  const staticReturn = isReturn && replayKey === 0;
   // Which intro version is showing (V1 = the original constellation). Only the
   // selected version's module is loaded (they're React.lazy), and refresh only
   // replays THIS version. Persisted to localStorage so a BROWSER refresh keeps
@@ -1017,14 +1027,14 @@ export const McpHomeGreeting = ({
       <Suspense fallback={null}>
         <ActiveIntro
           key={`bg-${activeVersion.id}-${replayKey}`}
-          skipIntro={isReturn}
+          skipIntro={staticReturn}
         />
       </Suspense>
       <div
         key={`inner-${replayKey}`}
         className={`mcpHome__inner${
           contentRevealed ? ' mcpHome__inner--revealed' : ''
-        }${isReturn ? ' mcpHome__inner--noAnim' : ''}`}>
+        }${staticReturn ? ' mcpHome__inner--noAnim' : ''}`}>
         {/* Olly — the same mascot row
             Overview home opens with. */}
         <div className="v6Scenario__mascotRow mcpHome__mascotRow">
