@@ -928,10 +928,9 @@ export const McpHomeGreeting = ({
   const runIntro = (nextId = activeVersionId) => {
     setScreenFadingOut(true);
     setTimeout(async () => {
-      // Reset the target version's once-per-load gates BEFORE remounting it.
-      // Awaited because V1's reset is an async dynamic import — remounting
-      // before it resolves would let V1 read its still-true gates and skip the
-      // intro. Only the active/target version is reset (others untouched).
+      // Reset the target version's once-per-load gates (tidy-up). V1's actual
+      // replay is now driven by the forceIntro prop on remount, not this async
+      // reset, so it no longer races the remount.
       await resetIntroVersion(nextId);
       mcpContentIntroPlayed = false;
       if (nextId !== activeVersionId) setActiveVersionId(nextId);
@@ -1028,6 +1027,7 @@ export const McpHomeGreeting = ({
         <ActiveIntro
           key={`bg-${activeVersion.id}-${replayKey}`}
           skipIntro={staticReturn}
+          forceIntro={replayKey > 0}
         />
       </Suspense>
       <div

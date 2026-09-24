@@ -458,7 +458,7 @@ export const resetSpaceBackgroundIntro = () => {
   hasDissolved = false;
 };
 
-export const SpaceBackground = ({ skipIntro = false } = {}) => {
+export const SpaceBackground = ({ skipIntro = false, forceIntro = false } = {}) => {
   const containerRef = useRef(null);
   const vignetteRef = useRef(null);
   const blurRef = useRef(null);
@@ -1022,7 +1022,9 @@ export const SpaceBackground = ({ skipIntro = false } = {}) => {
     // starfield shows behind the returning content. A remount that lands mid-
     // build (StrictMode double-mount, quick re-render) must NOT hide it, or the
     // logo never gets to form.
-    if (hasDissolved) {
+    // ...but NOT on a forced replay (version switch / refresh), which rebuilds
+    // the logo from scratch even though it dissolved on the previous play.
+    if (hasDissolved && !forceIntro) {
       points.userData.geo.userData.dissolveFade = 0;
       points.visible = false;
     }
@@ -1366,7 +1368,13 @@ export const SpaceBackground = ({ skipIntro = false } = {}) => {
     // reduced-motion. On remounts (tab open, theme change) it's already played,
     // so the scene appears fully formed with no re-animation.
     const INTRO_MS = 2000;
-    const playIntro = !hasIntroPlayed && !reduceMotion;
+    // `forceIntro` (a replay / version switch) ALWAYS plays the full intro,
+    // regardless of the module-level gate — this is the reliable signal from
+    // the switcher's remount, so V1 no longer depends on the async
+    // resetSpaceBackgroundIntro() landing before this effect runs (that race
+    // was why V1 didn't reset on the versions nav). Otherwise fall back to the
+    // once-per-load gate. Reduced motion / return never plays it.
+    const playIntro = !reduceMotion && (forceIntro || !hasIntroPlayed);
     // The staggered star fade-in rides along with the intro: it plays on the
     // first mount of a page load and is skipped on remounts (already faded).
     const playStarFade = playIntro;
@@ -1383,11 +1391,21 @@ export const SpaceBackground = ({ skipIntro = false } = {}) => {
     // whenever the logo hasn't dissolved yet (so a mid-build remount still gets
     // to dissolve), and never after it's already gone. Skipped for reduced
     // motion (that path renders a single static frame with the logo shown).
-    const playDissolve = !hasDissolved && !reduceMotion;
+    const playDissolve = !reduceMotion && (forceIntro || !hasDissolved);
+    // A forced replay restarts the whole choreography, so clear the dissolved
+    // gate too (otherwise the remount-hide block below would hide the logo
+    // before it rebuilds).
+    if (forceIntro) hasDissolved = false;
     hasIntroPlayed = true;
-    const introStart = performance.now();
-    const starFadeStart = introStart;
-    const returnFadeStart = introStart;
+    // Intro clock is anchored to the FIRST animate frame, not to effect time.
+    // On a remount (version switch / refresh) the GLB is cached and WebGL warms
+    // up, but the first paint can still lag well after the effect runs — if the
+    // clock started at effect time, that lag would be counted as elapsed and
+    // the fade/intro would START MID-PROGRESS. Setting these on frame 1 makes
+    // the intro always begin from zero.
+    let introStart = 0;
+    let starFadeStart = 0;
+    let returnFadeStart = 0;
     // easeOutQuint for a smoother, longer-settling glide (less abrupt than the
     // cubic wind-down) — suits the calmer wormhole intro.
     const easeOut = (x) => 1 - Math.pow(1 - x, 5);
@@ -1402,6 +1420,13 @@ export const SpaceBackground = ({ skipIntro = false } = {}) => {
 
     const animate = () => {
       frameRef.current = requestAnimationFrame(animate);
+      // Start the intro clock on the FIRST frame (see note above) so a delayed
+      // first paint never makes the intro begin mid-progress.
+      if (introStart === 0) {
+        introStart = performance.now();
+        starFadeStart = introStart;
+        returnFadeStart = introStart;
+      }
       // Apply any pending container resize just before painting, so the canvas
       // follows the panel without a blank frame.
       applyResizeIfNeeded();
