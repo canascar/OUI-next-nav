@@ -109,7 +109,18 @@ const IntroV2 = ({ skipIntro = false } = {}) => {
     const m = pageBg.match(/(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/);
     const rgb = m ? `${m[1]}, ${m[2]}, ${m[3]}` : isDark ? '11, 9, 18' : '230, 224, 245';
     root.style.backgroundColor = pageBg;
-    vig.style.background = `radial-gradient(74% 74% at 50% 48%, rgba(${rgb}, 0) 34%, rgba(${rgb}, 0.6) 62%, rgba(${rgb}, 0.92) 82%, rgba(${rgb}, 1) 100%)`;
+    // Directional edge fades (top/bottom/left/right) reaching solid page bg at
+    // each edge, over a tighter central radial — so all four edges dissolve
+    // into the bg instead of showing the lines hard at the frame.
+    const c0 = `rgba(${rgb}, 0)`;
+    const c1 = `rgba(${rgb}, 1)`;
+    vig.style.background = [
+      `linear-gradient(to top, ${c1} 0%, ${c0} 22%)`,
+      `linear-gradient(to bottom, ${c1} 0%, ${c0} 22%)`,
+      `linear-gradient(to left, ${c1} 0%, ${c0} 18%)`,
+      `linear-gradient(to right, ${c1} 0%, ${c0} 18%)`,
+      `radial-gradient(78% 82% at 50% 48%, ${c0} 30%, rgba(${rgb}, 0.5) 60%, rgba(${rgb}, 0.9) 84%, ${c1} 100%)`,
+    ].join(', ');
   }, [isDark]);
 
   useEffect(() => {
@@ -129,11 +140,13 @@ const IntroV2 = ({ skipIntro = false } = {}) => {
 
     const lines = isDark
       ? [
-          '124, 92, 255',
-          '91, 139, 255',
-          '157, 139, 255',
-          '196, 184, 255',
-          '110, 86, 207',
+          // Blue-dominant (low red) so it reads blue, not purple. One indigo
+          // anchor (#4f46e5), then blue-500/400 up to light sky blue.
+          '79, 70, 229', // indigo anchor #4f46e5
+          '59, 130, 246', // blue-500 #3b82f6
+          '79, 124, 240', // blue
+          '96, 165, 250', // blue-400 #60a5fa
+          '147, 197, 253', // light sky blue #93c5fd
         ]
       : [
           '110, 86, 207',

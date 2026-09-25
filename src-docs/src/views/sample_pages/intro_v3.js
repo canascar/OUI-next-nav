@@ -52,10 +52,11 @@ const IntroV3 = ({ skipIntro = false } = {}) => {
     // — no data stream, no convergence; just the residual fragments + glow.
     const reduce = prefersReduce || skipIntro;
 
-    // Iris/violet family; a brighter "head" tint for leading glyphs. Light mode
-    // uses DEEPER iris so the glyphs read against the pale lavender bg.
-    const body = isDark ? '157, 139, 255' : '90, 66, 190';
-    const head = isDark ? '210, 200, 255' : '108, 78, 220';
+    // Blue-dominant data stream (dark): blue-500 body with a light sky-blue
+    // "head" for leading glyphs — reads blue, not purple. Light mode keeps a
+    // deeper iris for contrast on the pale bg.
+    const body = isDark ? '59, 130, 246' : '90, 66, 190'; // blue-500
+    const head = isDark ? '147, 197, 253' : '108, 78, 220'; // light sky-blue head
     // Light-mode glyphs need more opacity to be visible on the light bg (dark
     // mode's additive-ish brightness carries on its own). This multiplies every
     // glyph's alpha.

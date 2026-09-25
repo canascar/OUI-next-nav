@@ -46,7 +46,24 @@ const IntroVignette = ({ isDark }) => {
       : isDark
       ? '11, 9, 18'
       : '230, 224, 245';
-    vig.style.background = `radial-gradient(74% 74% at 50% 48%, rgba(${rgb}, 0) 34%, rgba(${rgb}, 0.6) 62%, rgba(${rgb}, 0.92) 82%, rgba(${rgb}, 1) 100%)`;
+    // Fade the backdrop to the page bg toward the edges. A single centred
+    // radial can't fully cover all four edges of a wide box (the edge midpoints
+    // sit inside its radius), so layer directional LINEAR fades (top/bottom/
+    // left/right) that reach solid bg at each edge ON TOP of a tighter radial.
+    // This makes every edge — including V4's waves — dissolve into the bg
+    // rather than showing hard at the frame.
+    const c0 = `rgba(${rgb}, 0)`;
+    const c1 = `rgba(${rgb}, 1)`;
+    vig.style.background = [
+      // Top / bottom edges.
+      `linear-gradient(to top, ${c1} 0%, ${c0} 22%)`,
+      `linear-gradient(to bottom, ${c1} 0%, ${c0} 22%)`,
+      // Left / right edges.
+      `linear-gradient(to left, ${c1} 0%, ${c0} 18%)`,
+      `linear-gradient(to right, ${c1} 0%, ${c0} 18%)`,
+      // Central radial to darken the corners + soften the overall frame.
+      `radial-gradient(78% 82% at 50% 48%, ${c0} 30%, rgba(${rgb}, 0.5) 60%, rgba(${rgb}, 0.9) 84%, ${c1} 100%)`,
+    ].join(', ');
   }, [isDark]);
 
   return (

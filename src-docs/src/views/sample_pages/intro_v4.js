@@ -76,7 +76,9 @@ const IntroV4 = ({ skipIntro = false } = {}) => {
         window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
     const bands = isDark
-      ? ['79, 70, 229', '124, 92, 255', '157, 139, 255']
+      ? // Centered on the dark-mode PRIMARY #93b4fc (147,180,252): a deeper
+        // blue-500 anchor, the primary, and a lighter tint above it.
+        ['59, 130, 246', '147, 180, 252', '186, 208, 255']
       : ['110, 86, 207', '124, 92, 255', '150, 120, 240'];
 
     let raf = 0;
@@ -173,7 +175,7 @@ const IntroV4 = ({ skipIntro = false } = {}) => {
           transformOrigin: '50% 46%',
           willChange: 'opacity, transform',
           background: isDark
-            ? 'radial-gradient(58% 48% at 50% 46%, rgba(124,92,255,0.34) 0%, rgba(79,70,229,0.16) 42%, rgba(11,9,18,0) 72%)'
+            ? 'radial-gradient(58% 48% at 50% 46%, rgba(147,180,252,0.30) 0%, rgba(59,130,246,0.14) 42%, rgba(10,11,18,0) 72%)'
             : 'radial-gradient(58% 48% at 50% 46%, rgba(124,92,255,0.20) 0%, rgba(110,86,207,0.10) 44%, rgba(230,224,245,0) 74%)',
         }}
       />

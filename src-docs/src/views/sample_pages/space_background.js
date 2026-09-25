@@ -32,33 +32,37 @@ const PALETTES = {
     // Bluer iris for the central aura: additive bloom saturates R+B first, so a
     // red-heavy violet piles up to magenta/pink in the hot core. A blue-biased
     // iris keeps the centre glow blue-violet → white instead of pink.
-    core: new THREE.Color('#5a63f0'),
-    accent: new THREE.Color('#9D8BFF'), // oui-next dark primary (violet)
-    spark: new THREE.Color('#c4b8ff'), // lighter violet for far stars
-    fog: new THREE.Color('#0b0916'),
-    bg: '#0b0912', // deep violet-black backdrop
-    // Radial gradient: a faint violet lift at the eclipse centre fading to
-    // near-black at the edges, for depth behind the corona.
+    // Anchored to the design-system accent: indigo #4f46e5 / #6366f1, with a
+    // cool-blue supporting range (matching the avatar ring's blue end). Biased
+    // AWAY from the old violet/lavender lean so the field reads on-brand indigo
+    // rather than purple.
+    // Biased toward true BLUE (low red channel) so the additive corona reads
+    // blue, not purple. Indigo #4f46e5 is kept only as the deepest anchor; the
+    // bulk of the field is blue-500/400 (#3b82f6 / #60a5fa) into a light sky.
+    core: new THREE.Color('#4f7cf0'), // blue core (additive-safe)
+    accent: new THREE.Color('#3b82f6'), // blue-500
+    spark: new THREE.Color('#93c5fd'), // light blue far stars (blue-300)
+    fog: new THREE.Color('#080b14'),
+    bg: '#080b12', // deep blue-black backdrop
+    // Radial gradient: a faint blue lift at the centre fading to near-black.
     bgGradient:
-      'radial-gradient(120% 90% at 50% 42%, #171029 0%, #0d0a1a 45%, #070510 100%)',
-    disc: '#0b0912', // eclipse shadow — matches the backdrop (near-black)
+      'radial-gradient(120% 90% at 50% 42%, #0f1a30 0%, #0a0f1e 45%, #04060f 100%)',
+    disc: '#080b12', // eclipse shadow — matches the backdrop (near-black)
     discOpacity: 0.96,
     additive: true,
-    // Astral nebula hues sampled across the corona — deep indigo through iris
-    // to a magenta/rose edge, with rare cyan sparks. Rooted in the iris/violet
-    // tokens but spread into a celestial gradient.
-    // On-brand iris/violet spread — indigo through iris to pale lilac, with a
-    // subtle blue-iris spark. No pinks/cyans, to stay true to the theme.
+    // Blue-dominant spread: one deep indigo anchor, then blue-500/400 up to a
+    // light sky blue and a bright blue spark. Keeps the design accent present
+    // (the deep indigo) while reading unmistakably blue rather than purple.
     nebula: [
-      new THREE.Color('#4f46e5'), // indigo (v9 --g-accent-bright)
-      new THREE.Color('#6E56CF'), // iris (oui-next light primary)
-      new THREE.Color('#7C5CFF'), // iris-violet (oui-next secondary)
-      new THREE.Color('#9D8BFF'), // violet (oui-next dark primary)
-      new THREE.Color('#c4b8ff'), // pale lilac
-      new THREE.Color('#5b8bff'), // subtle blue-iris spark
+      new THREE.Color('#4f46e5'), // indigo anchor (v9 --g-accent-bright)
+      new THREE.Color('#3b82f6'), // blue-500
+      new THREE.Color('#4f7cf0'), // blue
+      new THREE.Color('#60a5fa'), // blue-400
+      new THREE.Color('#93c5fd'), // light sky blue
+      new THREE.Color('#7dd3fc'), // bright cyan-blue spark
     ],
-    nebulaWeights: [0.2, 0.24, 0.24, 0.16, 0.1, 0.06],
-    nebulaClouds: ['#4f46e5', '#7C5CFF', '#9D8BFF', '#5b8bff'],
+    nebulaWeights: [0.16, 0.26, 0.22, 0.18, 0.12, 0.06],
+    nebulaClouds: ['#4f46e5', '#3b82f6', '#60a5fa', '#7dd3fc'],
   },
   // Light theme: a CRISP CONSTELLATION eclipse, not a glow. Additive bloom
   // can't work on a light background (nothing to glow into → flat blobs), so
@@ -528,7 +532,19 @@ export const SpaceBackground = ({ skipIntro = false, forceIntro = false } = {}) 
     // the whole dissolve seamless right out to the container edge.
     const vignetteRgb = pageRgb;
     if (vignetteRef.current) {
-      vignetteRef.current.style.background = `radial-gradient(72% 72% at 50% 48%, rgba(${vignetteRgb}, 0) 26%, rgba(${vignetteRgb}, 0.55) 56%, rgba(${vignetteRgb}, 0.9) 80%, rgba(${vignetteRgb}, 1) 100%)`;
+      // Layer directional edge fades (top/bottom/left/right) that reach solid
+      // page bg AT each edge, over a central radial — a single radial can't
+      // cover a wide box's edge midpoints, so the field would show hard there.
+      // This makes every edge dissolve fully into the page in both themes.
+      const c0 = `rgba(${vignetteRgb}, 0)`;
+      const c1 = `rgba(${vignetteRgb}, 1)`;
+      vignetteRef.current.style.background = [
+        `linear-gradient(to top, ${c1} 0%, ${c0} 24%)`,
+        `linear-gradient(to bottom, ${c1} 0%, ${c0} 24%)`,
+        `linear-gradient(to left, ${c1} 0%, ${c0} 20%)`,
+        `linear-gradient(to right, ${c1} 0%, ${c0} 20%)`,
+        `radial-gradient(76% 80% at 50% 48%, ${c0} 26%, rgba(${vignetteRgb}, 0.5) 58%, rgba(${vignetteRgb}, 0.9) 82%, ${c1} 100%)`,
+      ].join(', ');
     }
     // Additive glow on dark; normal alpha blend on light so dark motes darken
     // the pale canvas instead of washing out.
