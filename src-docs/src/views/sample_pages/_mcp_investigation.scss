@@ -321,28 +321,28 @@
   // picks up the purples/glare from the particle field and spins.
   .emptySessionPage__inputField {
     background-color: transparent;
-    // Frost the backdrop BEHIND the field so the animated background (any
-    // version) is softened, not seen crisply through the translucent fill.
-    // The field body is transparent, so this blur applies to whatever sits
-    // behind it; the ::after fill (below) then tints it. Rounded to match the
-    // field so the frost stays inside the corners.
     border-radius: 16px;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    // The shared ::after paints the visible inner fill (it cuts out the border
-    // ring). Drop it to ~70% so the field reads translucent and the blurred
-    // backdrop shows softly through (a frosted-glass look).
+    // The inner fill (::after) is the field's SURFACE — a solid, fully-opaque
+    // fill that sits ABOVE the ::before border gradient and covers the whole
+    // interior, so the border animation stays confined to the border band in
+    // every browser (no mask/backdrop tricks that leaked in Firefox).
     &::after {
+      // FULLY OPAQUE inner fill — completely covers the ::before border
+      // gradient, so the animation is confined to the ~1.5px border band in
+      // every browser (no mask/backdrop compositing tricks, no Firefox bleed).
       background: lightOrDarkTheme(
-        rgba(255, 255, 255, 0.7),
-        rgba(21, 27, 38, 0.7)
+        rgb(247, 247, 251),
+        rgb(21, 27, 38)
       );
       transition: background 220ms ease;
     }
 
-    // Animated purple/glare border on focus. The ::before ring already exists
-    // (a slow ambient conic-gradient); on focus we swap it to a brighter
-    // iris/violet glare and spin it faster, plus add an outer glow.
+    // Animated iris border on focus. The ::before paints a travelling linear
+    // sheen across the full box; the OPAQUE ::after inner fill (below) sits on
+    // top and covers the entire interior, so only the ~1.5px border band shows.
+    // This is what reliably confines the animation to the border in EVERY
+    // browser — it does NOT depend on masks or backdrop-filter compositing
+    // (which leaked through the translucent body in Firefox).
     &:focus-within {
       box-shadow: lightOrDarkTheme(
         0 6px 22px rgba(110, 86, 207, 0.22),
@@ -350,48 +350,27 @@
       );
 
       &::before {
-        // Rotate the GRADIENT's angle (via the animated --mcp-angle property),
-        // NOT the element — a rotating filled rounded-rect shows its corners
-        // sweeping. Animating the conic `from` angle keeps the ring perfectly
-        // still while the colors travel around it: no seam, no corner sweep.
-        background: conic-gradient(
-          from var(--mcp-angle, 0deg),
-          rgba(124, 92, 255, 0.9),
-          rgba(157, 139, 255, 0.55),
-          rgba(196, 184, 255, 0.95),
-          rgba(91, 139, 255, 0.6),
-          rgba(157, 139, 255, 0.55),
-          rgba(124, 92, 255, 0.9)
+        background: linear-gradient(
+          90deg,
+          rgba(130, 100, 240, 0.85) 0%,
+          rgba(196, 184, 255, 1) 25%,
+          rgba(130, 100, 240, 0.85) 50%,
+          rgba(196, 184, 255, 1) 75%,
+          rgba(130, 100, 240, 0.85) 100%
         );
-        animation: mcpHomeFocusBorderSpin 5s linear infinite;
-        inset: -2px;
-        border-radius: 18px;
-        // Clip the gradient to a RING: paint the full box, then subtract the
-        // padding-box so only a ~3px border band remains. This keeps the
-        // animated gradient out of the field body entirely (no bleed-through
-        // the translucent centre) while the corona still shows through.
-        padding: 3px;
-        mask: linear-gradient(#000 0 0) content-box exclude,
-          linear-gradient(#000 0 0);
-        -webkit-mask: linear-gradient(#000 0 0) content-box,
-          linear-gradient(#000 0 0);
-        -webkit-mask-composite: xor;
+        background-size: 300% 100%;
+        animation: mcpHomeFocusBorderSheen 4s linear infinite;
       }
     }
   }
 }
 
-// Register --mcp-angle as a real <angle> so it can be interpolated. Without
-// @property it's an unanimatable string and the gradient would jump 0→360.
-@property --mcp-angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
-@keyframes mcpHomeFocusBorderSpin {
+// The focus border highlight travels by scrolling the linear gradient's
+// background-position — plain, widely-supported, no @property/angle needed
+// (so it works identically in Firefox), and with no conic centre to leak.
+@keyframes mcpHomeFocusBorderSheen {
   to {
-    --mcp-angle: 360deg;
+    background-position: 300% 0;
   }
 }
 
