@@ -254,18 +254,14 @@
   opacity: 0.5;
   transition: opacity 150ms ease, transform 200ms cubic-bezier(0.2, 0.7, 0.2, 1);
 
-  // Rotate the cross icon 45° to render it as a plus with matching stroke weight
+  // Rotate the cross icon 45° to render it as a plus with matching stroke
+  // weight. This is a STATIC orientation (not animated) — no hover spin.
   .ouiIcon {
     transform: rotate(45deg);
-    transition: transform 200ms cubic-bezier(0.2, 0.7, 0.2, 1);
   }
 
   &:hover {
     opacity: 1;
-
-    .ouiIcon {
-      transform: rotate(135deg);
-    }
   }
 
   &:active {

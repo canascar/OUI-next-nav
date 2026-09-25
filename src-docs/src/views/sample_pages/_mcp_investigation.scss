@@ -356,11 +356,11 @@
       );
 
       &::before {
-        // Widen the animated ring on focus (base is -1.5px) so the highlight
-        // is a thicker, more apparent band — reads clearly on the pale light
-        // field, not just a hairline.
-        inset: -2.5px;
-        border-radius: 18px;
+        // Keep the highlighted border a thin 1px band (the opaque ::after fill
+        // at inset:0 covers everything inside, so the exposed ring == this
+        // inset). Color/glow carry the emphasis, not thickness.
+        inset: -1px;
+        border-radius: 16px;
         // Travelling sheen. Theme-aware: light mode uses the DEEPER light
         // primary so the border reads clearly on the pale field; dark mode
         // uses the light periwinkle #93b4fc. Both with a brighter highlight.
