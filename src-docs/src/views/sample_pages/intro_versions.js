@@ -32,8 +32,7 @@ const V1 = React.lazy(() =>
 const V2 = React.lazy(() => import('./intro_v2'));
 const V3 = React.lazy(() => import('./intro_v3'));
 const V4 = React.lazy(() => import('./intro_v4'));
-// V5 hidden for now — re-enable alongside its INTRO_VERSIONS entry below.
-// const V5 = React.lazy(() => import('./intro_v5'));
+const V5 = React.lazy(() => import('./intro_v5'));
 
 // V1's content-reveal timing is driven by its long multi-phase constellation
 // intro (build → dissolve). Kept here so the switcher can hold the greeting
@@ -58,11 +57,9 @@ export const INTRO_VERSIONS = [
   { id: 'v2', label: 'V2', Component: V2, revealMs: 2200 },
   { id: 'v3', label: 'V3', Component: V3, revealMs: 3400 },
   { id: 'v4', label: 'V4', Component: V4, revealMs: 1400 },
-  // V5 — spirograph. HIDDEN for now: kept in the codebase (import + file) but
-  // not listed, so it's absent from the switcher. Re-enable by uncommenting.
-  // A saved 'v5' in localStorage safely falls back to V1 (guarded in
-  // McpHomeGreeting), so hiding it here is enough.
-  // { id: 'v5', label: 'V5', Component: V5, revealMs: 3400 },
+  // V5 — spirograph: rushes out fast on load, then eases into a calm idle.
+  // Reveal the UI as the figure settles.
+  { id: 'v5', label: 'V5', Component: V5, revealMs: 3400 },
 ];
 
 // localStorage key that remembers the selected version across browser reloads.
