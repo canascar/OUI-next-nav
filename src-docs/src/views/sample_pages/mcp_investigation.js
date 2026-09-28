@@ -35,6 +35,7 @@ import React, { Suspense, useContext, useEffect, useState } from 'react';
 import { OuiButtonIcon, OuiIcon, OuiToolTip } from '../../../../src/components';
 import { Mascot } from '../../../../olly-mascot/Mascot';
 import { ThemeContext } from '../../components/with_theme';
+import { ScenarioFindingCard } from './empty_session_page_v6';
 import {
   INTRO_VERSIONS,
   INTRO_VERSION_STORAGE_KEY,
@@ -845,6 +846,8 @@ export const McpHomeGreeting = ({
   onStartInvestigation,
   onSend,
   onJumpToPage,
+  findings = [],
+  onSelectFinding,
 }) => {
   const [inputValue, setInputValue] = useState('');
 
@@ -1113,6 +1116,27 @@ export const McpHomeGreeting = ({
             </div>
           </div>
         </div>
+
+        {/* Insights — the findings Olly surfaced. One row per finding, all the
+            same shared ScenarioFindingCard; clicking a row opens that
+            investigation in this thread. Sits below the ask input so the
+            greeting stays the focal point, with the insights ready underneath. */}
+        {findings.length > 0 && (
+          <div className="v6Scenario__findings v6Scenario__findings--inline mcpHome__findings">
+            {findings.map((finding) => (
+              <ScenarioFindingCard
+                key={finding.key}
+                finding={finding}
+                idPrefix="mcpHome"
+                showFeedback={false}
+                canDismiss
+                onSelect={() => {
+                  if (onSelectFinding) onSelectFinding(finding);
+                }}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Suggested prompts — Olly's read on what to ask next, given the
             findings above. Clicking one sends it straight through, same as
